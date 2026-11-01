@@ -462,6 +462,13 @@ class CheckerTest(unittest.TestCase):
         self.invariant_row(rows)
         self.assertNotIn("reading budget", self.assert_clean())
 
+    def test_large_register_is_not_a_warning(self):
+        # mining has no target row count; a size warning made leads cut admitted rules to stay under it
+        rows = "\n".join(f"| INV-{n:03d} | product promise | Rule {n} | [R](architecture.md) | candidate | tests |"
+                         for n in range(1, 151))
+        self.invariant_row(rows)
+        self.assertNotIn("WARN", self.assert_clean())
+
     def test_undecodable_file_warns_without_crashing(self):
         self.valid()
         self.write("latin.md", "# Caf\xe9\n".encode("latin-1"), mode="wb")

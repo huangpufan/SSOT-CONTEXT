@@ -2,7 +2,7 @@
 name: ssot-preflight
 description: Read the repository's SSOT before substantive work. Use this before code, config, documentation, review, debugging, refactoring, or planning work in a repository, to find the invariants and documents that bear on the task and to surface open questions that affect it. Skip it for non-repository chat, pure command runs, and typo or formatting edits that cannot change meaning.
 metadata:
-  protocol_version: "3.7"
+  protocol_version: "3.8"
   bundle: "SSOT Skill"
 ---
 

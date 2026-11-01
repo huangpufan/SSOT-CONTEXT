@@ -65,7 +65,7 @@ Repositories that already use other names, such as v2's `01-product/` and `02-ar
 
 ### The README
 
-`SSOT/README.md` is the entry point every task starts from, so keep it short, around 8,000 characters. It starts with front matter:
+`SSOT/README.md` is the entry point every task starts from, so keep it short, around 8,000 characters, not counting the rows of the invariants register (section 5), which grows with the rules. It starts with front matter:
 
 ```yaml
 ---

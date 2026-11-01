@@ -8,6 +8,30 @@ Entries up to 2.86 were derived from the v2 protocol-upgrade ledger, which is pr
 
 ## [Unreleased]
 
+## [3.8] - 2026-11-01
+
+Mining no longer comes back empty, and it records more of a repository's protected rules. In 3.7, one of three mining runs with `deepseek-v4.1-flash` on fd wrote no rules at all: the lead had its writers draft into working files for one merge at the end, and the run ended before the merge. Now writers write into `SSOT/` directly, each area is challenged, written, checked, and registered as soon as its own miners finish, and the lead keeps at most eight helpers running instead of starting more and having them refused. In a clean environment, one mining round with `gpt-6.1-terra` from the same starting SSOT stated 55% of click's claims against 42% for 3.7 (four runs each; click was held out while the text was written) and, with the text before the checker change, 59% of fd's against 52%; 92% to 95% of the added rows were correct in both versions. The consumer data format is unchanged (`ssot_format: 3`); nothing needs to catch up. Evidence and limits: `tests/trials-3.8.md`.
+
+### Changed
+- `mining.md` §2: helpers run from a queue, at most eight at a time or fewer if the runtime allows fewer; a workflow or batch tool that starts helpers counts against the same limit; after a limit error, wait for a running helper to finish and start again.
+- `mining.md` §4: each area's writer writes directly into its owner in `SSOT/`, not into a draft for the lead to merge. Each area goes through challenge, writing, and the row check as soon as its miners finish, and its checked rows join the register then, so a round that stops early keeps every area it finished.
+- `mining.md` §1 and §4: the checklist lists each documented option with every spelling; writers carry every condition, exception, alias, and exact value from the proposal and the challenge; the row checker also compares each row with its proposal for dropped details.
+- Memory model §4: the README's target of about 8,000 characters does not count the rows of the invariants register, which grows with the rules. The checker already excluded them.
+- `ssot-check.py`: no longer warns when the register passes 60 rows. Leads read the warning as a cap and moved admitted rules out of the register to stay under it.
+
+### Evidence
+- click, held out (169 claims), clean environment, one terra mining round from the same starting SSOT: 3.7 44%, 40%, 29%, 56% (mean 42%); 3.8 59%, 41%, 57%, 62% (mean 55%). Precision of added rows: 93% and 92%.
+- fd (202 claims), same arrangement: 3.7 69%, 26%, 56%, 55% (mean 52%); the 3.8 text before the checker change 60%, 64%, 64%, 48% (mean 59%). Precision: 94% and 95%.
+- fd with flash: 3.7 83%, 91%, and one run with no rules written; 3.8 92%, 96%, 95% (before the checker change) and 91%, none empty. Precision of added rows: 68% (3.7) and 66% (3.8).
+- A flash mining run of fd takes 95 to 157 minutes, set by the account's rate limit: 2,100 to 3,300 model steps at 18 to 30 steps per minute for the whole account, whether one run or several are active.
+
+### Not verified
+- Coverage near complete. Every clean terra mining round, in both versions, stopped after 4 to 13 minutes and called itself unfinished; on fd the spread between runs of one version (26% to 69% for 3.7) is larger than the difference between versions.
+- Precision with flash: a third of its added rows still miss a condition or exception, and the flash row checker passes rows the terra judge rejects.
+- Full setups with 3.8, large repositories, and flash on click.
+- Equal conditions for the flash comparison: the 3.7 runs ran three at a time, the 3.8 runs one at a time, as users run them (owner decision, 2026-10-31).
+- 3.7's own numbers (fd 64%, click 50%) were measured with the maintainer's personal codex configuration loaded; in a clean environment 3.7 states 52% and 42%.
+
 ## [3.7] - 2026-10-30
 
 Mining now finds most of the protected rules of a small or medium repository, not about a third. On fd, a Rust command-line tool, the share of protected behaviors that SSOT states after one mining round with `gpt-6.1-terra` rose from 33% to 64% on average over five runs, with 90% to 100% of the added rows correct; on click, a Python library held out while the text was written, from 35% to 50% over three runs. The largest gain came from removing a bottleneck: in 3.6 the lead agent decided and rechecked every proposal itself and stopped with most of them undecided; now one helper per area writes every outcome the challenge left standing into `SSOT/`, and the lead decides only disputes. The owner raised the runtime word budget from 9,500 to 10,000 for these changes. The consumer data format is unchanged (`ssot_format: 3`); nothing needs to catch up. Evidence and limits: `tests/trials-3.7.md`.

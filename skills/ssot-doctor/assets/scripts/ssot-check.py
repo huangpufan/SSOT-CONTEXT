@@ -428,12 +428,6 @@ def check_invariants(report, readme, text, ssot_dir):
                 report.add("ERROR", readme, number,
                            f"invariants must be written as a table ({INVARIANT_COLUMNS}) so they can be checked")
                 break
-    rows_total = sum(max(len(table) - 2, 0) for table in tables)
-    if rows_total > 60:
-        report.add("WARN", readme, section[0],
-                   f"{rows_total} invariants are read before every task; check that each is a lasting rule, "
-                   "not a one-time choice that belongs in a decision record")
-
     seen = {}
     for table in tables:
         header_number, header = table[0]
