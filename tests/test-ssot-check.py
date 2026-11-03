@@ -860,6 +860,83 @@ class CheckerTest(unittest.TestCase):
         self.git("init", "-q")
         self.assertNotIn("INFO", self.assert_clean())
 
+    # --- confirmed invariants changed without the user ---------------------
+    CONFIRMED = "| INV-01 | product promise | A retry never charges twice | [Retries](architecture.md#failure-and-recovery) | confirmed | user, 2026-05-02 |"
+
+    def edit_confirmed(self, row, extra=""):
+        self.write("README.md", README.replace(self.CONFIRMED, row + extra))
+
+    def test_changed_confirmed_rule_is_an_error(self):
+        self.repo_with()
+        for row, what in (
+                ("| INV-01 | product promise | A retry never charges twice, except for refunds | [Retries](architecture.md#failure-and-recovery) | confirmed | user, 2026-05-02 |", "rule"),
+                ("| INV-01 | process rule | A retry never charges twice | [Retries](architecture.md#failure-and-recovery) | confirmed | user, 2026-05-02 |", "kind"),
+                ("| INV-01 | product promise | A retry never charges twice | [Retries](architecture.md#failure-and-recovery) | candidate | user, 2026-05-02 |", "status"),
+                ("| INV-01 | product promise | Retries are a request, not a gate | [Retries](architecture.md) | confirmed | `user`, 2026-05-02 |", "rule")):
+            self.edit_confirmed(row)
+            out = self.assert_error(f"confirmed invariant INV-01 changed its {what} since the last commit")
+            self.assertIn("README.md:18", out)
+
+    def test_removed_confirmed_rule_is_an_error(self):
+        self.repo_with()
+        self.edit_confirmed("| INV-02 | product promise | Refunds go to the original card | [Retries](architecture.md) | candidate | inferred |")
+        self.assert_error("confirmed invariant INV-01 was removed since the last commit")
+
+    def test_moved_link_reworded_source_and_other_rows_are_not_reported(self):
+        self.repo_with()
+        self.edit_confirmed("|  INV-01 | product promise |  A retry  never charges twice | [Retries](architecture.md) | `confirmed` | user (payments lead), 2026-05-02 |",
+                            "\n| INV-02 | product promise | Refunds go to the original card | [Retries](architecture.md) | confirmed | `docs/refunds.md` |")
+        self.assertNotIn("confirmed invariant", self.assert_clean())
+        self.commit()
+        self.edit_confirmed(self.CONFIRMED, "\n| INV-02 | product promise | Refunds go to the card | [Retries](architecture.md) | candidate | inferred |")
+        self.assertNotIn("INV-01", self.assert_error("confirmed invariant INV-02 changed its rule and status"))
+
+    def test_candidate_rules_may_change(self):
+        self.repo_with()
+        self.edit_confirmed(self.CONFIRMED, "\n| INV-02 | product promise | Refunds go to the original card | [Retries](architecture.md) | candidate | inferred |")
+        self.commit()
+        self.edit_confirmed(self.CONFIRMED)
+        self.assertNotIn("invariant", self.assert_clean())
+
+    def test_change_with_a_newly_dated_source_is_reported_for_review(self):
+        self.repo_with()
+        self.edit_confirmed("| INV-01 | product promise | A retry never charges twice, except for refunds | [Retries](architecture.md#failure-and-recovery) | confirmed | user, 2026-05-02; narrowed by the user, 2026-11-02 |")
+        out = self.assert_clean()
+        self.assertIn("confirmed invariant(s) INV-01 changed since the last commit with a newly dated Source", out)
+        self.edit_confirmed("| INV-01 | product promise | A retry never charges twice, except for refunds | [Retries](architecture.md#failure-and-recovery) | confirmed | user, 2026-05-02; narrowed by the user, 2026-05-02 |")
+        self.assertIn("with a newly dated Source", self.assert_clean())  # approved on the day it was set
+        self.edit_confirmed("| INV-01 | product promise | A retry never charges twice, except for refunds | [Retries](architecture.md#failure-and-recovery) | confirmed | user, 2026-05-02 (narrowed) |")
+        self.assert_error("confirmed invariant INV-01 changed its rule")
+
+    def test_since_compares_with_the_named_commit(self):
+        self.repo_with()
+        start = self.git("rev-parse", "HEAD")
+        self.edit_confirmed("| INV-01 | product promise | A retry rarely charges twice | [Retries](architecture.md#failure-and-recovery) | confirmed | user, 2026-05-02 |")
+        self.commit()
+        self.assertNotIn("confirmed invariant", self.assert_clean())
+        code, out = self.run_checker(self.ssot, "--since", start)
+        self.assertEqual(code, 1, out)
+        self.assertIn(f"confirmed invariant INV-01 changed its rule since {start}", out)
+
+    def test_migration_from_a_v2_readme_is_not_compared(self):
+        self.write("README.md", "# Old\n\n## Invariants\n\n| ID | Kind | Rule | Explained in | Status | Source |\n|---|---|---|---|---|---|\n"
+                                "| INV-01 | product promise | Old wording | [R](architecture.md) | confirmed | user |\n")
+        self.write("architecture.md", ARCHITECTURE)
+        self.git("init", "-q")
+        self.commit()
+        self.write("README.md", README)
+        self.assertNotIn("confirmed invariant", self.assert_clean())
+
+    def test_confirmed_check_needs_a_committed_readme(self):
+        self.valid()
+        self.git("init", "-q")
+        self.edit_confirmed("| INV-01 | product promise | Anything | [Retries](architecture.md) | confirmed | user |")
+        self.assertNotIn("INFO", self.assert_clean())
+        self.write("notes.md", "# Notes\n")
+        self.git("add", "SSOT/notes.md")
+        self.commit()
+        self.assertNotIn("INFO", self.assert_clean())
+
     def test_shallow_history_is_disclosed(self):
         self.repo_with("src/old.py")
         os.remove(os.path.join(self.repo, "src/old.py"))

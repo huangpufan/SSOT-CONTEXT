@@ -177,7 +177,7 @@ budget "runtime protocol (SKILL.md + references)" "$(words "${RUNTIME_FILES[@]}"
 for lang in en zh; do
   budget "templates/$lang" "$(bytes "$TEMPLATES/$lang"/*)" 16384 bytes
 done
-budget "checker" "$(bytes "$SKILLS/ssot-doctor/assets/scripts/ssot-check.py")" 40960 bytes
+budget "checker" "$(bytes "$SKILLS/ssot-doctor/assets/scripts/ssot-check.py")" 45056 bytes
 budget "skills/ total" "$(git -C "$PROJECT_ROOT" ls-files -co --exclude-standard -z -- skills | xargs -0 cat | wc -c | tr -d ' ')" 163840 bytes
 
 echo

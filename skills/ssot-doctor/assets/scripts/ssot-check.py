@@ -4,12 +4,14 @@
 Usage: ssot-check.py [SSOT_DIR] [--since COMMIT]      (default: ./SSOT)
 
 --since COMMIT lists only mentions of files removed after COMMIT or in
-uncommitted changes, and counts the older ones in one line. Closeout uses it
-to see what its own batch removed.
+uncommitted changes, and counts the older ones in one line; it also compares
+confirmed invariants with COMMIT instead of HEAD. Closeout uses it to see what
+its own batch changed.
 
 Checks only what a program can decide: the entry file and its format marker,
-local links and heading anchors, the invariants register shape, the
-reviewed_through commit, size warnings, and file paths in inline code that git
+local links and heading anchors, the invariants register shape, confirmed
+invariants whose kind, rule, or status changed (or that were removed) without a
+newly dated source, the reviewed_through commit, size warnings, and file paths in inline code that git
 history says were removed or moved (outside decisions/ and research/). It never proves that a document is
 true, complete, or readable; that is the job of the agent review in
 ssot-doctor.
@@ -394,8 +396,8 @@ def inside(path, root):
     return os.path.commonpath([real_path, real_root]) == real_root
 
 
-def check_invariants(report, readme, text, ssot_dir):
-    lines = list(markdown_lines(text))
+def register_tables(lines, text):
+    """The Invariants section's lines and its pipe tables (lists of (line number, cells)); None if no section."""
     section = None
     for number, level, raw in headings(text):
         if section is None:
@@ -405,12 +407,8 @@ def check_invariants(report, readme, text, ssot_dir):
             section[2] = number
             break
     if section is None:
-        report.add("WARN", readme, None, "no Invariants section; add one (it may say there are none yet)")
-        return
+        return None
     body = [(n, line) for n, line in lines if n > section[0] and (section[2] is None or n < section[2])]
-    refdefs = {m.group(1).lower(): m.group(2).strip("<>")
-               for _, line in lines for m in [REFDEF_RE.match(line)] if m}
-
     tables, current = [], []
     for number, line in body:
         cells = table_cells(line)
@@ -422,6 +420,29 @@ def check_invariants(report, readme, text, ssot_dir):
             current.append((number, cells))
     if current:
         tables.append(current)
+    return body, tables
+
+
+def register_rows(text):
+    """Map each invariant ID to (line number, its six cells); the first row wins for a duplicate ID."""
+    found = register_tables(list(markdown_lines(text)), text)
+    rows = {}
+    for table in found[1] if found else []:
+        for number, cells in table:
+            if len(cells) == 6 and INVARIANT_ID_RE.match(cells[0].strip("`* ")):
+                rows.setdefault(cells[0].strip("`* "), (number, cells))
+    return rows
+
+
+def check_invariants(report, readme, text, ssot_dir):
+    lines = list(markdown_lines(text))
+    found = register_tables(lines, text)
+    if found is None:
+        report.add("WARN", readme, None, "no Invariants section; add one (it may say there are none yet)")
+        return
+    body, tables = found
+    refdefs = {m.group(1).lower(): m.group(2).strip("<>")
+               for _, line in lines for m in [REFDEF_RE.match(line)] if m}
     if not tables:
         for number, line in body:
             if re.search(r"\b[A-Z][A-Z0-9]*(?:-[A-Z][A-Z0-9]*)*-\d+\b", blank_inline_code(line)):
@@ -747,6 +768,67 @@ def check_removed_paths(report, ssot_dir, mentions, since):
                                        "commit are not recognised")
 
 
+# --- confirmed invariants ------------------------------------------------------
+# Only the user changes a confirmed rule (memory-model section 5), yet mining leads
+# have rewritten confirmed rows while tidying the register: narrowed one to "a
+# request, not a gate", added an exemption, dropped a duty. So each confirmed row
+# of the base commit (HEAD, or --since) is compared with the working tree. A new
+# kind, rule, or status, or a removed row, is an error unless the row's Source
+# gained a date, which is how a change the user decided is recorded. A moved
+# link or a reworded source changes nothing the rule says.
+
+DATE_RE = re.compile(r"\b\d{4}-\d{2}-\d{2}\b")
+
+
+def check_confirmed(report, readme, text, since):
+    base, directory = since or "HEAD", os.path.dirname(readme)
+    try:
+        code, stderr = git(directory, "rev-parse", "--verify", "--quiet", f"{base}:./README.md")
+        if code == GIT_NO:
+            return  # no commit yet, or the README is newer than the base
+        if code != 0:
+            if "not a git repository" in stderr:
+                report.add("INFO", None, None, "not in a git work tree, so changes to confirmed invariants were not checked")
+            else:
+                report.unchecked.append(f"confirmed invariants: git failed ({stderr.strip() or code})")
+            return
+        old = git_output(directory, "cat-file", "blob", f"{base}:./README.md")
+        if front_matter(old).get("ssot_format") != FORMAT:
+            return  # a v2 base has other columns; the migration's own check covers its rows
+        old = register_rows(old)
+    except OSError:
+        report.add("INFO", None, None, "git is not available, so changes to confirmed invariants were not checked")
+        return
+    except GitError as error:
+        report.unchecked.append(f"confirmed invariants: git failed ({error})")
+        return
+    new, when = register_rows(text), f"since {since}" if since else "since the last commit"
+    norm = lambda cell: " ".join(cell.strip("`* ").split()).lower()
+    approved = []
+    for ident, (_, cells) in old.items():
+        if norm(cells[4]) != "confirmed":
+            continue
+        if ident not in new:
+            report.add("ERROR", readme, None, f"confirmed invariant {ident} was removed {when}; restore it "
+                                              "(a rule the user retires keeps its row, with status retired)")
+            continue
+        number, now = new[ident]
+        changed = [name for name, at in (("kind", 1), ("rule", 2), ("status", 4)) if norm(cells[at]) != norm(now[at])]
+        if not changed:
+            continue
+        dates, before = DATE_RE.findall(now[5]), DATE_RE.findall(cells[5])
+        if any(dates.count(date) > before.count(date) for date in dates):  # a same-day change adds the date again
+            approved.append(ident)
+            continue
+        report.add("ERROR", readme, number,
+                   f"confirmed invariant {ident} changed its {' and '.join(changed)} {when}, and only the user "
+                   "changes a confirmed rule: restore it, and ask the user if it no longer fits. Only a change "
+                   "the user decided gets their name and the date in its Source")
+    if approved:
+        report.add("INFO", readme, None, f"confirmed invariant(s) {', '.join(approved)} changed {when} with a newly "
+                                         "dated Source; show each change to the user")
+
+
 # --- reviewed_through ----------------------------------------------------------
 
 def check_reviewed_through(report, readme, value):
@@ -829,6 +911,7 @@ def main(argv):
             if not meta.get("language"):
                 report.add("ERROR", readme, 1, "front matter needs `language:` (for example en or zh-CN)")
             check_invariants(report, readme, text, ssot_dir)
+            check_confirmed(report, readme, text, since)
             check_reviewed_through(report, readme, meta.get("reviewed_through"))
             for name in V2_LEDGERS:
                 if os.path.exists(os.path.join(ssot_dir, name)):

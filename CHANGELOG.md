@@ -8,6 +8,20 @@ Entries up to 2.86 were derived from the v2 protocol-upgrade ledger, which is pr
 
 ## [Unreleased]
 
+## [3.9] - 2026-11-03
+
+The checker now reports a confirmed invariant that an agent changed, and a mining lead that sees the error puts the rule back. Three of four 3.8 mining runs with `deepseek-v4.1-flash` on fd rewrote the text of three of the four confirmed rules while tidying the register: one added "documentation typos are exempt", one dropped "take responsibility for contribution rights", one turned "open an issue first" into "a request, not an enforced gate". Memory model §5 already forbade this; nothing detected it, and the precision grading looked only at candidate rows. The consumer data format is unchanged (`ssot_format: 3`); nothing needs to catch up. Evidence and limits: `tests/trials-3.9.md`.
+
+### Changed
+- `ssot-check.py`: compares each confirmed row of the base commit (`HEAD`, or the `--since` commit) with the working tree. A changed kind, rule, or status, or a removed row, is an error, unless the row's Source gained a date: that is how a change the user decided is recorded, and the checker then lists the row for the user to see. A moved link or a reworded source is not reported. Replayed on the 14 existing flash mining copies of fd, it reports exactly the rows a separate script found changed (0 to 3 per run) and nothing in the runs that only moved links.
+- Checker budget raised from 40 to 44 KiB (owner approval, 2026-11-02) for this check; the alternative, a second script, would need its own wiring into every skill that runs the checker.
+
+### Evidence
+- Five end-of-round replays with flash, each starting from the saved end state of a real mining run (`tests/trials-3.9.md`): in the three that held rewritten confirmed rules, the lead ran the checker, restored all of them word for word, and added no date; with no confirmed change, nothing was reported or changed; when the user approved a change in the request, the lead made it and dated the Source with the user. The same start state with the 3.8 checker restored none of the three, and its report said the confirmed rows were unchanged.
+
+### Not verified
+- A whole mining run with this checker, closeout's `--since` path, and other models. A lead could add a date without the user's approval; none of the five did, which is too few runs to rule it out, and a dated change is still listed for the user.
+
 ## [3.8] - 2026-11-01
 
 Mining no longer comes back empty, and it records more of a repository's protected rules. In 3.7, one of three mining runs with `deepseek-v4.1-flash` on fd wrote no rules at all: the lead had its writers draft into working files for one merge at the end, and the run ended before the merge. Now writers write into `SSOT/` directly, each area is challenged, written, checked, and registered as soon as its own miners finish, and the lead keeps at most eight helpers running instead of starting more and having them refused. In a clean environment, one mining round with `gpt-6.1-terra` from the same starting SSOT stated 55% of click's claims against 42% for 3.7 (four runs each; click was held out while the text was written) and, with the text before the checker change, 59% of fd's against 52%; 92% to 95% of the added rows were correct in both versions. The consumer data format is unchanged (`ssot_format: 3`); nothing needs to catch up. Evidence and limits: `tests/trials-3.8.md`.

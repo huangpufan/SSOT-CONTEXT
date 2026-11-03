@@ -15,7 +15,7 @@ The scope is the whole SSOT, one area or file, a catch-up from a given commit, o
 
 ## 2. Run the mechanical check
 
-From the repository root, run `python3 <this skill's directory>/assets/scripts/ssot-check.py SSOT`. It reports errors (a missing entry point, broken links or heading anchors, a malformed invariants register) and warnings (oversized files, v2 leftovers, and mentioned files that git says were removed or moved). It cannot tell whether a statement is true or readable. That part is your review; the removal warnings are a good place to start. Exit code 3 means the run was incomplete: the checker crashed or could not examine part of the tree. That is never a pass, and any errors it did list are still real. Errors in files outside your scope do not stop the review of your scope. Report them separately.
+From the repository root, run `python3 <this skill's directory>/assets/scripts/ssot-check.py SSOT`. It reports errors (a missing entry point, broken links or heading anchors, a malformed invariants register, a confirmed invariant changed without a new dated source) and warnings (oversized files, v2 leftovers, and mentioned files that git says were removed or moved). It cannot tell whether a statement is true or readable. That part is your review; the removal warnings are a good place to start. Exit code 3 means the run was incomplete: the checker crashed or could not examine part of the tree. That is never a pass, and any errors it did list are still real. Errors in files outside your scope do not stop the review of your scope. Report them separately.
 
 ## 3. Review the scope
 
