@@ -8,6 +8,20 @@ Entries up to 2.86 were derived from the v2 protocol-upgrade ledger, which is pr
 
 ## [Unreleased]
 
+## [3.10] - 2026-11-04
+
+A mining round now fixes a flagged register row by putting the case into the row, instead of narrowing it however the fixer likes or dropping it. On fd with `deepseek-v4.1-flash`, rows written in a mining round were often still rejected by the graders because a row said "always" or "only" where its own explanation named an exception, or left out an override (19 of 27 new rows accepted in one run, 8 of 15 in another). The consumer data format is unchanged (`ssot_format: 3`); nothing needs to catch up. Evidence and limits: `tests/trials-3.10.md`.
+
+### Changed
+- `references/mining.md` §4: the row check adds a "contradicted" verdict (the row's own explanation names a case that makes its words false) and lists every case with its evidence and the smallest change; a fresh helper then verifies each case itself and edits the row so it holds in every verified case, naming the case or narrowing the universal word or condition, never dropping a part, fixing the explanation where it disagrees, and leaving `confirmed` rows alone. This replaces "fix every row it flags, by narrowing, moving it, or dropping it".
+- Runtime budget raised from 10,000 to 11,000 words (owner direction, 2026-11-03: budgets may be loosened); the new text brings it to about 10,140.
+
+### Evidence
+- On two finished 3.9 mining runs of fd's output area, reviewers plus one fixer raised the claims judged safe from 29 to 39 and from 27 to 39 of 44 (majority of three gradings), and the new rows accepted from 19/27 to 22/27 and from 8/15 to 14/15; no confirmed row changed. A clause-by-clause check of the 31 changed rows against the code found a false clause in 5 rows instead of 15, and 6 of 169 clauses false instead of 18 of 95 (`tests/trials-3.10.md`).
+
+### Not verified
+- A whole mining round that follows the new wording; the experiment ran scripted prompts the text condenses. A second check of the fixed rows (three rows gained a wrong clause from the fix itself). Models other than flash, repositories other than fd, and the cost of rows that grew from about 15 to about 39 words for an agent reading the register at preflight.
+
 ## [3.9] - 2026-11-03
 
 The checker now reports a confirmed invariant that an agent changed, and a mining lead that sees the error puts the rule back. Three of four 3.8 mining runs with `deepseek-v4.1-flash` on fd rewrote the text of three of the four confirmed rules while tidying the register: one added "documentation typos are exempt", one dropped "take responsibility for contribution rights", one turned "open an issue first" into "a request, not an enforced gate". Memory model §5 already forbade this; nothing detected it, and the precision grading looked only at candidate rows. The consumer data format is unchanged (`ssot_format: 3`); nothing needs to catch up. Evidence and limits: `tests/trials-3.9.md`.
