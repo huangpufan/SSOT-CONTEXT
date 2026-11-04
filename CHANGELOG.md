@@ -8,6 +8,19 @@ Entries up to 2.86 were derived from the v2 protocol-upgrade ledger, which is pr
 
 ## [Unreleased]
 
+## [3.11] - 2026-11-05
+
+A mining round now keeps a register row out of the register until a fresh helper has checked it. Under 3.10 the same paragraph said both "add its checked rows to the register" and "write directly into the owner, not a draft", and in one real run the lead had the writer put 11 new rows straight into `SSOT/README.md`; the run then hit its time cap before the row check returned, and those rows stayed in the register unchecked. The consumer data format is unchanged (`ssot_format: 3`); nothing needs to catch up. Evidence and limits: `tests/trials-3.11.md`.
+
+### Changed
+- `references/mining.md` §4: the writer drafts each register row in its own working file, not in the register, and the lead adds only checked rows; an unchecked row stays in the working file. This replaces "add its checked rows to the register then" with the same duty stated so that "directly into the owner" cannot be read as covering the register.
+
+### Evidence
+- Replaying the real fd output-area run from just before the writer, twice per text: the drafting sentence alone left 11 unchecked rows in the register in both replays (the lead merged early); with "add only its checked rows" the register had no new row before the row check in both replays, and `ssot-check` passed (`tests/trials-3.11.md`).
+
+### Not verified
+- A finished run of the shipped text: both replays reached their 40-minute cap during the re-check, so no new rows were in the register when they stopped, including rows the first check had passed. Two replays per text from one starting state, one repository, and one model.
+
 ## [3.10] - 2026-11-04
 
 A mining round now fixes a flagged register row by putting the case into the row, instead of narrowing it however the fixer likes or dropping it. On fd with `deepseek-v4.1-flash`, rows written in a mining round were often still rejected by the graders because a row said "always" or "only" where its own explanation named an exception, or left out an override (19 of 27 new rows accepted in one run, 8 of 15 in another). The consumer data format is unchanged (`ssot_format: 3`); nothing needs to catch up. Evidence and limits: `tests/trials-3.10.md`.
