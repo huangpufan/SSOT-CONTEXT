@@ -8,6 +8,19 @@ Entries up to 2.86 were derived from the v2 protocol-upgrade ledger, which is pr
 
 ## [Unreleased]
 
+## [3.12] - 2026-11-05
+
+A mining round now splits an owner file that passes the reading budget instead of shortening it. `ssot-check` already warns at about 16,000 characters and the memory model already says to turn the file into a folder, but `mining.md` did not say it. In six earlier runs on fd's output area, three owner files ended between 15,908 and 16,000 characters, and in one the writer's report says it dropped secondary notes to get there, among them an exception a later row check flagged as missing. The consumer data format is unchanged (`ssot_format: 3`); nothing needs to catch up. Evidence and limits: `tests/trials-3.12.md`.
+
+### Changed
+- `references/mining.md` §4: when the checker warns that an owner file is past the reading budget, split it by topic (memory model §4), and never shorten it by dropping a condition, exception, alias, or piece of evidence. About 33 words; the runtime budget is 10,187 of 11,000.
+
+### Evidence
+- Two replays of a real fd output-area run from just before the writer, with a 90-minute cap: both finished, both split the owner file into a folder (5 and 4 files; 20,270 and 17,755 characters when the lead first saw them), and the new register rows entered the register only after the row check had passed. Without the sentence, one of six runs ended with a folder (`tests/trials-3.12.md`).
+
+### Not verified
+- That the sentence caused the split: the difference is two of two against one of six, and every run saw the checker's warning. That a file under the budget stays whole. That a split loses nothing: in one replay the files shrank by about 3,000 characters when the writer split, the pre-split file was deleted, and only the later row checks (one dropped condition found and restored) and a link check speak for it. Other repositories, areas, and models; a whole mining round.
+
 ## [3.11] - 2026-11-05
 
 A mining round now keeps a register row out of the register until a fresh helper has checked it. Under 3.10 the same paragraph said both "add its checked rows to the register" and "write directly into the owner, not a draft", and in one real run the lead had the writer put 11 new rows straight into `SSOT/README.md`; the run then hit its time cap before the row check returned, and those rows stayed in the register unchecked. The consumer data format is unchanged (`ssot_format: 3`); nothing needs to catch up. Evidence and limits: `tests/trials-3.11.md`.
