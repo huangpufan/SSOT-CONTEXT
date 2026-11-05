@@ -8,6 +8,25 @@ Entries up to 2.86 were derived from the v2 protocol-upgrade ledger, which is pr
 
 ## [Unreleased]
 
+## [3.13] - 2026-11-06
+
+Closeout now asks the agent to record a user's decision as a confirmed row of its own, with the user's words in its Source, instead of stamping `confirmed` on an existing candidate row. In 28 recorded edit sessions of the released 3.12 text on fd, the sessions wrote 13 confirmed rows. Seven of them were whole candidate rows that the agent rewrote and promoted with a Source of "user, date", and none of the 13 quoted the user. A plain tuning request (raise the minimum Rust version) also turned its row into a confirmed rule that later agents would have to ask a person to change. With this wording, 48 sessions wrote 23 confirmed rows: 2 promotions, 21 new short rows, and all 23 carry a quotation in their Source.
+
+### Changed
+- `skills/ssot-closeout/SKILL.md` step 2: a lasting user directive, or a departure from a protected rule that the user accepted, becomes its own confirmed row. Its Source quotes the user's words and the date, and the row states only what those words decided. Clauses of an earlier candidate row that the user did not discuss stay in a candidate row, and a clause of a confirmed row is never moved to candidate. Step 4 now points to step 2 for how to record a departure instead of repeating it. About 47 words added; the runtime protocol is 10,234 of 11,000 words.
+
+### Evidence
+- `tests/trials-3.13.md`: edit sessions of `deepseek-v4.1-flash` (maximum reasoning effort) on fd with its 83-row mined register, one request per session, from the same clean starting commit for baseline and candidate. Baseline: the released 3.12 text, 28 sessions. Candidate: 48 sessions (14 with an earlier version of the wording, 34 with the final one). The failed variants and the sessions that were stopped are listed there.
+- Confirmed rows written, whole-row promotions of a candidate, and rows with a quotation in the Source: baseline 13, 7, 0 of 13; candidate 23, 2, 23 of 23. The two remaining promotions were a held-out request that rewrote a whole row and stamped it, and a tuning request.
+- No over-asking showed up in the one signal that was measured, a session that ended without a code change: none of the 27 harmless, user-accepted, and tuning sessions under the candidate did (0 of 15 under the baseline). A session that changed the code and also asked would not show in this signal.
+- The shape tests pass (48 of 48) and the checker tests pass (99 of 99) on the release tree; the checker script is unchanged.
+
+### Not verified
+- That agents stop before crossing a protected rule. This change does not touch that rule, and the sessions that proceeded kept proceeding: requests crossing a rule ended without a code change in 10 of 21 candidate sessions and 4 of 13 baseline sessions, which is not a claimed effect (the held-out requests alone went 1 of 6 against 1 of 3). Three rewordings or redesigns of the asking rule were tried, and none changed it reliably; one was stopped after 2 completed sessions and another after 3, and all three are listed in the trials file.
+- That a quoted Source means the user accepted losing the old protection. The quotes are the text of the user's request: of the nine rows for requests in which the user states that they accept the break, five quote those words and four quote only the new behavior. The row is traceable, not authorized, and a person still has to read each new confirmed row.
+- That a new row states only what the user decided: in one session a short row added clauses the user never said (that `--show-errors` only controls the diagnostic, and that recovered broken symlinks are entries). A new short row can also fix a one-time tuning choice into a confirmed rule; one candidate session did. The last sentence added, that a clause of a confirmed row is never moved to candidate, has no scenario in the data that exercises it.
+- Other repositories, other models, and changes that were built and tested as a whole: the machine's Rust is 1.75 and fd needs 1.90, so no change was built as a whole, although 16 of the 28 baseline and 20 of the 48 candidate sessions compiled or tested isolated pieces. No reading cost was measured. The first of three repeats used the wording before its last clause (the limit to candidate rows); the other two used the final text. The agents often reasoned as if they were in a benchmark with hidden tests, in baseline and candidate alike.
+
 ## [3.12] - 2026-11-05
 
 A mining round now splits an owner file that passes the reading budget instead of shortening it. `ssot-check` already warns at about 16,000 characters and the memory model already says to turn the file into a folder, but `mining.md` did not say it. In six earlier runs on fd's output area, three owner files ended between 15,908 and 16,000 characters, and in one the writer's report says it dropped secondary notes to get there, among them an exception a later row check flagged as missing. The consumer data format is unchanged (`ssot_format: 3`); nothing needs to catch up. Evidence and limits: `tests/trials-3.12.md`.
