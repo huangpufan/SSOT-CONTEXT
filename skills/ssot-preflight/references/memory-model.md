@@ -39,6 +39,7 @@ Readers act on what you write, so never present something planned as if it exist
 
 - Describe current behavior in the present tense.
 - Mark anything decided but not built, for example: "Planned, not built yet:… (see decision 0012)". Remove the label when it ships, or rewrite the text if the plan changes.
+- Mark an agent's inferred follow-up, revisit or removal condition "Proposed, not decided", separate from the accepted choice. A reason for a decision does not establish a later action.
 - Say what is unknown. "We have not verified this on macOS" is useful. Silence is not.
 
 When a document and the code disagree, the code describes current behavior. Find out whether the document is stale, the code violates an intended rule, or the intent has not been implemented yet, and fix the document or report the violation accordingly.
@@ -97,7 +98,7 @@ A research note records an investigation whose result still guides work. Keep th
 
 ### Temporary workarounds and deferrals
 
-When a change adds a temporary workaround, a compatibility shim, or a `TODO`/`HACK` that future work must know about, note it in the owner of the affected part. Say why it exists and what condition allows its removal. When you defer a known problem, record what was deferred, why, and what would trigger revisiting it. "Later" on its own is not a record.
+When a change adds a temporary workaround, a compatibility shim, or a `TODO`/`HACK` that future work must know about, note it in the owner of the affected part. Say why it exists and what established condition allows its removal. If no condition was decided, say so; section 3 distinguishes a proposal from a decision. When you defer a known problem, record what was deferred, why, and what would trigger revisiting it. "Later" on its own is not a record.
 
 ## 5. Invariants
 
@@ -142,6 +143,18 @@ Write every SSOT file for a reader who arrives knowing nothing about the project
 - **Write in the declared language.** Use the README's `language`.
 - **One paragraph, one line.** Do not break a paragraph or a list item across lines to fit a width. Editors and viewers wrap text themselves; a hard break shows up as a short, ragged line, and in Chinese or Japanese it can add a stray space mid-sentence.
 - **Make diagrams parse.** In Mermaid diagrams, write comments with Mermaid's own `%%` syntax, never `<!-- -->` inside the fence, because Mermaid rejects HTML comments.
+
+### Checking behavior claims
+
+For each behavior claim this batch adds or broadens, check the wording itself before the structural checker:
+
+1. Read the final changed passages. Copy each new or broader behavior sentence verbatim into scratch or tool input, keeping its input types, conditions and words such as "all" or "only".
+2. Find the code condition that would make that sentence true. Name the value the condition tests. When a guard tests a derived value, name that derived value in the sentence. Being convertible does not make an input satisfy the converted value's condition: a positive input can become zero during integer conversion.
+3. Choose an input the sentence includes that might fail that condition. Run it and compare the result with the exact sentence, recording the claim, input and outcome together in scratch or tool output. A before/after differential checks preservation; it does not establish a new generalization's truth.
+4. Correct or narrow unsupported wording, or state what could not be checked. Carry the checked conditions into the final response too.
+
+Finish when every new or broader behavior sentence in the final saved text is matched to its condition and probe result, or explicitly qualified as unchecked. A later wording change reopens only that sentence. Check this batch's claims, not every unchanged document. Scratch evidence belongs to the task, not a new SSOT ledger.
+
 
 Length is not the goal in either direction. Write as much as a newcomer needs to understand the point, and nothing that only restates the code.
 

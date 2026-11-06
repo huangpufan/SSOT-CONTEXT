@@ -397,8 +397,9 @@ class CheckerTest(unittest.TestCase):
 
     def test_reference_style_explanation_link(self):
         self.invariant_row("| INV-01 | process rule | Rule | [R][arch] | confirmed | user |")
-        self.write("README.md", (self.ssot and open(os.path.join(self.ssot, "README.md")).read())
-                   + "\n[arch]: architecture.md\n")
+        with open(os.path.join(self.ssot, "README.md"), encoding="utf-8") as handle:
+            readme = handle.read()
+        self.write("README.md", readme + "\n[arch]: architecture.md\n")
         self.assert_clean()
 
     def test_missing_invariants_section_warns(self):

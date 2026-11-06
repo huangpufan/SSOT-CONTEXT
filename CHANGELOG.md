@@ -8,6 +8,23 @@ Entries up to 2.86 were derived from the v2 protocol-upgrade ledger, which is pr
 
 ## [Unreleased]
 
+## [3.15] - 2026-11-06
+
+The writing protocol now asks SSOT writers to check a new behavior sentence against its actual code condition and a potentially contradicting input, rather than treating an old/new differential or structural PASS as proof of the sentence. A positive input may become zero during integer conversion: several trial documents missed that distinction despite correct code. The consumer format remains `ssot_format: 3`. Scope, failed variants, costs and execution limits: [tests/trials-3.15.md](tests/trials-3.15.md).
+
+### Changed
+- The shared memory model owns the claim check: read final changed wording, identify the tested value, compare a boundary input with the sentence, qualify unchecked parts, and recheck a later wording change. It also separates inferred follow-up/revisit/removal proposals from accepted decisions and permits an honestly undecided workaround-removal condition. Closeout preserves unaffected prose and rule scope/status, dispatches the shared check, carries checked conditions into its final report, and includes evidence agreement in its completion criterion. Preflight behavior, authorization/helper rules, metadata triggers, checker, installer and budgets are unchanged; runtime protocol is 10,804 of 11,000 words.
+- Close an existing regression fixture's README reader so the suite no longer emits its recurring `ResourceWarning`.
+
+### Evidence
+- Frozen headless `deepseek-v4.1-flash` trials: both source-complete parser tasks and four fresh controls produced the checked final behavior/scope. Five parser cases passed 45 independent inputs each; a text-normalization control passed 17. Source readback, actual SSOT/final response and tool evidence were reviewed separately. The original protection status stayed unchanged outside the accepted scope; the harmless rename did not rewrite SSOT; the existing-rule confirmation was not marked planned. R added only scoped regression tests, restoring an assertion the original fixture maker had dropped; the future maker was corrected while preserving the old trial evidence.
+- The two matched baseline closeouts also produced accurate final prose, so this pair does not establish an error-rate gain. Whole-task false generalizations, failed earlier capture routes and an incomplete trial remain recorded as failures. There was no full mining rerun or separate automated model-grading pass for each trial; maintainer review usage is outside the parent-cost table. Parent calls, reading, writes and time are reported without a savings claim.
+- Local bundle checks pass 48/48; checker regressions pass 97/97 with `ResourceWarning` treated as an error; installer end-to-end checks pass 100/100. The integrated runtime bodies match the frozen candidate apart from the mechanical version marker.
+
+### Not verified
+- Complete obedience to the new procedure: core transcripts show actual final-text/condition/result correspondence, but do not copy every sentence verbatim into a probe script. That operational target is only partly met, and D reused an exactly scoped candidate row. Neither is hidden by the correct final results. This release is a clarified writing contract with bounded result evidence, not a clean win on every frozen operating requirement or a trusted semantic enforcement barrier.
+- Error-rate or total cost reduction, initial protected-departure stopping, early decision persistence, crash recovery, the earlier unknown-reason omission, other trial models or real large-repository generalization. Bootstrap, doctor and migration behavior were not rerun with the shared writing change. None of the failed early-capture routes ship.
+
 ## [3.14] - 2026-11-06
 
 A fresh helper now judges whether a user accepted departing from a protected rule. Earlier trials showed implementers reading the protection and then treating the request itself as approval. The helper receives the request, SSOT path and criterion verbatim; the implementer waits and follows its answer. This is an instruction, not an enforced write barrier. The consumer format remains `ssot_format: 3`. Evidence, costs and failed variants: `tests/trials-3.14.md`.

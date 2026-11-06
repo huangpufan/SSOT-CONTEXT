@@ -1,5 +1,7 @@
 # 3.15 exploration (2026-11-06): preserve a decision without claiming it is implemented
 
+> Historical exploration before the 3.15 release. These failed variants did not ship; later release evidence is in [trials-3.15.md](trials-3.15.md).
+
 **No 3.15 protocol release resulted from this exploration.** The released bundle remains 3.14 (`ac927e8`). Two frozen candidates were tested and rejected against their pre-registered lines; neither changes the shipped instructions. The useful result is a concrete interrupted-state defect and a read-only way to inspect it without model grading.
 
 ## What was investigated
