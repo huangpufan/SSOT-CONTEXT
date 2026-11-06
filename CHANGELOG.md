@@ -8,6 +8,22 @@ Entries up to 2.86 were derived from the v2 protocol-upgrade ledger, which is pr
 
 ## [Unreleased]
 
+## [3.14] - 2026-11-06
+
+A fresh helper now judges whether a user accepted departing from a protected rule. Earlier trials showed implementers reading the protection and then treating the request itself as approval. The helper receives the request, SSOT path and criterion verbatim; the implementer waits and follows its answer. This is an instruction, not an enforced write barrier. The consumer format remains `ssot_format: 3`. Evidence, costs and failed variants: `tests/trials-3.14.md`.
+
+### Changed
+- Preflight §3 routes the acceptance decision to memory-model §5 instead of repeating its own rule. That section owns the helper's criterion, stop/go answer, waiting and failure behavior. Final review added earlier acceptance with its original question, primary evidence for unregistered protections, and an explicit continuation after the user accepts a specific departure when a helper is unavailable. It reuses preflight/closeout recording rather than adding an approval ledger. No checker or budget change; runtime protocol is 10,472 of 11,000 words.
+
+### Evidence
+- Frozen fd/`deepseek-v4.1-flash` comparison: 11 fresh requests, twice per arm, 44 completed sessions. Crossing requests ended with no final diff in 12/12 candidate sessions versus 2/12 with 3.13 text; all 12 candidate answers asked for acceptance. A helper preceded logged edits in 10/12. Harmless and explicitly accepted requests left changes in 10/10 in each arm. All four pre-registered numerical validation lines passed; earlier failed development lines remain recorded.
+- Mean parent calls for harmless/accepted tasks were 63.0 versus 60.7, mean session time 188.5 versus 215.0 seconds; harmless tasks alone increased from 25.3 to 39.2 calls and 81.0 to 118.0 seconds. Helper-internal calls/tokens/cost are excluded. A deterministic summarizer recomputes existing logs. Final input/recovery fixes received static review and a four-scenario contract walkthrough; an attempted live smoke stalled before its first model step and the remaining cases were not started.
+- Release-tree structural checks pass (48/48), checker regression tests pass (97/97), and the summarizer's Python syntax and missing-evidence/failing-gate checks pass. The checker is unchanged.
+
+### Not verified
+- Guaranteed stopping before editing: two candidate crossing sessions edited first, then consulted the helper and restored their drafts. One of four accepted departures skipped the helper. The same frozen wording missed its earlier development lines (14/16 clean, 11/16 helpers before edits); the validation is new requests on the same register, not a new repository.
+- Live behavior of the final input/recovery fixes: the 44 sessions ran the earlier frozen wrapper, not those fixes. Hosts without helper support, an unanswered/failed helper, earlier conversational approval, real follow-up acceptance, newly recovered protections, other repositories/models, compiled patch correctness, or total cost savings. The helper receives supplied primary evidence as well as SSOT, without independently exploring code. This release neither supplies a trusted approval boundary nor fixes tuning values treated as protections; the 3.13 recording limitations remain.
+
 ## [3.13] - 2026-11-06
 
 Closeout now asks the agent to record a user's decision as a confirmed row of its own, with the user's words in its Source, instead of stamping `confirmed` on an existing candidate row. In 28 recorded edit sessions of the released 3.12 text on fd, the sessions wrote 13 confirmed rows. Seven of them were whole candidate rows that the agent rewrote and promoted with a Source of "user, date", and none of the 13 quoted the user. A plain tuning request (raise the minimum Rust version) also turned its row into a confirmed rule that later agents would have to ask a person to change. With this wording, 48 sessions wrote 23 confirmed rows: 2 promotions, 21 new short rows, and all 23 carry a quotation in their Source.

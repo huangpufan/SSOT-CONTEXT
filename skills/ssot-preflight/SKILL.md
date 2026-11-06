@@ -2,7 +2,7 @@
 name: ssot-preflight
 description: Read the repository's SSOT before substantive work. Use this before code, config, documentation, review, debugging, refactoring, or planning work in a repository, to find the invariants and documents that bear on the task and to surface open questions that affect it. Skip it for non-repository chat, pure command runs, and typo or formatting edits that cannot change meaning.
 metadata:
-  protocol_version: "3.13"
+  protocol_version: "3.14"
   bundle: "SSOT Skill"
 ---
 
@@ -30,7 +30,7 @@ Read `SSOT/README.md`, then:
 
 Before you settle on an implementation, identify the behaviors and boundaries the change could affect: their SSOT owners, the tests that assert them, boundary checks and guards, and the fix or revert history of the code involved. Follow callers and shared state where effects cross files. Tell a protected outcome from an incidental detail with the admission and departure rules in [memory-model.md §5](references/memory-model.md#5-invariants).
 
-Before implementation details, state each affected rule, registered or newly admitted: "Must preserve: [outcome and conditions] — [evidence]." Compare the request with these rules. For a concrete conflict, propose a preserving design that meets the request, or pause and ask whether to change the protection, naming who relies on it and the consequence. A request naming the new behavior is not approval; the user may not know the protection exists. Approval counts only when the user's words accept giving up that protection, previously or now. Continue independent work. Record missing rules as candidates through closeout.
+Before implementation details, state each affected rule, registered or newly admitted: "Must preserve: [outcome and conditions] — [evidence]." Compare the request with these rules. For a concrete conflict, propose a preserving design that meets the request, or follow "When to ask" in memory-model §5. Continue independent work. Record missing rules as candidates through closeout.
 
 ## 4. Before your first change, and while you work
 
