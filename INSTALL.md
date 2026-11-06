@@ -81,7 +81,7 @@ for ssot_skill in ssot-preflight ssot-bootstrap ssot-closeout ssot-audit ssot-do
   test -f "$ssot_skills_dir/$ssot_skill/SKILL.md" || exit 1
   test -f "$ssot_skills_dir/$ssot_skill/agents/openai.yaml" || exit 1
 done
-# 3.x (the default): the checker must start.
+# 4.x (the default): the checker must start.
 python3 "$ssot_skills_dir/ssot-doctor/assets/scripts/ssot-check.py" --help >/dev/null
 # v2 (installed with --ref v2-final) instead:
 #   SSOT_TEST_PACKAGE_SHAPE_ONLY=1 bash "$ssot_skills_dir/ssot-doctor/assets/scripts/test/run-tests.sh"
@@ -110,10 +110,10 @@ Read existing instructions first. Follow any pointer or symlink to the repositor
 
 Before finishing, reread the resulting file and confirm it covers:
 
-- automatic preflight and closeout for substantive work, with bootstrap (only with the user's agreement) and doctor selected by their conditions;
+- automatic preflight for substantive work, immediate closeout capture of accepted durable decisions, and batch-end reconciliation, with bootstrap (only with the user's agreement) and doctor selected by their conditions;
 - the skip cases for chat, pure command execution, and meaning-preserving typo/format edits, while explicit SSOT requests still route to a skill;
 - loading the selected skill's full instructions, and reporting a missing skill honestly;
-- for a 3.x installation, no leftover instructions from an older SSOT setup, such as running `$ssot-audit` for protocol lag, advancing `tracked_*` fields, or reading `STATUS.md` first (a v2 installation keeps those, and uses the block from its own `adapter-thin.md`);
+- for a 4.x installation, no leftover instructions from an older SSOT setup, such as running `$ssot-audit` for protocol lag, advancing `tracked_*` fields, or reading `STATUS.md` first (a v2 installation keeps those, and uses the block from its own `adapter-thin.md`);
 - preserving existing project rules, user decisions, and commit/push authorization.
 
 Do not copy or apply SSOT-SKILL's own `AGENTS.md` to the user's repository. It governs maintenance of the bundle source, including its release and commit conventions.
@@ -127,7 +127,7 @@ Remove the temporary installer directory you created after verification. Report:
 - which installed-file checks passed;
 - that the user must restart the agent session to load the skills and repository instructions, then can describe tasks as usual.
 
-Explain that the agent handles the lifecycle: preflight before substantive work, an offer to bootstrap when `SSOT/` is missing or unfinished, and closeout before finishing a substantive batch, with doctor used for checks and catch-up. Do not hand routine skill invocation back to the user as a manual checklist. Do not claim the skills are active before restart and discovery are confirmed. Do not ask the user to choose a global installation again after a successful project-only setup.
+Explain that the agent handles the lifecycle: preflight before substantive work, an offer to bootstrap when `SSOT/` is missing or unfinished, immediate capture of accepted durable decisions through closeout, and reconciliation before finishing a substantive batch, with doctor used for checks and catch-up. Do not hand routine skill invocation back to the user as a manual checklist. Do not claim the skills are active before restart and discovery are confirmed. Do not ask the user to choose a global installation again after a successful project-only setup.
 
 ## Update or remove an existing installation
 
@@ -151,14 +151,15 @@ After removal, verify the bundle files are absent. Preserve generated `SSOT/` do
 
 After an update, repeat verification and reconcile the instruction block, then request a session restart. Installing new skill files never changes the repository's `SSOT/` by itself.
 
-### Upgrading from 2.x to 3.0
+### Upgrading from 2.x or 3.x to 4.0
 
-Version 3.0 keeps the repository memory and drops the v2 certification machinery: area coverage labels, the `STATUS.md` and `HISTORY.md` ledgers, review records under `.bootstrap/`, and protocol catch-up audits. Tell the user what this means before upgrading:
+Version 4.0 uses `ssot_format: 4`: `SSOT/README.md` routes to maintained repository-local owners, including documents outside `SSOT/`. Explain the boundary before upgrading:
 
-- After the upgrade, the agents still **read** a v2 `SSOT/`, but they **do not write** to it, because updated documents next to stale ledgers would contradict each other. Closeout lists what should be recorded instead.
-- The fix is a one-time migration with `$ssot-bootstrap`. With the user's agreement it moves everything still valid (invariants, decisions, open questions, limits) into the v3 layout, removes the ledgers, and replaces old SSOT instructions in `AGENTS.md` / `CLAUDE.md`. It is one commit, and git history keeps the old files.
-- If the repository's own scripts, hooks, CI, or tests call v2 bundle files such as `ssot-lint.sh`, those commands fail as soon as the v3 files replace them. The migration repoints them; until then, expect those checks to fail rather than bypassing them.
-- Moving to 3.0 is a decision for the whole repository. Every installation that works on it (other agents, global installs, teammates' machines, CI hooks) must be on 3.x before the migration, or a v2 agent will try to rebuild the v2 ledgers. Likewise, staying on v2 means keeping all of them on v2.
+- Agents read v2 and v3 memory but do not write to it until the user agrees to migrate with `$ssot-bootstrap`. Installing skills never migrates consumer documents.
+- A v3 migration preserves knowledge, invariant IDs and statuses, and existing owner paths. A v2 migration additionally extracts durable content before removing certification ledgers and repoints scripts using retired v2 tools. Preserve unique uncommitted material before removing anything; migration is one commit with no unrelated changes.
+- Every installation that writes the repository must use v4 before migration; old v3 agents otherwise misread external-owner routes. To retain v3, choose a v3 release with `--ref`.
+- Reconcile the instruction block and restart the session. Decision capture saves accepted durable confirmations, corrections, rejections, and scope limits immediately; batch closeout reconciles final behavior. Setup and catch-up inspect accessible project-related AI conversations, including later additions to existing threads, without putting private raw transcripts in the repository. Report inaccessible sources and examined ranges; commit watermarks do not certify conversation coverage. No automatic background collection or zero-omission guarantee is provided.
+
 - To stay on v2 instead, upgrade with `--ref v2-final`, which installs the frozen last v2 release (2.86):
 
 ```bash

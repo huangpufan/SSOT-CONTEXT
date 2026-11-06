@@ -70,6 +70,7 @@ fi
 mkdir -p "$SCENARIO2/project/SSOT"
 sed -e 's/<初建时考察的提交>//' "$PROJ_BASE/ssot-bootstrap/assets/templates/ssot-readme.md" \
   > "$SCENARIO2/project/SSOT/README.md"
+assert_grep "scenario2: installed README uses format 4" "$SCENARIO2/project/SSOT/README.md" '^ssot_format: 4$'
 for doc in product architecture process gotchas glossary; do
   cp "$PROJ_BASE/ssot-bootstrap/assets/templates/$doc.md" "$SCENARIO2/project/SSOT/$doc.md"
 done
@@ -644,6 +645,9 @@ git -C "$REF_SRC" init -q
 git -C "$REF_SRC" symbolic-ref HEAD refs/heads/main
 REF_GIT=(git -C "$REF_SRC" -c core.hooksPath=/dev/null -c commit.gpgsign=false -c user.name=SSOT-test -c user.email=ssot-test@example.invalid)
 "${REF_GIT[@]}" add -A && "${REF_GIT[@]}" commit -qm 'old generation' && "${REF_GIT[@]}" tag old-gen
+sed -i.bak 's/protocol_version: "[^"]*"/protocol_version: "3.99-fixture"/' "$REF_SRC/skills/ssot-preflight/SKILL.md"
+rm -f "$REF_SRC/skills/ssot-preflight/SKILL.md.bak"
+"${REF_GIT[@]}" add -A && "${REF_GIT[@]}" commit -qm 'v3 generation' && "${REF_GIT[@]}" tag v3-gen
 rm -rf "$REF_SRC/skills" && cp -R "$PROJECT_ROOT/skills" "$REF_SRC/skills"
 "${REF_GIT[@]}" add -A && "${REF_GIT[@]}" commit -qm 'current generation'
 CURRENT_VERSION="$(tr -d '[:space:]' < "$PROJECT_ROOT/VERSION")"
@@ -667,9 +671,20 @@ ref_install "$SCENARIO24/default" >"$SCENARIO24/default.log" 2>&1 || fail "scena
 assert_grep "scenario24: without --ref, main is installed" \
   "$SCENARIO24/default/.claude/skills/ssot-preflight/SKILL.md" "protocol_version: \"$CURRENT_VERSION\""
 ref_install "$SCENARIO24/tagged" --ref main >"$SCENARIO24/back.log" 2>&1 || fail "scenario24: moving back to main failed"
-assert_grep "scenario24: replacing 2.x with 3.x prints the upgrade note" "$SCENARIO24/back.log" "read-only for agents until migrated"
+assert_grep "scenario24: replacing 2.x with current format prints the upgrade note" "$SCENARIO24/back.log" "read-only for agents until migrated"
 assert_no_file "scenario24: moving from the tag to main retires the companion" \
   "$SCENARIO24/tagged/.claude/skills/SKILL_STYLE.md"
+ref_install "$SCENARIO24/legacy-chain" --ref old-gen >"$SCENARIO24/chain-old.log" 2>&1 || fail "scenario24: chain setup failed"
+ref_install "$SCENARIO24/legacy-chain" --ref v3-gen >"$SCENARIO24/chain-v3.log" 2>&1 || fail "scenario24: legacy 2-to-3 upgrade failed"
+assert_grep "scenario24: legacy 2-to-3 warning preserved" "$SCENARIO24/chain-v3.log" "read-only for agents until migrated"
+ref_install "$SCENARIO24/legacy-chain" --ref main >"$SCENARIO24/chain-v4.log" 2>&1 || fail "scenario24: 3-to-4 upgrade failed"
+assert_grep "scenario24: 3-to-4 warns about old memory" "$SCENARIO24/chain-v4.log" "v2 or v3 SSOT are read-only"
+ref_install "$SCENARIO24/legacy-chain" --ref main >"$SCENARIO24/chain-same.log" 2>&1 || fail "scenario24: same-major reinstall failed"
+if grep -q 'read-only for agents until migrated' "$SCENARIO24/chain-same.log"; then
+  fail "scenario24: same-major reinstall emits a migration warning"
+else
+  pass "scenario24: same-major reinstall omits the migration warning"
+fi
 if ref_install "$SCENARIO24/bad" --ref 'old-gen;rm -rf /' >"$SCENARIO24/bad.log" 2>&1; then
   fail "scenario24: an invalid --ref must be rejected"
 else

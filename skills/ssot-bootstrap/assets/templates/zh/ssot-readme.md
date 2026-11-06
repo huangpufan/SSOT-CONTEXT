@@ -1,5 +1,5 @@
 ---
-ssot_format: 3
+ssot_format: 4
 language: zh-CN
 reviewed_through: <初建时考察的提交>
 ---
@@ -10,7 +10,7 @@ reviewed_through: <初建时考察的提交>
 
 ## 文件地图
 
-<!-- 每个已经建立的 SSOT 文件写一行。没建的文件删掉对应行；某个文件拆成目录（例如 architecture/）后，改成指向目录。 -->
+<!-- 路由到仓库内现有权威文档，包括 SSOT/ 以外的文件。下列链接只是没有现有 owner 时的示例；换成实际 owner，并删除未使用项。 -->
 
 - [产品](product.md)：谁在用、承诺了什么、不做什么。
 - [架构](architecture.md)：系统由哪些部分组成、各自掌管哪些状态、关键流程、出错时怎么处理。

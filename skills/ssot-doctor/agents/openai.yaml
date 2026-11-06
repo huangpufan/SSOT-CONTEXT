@@ -1,4 +1,4 @@
 interface:
   display_name: "SSOT Doctor"
   short_description: "Check, review, or catch up SSOT"
-  default_prompt: "Use $ssot-doctor to check SSOT health, review it against the code, or catch it up on past commits."
+  default_prompt: "Use $ssot-doctor to check SSOT health, review it against domain evidence, or catch it up on commits and supplied decision sources."

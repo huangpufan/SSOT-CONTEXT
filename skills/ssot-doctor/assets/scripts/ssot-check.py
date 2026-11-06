@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Mechanical checks for a repository SSOT/ directory (SSOT Skill v3).
+"""Mechanical checks for a repository SSOT/ directory (SSOT Skill v4).
 
 Usage: ssot-check.py [SSOT_DIR] [--since COMMIT]      (default: ./SSOT)
 
@@ -40,7 +40,7 @@ import sys
 import traceback
 from urllib.parse import unquote
 
-FORMAT = "3"
+FORMAT = "4"
 # Reading budgets are counted in characters, not bytes, so documents in
 # languages with multi-byte scripts (Chinese, Japanese) are not penalised.
 README_WARN_CHARS = 8000
@@ -224,7 +224,7 @@ def slug(text):
 
 
 _anchor_cache = {}
-REPO_ROOT = [os.sep]  # set in main(): the folder that holds SSOT/
+REPO_ROOT = [os.sep]  # set in main(): the repository containing SSOT/
 
 
 def anchors(path):
@@ -324,7 +324,7 @@ def check_link(report, doc, number, target):
         report.add("WARN", doc, number, f"absolute link path is machine-specific: {target}")
         return
     resolved, fragment = resolve(doc, target)
-    if not inside(resolved, REPO_ROOT[0]):
+    if not repository_local(resolved):
         report.add("WARN", doc, number,
                    f"link leaves the repository and only works where the same folders sit beside it: {target}")
         return
@@ -491,10 +491,10 @@ def check_invariants(report, readme, text, ssot_dir):
                 report.add("ERROR", readme, number, f"invariant {ident} needs a link to where it is explained")
             for target in targets:
                 path = None if SCHEME_RE.match(target) else resolve(readme, target)[0]
-                if path is None or not inside(path, ssot_dir):
+                if path is None or not repository_local(path) or not path.lower().endswith(".md"):
                     report.add("ERROR", readme, number,
-                               f"invariant {ident} is explained outside SSOT/ ({target}); "
-                               "its explanation must live inside SSOT/")
+                               f"invariant {ident} needs a Markdown explanation in the same repository ({target}); "
+                               "URLs, other repositories, and symlink escapes are not explanations")
             if status.lower() not in INVARIANT_STATUSES:
                 report.add("ERROR", readme, number,
                            f"invariant {ident} status '{status}' must be confirmed, candidate, or retired")
@@ -793,7 +793,7 @@ def check_confirmed(report, readme, text, since):
                 report.unchecked.append(f"confirmed invariants: git failed ({stderr.strip() or code})")
             return
         old = git_output(directory, "cat-file", "blob", f"{base}:./README.md")
-        if front_matter(old).get("ssot_format") != FORMAT:
+        if front_matter(old).get("ssot_format") not in {"3", FORMAT}:
             return  # a v2 base has other columns; the migration's own check covers its rows
         old = register_rows(old)
     except OSError:
@@ -869,6 +869,57 @@ def check_reviewed_through(report, readme, value):
 
 # --- main ----------------------------------------------------------------------
 
+def repository_root(directory):
+    """Find the requested repository before following any directory symlink."""
+    probe = os.path.abspath(directory)
+    prefix = os.path.abspath(os.sep)
+    for part in probe.split(os.sep):
+        if not part:
+            continue
+        prefix = os.path.join(prefix, part)
+        if os.path.islink(prefix):
+            probe = os.path.dirname(prefix)
+            break
+    fallback = probe if probe != directory else os.path.dirname(directory)
+    try:
+        result = subprocess.run(["git", *GIT_SAFE, "-C", probe, "rev-parse", "--show-toplevel"],
+                                capture_output=True, text=True, env=GIT_ENV)
+    except FileNotFoundError:
+        return os.path.realpath(fallback)
+    if result.returncode == 0:
+        return os.path.realpath(result.stdout.strip())
+    if "not a git repository" not in result.stderr:
+        raise GitError(result.stderr.strip())
+    return os.path.realpath(fallback)
+
+
+def repository_local(path):
+    if not inside(path, REPO_ROOT[0]):
+        return False
+    # A nested worktree/submodule owns different facts even inside this root.
+    directory = os.path.realpath(path)
+    if not os.path.isdir(directory):
+        directory = os.path.dirname(directory)
+    while directory != REPO_ROOT[0]:
+        if os.path.lexists(os.path.join(directory, ".git")):
+            return False
+        directory = os.path.dirname(directory)
+    return True
+
+
+def checked_documents(ssot_dir, readme, report):
+    """SSOT plus direct README Markdown owners; their links are checked, not crawled."""
+    documents = set(markdown_files(ssot_dir, report))
+    if os.path.isfile(readme) and repository_local(readme):
+        for _, target in link_targets(read_text(readme)):
+            if SCHEME_RE.match(target) or unquote(target).startswith("/"):
+                continue
+            path, _ = resolve(readme, target)
+            if path.lower().endswith(".md") and repository_local(path) and os.path.isfile(path):
+                documents.add(path)
+    yield from sorted(documents)
+
+
 def markdown_files(ssot_dir, report):
     def unreadable(error):
         report.unchecked.append(f"{error.filename}: {error.strerror}")
@@ -897,13 +948,15 @@ def main(argv):
         print(f"ERROR no SSOT directory at {ssot_dir}")
         return 2
     report = Report(ssot_dir)
-    REPO_ROOT[0] = os.path.dirname(ssot_dir)
+    REPO_ROOT[0] = repository_root(ssot_dir)
     readme = os.path.join(ssot_dir, "README.md")
 
     is_v2 = any(os.path.exists(os.path.join(ssot_dir, name)) for name in V2_LEDGERS)
     legacy = False
     if not os.path.isfile(readme):
         report.add("ERROR", readme, None, "missing SSOT/README.md (the entry every task starts from)")
+    elif not repository_local(readme):
+        report.add("ERROR", readme, None, "README must belong to the same repository")
     else:
         text = read_text(readme)
         meta = front_matter(text)
@@ -917,20 +970,23 @@ def main(argv):
                 if os.path.exists(os.path.join(ssot_dir, name)):
                     report.add("WARN", os.path.join(ssot_dir, name), None,
                                "v2 ledger left after migration; extract anything still valid, then remove it")
-        elif is_v2:
+        elif meta.get("ssot_format") in {"2", "3"} or is_v2:
             legacy = True
-            report.add("INFO", readme, None,
-                       "v2 layout (no `ssot_format: 3`); readable as-is, see ssot-bootstrap for migration; "
-                       "the invariants register is not checked until then")
+            version = meta.get("ssot_format", "2")
+            report.add("INFO", readme, None, f"v{version} layout; use ssot-bootstrap to migrate to format 4")
+            report.unchecked.append("legacy SSOT requires migration; format 4 ownership was not checked")
         else:
-            report.add("ERROR", readme, 1, "front matter needs `ssot_format: 3`")
+            report.add("ERROR", readme, 1, "front matter needs `ssot_format: 4`")
 
     if os.path.isfile(os.path.join(ssot_dir, "BOOTSTRAP.md")):
         report.add("INFO", os.path.join(ssot_dir, "BOOTSTRAP.md"), None,
                    "bootstrap is unfinished; continue it with ssot-bootstrap")
 
     mentions = []
-    for doc in markdown_files(ssot_dir, report):
+    for doc in checked_documents(ssot_dir, readme, report):
+        if not repository_local(doc):
+            report.add("ERROR", doc, None, "document leaves the repository (possibly through a symlink)")
+            continue
         text = read_text(doc)
         mentions.extend((doc, number, path, line) for number, path, line in path_mentions(ssot_dir, doc, text))
         limit = README_WARN_CHARS if doc == readme else DOC_WARN_CHARS

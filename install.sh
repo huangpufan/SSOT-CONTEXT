@@ -144,7 +144,8 @@ t() {
       RESTART_TIP) echo "合并下方项目指令后，重启 Agent 会话以加载 Skill 和指令。" ;;
       PREFLIGHT_TIP) echo "之后照常提需求；Agent 会在实质性工作前自动使用 \$ssot-preflight。" ;;
       CLOSEOUT_TIP) echo "Agent 会在实质性变更批次的最终回复或提交前自动使用 \$ssot-closeout。" ;;
-      UPGRADE_V3_NOTE) echo "这里原来装的是 SSOT Skill 2.x，现在换成 3.x：使用 v2 SSOT 的仓库在迁移前对 Agent 只读，调用 ssot-lint.sh 的脚本会失效。迁移方法见 https://github.com/huangpufan/SSOT-SKILL/blob/main/INSTALL.md#upgrading-from-2x-to-30 ；想留在 v2，请带 --ref v2-final 重新运行。" ;;
+      UPGRADE_V3_NOTE) echo "这里原来装的是 SSOT Skill 2.x，现在换成 3.x：使用 v2 SSOT 的仓库在迁移前对 Agent 只读，调用 ssot-lint.sh 的脚本会失效。迁移方法见 https://github.com/huangpufan/SSOT-SKILL/blob/main/INSTALL.md#upgrading-from-2x-or-3x-to-40 ；想留在 v2，请带 --ref v2-final 重新运行。" ;;
+      UPGRADE_V4_NOTE) echo "SSOT Skill 2.x / 3.x 现在升级到 4.x：旧 v2 / v3 SSOT 在经用户同意迁移前对 Agent 只读。安装技能不迁移项目文档；保留知识、规则状态与原有路径，迁移前将全部写入端升级为 v4。迁移说明：https://github.com/huangpufan/SSOT-SKILL/blob/main/INSTALL.md#upgrading-from-2x-or-3x-to-40 。" ;;
       PROJECT_NOTE) echo "项目级安装仅在 Agent 在该项目根启动时生效。" ;;
       ALSO_GLOBAL_HINT) echo "如需同时全局安装，重新跑命令并追加 --scope global。" ;;
       WIRE_HEADER) echo "下一步：让 Agent 将这段触发指令合并到本仓库的指令文件" ;;
@@ -182,7 +183,8 @@ t() {
       RESTART_TIP) echo "Merge the project instructions below, then restart the Agent session to load skills and instructions." ;;
       PREFLIGHT_TIP) echo "Then describe tasks normally; the Agent uses \$ssot-preflight automatically before substantive work." ;;
       CLOSEOUT_TIP) echo "The Agent uses \$ssot-closeout automatically before a substantive batch's final response or commit." ;;
-      UPGRADE_V3_NOTE) echo "SSOT Skill 2.x was installed here and is now replaced by 3.x: repositories with a v2 SSOT are read-only for agents until migrated, and scripts that call ssot-lint.sh stop working. Migration: https://github.com/huangpufan/SSOT-SKILL/blob/main/INSTALL.md#upgrading-from-2x-to-30 . To stay on v2, re-run with --ref v2-final." ;;
+      UPGRADE_V3_NOTE) echo "SSOT Skill 2.x was installed here and is now replaced by 3.x: repositories with a v2 SSOT are read-only for agents until migrated, and scripts that call ssot-lint.sh stop working. Migration: https://github.com/huangpufan/SSOT-SKILL/blob/main/INSTALL.md#upgrading-from-2x-or-3x-to-40 . To stay on v2, re-run with --ref v2-final." ;;
+      UPGRADE_V4_NOTE) echo "SSOT Skill 2.x / 3.x is now replaced by 4.x: repositories with a v2 or v3 SSOT are read-only for agents until migrated with user agreement. Installing skills does not migrate project documents; preserve knowledge, rule statuses, and owner paths, and upgrade all writers to v4 first. Migration: https://github.com/huangpufan/SSOT-SKILL/blob/main/INSTALL.md#upgrading-from-2x-or-3x-to-40 ." ;;
       PROJECT_NOTE) echo "Project installs apply only when the Agent starts in this project root." ;;
       ALSO_GLOBAL_HINT) echo "To also install globally, re-run with --scope global appended." ;;
       WIRE_HEADER) echo "Next: ask your Agent to merge this trigger block into this repo's instructions" ;;
@@ -1108,11 +1110,13 @@ copy_bundle() {
   find "$stage" -type d -name "__pycache__" -prune -exec rm -rf {} +
   find "$stage" -type f \( -name "*.pyc" -o -name ".DS_Store" \) -delete
 
-  # A 2.x -> 3.x replacement changes how agents treat existing SSOT folders.
+  # Cross-format replacements change how agents treat existing SSOT folders.
   local old_version="" new_version=""
   old_version="$(skill_protocol_version "$base/$PRIMARY_SKILL/SKILL.md")"
   new_version="$(skill_protocol_version "$stage/$PRIMARY_SKILL/SKILL.md")"
-  if [[ "$old_version" == 2.* && "$new_version" == 3.* ]]; then
+  if [[ ( "$old_version" == 2.* || "$old_version" == 3.* ) && "$new_version" == 4.* ]]; then
+    warn "$(t UPGRADE_V4_NOTE)"
+  elif [[ "$old_version" == 2.* && "$new_version" == 3.* ]]; then
     warn "$(t UPGRADE_V3_NOTE)"
   fi
 

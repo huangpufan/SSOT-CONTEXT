@@ -14,7 +14,7 @@ We believe coding agents will evolve toward automating design, implementation, a
 
 Within those boundaries, agents do the work, supported by the **harness**: the tools, checks, and execution controls around them.
 
-**SSOT Skill gives those invariants and decisions a durable home.** It maintains a version-controlled `SSOT/` directory, preserving the constraints and their rationale alongside architecture, decisions, and known pitfalls. Across sessions and agents, the work starts from the same explicit agreements.
+**SSOT Skill gives those invariants and decisions a durable home.** It maintains a version-controlled entry at `SSOT/README.md`, routing to the single owners of constraints, their rationale, architecture, decisions, and known pitfalls. Existing maintained repository documents can remain those owners. Across sessions and agents, the work starts from the same explicit agreements.
 
 **SSOT** means **Single Source of Truth**: each durable fact has one maintained home; other documents link to it. The bundle provides six skills, Markdown templates, and a local checker inside your existing coding agent. It maintains the shared knowledge; your harness and tests execute and verify the work.
 
@@ -58,7 +58,7 @@ Investigate and fix the login timeout, and verify the fix.
 The repository instructions tell the agent when to act:
 
 - **Before substantive work:** read `SSOT/README.md` and the few documents the task touches, check the rules people decided, and surface open questions that affect the task. If the repository has no `SSOT/` yet, the agent offers to create one; nothing is created without your agreement.
-- **During work:** notice facts that will outlive the task, such as a decision, a changed contract, a trap, or a rule you state.
+- **During work:** save a durable confirmation, correction, rejection, or scope decision when it is accepted, and read back the saved passage. Keep the question it answered and distinguish the accepted decision from what is implemented; batch closeout reconciles the remaining durable facts.
 - **Before finishing or committing a substantive batch:** record those facts where they belong and remove the statements they replace. When nothing durable changed, nothing is written.
 
 You do not need to select or invoke a skill at every step. Creating the memory for a large repository may take more than one session; progress is saved in `SSOT/BOOTSTRAP.md` until setup is done. Then read the result at `SSOT/README.md`.
@@ -85,13 +85,13 @@ The agent selects from four skills according to the task and repository state; t
 |---|---|---|
 | Starting a substantive repository task | [`ssot-preflight`](./skills/ssot-preflight/SKILL.md) | Read the relevant memory and the rules that bind the task |
 | Creating, continuing, or migrating `SSOT/` | [`ssot-bootstrap`](./skills/ssot-bootstrap/SKILL.md) | Build the memory from the repository's code, history, and documents |
-| Finishing a substantive change batch | [`ssot-closeout`](./skills/ssot-closeout/SKILL.md) | Record what changed for good, or write nothing |
-| Checking health, reviewing, or catching up on commits | [`ssot-doctor`](./skills/ssot-doctor/SKILL.md) | Run the checker, review against the code, and report what was checked |
+| Accepting a durable decision, or finishing a substantive change batch | [`ssot-closeout`](./skills/ssot-closeout/SKILL.md) | Record what changed for good, or write nothing |
+| Checking health, reviewing, or catching up on commits and conversation sources | [`ssot-doctor`](./skills/ssot-doctor/SKILL.md) | Run the checker, review against domain evidence, and report what was checked |
 | Older prompts naming `$ssot-audit` or `$ssot-skill` | [`ssot-audit`](./skills/ssot-audit/SKILL.md), [`ssot-skill`](./skills/ssot-skill/SKILL.md) | Route to the skills above |
 
 ## What appears in your repository?
 
-The installed skills are the instructions and tools. Your repository's `SSOT/` is the memory they maintain:
+The installed skills are the instructions and tools. Your repository's `SSOT/README.md` is the entry to the memory they maintain:
 
 ```text
 Your task → agent reads SSOT → does the work → updates SSOT if something durable changed
@@ -111,7 +111,7 @@ Only the entry file is required; the others appear when there is something true 
  └── research/        Investigations whose conclusions still guide decisions
 ```
 
-A file that grows large becomes a folder of the same name. Existing READMEs and design documents are input: their lasting facts move into `SSOT/`, and the originals point there, so each fact has one maintained home.
+A new SSOT-owned document that grows large can become a folder of the same name; existing owners follow their local maintenance conventions rather than being split automatically. Existing maintained READMEs, design documents, and domain contracts can remain the owners, linked from `SSOT/README.md`. Reorganization preserves meaningful content and its reasons before replacing a source with a pointer. Research originals, task artifacts, and runtime state retain their appropriate owners.
 
 ## What keeps the memory useful?
 
@@ -124,6 +124,8 @@ A file that grows large becomes a folder of the same name. Existing READMEs and 
 **Checks state their limits.** The [checker](./skills/ssot-doctor/assets/scripts/ssot-check.py) finds broken links, a malformed rules table, a confirmed rule changed without a dated approval, oversized files, and mentions of code files that git says were deleted or moved. It cannot tell whether a document is true or readable; Doctor reviews that against the code and says how far it looked.
 
 **Maintenance follows the agent workflow.** Changes made outside that workflow are picked up when you ask for a catch-up. A long catch-up can take several sessions; each one continues from the last commit the previous one finished.
+
+**Conversation recovery has a stated scope.** Setup and catch-up inventory accessible project-related AI conversations, recover the question, answer, and later corrections, and revisit new content appended to old threads. Raw private conversations stay outside the repository. Inaccessible sources remain gaps; a commit watermark does not establish conversation coverage. These skills do not run an automatic background collector or guarantee that every decision is captured.
 
 ## Supported agents
 
@@ -156,9 +158,9 @@ Read https://raw.githubusercontent.com/huangpufan/SSOT-SKILL/main/INSTALL.md and
 
 Restart the agent afterward. Replacing the installed skills never changes `SSOT/` by itself. To uninstall, ask the agent to follow the guide's removal steps for the chosen scope, including checking for obsolete trigger instructions.
 
-### Upgrading from 2.x
+### Upgrading from 2.x or 3.x
 
-Version 3.0 keeps the memory and drops v2's certification machinery: area coverage labels, the `STATUS.md` and `HISTORY.md` ledgers, review archives, and catch-up audits after every release ([why](./DESIGN.md)). After upgrading, agents still read a v2 `SSOT/` but do not write to it until it is migrated. Repository scripts that call v2's `ssot-lint.sh` stop working until the migration repoints them. Migration is one agent-run commit with your agreement: ask "Migrate this repository's SSOT to v3." To stay on v2, install with `--ref v2-final`.
+Version 4.0 uses `ssot_format: 4` so maintained repository-local documents can remain authoritative outside `SSOT/`. Agents read v2 and v3 memory but do not update it until you agree to a preservation-aware migration: ask "Migrate this repository's SSOT to v4." All installations that write this repository must use v4 before migration. The v3 migration keeps existing knowledge and paths; v2 migration also extracts durable content before removing the old ledgers and repoints scripts that used retired v2 tools. Migration needs your agreement and is one commit. To stay on v2, install with `--ref v2-final`; to retain v3, choose a v3 release with `--ref`.
 
 <details> <summary>Manual update and removal commands</summary>
 

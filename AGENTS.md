@@ -4,13 +4,13 @@
 
 ## What This Repo Is
 
-SSOT-SKILL is a skill bundle that gives a software repository a small, maintained memory in `SSOT/`: what the project is for, how it works, the rules people decided, why things are the way they are, and the traps. [DESIGN.md](./DESIGN.md) explains why it is shaped this way, including what version 3 removed. The bundle contains six skills:
+SSOT-SKILL is a skill bundle that gives a project repository a small, maintained memory entered through `SSOT/README.md`, with repository-local knowledge owners: what the project is for, how it works, the rules people decided, why things are the way they are, and the traps. [DESIGN.md](./DESIGN.md) explains why it is shaped this way, including what version 3 removed. The bundle contains six skills:
 
 | Skill | Role |
 |-------|------|
 | `ssot-preflight` | Read the relevant memory before substantive work |
 | `ssot-bootstrap` | Create, continue, or migrate a repository's SSOT (with the user's agreement) |
-| `ssot-closeout` | Record durable changes after a substantive batch; writes nothing when none |
+| `ssot-closeout` | Capture accepted decisions immediately; reconcile durable changes at batch end |
 | `ssot-doctor` | Check, review, or catch up SSOT |
 | `ssot-audit` | Compatibility name; routes to Doctor's catch-up |
 | `ssot-skill` | Compatibility name; routes to the four above |
@@ -76,8 +76,8 @@ KISS is the permanent SSOT design principle: choose the shortest **reliable path
 | `VERSION` | Bundle protocol version |
 | `CHANGELOG.md` | Version history |
 | `skills/*/SKILL.md` | Skill protocol and instructions |
-| `skills/ssot-preflight/references/memory-model.md` | What a consumer `SSOT/` holds and how it is written |
-| `skills/ssot-bootstrap/references/bootstrap.md` | Creating an SSOT and migrating a v2 one |
+| `skills/ssot-preflight/references/memory-model.md` | What consumer memory holds, its owners, and how it is written |
+| `skills/ssot-bootstrap/references/bootstrap.md` | Creating an SSOT and preserving v2/v3 knowledge during migration |
 | `skills/*/agents/openai.yaml` | Agent metadata for each skill |
 | `skills/ssot-bootstrap/assets/templates/{en,zh}/` | Bootstrap templates |
 | `skills/ssot-doctor/assets/scripts/ssot-check.py` | Read-only mechanical checker |

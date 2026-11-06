@@ -9,5 +9,5 @@ Route by the moment:
 
 - Starting substantive repository work: `$ssot-preflight`.
 - Creating, continuing, or migrating a repository's SSOT: `$ssot-bootstrap`.
-- Finishing a substantive change batch: `$ssot-closeout`.
-- A health check, a review, or catching up on past commits: `$ssot-doctor`.
+- Capturing a durable user decision immediately, or finishing a substantive change batch: `$ssot-closeout`.
+- A health check, a review, or catching up on past commits or conversation sources: `$ssot-doctor`.

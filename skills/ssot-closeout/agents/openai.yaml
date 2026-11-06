@@ -1,4 +1,4 @@
 interface:
   display_name: "SSOT Closeout"
-  short_description: "Record durable changes before finishing"
-  default_prompt: "Use $ssot-closeout before the final response or commit of a substantive change batch."
+  short_description: "Capture decisions now; close out durable changes"
+  default_prompt: "Use $ssot-closeout immediately for durable user confirmations, corrections, rejections or scope limits, including discussion-only work, and before finishing a substantive batch."

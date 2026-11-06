@@ -1,5 +1,5 @@
 ---
-ssot_format: 3
+ssot_format: 4
 language: en
 reviewed_through: <commit you explored>
 ---
@@ -10,7 +10,7 @@ reviewed_through: <commit you explored>
 
 ## Map
 
-<!-- One line per SSOT file that exists. Delete lines for files you did not create; add lines for folders such as architecture/ when a file was split. -->
+<!-- Route to existing canonical repository owners, including files outside SSOT/. The links below are fallback examples: replace them with real owners and remove unused entries. -->
 
 - [Product](product.md): who uses it, what it promises, and what it does not do.
 - [Architecture](architecture.md): the parts, who owns which state, the key flows, and failure handling.

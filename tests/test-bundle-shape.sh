@@ -93,10 +93,10 @@ if [[ -d "$TEMPLATES/en" && -d "$TEMPLATES/zh" ]]; then
   [[ -z "$STRAY" ]] && pass "no stray templates at the root" || fail "stray template at the root: $STRAY"
   for lang in en zh; do
     readme="$TEMPLATES/$lang/ssot-readme.md"
-    if head -5 "$readme" | grep -q '^ssot_format: 3$' && head -5 "$readme" | grep -q '^language: '; then
+    if head -5 "$readme" | grep -q '^ssot_format: 4$' && head -5 "$readme" | grep -q '^language: '; then
       pass "$lang: README template carries the format marker and language"
     else
-      fail "$lang: README template lacks ssot_format: 3 or language"
+      fail "$lang: README template lacks ssot_format: 4 or language"
     fi
     adapter="$TEMPLATES/$lang/adapter-thin.md"
     if [[ "$(grep -c '^<!-- SSOT-SKILL:BEGIN -->$' "$adapter")" == 1 && "$(grep -c '^<!-- SSOT-SKILL:END -->$' "$adapter")" == 1 ]]; then
@@ -172,12 +172,12 @@ budget() { # $1=label $2=value $3=limit $4=unit
 }
 mapfile -t ENTRY_FILES < <(find "$SKILLS" -name SKILL.md | sort)
 mapfile -t RUNTIME_FILES < <(find "$SKILLS" \( -name SKILL.md -o -path '*/references/*.md' \) -type f | sort)
-budget "SKILL.md entrypoints" "$(words "${ENTRY_FILES[@]}")" 3300 words
-budget "runtime protocol (SKILL.md + references)" "$(words "${RUNTIME_FILES[@]}")" 11000 words
+budget "SKILL.md entrypoints" "$(words "${ENTRY_FILES[@]}")" 3600 words
+budget "runtime protocol (SKILL.md + references)" "$(words "${RUNTIME_FILES[@]}")" 13000 words
 for lang in en zh; do
   budget "templates/$lang" "$(bytes "$TEMPLATES/$lang"/*)" 16384 bytes
 done
-budget "checker" "$(bytes "$SKILLS/ssot-doctor/assets/scripts/ssot-check.py")" 45056 bytes
+budget "checker" "$(bytes "$SKILLS/ssot-doctor/assets/scripts/ssot-check.py")" 49152 bytes
 budget "skills/ total" "$(git -C "$PROJECT_ROOT" ls-files -co --exclude-standard -z -- skills | xargs -0 cat | wc -c | tr -d ' ')" 163840 bytes
 
 echo

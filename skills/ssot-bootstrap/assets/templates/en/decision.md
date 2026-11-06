@@ -4,6 +4,9 @@
 - Date: YYYY-MM-DD
 - Decided by: <a user directive, a team review, or an agent proposal the user accepted>
 
+- Source and scope: <necessary user words, the question they answer, source ID/link, and where this applies>
+- Implementation: <current / planned / unknown; acceptance does not prove implementation>
+
 ## Situation
 
 <!-- What was happening and what forced a choice. -->
@@ -12,7 +15,7 @@
 
 ## Alternatives considered
 
-<!-- Each option and why it lost. This is what stops someone reviving it. -->
+<!-- Each option and the stated reason it lost; say unknown if no reason was given. Preserve unaffected parts of any earlier decision. -->
 
 ## Consequences
 

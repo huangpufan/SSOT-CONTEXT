@@ -4,17 +4,19 @@ This file owns what a repository's `SSOT/` contains, where each kind of knowledg
 
 ## 1. What SSOT is for
 
-`SSOT/` is the repository's long-term memory. A new agent, or a person who delegates work to agents, should be able to read it and know what the project is for, how it works, which rules must not be broken, why things are the way they are, and where the traps are. With that, they can plan a change without first reconstructing the whole codebase. Its most important job is the rules: the architecture boundaries and product behaviors that only a person may change. Everything else an agent may change on its own.
+`SSOT/` is the repository's long-term memory. A new agent, or a person who delegates work to agents, should be able to read it and know what the project is for, how it works, which rules must not be broken, why things are the way they are, and where the traps are. With that, they can plan a change without first reconstructing the whole codebase. Its most important job is the rules: the architecture boundaries and product behaviors that only a person may change. Other changes still follow the repository’s authorization and ownership rules, including human-approved canon or domain facts maintained outside the invariant register and decision records.
 
-SSOT is memory, not a verification system. The code, configuration, schemas, tests, and observed runtime behavior remain the evidence for what the system does today. Proof that one task works belongs in that task's commit, pull request, or test run, not in SSOT.
+SSOT is memory, not a verification system. Domain evidence (section 3) remains authoritative for factual claims. Proof that one task works belongs in that task's commit, pull request, or test run, not in SSOT.
 
-"Single source of truth" means each durable fact is explained in exactly one place inside `SSOT/`, its **owner**. Other places link to the owner instead of repeating it. When a repository has other documents (a public README, a `docs/` folder, design notes), their durable facts move into `SSOT/`, and the old copy becomes a short pointer or is marked as historical. A public README may keep its summary for outside readers, but `SSOT/` is the place that is kept current.
+"Single source of truth" means one maintained **owner** for each fact. `SSOT/README.md` is the entry point and routes to owners; an owner may stay elsewhere inside the repository. Keep established canonical documents (for example `DESIGN.md`, `MEMORY.md`, a creative canon, control document or decision history) in place and link them instead of creating parallel SSOT copies. New knowledge goes to the existing relevant owner, or a new owner only where none fits. Routing does not grant write permission: external repositories, reference material and runtime stores are linked, not edited by this workflow.
+
+Automatic upkeep depends on the agent loading these instructions and seeing the relevant input. It cannot recover unseen conversations or promise zero loss.
 
 ## 2. What to store, and what to leave out
 
 Store a fact when all three hold:
 
-1. The code and git history cannot cheaply tell a reader this.
+1. The domain’s primary evidence and history cannot cheaply tell a reader this.
 2. It would change a future decision or prevent a mistake.
 3. It changes more slowly than people will maintain it.
 
@@ -42,7 +44,7 @@ Readers act on what you write, so never present something planned as if it exist
 - Mark an agent's inferred follow-up, revisit or removal condition "Proposed, not decided", separate from the accepted choice. A reason for a decision does not establish a later action.
 - Say what is unknown. "We have not verified this on macOS" is useful. Silence is not.
 
-When a document and the code disagree, the code describes current behavior. Find out whether the document is stale, the code violates an intended rule, or the intent has not been implemented yet, and fix the document or report the violation accordingly.
+Use evidence appropriate to the claim: code, tests and runtime for software behavior; canonical material and the actual text for creative continuity; original sources, data and methods for research; the user’s words with their question for human decisions. Code cannot establish whether a person accepted a choice. When a document and the code disagree about software behavior, the code describes current implementation. Find out whether the document is stale, the code violates an intended rule, or the intent has not been implemented yet, and fix the document or report the violation accordingly.
 
 A claim about verification must say how far the verification went. "Unit tests pass" does not support "works end to end", and evidence from one platform does not cover another. A performance number says how and when it was measured. Keep four things apart: what was decided, what the code does, what one run showed, and what is guaranteed in general.
 
@@ -60,7 +62,9 @@ SSOT/
 └── research/        investigations whose conclusions still guide decisions
 ```
 
-Only `README.md` is required. Create the others when there is real content for them. Never create empty placeholder files. When a file grows past about 16,000 characters or covers clearly separate topics, turn it into a folder of the same name, with a `README.md` that introduces the topic and routes to one file per subtopic (for example `architecture/README.md` plus `architecture/payments.md`).
+This is a fallback layout for knowledge without an existing owner, not a required replacement for the repository’s documentation. Only `README.md` is required. Create the others when there is real content for them. Never create empty placeholder files. For new SSOT-owned documents, when a file grows past about 16,000 characters or covers clearly separate topics, turn it into a folder of the same name, with a `README.md` that introduces the topic and routes to one file per subtopic (for example `architecture/README.md` plus `architecture/payments.md`).
+
+Existing canonical owners follow their own size, index and writing rules; this fallback layout does not automatically split or reorganize them.
 
 Repositories that already use other names, such as v2's `01-product/` and `02-architecture/`, keep them. The README's routes decide where things are, so renaming is never required.
 
@@ -70,7 +74,7 @@ Repositories that already use other names, such as v2's `01-product/` and `02-ar
 
 ```yaml
 ---
-ssot_format: 3
+ssot_format: 4
 language: en        # the language SSOT prose is written in, e.g. en or zh-CN
 reviewed_through: 1a2b3c4   # optional: the next catch-up starts after this commit
 ---
@@ -100,6 +104,14 @@ A research note records an investigation whose result still guides work. Keep th
 
 When a change adds a temporary workaround, a compatibility shim, or a `TODO`/`HACK` that future work must know about, note it in the owner of the affected part. Say why it exists and what established condition allows its removal. If no condition was decided, say so; section 3 distinguishes a proposal from a decision. When you defer a known problem, record what was deferred, why, and what would trigger revisiting it. "Later" on its own is not a record.
 
+### Existing task and evidence owners
+
+Task progress, research originals and running databases keep their existing owners. Link to them rather than copying changing state into SSOT. Read them only when the task route calls for them. Before resuming across sessions, verify repository and task identity, the authoritative progress record, completed side effects and the next safe action; do not infer identity from the newest file or replay completed effects. SSOT records and routes knowledge; it does not schedule or execute work.
+
+### Preserving content when reorganizing
+
+Before moving, merging, compressing or deleting documentation, make a temporary content account: each decision, exception, rejection reason, unique asset and source context has a destination, remains in place, or is explicitly proposed for removal. Compare the final saved text against this account and the original before deleting anything. Unaccounted content stays. Keep historical decisions and their provenance as history, including partial supersessions. This account is task scratch, not a permanent review ledger; moving facts does not expand write or deletion authority.
+
 ## 5. Invariants
 
 An invariant is a rule that people decided and that the implementation must preserve: an architecture boundary, or a product behavior that users, clients, or integrations rely on. Changing one takes a person; work that keeps every invariant needs nobody's approval. The register in the README lists them:
@@ -119,7 +131,7 @@ A rule belongs here when it is a lasting constraint on future work, set by a per
 - **candidate.** An agent inferred the rule from evidence that people protect it. Follow it by default. When a task needs to depart from it, or its meaning is unclear in a way that matters, ask the user to confirm or drop it and record the answer; silence confirms nothing. That the code already behaves this way does not make it confirmed, and candidates are not put to the user one by one: each is settled when a task needs to depart from it.
 - **retired.** It no longer applies. Keep the row so the history stays readable, and link the decision that retired it.
 
-When a user states a lasting rule ("never X", "always Y", "from now on"), record it as a confirmed invariant with the user and date as its source. The explanation lives in the owner the row links to, inside `SSOT/`.
+When a user states a lasting rule ("never X", "always Y", "from now on"), record it as a confirmed invariant with the user and date as its source. The explanation lives in the owner the row links to, inside the repository, including existing owners outside `SSOT/`.
 
 **Recovering a rule from the code.** Many protected rules were never written down. Admit one as a candidate only when you can name the outcome it protects, the conditions under which it holds, and evidence that people protect it on purpose: a test that asserts the outcome for its own sake, a fix or revert commit that restored it, a guard whose comment or history says why, a promise in the user documentation, or a compatibility shim or migration that exists to keep it. A test's existence alone is not enough; it may pin an incidental detail, which a change may update. State the supported exceptions, if any. Give one concrete change that would violate the rule and one nearby change it permits. Search for evidence that contradicts its scope, and tell a legitimate exception from an existing violation. "No known exception" is acceptable, but it does not prove the rule holds everywhere. A rule people stated stays protected even where the code violates it; report the violation instead of rewriting the rule.
 
@@ -138,8 +150,8 @@ Write every SSOT file for a reader who arrives knowing nothing about the project
 - **Use plain words.** Prefer the ordinary word to the internal label. The first time you use a project-specific term, explain it in positive terms, enough for this paragraph to make sense. A link to the glossary adds the full definition but does not replace that local explanation. You may explain a term again in context, but do not give it a different meaning. Keep identifiers, enum values, commands, and quoted text exactly as they are, even in a document written in another language.
 - **Explain in prose, look up in tables.** Paragraphs carry reasons, causes, and consequences. Use tables for lookups and comparisons. If a cell needs a sentence of reasoning, that reasoning belongs in a paragraph.
 - **Be concrete.** One real example ("a retry after a gateway timeout") makes a rule easier to apply than an abstract description does.
-- **State the scope the code has.** Write "all", "only", "every", "never", or "always" only when the code enforces it; otherwise say "by default", "on Linux", "unless X", or name the exception. A statement that is right in the common case but leaves out the condition misleads a task as much as a wrong one.
-- **Keep one fact in one place.** Link instead of copying. When you change a fact, search `SSOT/` and the agent instruction files for older statements of it and fix them too.
+- **State the scope the code has.** Write "all", "only", "every", "never", or "always" only when domain evidence supports that scope; otherwise say "by default", "on Linux", "unless X", or name the exception. A statement that is right in the common case but leaves out the condition misleads a task as much as a wrong one.
+- **Keep one fact in one place.** Link instead of copying. When you change a fact, search routed owners, `SSOT/`, and the agent instruction files for older statements of it and fix them too.
 - **Write in the declared language.** Use the README's `language`.
 - **One paragraph, one line.** Do not break a paragraph or a list item across lines to fit a width. Editors and viewers wrap text themselves; a hard break shows up as a short, ragged line, and in Chinese or Japanese it can add a stray space mid-sentence.
 - **Make diagrams parse.** In Mermaid diagrams, write comments with Mermaid's own `%%` syntax, never `<!-- -->` inside the fence, because Mermaid rejects HTML comments.
@@ -149,17 +161,17 @@ Write every SSOT file for a reader who arrives knowing nothing about the project
 For each behavior claim this batch adds or broadens, check the wording itself before the structural checker:
 
 1. Read the final changed passages. Copy each new or broader behavior sentence verbatim into scratch or tool input, keeping its input types, conditions and words such as "all" or "only".
-2. Find the code condition that would make that sentence true. Name the value the condition tests. When a guard tests a derived value, name that derived value in the sentence. Being convertible does not make an input satisfy the converted value's condition: a positive input can become zero during integer conversion.
-3. Choose an input the sentence includes that might fail that condition. Run it and compare the result with the exact sentence, recording the claim, input and outcome together in scratch or tool output. A before/after differential checks preservation; it does not establish a new generalization's truth.
+2. For human decisions, check the original words and answered question; for creative or research claims, check the canonical text or original sources and state unverified portions. For software behavior, find the code condition that would make that sentence true. Name the value the condition tests. When a guard tests a derived value, name that derived value in the sentence. Being convertible does not make an input satisfy the converted value's condition: a positive input can become zero during integer conversion.
+3. For software behavior, choose an input the sentence includes that might fail that condition. Run it and compare the result with the exact sentence, recording the claim, input and outcome together in scratch or tool output. A before/after differential checks preservation; it does not establish a new generalization's truth.
 4. Correct or narrow unsupported wording, or state what could not be checked. Carry the checked conditions into the final response too.
 
-Finish when every new or broader behavior sentence in the final saved text is matched to its condition and probe result, or explicitly qualified as unchecked. A later wording change reopens only that sentence. Check this batch's claims, not every unchanged document. Scratch evidence belongs to the task, not a new SSOT ledger.
+Finish when every new or broader claim in the final saved text is matched to domain evidence and readback, or explicitly qualified as unchecked; software behavior claims additionally need their condition and probe result. A later wording change reopens only that sentence. Check this batch's claims, not every unchanged document. Scratch evidence belongs to the task, not a new SSOT ledger.
 
 
 Length is not the goal in either direction. Write as much as a newcomer needs to understand the point, and nothing that only restates the code.
 
 ## 7. The format marker and older layouts
 
-`ssot_format: 3` in the README's front matter marks this model. The bundle's own version number can change without changing the format, and a new bundle release never obliges a repository to "catch up".
+`ssot_format: 4` in the README's front matter marks this model. The bundle's own version number can change without changing the format, and a new bundle release never obliges a repository to "catch up".
 
-A repository whose `SSOT/README.md` lacks `ssot_format: 3` uses an earlier model, usually v2 with `SSOT/STATUS.md`. Its coverage labels and review records are historical, but the decisions, user constraints, limits, and open questions it records still apply. Do not write to it, because mixing models leaves ledgers that contradict updated documents; offer to migrate it with `$ssot-bootstrap` instead.
+A repository whose `SSOT/README.md` lacks `ssot_format: 4` uses an older or unrecognized model, including v2 and v3. Read its decisions, constraints, limits and open questions as knowledge; they still bind. Keep it read-only until the user explicitly agrees to migration through `$ssot-bootstrap`. V3 needs owner-preserving marker and wiring updates, not v2 ledger removal.

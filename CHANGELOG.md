@@ -8,6 +8,22 @@ Entries up to 2.86 were derived from the v2 protocol-upgrade ledger, which is pr
 
 ## [Unreleased]
 
+## [4.0] - 2026-11-06
+
+### Changed
+- Consumer format becomes `ssot_format: 4`. The README remains the entry point; existing maintained repository-local documents can remain authoritative owners outside `SSOT/`. Reorganization accounts for meaningful content before replacing sources with pointers. Research originals, task artifacts, machine-checked domain evidence, and runtime state retain their appropriate owners.
+- Closeout also captures accepted durable confirmations, corrections, rejections, and scope limits immediately, with saved-text readback. Capture preserves the question answered, source words, accepted scope, implementation state, unknown rationale, and partial supersession; end-of-batch reconciliation remains.
+- Bootstrap and Doctor inventory accessible project-related AI conversation sources, recover relevant question/answer context and later corrections, and revisit appended portions of existing threads. Private raw transcripts stay outside the repository; inaccessible sources and examined ranges are reported. Commit watermarks do not establish conversation coverage, and the protocol promises neither autonomous background collection nor zero omissions.
+- The installer warns on 2.x/3.x-to-4.x replacement, preserves the 2.x-to-3.x warning, and avoids migration warnings on same-major reinstallation.
+- v2 and v3 consumer memory stays readable but read-only until an agreed preservation-aware migration. v3 migration keeps knowledge and paths; v2 also preserves unique content before retiring old ledgers and reconnecting old tooling. All writers must use v4 before migration.
+- Raise entrypoint budgets from 3,300 to 3,600 words, runtime protocol from 11,000 to 13,000 words, and checker from 44 to 48 KiB for decision capture, conversation-source recovery, external-owner routes, preservation-aware migration, and their checks. Measured template sizes (8,870 bytes English and 8,590 bytes Chinese) and the 145,491-byte skills bundle fit the existing 16 KiB per-language and 160 KiB whole-bundle limits, which remain unchanged; no unrelated rules were compressed to fit.
+
+### Evidence and limits
+- Local checks: installer 104 passed, checker 112 passed, bundle shape 48 passed, and ShellCheck passed. The measured protocol uses 3,480 entrypoint words and 12,616 runtime words; the checker is 47,224 bytes. These structural and regression checks do not establish general agent behavior.
+- Behavior trials and their actual outcomes are recorded in [the v4 trial report](tests/trials-4.0.md). A separate synthetic migration exercised by a local agent passed 11 preservation checks. Neither exercise migrated a real consuming project or reviewed its full product history.
+- Two design discussions with `claude-sonnet-5-5` accepted the owner, immediate-capture, conversation-layer, and format-4 direction; counterexamples led to corrections for actor scope, human origin, local-owner rules, and superseded cursors. Discussion is design review, not behavioral validation.
+- Format 4 requires all writers to upgrade before an agreed migration; older memory remains read-only. Automatic background hooks and multi-platform conversation connectors are not implemented. Accessible-source review cannot guarantee that every conversation or decision was recovered.
+
 ## [3.15] - 2026-11-06
 
 The writing protocol now asks SSOT writers to check a new behavior sentence against its actual code condition and a potentially contradicting input, rather than treating an old/new differential or structural PASS as proof of the sentence. A positive input may become zero during integer conversion: several trial documents missed that distinction despite correct code. The consumer format remains `ssot_format: 3`. Scope, failed variants, costs and execution limits: [tests/trials-3.15.md](tests/trials-3.15.md).
@@ -1112,7 +1128,8 @@ Method, per-question scores, and limits are in `tests/trials-3.0.md`.
 
 ---
 
-[Unreleased]: https://github.com/huangpufan/SSOT-SKILL/compare/v2.21...HEAD
+[Unreleased]: https://github.com/huangpufan/SSOT-SKILL/compare/v4.0...HEAD
+[4.0]: https://github.com/huangpufan/SSOT-SKILL/releases/tag/v4.0
 [2.21]: https://github.com/huangpufan/SSOT-SKILL/releases/tag/v2.21
 [2.19]: https://github.com/huangpufan/SSOT-SKILL/releases/tag/v2.19
 [2.18]: https://github.com/huangpufan/SSOT-SKILL/releases/tag/v2.18

@@ -27,7 +27,7 @@ for _index, (_key, _value) in enumerate(_GIT_FIXTURE_CONFIG):
     os.environ[f"GIT_CONFIG_VALUE_{_index}"] = _value
 CHECKER = os.path.join(ROOT, "skills", "ssot-doctor", "assets", "scripts", "ssot-check.py")
 
-README = """\
+README_V3 = """\
 ---
 ssot_format: 3
 language: en
@@ -51,6 +51,9 @@ Demo is a tiny service.
 
 None yet.
 """
+
+# Keep the original format-3 fixture for explicit migration coverage.
+README = README_V3.replace("ssot_format: 3", "ssot_format: 4")
 
 ARCHITECTURE = """\
 # Architecture
@@ -132,24 +135,160 @@ class CheckerTest(unittest.TestCase):
         out = self.assert_clean()
         self.assertIn("ssot-check: PASS - 0 error(s), 0 warning(s)", out)
 
+    def test_v3_fixture_is_legacy_not_format4_pass(self):
+        self.write("README.md", README_V3)
+        self.write("architecture.md", ARCHITECTURE)
+        code, out = self.run_checker()
+        self.assertEqual(code, 3, out)
+        self.assertIn("v3 layout", out)
+        self.assertNotIn("ssot-check: PASS", out)
+
+    def external_owner(self, content):
+        self.valid()
+        self.write("../docs/owner.md", content)
+        self.write("README.md", README.replace("architecture.md", "../docs/owner.md"))
+
+    def test_external_owner_links_and_anchors_are_checked(self):
+        self.external_owner(ARCHITECTURE + "\n[Missing](missing.md)\n")
+        self.assert_error("broken link: missing.md")
+        self.external_owner(ARCHITECTURE + "\n[Missing](#absent)\n")
+        self.assert_error("missing heading anchor: #absent")
+
+    def test_owner_scope_does_not_crawl_unrelated_or_nested_documents(self):
+        self.external_owner(ARCHITECTURE + "\n[Detail](detail.md)\n")
+        self.write("../docs/detail.md", "# Detail\n[Broken](absent.md)\n")
+        self.write("../unrelated.md", "[Broken](absent.md)\n")
+        self.assert_clean()
+
+    def test_chinese_repository_owner_filename_heading_and_explicit_id(self):
+        self.valid()
+        self.write("../docs/创作设定.md", '# 创作设定\n\n## 人物关系与边界\n\n<a id="设定修改与决策记录"></a>\n')
+        self.write("README.md", README + "\n[人物](../docs/创作设定.md#人物关系与边界)\n"
+                   "[修改](../docs/创作设定.md#设定修改与决策记录)\n")
+        self.assert_clean()
+        self.write("../docs/创作设定.md", '# 创作设定\n\n## 人物关系与边界\n')
+        self.assert_error("missing heading anchor: ../docs/创作设定.md#设定修改与决策记录")
+
+    def test_non_markdown_route_is_valid_but_not_invariant_explanation(self):
+        self.valid()
+        self.write("../docs/settings.json", '{"mode": "draft"}\n')
+        self.write("README.md", README + "\n[Settings](../docs/settings.json)\n")
+        self.assert_clean()
+        self.invariant_row("| INV-01 | process rule | Rule | [R](../docs/settings.json) | confirmed | user |")
+        self.assert_error("needs a Markdown explanation in the same repository")
+
+    def test_existing_large_external_owner_warns_without_rewriting(self):
+        self.external_owner(ARCHITECTURE + "\n" + "Canonical context. " * 1000 + "\n")
+        owner = os.path.join(self.repo, "docs", "owner.md")
+        with open(owner, "rb") as handle:
+            before = hashlib.sha256(handle.read()).hexdigest()
+        out = self.assert_clean()
+        self.assertIn("WARN  ../docs/owner.md", out)
+        self.assertIn("16000-character reading budget", out)
+        with open(owner, "rb") as handle:
+            self.assertEqual(hashlib.sha256(handle.read()).hexdigest(), before)
+
+    def test_external_owner_missing_file_is_error(self):
+        self.valid()
+        self.write("README.md", README.replace("architecture.md", "../docs/missing.md"))
+        self.assert_error("broken link")
+
+    def test_url_and_non_markdown_are_not_invariant_explanations(self):
+        for target in ("https://example.com/rules.md", "../rules.txt"):
+            self.invariant_row(f"| INV-01 | process rule | Rule | [R]({target}) | confirmed | user |")
+            self.assert_error("needs a Markdown explanation in the same repository")
+
+    def test_symlink_escape_is_not_an_owner(self):
+        with tempfile.TemporaryDirectory() as outside:
+            owner = os.path.join(outside, "owner.md")
+            with open(owner, "w") as handle:
+                handle.write("# Owner\n")
+            os.symlink(owner, os.path.join(self.ssot, "escape.md"))
+            self.invariant_row("| INV-01 | process rule | Rule | [R](escape.md) | confirmed | user |")
+            self.assert_error("needs a Markdown explanation in the same repository")
+            os.unlink(os.path.join(self.ssot, "escape.md"))
+
+    def test_nested_git_repository_is_not_an_owner(self):
+        self.external_owner(ARCHITECTURE)
+        subprocess.run(["git", "init", "-q", os.path.join(self.repo, "docs")], check=True)
+        self.assert_error("needs a Markdown explanation in the same repository")
+
+    def test_ssot_below_repository_root_can_use_sibling_owner(self):
+        subprocess.run(["git", "init", "-q", self.repo], check=True)
+        self.ssot = os.path.join(self.repo, "project", "SSOT")
+        os.makedirs(self.ssot)
+        self.valid()
+        self.write("../../docs/owner.md", ARCHITECTURE)
+        self.write("README.md", README.replace("architecture.md", "../../docs/owner.md"))
+        self.assert_clean()
+
+    def test_requested_ssot_symlink_cannot_change_repository_identity(self):
+        self.valid()
+        self.git("init", "-q")
+        for indirect in (False, True):
+            with self.subTest(ancestor_symlink=indirect), tempfile.TemporaryDirectory() as target:
+                subprocess.run(["git", "init", "-q", target], check=True)
+                target_ssot = os.path.join(target, "SSOT")
+                os.makedirs(target_ssot)
+                for name, content in (("README.md", README), ("architecture.md", ARCHITECTURE)):
+                    with open(os.path.join(target_ssot, name), "w") as handle:
+                        handle.write(content)
+                link = os.path.join(self.repo, "linked")
+                os.symlink(target if indirect else target_ssot, link)
+                try:
+                    requested = os.path.join(link, "SSOT") if indirect else link
+                    code, out = self.run_checker(requested)
+                    self.assertEqual(code, 1, out)
+                    self.assertIn("README must belong to the same repository", out)
+                    # An explicit real path to another repo remains a legitimate request.
+                    code, out = self.run_checker(target_ssot)
+                    self.assertEqual(code, 0, out)
+                finally:
+                    os.unlink(link)
+
+    def test_requested_ssot_symlink_within_same_repository_is_allowed(self):
+        self.valid()
+        self.git("init", "-q")
+        link = os.path.join(self.repo, "linked")
+        os.symlink(self.ssot, link)
+        code, out = self.run_checker(link)
+        self.assertEqual(code, 0, out)
+
+    def test_format3_to_format4_migration_keeps_confirmed_rule_guard(self):
+        self.valid()
+        self.write("README.md", README_V3)
+        self.git("init", "-q")
+        self.commit()
+        self.write("README.md", README.replace("A retry never charges twice", "A retry may charge twice"))
+        self.assert_error("confirmed invariant INV-01 changed its rule")
+
+    def test_external_owner_removed_code_mentions_are_checked(self):
+        self.repo_with("src/gone.py")
+        os.remove(os.path.join(self.repo, "src/gone.py"))
+        self.commit()
+        self.external_owner(ARCHITECTURE + "\nSee `src/gone.py`.\n")
+        self.assertIn("`src/gone.py` was removed", self.assert_clean())
+
     def test_missing_readme(self):
         self.write("architecture.md", ARCHITECTURE)
         self.assert_error("missing SSOT/README.md")
 
     def test_missing_format_marker(self):
         self.write("README.md", "# Demo\n")
-        self.assert_error("ssot_format: 3")
+        self.assert_error("ssot_format: 4")
 
     def test_missing_language(self):
         self.write("README.md", README.replace("language: en\n", ""))
         self.write("architecture.md", ARCHITECTURE)
         self.assert_error("language:")
 
-    def test_v2_layout_is_reported_not_failed(self):
+    def test_v2_layout_requires_migration(self):
         self.write("README.md", "# Old\n")
         self.write("STATUS.md", "# Status\n")
-        out = self.assert_clean()
+        code, out = self.run_checker()
+        self.assertEqual(code, 3, out)
         self.assertIn("v2 layout", out)
+        self.assertIn("requires migration", out)
 
     def test_v2_ledger_left_after_migration_warns(self):
         self.valid()
@@ -314,11 +453,11 @@ class CheckerTest(unittest.TestCase):
         self.assertIn("needs a source", out)
         self.assertIn("needs a kind", out)
 
-    def test_invariant_explained_outside_ssot_fails(self):
+    def test_invariant_explained_in_repository_owner_passes(self):
         with open(os.path.join(self.repo, "AGENTS.md"), "w") as handle:
             handle.write("# Agents\n")
         self.invariant_row("| INV-01 | process rule | Rule | [AGENTS](../AGENTS.md) | confirmed | user |")
-        self.assert_error("must live inside SSOT/")
+        self.assert_clean()
 
     def test_invariant_anchor_in_readme_is_inside_ssot(self):
         self.invariant_row("| INV-01 | process rule | Rule | [Below](#open-questions) | confirmed | user |")
@@ -360,14 +499,14 @@ class CheckerTest(unittest.TestCase):
         self.write("architecture.md", ARCHITECTURE)
         self.assert_error("must be confirmed, candidate, or retired")
 
-    def test_invariant_explanation_via_symlink_outside_ssot_fails(self):
+    def test_invariant_explanation_via_symlink_to_repository_owner_passes(self):
         outside = os.path.join(self.repo, "outside")
         os.makedirs(outside)
         with open(os.path.join(outside, "rules.md"), "w") as handle:
             handle.write("# Rules\n")
         os.symlink(outside, os.path.join(self.ssot, "linked"))
         self.invariant_row("| INV-01 | process rule | Rule | [R](linked/rules.md) | confirmed | user |")
-        self.assert_error("must live inside SSOT/")
+        self.assert_clean()
 
     def test_invariant_table_without_outer_pipes_is_checked(self):
         self.write("README.md", README.replace(
