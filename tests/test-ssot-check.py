@@ -254,6 +254,32 @@ class CheckerTest(unittest.TestCase):
         code, out = self.run_checker(link)
         self.assertEqual(code, 0, out)
 
+    def test_system_path_alias_before_repository_keeps_identity(self):
+        self.valid()
+        self.git("init", "-q")
+        with tempfile.TemporaryDirectory() as aliases, tempfile.TemporaryDirectory() as foreign:
+            alias = os.path.join(aliases, "system-root")
+            os.symlink(os.path.dirname(self.repo), alias)
+            requested = os.path.join(alias, os.path.basename(self.repo))
+            code, out = self.run_checker(os.path.join(requested, "SSOT"))
+            self.assertEqual(code, 0, out)
+
+            # The preceding system alias must not hide a later cross-repo link.
+            subprocess.run(["git", "init", "-q", foreign], check=True)
+            target = os.path.join(foreign, "SSOT")
+            os.makedirs(target)
+            for name, content in (("README.md", README), ("architecture.md", ARCHITECTURE)):
+                with open(os.path.join(target, name), "w") as handle:
+                    handle.write(content)
+            link = os.path.join(self.repo, "linked")
+            os.symlink(target, link)
+            try:
+                code, out = self.run_checker(os.path.join(requested, "linked"))
+                self.assertEqual(code, 1, out)
+                self.assertIn("README must belong to the same repository", out)
+            finally:
+                os.unlink(link)
+
     def test_format3_to_format4_migration_keeps_confirmed_rule_guard(self):
         self.valid()
         self.write("README.md", README_V3)

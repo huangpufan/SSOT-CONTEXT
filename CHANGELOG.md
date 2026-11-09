@@ -16,6 +16,9 @@ Entries up to 2.86 were derived from the v2 protocol-upgrade ledger, which is pr
 - Immediate capture explicitly compares saved verbatim user words when available. A trial that retained the meaning but omitted the source words exposed this missing check; unavailable original exchanges remain unknown rather than invented.
 - Add an opt-in native performance recorder with fixture prechecks, frozen-source manifests, event-boundary snapshots and per-turn usage. It requests only `gpt-6.1-terra`; CI compiles it without running models. Consumer format and budgets are unchanged.
 
+### Fixed
+- Repository identity discovery no longer treats a system path alias above a Git worktree as a cross-repository link. A new regression reproduces the macOS CI failure on Linux and still rejects a later link into another repository. This repairs the resolver rather than weakening or skipping the platform check.
+
 ### Evidence and limits
 - [Performance trials](tests/trials-4.2.md) separate source snapshots, producer failures, earlier regressions, final-route checks and unchanged-path evidence reuse. The warm routine observation reduces input from 105,517 to 65,035 tokens and time from 22.269 to 17.663 seconds while reading an externally changed owner. Cold routine and missing-SSOT observations also reduce total input. These are small controlled observations, not a general speed or billing guarantee; complex decision-recording latency and reading remain mixed.
 - Two final-route captures retain the original quote and actually reread the saved record before dependent writing. A formal-source neighbor retains accepted standing and unknown original/date/reason; read-only, typo, structural-rename and protected-departure controls retain their observed boundaries. Full bootstrap, migration, process-kill recovery and real large-consumer performance are not tested here.

@@ -876,16 +876,20 @@ def check_reviewed_through(report, readme, value):
 # --- main ----------------------------------------------------------------------
 
 def repository_root(directory):
-    """Find the requested repository before following any directory symlink."""
+    """Keep worktree identity across links, allowing aliases above the repository."""
     probe = os.path.abspath(directory)
     prefix = os.path.abspath(os.sep)
+    repository_seen = os.path.lexists(os.path.join(prefix, ".git"))
     for part in probe.split(os.sep):
         if not part:
             continue
         prefix = os.path.join(prefix, part)
-        if os.path.islink(prefix):
+        if os.path.islink(prefix) and repository_seen:
             probe = os.path.dirname(prefix)
             break
+        # System aliases can precede the worktree (for example a temp root).
+        # Once inside a repository, a link cannot select a different one.
+        repository_seen |= os.path.lexists(os.path.join(prefix, ".git"))
     fallback = probe if probe != directory else os.path.dirname(directory)
     try:
         result = subprocess.run(["git", *GIT_SAFE, "-C", probe, "rev-parse", "--show-toplevel"],
