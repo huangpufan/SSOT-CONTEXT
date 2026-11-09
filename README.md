@@ -61,6 +61,8 @@ The repository instructions tell the agent when to act:
 - **During work:** save a durable confirmation, correction, rejection, or scope decision when it is accepted, and read back the saved passage. Keep the question it answered and distinguish the accepted decision from what is implemented; batch closeout reconciles the remaining durable facts.
 - **Before finishing or committing a substantive batch:** record those facts where they belong and remove the statements they replace. When nothing durable changed, nothing is written.
 
+**Routine work has a shorter reading path.** Preflight checks whether SSOT exists before loading the memory model, then reads the sections needed for using memory. Immediate decision capture and batch reconciliation have separate routes; a content-only code change with no durable memory change can finish after comparing the relevant owners. Retained skill instructions can be reused; each new task refreshes the project entry and relevant owners, including uncommitted content. Lost context or uncertain freshness requires another read. Measurements and limits are in [the performance trials](./tests/trials-4.2.md).
+
 You do not need to select or invoke a skill at every step. Creating the memory for a large repository may take more than one session; progress is saved in `SSOT/BOOTSTRAP.md` until setup is done. Then read the result at `SSOT/README.md`.
 
 <details> <summary>Optional: request setup or a focused check directly</summary>
@@ -121,11 +123,13 @@ A new SSOT-owned document that grows large can become a folder of the same name;
 
 **People's rules stay people's decisions.** Rules you confirm are listed in `SSOT/README.md`. An agent may work within them but never changes them; a task that conflicts with one stops and asks you.
 
-**Checks state their limits.** The [checker](./skills/ssot-doctor/assets/scripts/ssot-check.py) finds broken links, a malformed rules table, a confirmed rule changed without a dated approval, oversized files, and mentions of code files that git says were deleted or moved. It cannot tell whether a document is true or readable; Doctor reviews that against the code and says how far it looked.
+**Checks state their limits.** The [checker](./skills/ssot-doctor/assets/scripts/ssot-check.py) finds broken links, a malformed rules table, a confirmed rule changed without a new dated source, oversized files, and mentions of code files that git says were deleted or moved. It cannot establish truth, readability or authorization. Doctor reviews the relevant [domain evidence](./skills/ssot-preflight/references/memory-model.md#3-current-planned-and-unknown), checks readability, and says how far it looked.
+
+**Choose models for the question.** Doctor and mining can use [structural review](./skills/ssot-doctor/references/structural-review.md): states and paths, ownership graphs, mappings from requirements and decisions to implementation and evidence, and constraints with counterexamples. Methods are selected by scope and risk. Coverage concerns the explicit model and observed evidence. Missing sources, untested paths and unknowns remain gaps; model coverage does not prove all real needs were covered. This is neither full modeling for every task nor an automatic model checker.
 
 **Maintenance follows the agent workflow.** Changes made outside that workflow are picked up when you ask for a catch-up. A long catch-up can take several sessions; each one continues from the last commit the previous one finished.
 
-**Conversation recovery has a stated scope.** Setup and catch-up inventory accessible project-related AI conversations, recover the question, answer, and later corrections, and revisit new content appended to old threads. Raw private conversations stay outside the repository. Inaccessible sources remain gaps; a commit watermark does not establish conversation coverage. These skills do not run an automatic background collector or guarantee that every decision is captured.
+**Conversation recovery has a stated scope.** The agent running setup or catch-up discovers project-related conversation sources across AI products, recovers the original question, answer and later corrections, and revisits new content appended to old threads. Raw private conversations stay outside the repository. Source gaps remain explicit; a commit watermark does not establish conversation coverage. These skills do not run an automatic background collector or guarantee that every decision is captured.
 
 ## Supported agents
 

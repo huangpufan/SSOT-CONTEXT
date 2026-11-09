@@ -774,8 +774,9 @@ def check_removed_paths(report, ssot_dir, mentions, since):
 # request, not a gate", added an exemption, dropped a duty. So each confirmed row
 # of the base commit (HEAD, or --since) is compared with the working tree. A new
 # kind, rule, or status, or a removed row, is an error unless the row's Source
-# gained a date, which is how a change the user decided is recorded. A moved
-# link or a reworded source changes nothing the rule says.
+# gained a date. This is a source-recording guard, not proof of acceptance;
+# human-decision evidence and date meaning belong to memory-model section 3.
+# A moved link or a reworded source changes nothing the rule says.
 
 DATE_RE = re.compile(r"\b\d{4}-\d{2}-\d{2}\b")
 
@@ -821,12 +822,17 @@ def check_confirmed(report, readme, text, since):
             approved.append(ident)
             continue
         report.add("ERROR", readme, number,
-                   f"confirmed invariant {ident} changed its {' and '.join(changed)} {when}, and only the user "
-                   "changes a confirmed rule: restore it, and ask the user if it no longer fits. Only a change "
-                   "the user decided gets their name and the date in its Source")
+                   f"confirmed invariant {ident} changed its {' and '.join(changed)} {when}. A confirmed rule "
+                   "changes only through an accepted decision. First check this task and existing owners for "
+                   "human-decision evidence (memory-model section 3). With matching acceptance, keep only the "
+                   "authorized change and repair Source with that evidence. Keep unknown approval dates unknown; "
+                   "label any actual record/capture date as such, not as approval or replacement order. Without "
+                   "acceptance, restore the protection and ask the user; if evidence conflicts, preserve the "
+                   "protection and report the conflict. Do not revert only the register to hide disagreement "
+                   "with accepted owners or code, or treat a passing check as truth")
     if approved:
         report.add("INFO", readme, None, f"confirmed invariant(s) {', '.join(approved)} changed {when} with a newly "
-                                         "dated Source; show each change to the user")
+                                         "dated Source; verify the accepted decision and scope, then show each change to the user")
 
 
 # --- reviewed_through ----------------------------------------------------------

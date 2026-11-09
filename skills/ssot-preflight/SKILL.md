@@ -2,13 +2,15 @@
 name: ssot-preflight
 description: Read the repository's SSOT before substantive work. Use this before code, config, documentation, review, debugging, refactoring, or planning work in a repository, to find the invariants and documents that bear on the task and to surface open questions that affect it. Skip it for non-repository chat, pure command runs, and typo or formatting edits that cannot change meaning.
 metadata:
-  protocol_version: "4.0"
+  protocol_version: "4.2"
   bundle: "SSOT Skill"
 ---
 
 # SSOT Preflight
 
-Before substantive work, find out what the repository's memory says about the task. Read [`references/memory-model.md`](references/memory-model.md), which explains what `SSOT/` holds and what the invariants register means, the first time you use SSOT in a session.
+Before substantive work, find the entry point first. Load the [memory model](references/memory-model.md) only for the applicable route below.
+
+Explicit SSOT checks, reviews or catch-up require `$ssot-doctor` for that scope, including alongside implementation; preflight cannot replace it. Ordinary code reviews do not trigger Doctor.
 
 ## 1. Find the entry point
 
@@ -18,7 +20,7 @@ Before substantive work, find out what the repository's memory says about the ta
 
 ## 2. Read what this task needs
 
-Read `SSOT/README.md`, then:
+For v4, first read memory-model sections [1](references/memory-model.md#1-what-ssot-is-for), [3](references/memory-model.md#3-current-planned-and-unknown) and [5](references/memory-model.md#5-invariants), using bounded section reads. The writing sections are for closeout or setup. Read `SSOT/README.md`, then:
 
 1. **Invariants.** Find the rows whose rule this task could affect, and read the explanation each one links to. Section 3 says what to do when the change could break one.
 2. **Open questions.** If one blocks the path this task needs, say so. Only the work that depends on the answer waits; unrelated work goes ahead.
@@ -26,11 +28,13 @@ Read `SSOT/README.md`, then:
 4. **Routes.** Read the files the task routes point to. If no route fits, read the product and architecture entry documents. Do not read the whole tree.
 5. **What you rely on.** When an SSOT statement decides how you will implement something, check the evidence appropriate to its domain first (memory-model §3). Code shows implementation, not whether a human decision was accepted. Note the mismatch so closeout fixes the document, or so you can report the violation.
 
+Reuse retained skill instructions and model sections until an update or context loss. At each new task, reread the README and relevant project owners, including dirty and untracked content; unchanged `HEAD` is insufficient. Within that task, reuse unchanged passages; reread after edits, scope changes or uncertain freshness. Bound source and owner reads.
+
 ## 3. Find what the change must preserve
 
 Before you settle on an implementation, identify the behaviors and boundaries the change could affect: their canonical owners and the domain evidence that establishes them. For software, inspect the tests, boundary checks and guards, and fix or revert history; follow callers and shared state where effects cross files. For creative, research or human-decision work, use the relevant canon, original materials or accepted source exchange rather than requiring code evidence. Tell a protected outcome from an incidental detail with the admission and departure rules in [memory-model.md §5](references/memory-model.md#5-invariants).
 
-Before implementation details, state each affected rule, registered or newly admitted: "Must preserve: [outcome and conditions] — [evidence]." Compare the request with these rules. For a concrete conflict, propose a preserving design that meets the request, or follow "When to ask" in memory-model §5. Continue independent work. Record missing rules as candidates through closeout.
+Before implementation details, state each affected rule, registered or newly admitted: "Must preserve: [outcome and conditions] — [evidence]." Compare the request with these rules. For a concrete conflict, propose a preserving design that meets the request, or follow "When to ask" in memory-model §5. Continue independent work. Record missing rules through closeout using [human-decision evidence](references/memory-model.md#human-decision-evidence): preserve recorded acceptance; only inferred rules are candidates.
 
 ## 4. Before your first change, and while you work
 
@@ -44,4 +48,3 @@ Watch for the other facts that will outlive the task: decisions, changed contrac
 |---|---|
 | No SSOT yet, setup unfinished, or an older layout to migrate | `$ssot-bootstrap` |
 | Finishing a substantive batch, before the final response or commit | `$ssot-closeout` |
-| Health check, a review, or catching up on past commits | `$ssot-doctor` |

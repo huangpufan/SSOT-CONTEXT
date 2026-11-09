@@ -4,7 +4,7 @@ Templates for every file live in `../assets/templates/`. They are starting shape
 
 ## 1. Explore before writing
 
-First inventory existing canonical repository owners (section 4) and choose which knowledge each owns, before creating new documents. Read enough to answer, from evidence:
+First make a preliminary inventory of existing canonical repository owners (section 4) and choose which knowledge each owns. Read enough to build a trustworthy initial README, answering from evidence:
 
 - what the project is for and who uses it: READMEs, docs, product notes, issue templates;
 - how it is built, tested, released, and deployed: build files, CI configuration, scripts, Dockerfiles, release notes;
@@ -13,9 +13,9 @@ First inventory existing canonical repository owners (section 4) and choose whic
 - what history says: `git log` themes, large refactors, reverted changes, bug-fix commits that reveal traps;
 - which outcomes users, clients, and integrations rely on staying the same: public promises, APIs, CLI behavior, saved data, import and export formats, and upgrades.
 
-For first setup, inventory relevant project conversations across available AI products and reconcile decisions using [conversation catch-up](../../ssot-doctor/references/conversation-catchup.md). Report inaccessible sources as gaps; independent exploration continues.
+For first setup, discover relevant project conversation sources using [conversation catch-up](../../ssot-doctor/references/conversation-catchup.md). This initial inventory is not comprehensive reading and reconciliation: do those after saving section 2's README. Valid human-decision evidence already available may seed it. Report inaccessible sources as gaps; independent exploration continues.
 
-The protected architecture and product rules are found separately, in rounds, by several agents: follow [`mining.md`](mining.md) after the README is written.
+Find protected architecture and product rules through [`mining.md`](mining.md), including its setup dispatch gate.
 
 Note where the evidence is thin. That becomes an open question, not a guess. For a large repository, explore one part at a time and write as you go, so nothing depends on holding the whole repository in mind.
 
@@ -23,12 +23,14 @@ Note where the evidence is thin. That becomes an open question, not a guess. For
 
 Start from `ssot-readme.md`. Set `ssot_format: 4` and the documentation language: the language the user asked for, or else the language of the repository's existing documentation. Write the project summary, the map, and task routes for the main kinds of work you saw in the history. Seed the invariants register like this:
 
-- A rule with verifiable human authorship or acceptance is `confirmed`; a filename such as `AGENTS.md` or an AI summary alone establishes neither. Preserve already-confirmed rules without downgrading them. Its source is the human-origin evidence, and its explanation stays in its canonical repository owner (section 4).
+- Classify human-established rules using [human-decision evidence](../../ssot-preflight/references/memory-model.md#human-decision-evidence), including accepted choices already recorded in canonical owners. Cite the evidence with its original-source limits; the explanation stays in its canonical repository owner (section 4).
 - A rule you inferred from the code, the history, or a description of behavior in the user documentation is `candidate`, admitted through [`mining.md`](mining.md).
+
+Save this entry point before comprehensive conversation recovery. Use verified project facts, owner routes and available human-decision evidence; mark unknowns. Say setup is in progress and which areas remain, linking `BOOTSTRAP.md` for ongoing work (section 5).
 
 ## 3. Fill only what has real content
 
-Route to existing owners first. Fill only missing knowledge supported by evidence, updating an existing owner when authorized. Create `product.md`, `architecture.md`, `process.md`, decision records or gotchas only where no suitable owner exists. Follow the memory model throughout: explain the system rather than restate the code, label anything planned as planned, and say what is unknown. Skip any file you cannot fill truthfully, and list it as an open question instead.
+Route to existing owners first. Fill only missing knowledge supported by evidence, updating an existing owner when authorized. Update README routes as each owner is saved. Create `product.md`, `architecture.md`, `process.md`, decision records or gotchas only where no suitable owner exists. Follow the memory model throughout: explain the system rather than restate the code, label anything planned as planned, and say what is unknown. Skip any file you cannot fill truthfully, and list it as an open question instead.
 
 ## 4. Keep existing owners and route to them
 
@@ -38,7 +40,7 @@ If duplicated or obsolete documents need consolidation, propose the owner and ex
 
 ## 5. Work across sessions
 
-If setup will not finish in one session, keep `SSOT/BOOTSTRAP.md` from the `bootstrap-progress.md` template. Record what is done, what comes next, and the questions waiting for the user. Each session starts by reading it. Delete it when setup is complete.
+If setup will not finish in one session, keep `SSOT/BOOTSTRAP.md` from the `bootstrap-progress.md` template. As each area/source unit finishes, record its completed range, owner outputs, scratch checklist links and next action; keep detailed checklists in scratch. Record gaps and questions waiting for the user. Each session starts by reading it, verifying completed units and active writers, then resuming unfinished work rather than repeating completed units. Do not retry provider-blocked chunks merely on resume; continue independent units. Delete it when setup is complete.
 
 ## 6. Wire the instructions and finish
 
@@ -46,7 +48,7 @@ If setup will not finish in one session, keep `SSOT/BOOTSTRAP.md` from the `boot
 2. Run `python3 ../ssot-doctor/assets/scripts/ssot-check.py SSOT`, with the path taken relative to this skill's directory. Fix every error. Where it warns that a mentioned file was removed or moved, correct each sentence that still describes current code.
 3. Check what you wrote against the appropriate domain evidence, and run the newcomer test; both are in `ssot-doctor` section 3 (Truth, and Usefulness to a newcomer). Fix the errors and gaps they expose. If no helper is available, do them yourself and tell the user they were not independent. The rule mining in `mining.md` always uses separate helpers; it is never done by one agent alone.
 4. Show the user every invariant you registered, the confirmed ones with their sources too (a rule found in an instruction file may have been written by an agent), plus the candidates and the open questions, and invite corrections. Do the same with the planned changes to documents outside `SSOT/` (section 4). Setup is complete once all of these have been put to the user; it does not stay open waiting for the answers. If some documents still repeat facts that SSOT now owns, add one open question to the README that names them; that question, not `BOOTSTRAP.md`, carries the pending work, and the exact edits are worked out once the user agrees. Answers that come later are recorded through `$ssot-closeout`. A candidate nobody answers stays a candidate; preflight asks about it when a task needs to depart from it.
-5. Set `reviewed_through` in the README front matter to the commit whose code you explored. It marks where the next catch-up starts; it does not claim that you read every earlier commit. Then delete `BOOTSTRAP.md`.
+5. Set `reviewed_through` in the README front matter to the commit whose code you explored. It marks where the next catch-up starts; it does not claim that you read every earlier commit. Remove the setup-in-progress notice, then delete `BOOTSTRAP.md`.
 
 ## 7. Migrating a v2 layout to v4
 

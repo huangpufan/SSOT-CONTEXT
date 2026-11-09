@@ -6,6 +6,10 @@ Kind: <new setup, or migration from v2>. Started from commit: <SHA>.
 
 ## Done
 
+Completed area/source units and ranges, with owner outputs and links to scratch checklists.
+
 ## Next
+
+Next unfinished units, active writers, and blocked-source gaps to preserve.
 
 ## Waiting for the user

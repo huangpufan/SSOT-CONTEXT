@@ -43,6 +43,10 @@ Code history cannot recover all of that intent. Bootstrap and catch-up inventory
 
 The format change makes old v3 installations unsafe writers of external-owner routes. Old v2 and v3 memory stays readable but read-only until an agreed, preservation-aware bootstrap migration. Reorganization must account for meaningful content before replacing its source with a pointer; structural success alone cannot prove that nothing was lost.
 
+## Routine reading and branch costs
+
+A routine task should pay for the knowledge it uses. Preflight checks for an entry point before loading the shared model and reads its using-memory sections first. Writing rules remain in that same model and are reached when writing is needed. Closeout keeps write gates and route selection in its entrypoint; batch reconciliation is disclosed separately so each immediate decision need not load it. A no-update closeout still compares relevant owners, and structural changes still require the checker. Retained skill instructions are reused until an observed update or context loss; each new task refreshes the project entry and relevant owners, including dirty content. This introduces no persistent cache or review ledger. These choices reduce required reading on some paths without deleting the longer paths. Whole-task measurements and counterexamples belong in [the performance trial report](./tests/trials-4.2.md).
+
 ## What was removed, and what it would take to bring it back
 
 The following left the bundle in 3.0. The full v2 implementation is frozen at the `v2-final` tag and installable with `install.sh --ref v2-final`:

@@ -19,6 +19,8 @@ From the repository root, run `python3 <this skill's directory>/assets/scripts/s
 
 ## 3. Review the scope
 
+For lifecycle, ownership or requirement-to-evidence gaps, choose the relevant methods in [structural review](references/structural-review.md); use existing review roles rather than adding helpers by default.
+
 - **Truth.** In each document, pick the statements a future task would act on, such as contracts, state ownership, commands, defaults, and "planned" labels, and check each against its domain evidence (memory-model §3); a fresh helper that did not write them checks best. Look hardest at two kinds: statements with "all", "only", "every", "never", or "always", which often miss an exception; and statements taken from a design document, an ADR, or a code comment, which may describe intent the code does not implement. Fix or qualify each one that does not hold, and label unbuilt intent as planned. Start with areas that changed recently in `git log`.
 - **Consistency.** Look for one fact stated two different ways, and for superseded decisions still presented as current.
 - **Invariants.** Every row links to its canonical owner inside the repository. No rule changed meaning or status without a recorded user decision. Each candidate meets the admission rule in memory-model §5; candidates are not a backlog for the user to confirm.

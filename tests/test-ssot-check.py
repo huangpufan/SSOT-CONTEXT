@@ -1048,6 +1048,28 @@ class CheckerTest(unittest.TestCase):
         self.edit_confirmed("| INV-01 | product promise | A retry never charges twice, except for refunds | [Retries](architecture.md#failure-and-recovery) | confirmed | user, 2026-05-02 (narrowed) |")
         self.assert_error("confirmed invariant INV-01 changed its rule")
 
+    def test_accepted_change_with_unknown_approval_date_needs_source_repair(self):
+        self.repo_with()
+        self.write("architecture.md", ARCHITECTURE + "\n## Refund exception\n\n"
+                   "Recorded as accepted by the payments lead: refund retries may charge again; "
+                   "the promise still covers all other retries. Approval date unknown. "
+                   "The original exchange is unavailable.\n")
+        self.commit("record accepted refund exception")
+        self.code_file("src/payments.py", "def may_charge_again(is_refund):\n    return is_refund\n")
+        changed = self.CONFIRMED.replace("A retry never charges twice", "A retry never charges twice, except for refunds")
+        self.edit_confirmed(changed)
+        # An accepted owner and matching code do not bypass the Source guard.
+        out = self.assert_error("confirmed invariant INV-01 changed its rule")
+        self.assertIn("With matching acceptance, keep only the authorized change and repair Source", out)
+        self.assertIn("Without acceptance, restore the protection and ask the user", out)
+        self.assertIn("Do not revert only the register", out)
+        self.edit_confirmed(changed.replace("user, 2026-05-02 |",
+            "user, 2026-05-02; payments lead, recorded as accepted in "
+            "[Refund exception](architecture.md#refund-exception); approval date unknown; "
+            "original exchange unavailable; record captured 2026-11-06 |"))
+        # Structural success records a real source, not proof of authorization.
+        self.assertIn("with a newly dated Source", self.assert_clean())
+
     def test_since_compares_with_the_named_commit(self):
         self.repo_with()
         start = self.git("rev-parse", "HEAD")

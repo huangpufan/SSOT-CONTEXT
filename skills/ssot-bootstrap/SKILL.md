@@ -14,6 +14,8 @@ Follow [`references/bootstrap.md`](references/bootstrap.md), and [`references/mi
 - Sections 1–6 cover a new SSOT, or continuing an unfinished one.
 - Section 7 covers migrating a v2 layout; section 8 covers v3 without v2 ledger removal, including resuming a migration that `SSOT/BOOTSTRAP.md` says is under way.
 
+Before mining in new or resumed setup, follow [mining's setup dispatch gate](references/mining.md#1-declare-the-scope-before-mining). Continue unfinished work from `BOOTSTRAP.md`.
+
 You are done when all of these hold:
 
 - the README routes the repository's main kinds of task;
