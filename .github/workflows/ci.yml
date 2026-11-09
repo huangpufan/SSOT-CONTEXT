@@ -23,7 +23,7 @@ jobs:
           [[ "${{ runner.os }}" == "macOS" ]] && BASH_BIN=/opt/homebrew/bin/bash
           for f in install.sh tests/*.sh; do "$BASH_BIN" -n "$f"; done
       - name: Python compile
-        run: python3 -m py_compile skills/ssot-doctor/assets/scripts/ssot-check.py skills/ssot-preflight/assets/scripts/read-context.py tests/test-ssot-check.py tests/test-preflight-context.py tests/run-performance-trials.py
+        run: python3 -m py_compile skills/ssot-doctor/assets/scripts/ssot-check.py tests/test-ssot-check.py tests/run-performance-trials.py tests/benchmark/*.py
 
   shellcheck:
     name: shellcheck
@@ -45,8 +45,8 @@ jobs:
       - uses: actions/checkout@v4
       - name: Run checker tests
         run: python3 tests/test-ssot-check.py
-      - name: Run preflight reader tests
-        run: python3 tests/test-preflight-context.py
+      - name: Run benchmark self-tests (no model calls)
+        run: python3 tests/benchmark/test_benchmark.py
 
   mermaid-templates:
     name: parse template diagrams

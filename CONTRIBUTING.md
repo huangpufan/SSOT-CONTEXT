@@ -41,7 +41,7 @@ Detailed shared material belongs in a reference, read at the point of use. `SKIL
 | What | Limit |
 |---|---|
 | All `SKILL.md` files together | 3,600 words |
-| Everything an agent may read at runtime (`SKILL.md` + `references/`) | 13,800 words |
+| Everything an agent may read at runtime (`SKILL.md` + `references/`) | 14,000 words |
 | Templates, per language | 16 KiB |
 | `ssot-check.py` | 48 KiB |
 | All of `skills/` | 160 KiB |
@@ -49,6 +49,8 @@ Detailed shared material belongs in a reference, read at the point of use. `SKIL
 Version 4.0 raises entrypoints to 3,600 words, runtime protocol to 13,000 words, and the checker to 48 KiB for immediate decision capture, accessible conversation-source recovery, external-owner routes, preservation-aware migration, and checks on those routes. Measured template and whole-bundle sizes fit their existing limits, which remain unchanged.
 
 Version 4.1 raises only the runtime limit to 13,800 words. Real adoption and behavior trials exposed boundaries between formal acceptance, original-source verification and capture dates, plus mixed-task Doctor routing. A notification lifecycle counterexample also requires a scoped structural-review reference: contracts and code define the cases, while evidence must observe the relevant transitions and sequences. Keep the necessary context rather than cutting unrelated authorization or recovery rules; all other limits remain unchanged.
+
+Version 4.4 raises the runtime limit to 14,000 words for native reading, stale-route recovery and conditional section navigation. The changed routing adds 82 words; no unrelated authorization, recovery or writing rules were shortened. The benchmark measures this reading policy independently from index changes; its evidence and limits are recorded with the release. Other budgets remain unchanged.
 
 A budget is a reason to rethink responsibilities, never a reason to cut a recovery or authorization branch to fit, and never a reason to rewrite unrelated rule text to make room: such edits are untested changes. In 3.5 the owner raised the limits from 3,000 and 8,000 words, with room left on purpose, after a trial branch had tightened about 40 unrelated sentences to fit new rules into the old limits; in 3.7 the owner raised the runtime limit from 9,500 to 10,000 words for the mining changes, instead of cutting other rules; in 3.9 the owner raised the checker limit from 40 to 44 KiB for the check on confirmed invariants; in 3.10 the owner raised the runtime limit from 10,000 to 11,000 words for the row-fixing step in mining. A v2 word cap once rejected a complete entrypoint for being complete. Raising a limit requires the same evidence as adding a rule. Record the reason in `CHANGELOG.md`.
 
@@ -65,12 +67,12 @@ Templates under `skills/ssot-bootstrap/assets/templates/{en,zh}/` are copied int
 ```bash
 bash tests/test-bundle-shape.sh        # shape, links, budgets
 python3 tests/test-ssot-check.py       # checker regression tests
-python3 tests/test-preflight-context.py # bounded reader command tests
+python3 tests/benchmark/test_benchmark.py # benchmark oracle and accounting; no model calls
 bash tests/test-installer-e2e.sh       # installer end to end
 shellcheck -S warning -e SC2034 install.sh tests/*.sh
 ```
 
-For opt-in native performance comparisons, use [the performance recorder and evidence guide](./tests/trials-4.3.md#reproduction-and-local-checks). It runs billable models only when explicitly invoked; CI compiles it without running trials.
+For opt-in native performance comparisons, use [the reading benchmark](./tests/benchmark/README.md). It runs billable models only when explicitly invoked; CI compiles it without running trials.
 
 For diagram changes, install `mermaid@11.12.0` and `jsdom@26.1.0` into an isolated npm prefix, then run `node tests/test-mermaid-templates.mjs <prefix>/node_modules`.
 

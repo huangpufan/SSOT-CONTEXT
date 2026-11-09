@@ -80,7 +80,7 @@ KISS is the permanent SSOT design principle: choose the shortest **reliable path
 | `skills/ssot-bootstrap/references/bootstrap.md` | Creating an SSOT and preserving v2/v3 knowledge during migration |
 | `skills/*/agents/openai.yaml` | Agent metadata for each skill |
 | `skills/ssot-bootstrap/assets/templates/{en,zh}/` | Bootstrap templates |
-| `skills/ssot-preflight/assets/scripts/read-context.py` | Read-only entry and using-memory reader |
+| `tests/benchmark/README.md` | Reproducible reading benchmark and its limits |
 | `skills/ssot-doctor/assets/scripts/ssot-check.py` | Read-only mechanical checker |
 | `tests/` | Bundle shape and budgets, checker, installer, and diagram tests |
 | `.github/workflows/ci.yml` | CI pipeline |

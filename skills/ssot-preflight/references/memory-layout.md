@@ -35,8 +35,8 @@ reviewed_through: 1a2b3c4   # optional: the next catch-up starts after this comm
 Then, in this order:
 
 1. **What this project is.** A few sentences of plain prose: who it is for, what it does, and what it deliberately does not do.
-2. **Map.** Which file answers which kind of question.
-3. **Task routes.** A table from task signals (for example "touches billing", "changes the CLI", "release") to the files to read first. A table fits here because readers look things up in it.
+2. **Map.** Which owner answers which question; link directly to it.
+3. **Task routes.** Map recurring task signals to owner sections, the question each answers, and when to follow related constraints or another owner. Use searchable headings and direct section links; keep facts in their owners. Add routes when they save discovery, not for every file. A long owner may have a local contents list; avoid chains of indexes. Keep routes current when owners move.
 4. **Invariants.** The register in section 5.
 5. **Open questions.** Unresolved decisions and known gaps that affect work. Each one gets a line saying what is open, what work it blocks, and where the details live. Remove an entry when it is resolved.
 

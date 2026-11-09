@@ -1,0 +1,1585 @@
+{
+  "schema": 1,
+  "baseline_commit": "6b05fe1",
+  "candidate_version": "4.4",
+  "model": "gpt-6.1-terra",
+  "raw_artifact_directory": "ssot-benchmark-44-4u7knkfy",
+  "experiments": {
+    "protocol-final": {
+      "comparison": "protocol",
+      "seed": 20261109,
+      "repeats": 2,
+      "cases": [
+        "routed",
+        "unrouted",
+        "stale",
+        "warm",
+        "typo"
+      ],
+      "order": [
+        [
+          "unrouted-r2",
+          "baseline"
+        ],
+        [
+          "unrouted-r2",
+          "candidate"
+        ],
+        [
+          "warm-r2",
+          "candidate"
+        ],
+        [
+          "warm-r2",
+          "baseline"
+        ],
+        [
+          "routed-r2",
+          "baseline"
+        ],
+        [
+          "routed-r2",
+          "candidate"
+        ],
+        [
+          "warm-r1",
+          "candidate"
+        ],
+        [
+          "warm-r1",
+          "baseline"
+        ],
+        [
+          "unrouted-r1",
+          "baseline"
+        ],
+        [
+          "unrouted-r1",
+          "candidate"
+        ],
+        [
+          "typo-r1",
+          "candidate"
+        ],
+        [
+          "typo-r1",
+          "baseline"
+        ],
+        [
+          "typo-r2",
+          "baseline"
+        ],
+        [
+          "typo-r2",
+          "candidate"
+        ],
+        [
+          "stale-r2",
+          "candidate"
+        ],
+        [
+          "stale-r2",
+          "baseline"
+        ],
+        [
+          "routed-r1",
+          "baseline"
+        ],
+        [
+          "routed-r1",
+          "candidate"
+        ],
+        [
+          "stale-r1",
+          "candidate"
+        ],
+        [
+          "stale-r1",
+          "baseline"
+        ]
+      ],
+      "environment": {
+        "codex": "codex-cli 0.167.0",
+        "python": "3.12.3 (main, Aug 31 2026, 10:18:26) [GCC 13.3.0]",
+        "platform": "linux"
+      },
+      "bundle_manifest_hashes": {
+        "baseline": "699e2687f531329f8c18c5d4ac97fe923f59d67e30f91b1ce85a5d16dfbe5364",
+        "candidate": "2c8ba062056175b915ac08db0b19dccc6fffeedb3ae21f402e2931e5c737332c"
+      },
+      "harness_manifest_hash": "43f1e73cb91a9bd125e95d787ce20c9900d81b7efaf9d92374e03dac46e51970",
+      "attempts": [
+        {
+          "pair": "unrouted-r2",
+          "case": "unrouted",
+          "arm": "baseline",
+          "state": "passed",
+          "turns": [
+            {
+              "turn": 1,
+              "completed": true,
+              "quality_passed": true,
+              "costs": {
+                "seconds": 42.293,
+                "tool_items": 12,
+                "tool_output_bytes": 24787,
+                "input_tokens": 152732,
+                "cached_input_tokens": 138368,
+                "output_tokens": 1719,
+                "uncached_input_tokens": 14364
+              },
+              "usage_source": "native",
+              "reading": {
+                "contract_seen": true,
+                "eligibility_seen": true,
+                "updated_promotion_seen": false,
+                "distractor_documents_seen": 0,
+                "preflight_seen": true
+              },
+              "public_test_receipt": true,
+              "dedicated_reader_command": true,
+              "native_receipt_sha256": "4481253df3812a9176bb20e6dcc6847b5b2f2bf4be11d3f6c4f203e269c51e25",
+              "oracle_checks": {
+                "only_requested_file_changed": true,
+                "contract_and_boundaries": true,
+                "head_unchanged": true
+              }
+            }
+          ]
+        },
+        {
+          "pair": "unrouted-r2",
+          "case": "unrouted",
+          "arm": "candidate",
+          "state": "passed",
+          "turns": [
+            {
+              "turn": 1,
+              "completed": true,
+              "quality_passed": true,
+              "costs": {
+                "seconds": 43.813,
+                "tool_items": 13,
+                "tool_output_bytes": 33207,
+                "input_tokens": 157181,
+                "cached_input_tokens": 136320,
+                "output_tokens": 1513,
+                "uncached_input_tokens": 20861
+              },
+              "usage_source": "native",
+              "reading": {
+                "contract_seen": true,
+                "eligibility_seen": true,
+                "updated_promotion_seen": false,
+                "distractor_documents_seen": 0,
+                "preflight_seen": true
+              },
+              "public_test_receipt": true,
+              "dedicated_reader_command": false,
+              "native_receipt_sha256": "0a79cd6d92f392f31008ba60b6ace47b96d80d8a4eb43157a8d3dac4e0aec31b",
+              "oracle_checks": {
+                "only_requested_file_changed": true,
+                "contract_and_boundaries": true,
+                "head_unchanged": true
+              }
+            }
+          ]
+        },
+        {
+          "pair": "warm-r2",
+          "case": "warm",
+          "arm": "candidate",
+          "state": "passed",
+          "turns": [
+            {
+              "turn": 1,
+              "completed": true,
+              "quality_passed": true,
+              "costs": {
+                "seconds": 43.167,
+                "tool_items": 12,
+                "tool_output_bytes": 37419,
+                "input_tokens": 143378,
+                "cached_input_tokens": 131200,
+                "output_tokens": 1782,
+                "uncached_input_tokens": 12178
+              },
+              "usage_source": "native",
+              "reading": {
+                "contract_seen": true,
+                "eligibility_seen": true,
+                "updated_promotion_seen": false,
+                "distractor_documents_seen": 0,
+                "preflight_seen": true
+              },
+              "public_test_receipt": true,
+              "dedicated_reader_command": false,
+              "native_receipt_sha256": "8c2fa98b44d99c9e085d6df357e6f57fea27c0b5a639abd8214b616f6600fbb8",
+              "oracle_checks": {
+                "only_requested_file_changed": true,
+                "contract_and_boundaries": true,
+                "head_unchanged": true
+              }
+            },
+            {
+              "turn": 2,
+              "completed": true,
+              "quality_passed": true,
+              "costs": {
+                "seconds": 29.683,
+                "tool_items": 7,
+                "tool_output_bytes": 16039,
+                "input_tokens": 126914,
+                "cached_input_tokens": 118656,
+                "output_tokens": 1082,
+                "uncached_input_tokens": 8258
+              },
+              "usage_source": "native",
+              "reading": {
+                "contract_seen": true,
+                "eligibility_seen": true,
+                "updated_promotion_seen": true,
+                "distractor_documents_seen": 0,
+                "preflight_seen": true
+              },
+              "public_test_receipt": true,
+              "dedicated_reader_command": false,
+              "native_receipt_sha256": "c08ea7f9559b81e1d135e4bd984c6e154ebbad80c6b6611f7d9237e35511b9c8",
+              "oracle_checks": {
+                "only_requested_file_changed": true,
+                "contract_and_boundaries": true,
+                "head_unchanged": true
+              }
+            }
+          ]
+        },
+        {
+          "pair": "warm-r2",
+          "case": "warm",
+          "arm": "baseline",
+          "state": "passed",
+          "turns": [
+            {
+              "turn": 1,
+              "completed": true,
+              "quality_passed": true,
+              "costs": {
+                "seconds": 43.57,
+                "tool_items": 11,
+                "tool_output_bytes": 27373,
+                "input_tokens": 175758,
+                "cached_input_tokens": 162560,
+                "output_tokens": 1452,
+                "uncached_input_tokens": 13198
+              },
+              "usage_source": "native",
+              "reading": {
+                "contract_seen": true,
+                "eligibility_seen": true,
+                "updated_promotion_seen": false,
+                "distractor_documents_seen": 0,
+                "preflight_seen": true
+              },
+              "public_test_receipt": true,
+              "dedicated_reader_command": true,
+              "native_receipt_sha256": "79dea788b656694e5915064cb4215bf03df887a3ce5a193ae81e24e0948219fa",
+              "oracle_checks": {
+                "only_requested_file_changed": true,
+                "contract_and_boundaries": true,
+                "head_unchanged": true
+              }
+            },
+            {
+              "turn": 2,
+              "completed": true,
+              "quality_passed": true,
+              "costs": {
+                "seconds": 27.779,
+                "tool_items": 7,
+                "tool_output_bytes": 16545,
+                "input_tokens": 148082,
+                "cached_input_tokens": 139392,
+                "output_tokens": 1039,
+                "uncached_input_tokens": 8690
+              },
+              "usage_source": "native",
+              "reading": {
+                "contract_seen": true,
+                "eligibility_seen": true,
+                "updated_promotion_seen": true,
+                "distractor_documents_seen": 0,
+                "preflight_seen": false
+              },
+              "public_test_receipt": true,
+              "dedicated_reader_command": true,
+              "native_receipt_sha256": "af0516861c39611dff47228529c6e492ceca47dd495ed93f1981d0d953b8b95a",
+              "oracle_checks": {
+                "only_requested_file_changed": true,
+                "contract_and_boundaries": true,
+                "head_unchanged": true
+              }
+            }
+          ]
+        },
+        {
+          "pair": "routed-r2",
+          "case": "routed",
+          "arm": "baseline",
+          "state": "passed",
+          "turns": [
+            {
+              "turn": 1,
+              "completed": true,
+              "quality_passed": true,
+              "costs": {
+                "seconds": 41.936,
+                "tool_items": 10,
+                "tool_output_bytes": 32418,
+                "input_tokens": 137828,
+                "cached_input_tokens": 123776,
+                "output_tokens": 1702,
+                "uncached_input_tokens": 14052
+              },
+              "usage_source": "native",
+              "reading": {
+                "contract_seen": true,
+                "eligibility_seen": true,
+                "updated_promotion_seen": false,
+                "distractor_documents_seen": 0,
+                "preflight_seen": true
+              },
+              "public_test_receipt": true,
+              "dedicated_reader_command": true,
+              "native_receipt_sha256": "3bee20d0559eb2741652c37fa89591104e34e5422e7e4ba63dfba7f9f4daf742",
+              "oracle_checks": {
+                "only_requested_file_changed": true,
+                "contract_and_boundaries": true,
+                "head_unchanged": true
+              }
+            }
+          ]
+        },
+        {
+          "pair": "routed-r2",
+          "case": "routed",
+          "arm": "candidate",
+          "state": "passed",
+          "turns": [
+            {
+              "turn": 1,
+              "completed": true,
+              "quality_passed": true,
+              "costs": {
+                "seconds": 42.405,
+                "tool_items": 14,
+                "tool_output_bytes": 32172,
+                "input_tokens": 161507,
+                "cached_input_tokens": 134784,
+                "output_tokens": 1587,
+                "uncached_input_tokens": 26723
+              },
+              "usage_source": "native",
+              "reading": {
+                "contract_seen": true,
+                "eligibility_seen": true,
+                "updated_promotion_seen": false,
+                "distractor_documents_seen": 0,
+                "preflight_seen": true
+              },
+              "public_test_receipt": true,
+              "dedicated_reader_command": false,
+              "native_receipt_sha256": "887a7996708c1a158477d83f1d8af1bfb989793f8a21a8e064b9a6649d70bcc6",
+              "oracle_checks": {
+                "only_requested_file_changed": true,
+                "contract_and_boundaries": true,
+                "head_unchanged": true
+              }
+            }
+          ]
+        },
+        {
+          "pair": "warm-r1",
+          "case": "warm",
+          "arm": "candidate",
+          "state": "passed",
+          "turns": [
+            {
+              "turn": 1,
+              "completed": true,
+              "quality_passed": true,
+              "costs": {
+                "seconds": 41.535,
+                "tool_items": 13,
+                "tool_output_bytes": 29691,
+                "input_tokens": 154051,
+                "cached_input_tokens": 138752,
+                "output_tokens": 1597,
+                "uncached_input_tokens": 15299
+              },
+              "usage_source": "native",
+              "reading": {
+                "contract_seen": true,
+                "eligibility_seen": true,
+                "updated_promotion_seen": false,
+                "distractor_documents_seen": 0,
+                "preflight_seen": true
+              },
+              "public_test_receipt": true,
+              "dedicated_reader_command": false,
+              "native_receipt_sha256": "a18d525c6873b66feea9b54104240952b5a4c66321a5a327163d61c96096a9bc",
+              "oracle_checks": {
+                "only_requested_file_changed": true,
+                "contract_and_boundaries": true,
+                "head_unchanged": true
+              }
+            },
+            {
+              "turn": 2,
+              "completed": true,
+              "quality_passed": true,
+              "costs": {
+                "seconds": 31.153,
+                "tool_items": 12,
+                "tool_output_bytes": 19846,
+                "input_tokens": 132540,
+                "cached_input_tokens": 116096,
+                "output_tokens": 1151,
+                "uncached_input_tokens": 16444
+              },
+              "usage_source": "native",
+              "reading": {
+                "contract_seen": true,
+                "eligibility_seen": true,
+                "updated_promotion_seen": true,
+                "distractor_documents_seen": 0,
+                "preflight_seen": true
+              },
+              "public_test_receipt": true,
+              "dedicated_reader_command": false,
+              "native_receipt_sha256": "a17d36e32330709d895a9dfb4ab065141aace52d39f79c462d0d0439113837aa",
+              "oracle_checks": {
+                "only_requested_file_changed": true,
+                "contract_and_boundaries": true,
+                "head_unchanged": true
+              }
+            }
+          ]
+        },
+        {
+          "pair": "warm-r1",
+          "case": "warm",
+          "arm": "baseline",
+          "state": "passed",
+          "turns": [
+            {
+              "turn": 1,
+              "completed": true,
+              "quality_passed": true,
+              "costs": {
+                "seconds": 63.749,
+                "tool_items": 11,
+                "tool_output_bytes": 28092,
+                "input_tokens": 154063,
+                "cached_input_tokens": 143360,
+                "output_tokens": 1455,
+                "uncached_input_tokens": 10703
+              },
+              "usage_source": "native",
+              "reading": {
+                "contract_seen": true,
+                "eligibility_seen": true,
+                "updated_promotion_seen": false,
+                "distractor_documents_seen": 0,
+                "preflight_seen": true
+              },
+              "public_test_receipt": true,
+              "dedicated_reader_command": true,
+              "native_receipt_sha256": "818c3b8b10d39fa1106cc09f63bfb74c91d9dc70465cb54554c9daab51e8dd2d",
+              "oracle_checks": {
+                "only_requested_file_changed": true,
+                "contract_and_boundaries": true,
+                "head_unchanged": true
+              }
+            },
+            {
+              "turn": 2,
+              "completed": true,
+              "quality_passed": true,
+              "costs": {
+                "seconds": 44.554,
+                "tool_items": 7,
+                "tool_output_bytes": 22641,
+                "input_tokens": 134011,
+                "cached_input_tokens": 127744,
+                "output_tokens": 1016,
+                "uncached_input_tokens": 6267
+              },
+              "usage_source": "native",
+              "reading": {
+                "contract_seen": true,
+                "eligibility_seen": true,
+                "updated_promotion_seen": true,
+                "distractor_documents_seen": 0,
+                "preflight_seen": true
+              },
+              "public_test_receipt": true,
+              "dedicated_reader_command": true,
+              "native_receipt_sha256": "8c06df357dec78a8aa16d4364429d597e6cfa31a44b76a73d379ab8d10abc08f",
+              "oracle_checks": {
+                "only_requested_file_changed": true,
+                "contract_and_boundaries": true,
+                "head_unchanged": true
+              }
+            }
+          ]
+        },
+        {
+          "pair": "unrouted-r1",
+          "case": "unrouted",
+          "arm": "baseline",
+          "state": "passed",
+          "turns": [
+            {
+              "turn": 1,
+              "completed": true,
+              "quality_passed": true,
+              "costs": {
+                "seconds": 33.726,
+                "tool_items": 6,
+                "tool_output_bytes": 25741,
+                "input_tokens": 132162,
+                "cached_input_tokens": 122368,
+                "output_tokens": 1371,
+                "uncached_input_tokens": 9794
+              },
+              "usage_source": "native",
+              "reading": {
+                "contract_seen": true,
+                "eligibility_seen": true,
+                "updated_promotion_seen": false,
+                "distractor_documents_seen": 0,
+                "preflight_seen": true
+              },
+              "public_test_receipt": true,
+              "dedicated_reader_command": true,
+              "native_receipt_sha256": "50f262dff5aedc12c526709fe0f8c811d16144f2c3e61d9a04cd40c22626654f",
+              "oracle_checks": {
+                "only_requested_file_changed": true,
+                "contract_and_boundaries": true,
+                "head_unchanged": true
+              }
+            }
+          ]
+        },
+        {
+          "pair": "unrouted-r1",
+          "case": "unrouted",
+          "arm": "candidate",
+          "state": "passed",
+          "turns": [
+            {
+              "turn": 1,
+              "completed": true,
+              "quality_passed": true,
+              "costs": {
+                "seconds": 59.061,
+                "tool_items": 15,
+                "tool_output_bytes": 37232,
+                "input_tokens": 142519,
+                "cached_input_tokens": 130304,
+                "output_tokens": 1613,
+                "uncached_input_tokens": 12215
+              },
+              "usage_source": "native",
+              "reading": {
+                "contract_seen": true,
+                "eligibility_seen": true,
+                "updated_promotion_seen": false,
+                "distractor_documents_seen": 0,
+                "preflight_seen": true
+              },
+              "public_test_receipt": true,
+              "dedicated_reader_command": false,
+              "native_receipt_sha256": "a2241b6ec33b759c4e69b29e5e295d174a7bfa52e2c2fab2afcee47db0023ac5",
+              "oracle_checks": {
+                "only_requested_file_changed": true,
+                "contract_and_boundaries": true,
+                "head_unchanged": true
+              }
+            }
+          ]
+        },
+        {
+          "pair": "typo-r1",
+          "case": "typo",
+          "arm": "candidate",
+          "state": "passed",
+          "turns": [
+            {
+              "turn": 1,
+              "completed": true,
+              "quality_passed": true,
+              "costs": {
+                "seconds": 10.802,
+                "tool_items": 2,
+                "tool_output_bytes": 14,
+                "input_tokens": 45485,
+                "cached_input_tokens": 39424,
+                "output_tokens": 247,
+                "uncached_input_tokens": 6061
+              },
+              "usage_source": "native",
+              "reading": {
+                "contract_seen": false,
+                "eligibility_seen": false,
+                "updated_promotion_seen": false,
+                "distractor_documents_seen": 0,
+                "preflight_seen": false
+              },
+              "public_test_receipt": false,
+              "dedicated_reader_command": false,
+              "native_receipt_sha256": "6737c8db008d9fc1d42ab107bf44c2d4636937e13700e47816db5131b35bd4b1",
+              "oracle_checks": {
+                "only_requested_file_changed": true,
+                "typo_fixed": true,
+                "head_unchanged": true
+              }
+            }
+          ]
+        },
+        {
+          "pair": "typo-r1",
+          "case": "typo",
+          "arm": "baseline",
+          "state": "passed",
+          "turns": [
+            {
+              "turn": 1,
+              "completed": true,
+              "quality_passed": true,
+              "costs": {
+                "seconds": 12.882,
+                "tool_items": 2,
+                "tool_output_bytes": 14,
+                "input_tokens": 45518,
+                "cached_input_tokens": 39296,
+                "output_tokens": 259,
+                "uncached_input_tokens": 6222
+              },
+              "usage_source": "native",
+              "reading": {
+                "contract_seen": false,
+                "eligibility_seen": false,
+                "updated_promotion_seen": false,
+                "distractor_documents_seen": 0,
+                "preflight_seen": false
+              },
+              "public_test_receipt": false,
+              "dedicated_reader_command": false,
+              "native_receipt_sha256": "33e99feca9e35adf5a7629d64bbad0231ec9408ef2053e1f3685d97eec590648",
+              "oracle_checks": {
+                "only_requested_file_changed": true,
+                "typo_fixed": true,
+                "head_unchanged": true
+              }
+            }
+          ]
+        },
+        {
+          "pair": "typo-r2",
+          "case": "typo",
+          "arm": "baseline",
+          "state": "passed",
+          "turns": [
+            {
+              "turn": 1,
+              "completed": true,
+              "quality_passed": true,
+              "costs": {
+                "seconds": 10.415,
+                "tool_items": 2,
+                "tool_output_bytes": 14,
+                "input_tokens": 45396,
+                "cached_input_tokens": 42112,
+                "output_tokens": 180,
+                "uncached_input_tokens": 3284
+              },
+              "usage_source": "native",
+              "reading": {
+                "contract_seen": false,
+                "eligibility_seen": false,
+                "updated_promotion_seen": false,
+                "distractor_documents_seen": 0,
+                "preflight_seen": false
+              },
+              "public_test_receipt": false,
+              "dedicated_reader_command": false,
+              "native_receipt_sha256": "c3a204ad95a56077ed8d7e3b4aa267f5545683708437eb93ba929d041ba48baf",
+              "oracle_checks": {
+                "only_requested_file_changed": true,
+                "typo_fixed": true,
+                "head_unchanged": true
+              }
+            }
+          ]
+        },
+        {
+          "pair": "typo-r2",
+          "case": "typo",
+          "arm": "candidate",
+          "state": "passed",
+          "turns": [
+            {
+              "turn": 1,
+              "completed": true,
+              "quality_passed": true,
+              "costs": {
+                "seconds": 10.466,
+                "tool_items": 2,
+                "tool_output_bytes": 14,
+                "input_tokens": 45477,
+                "cached_input_tokens": 42240,
+                "output_tokens": 240,
+                "uncached_input_tokens": 3237
+              },
+              "usage_source": "native",
+              "reading": {
+                "contract_seen": false,
+                "eligibility_seen": false,
+                "updated_promotion_seen": false,
+                "distractor_documents_seen": 0,
+                "preflight_seen": false
+              },
+              "public_test_receipt": false,
+              "dedicated_reader_command": false,
+              "native_receipt_sha256": "f938d6f0a89144e834d2f33ccefdc218c3c23a017483ef93f06bc50136929b03",
+              "oracle_checks": {
+                "only_requested_file_changed": true,
+                "typo_fixed": true,
+                "head_unchanged": true
+              }
+            }
+          ]
+        },
+        {
+          "pair": "stale-r2",
+          "case": "stale",
+          "arm": "candidate",
+          "state": "passed",
+          "turns": [
+            {
+              "turn": 1,
+              "completed": true,
+              "quality_passed": true,
+              "costs": {
+                "seconds": 45.185,
+                "tool_items": 17,
+                "tool_output_bytes": 37850,
+                "input_tokens": 143737,
+                "cached_input_tokens": 119936,
+                "output_tokens": 1716,
+                "uncached_input_tokens": 23801
+              },
+              "usage_source": "native",
+              "reading": {
+                "contract_seen": true,
+                "eligibility_seen": true,
+                "updated_promotion_seen": false,
+                "distractor_documents_seen": 0,
+                "preflight_seen": true
+              },
+              "public_test_receipt": true,
+              "dedicated_reader_command": false,
+              "native_receipt_sha256": "5c9badf539959d6178c0b34a234f9d7ad35a8277caf727a082e88d4d486b4f18",
+              "oracle_checks": {
+                "only_requested_file_changed": true,
+                "contract_and_boundaries": true,
+                "head_unchanged": true
+              }
+            }
+          ]
+        },
+        {
+          "pair": "stale-r2",
+          "case": "stale",
+          "arm": "baseline",
+          "state": "passed",
+          "turns": [
+            {
+              "turn": 1,
+              "completed": true,
+              "quality_passed": true,
+              "costs": {
+                "seconds": 42.969,
+                "tool_items": 11,
+                "tool_output_bytes": 28212,
+                "input_tokens": 134160,
+                "cached_input_tokens": 119552,
+                "output_tokens": 1672,
+                "uncached_input_tokens": 14608
+              },
+              "usage_source": "native",
+              "reading": {
+                "contract_seen": true,
+                "eligibility_seen": true,
+                "updated_promotion_seen": false,
+                "distractor_documents_seen": 0,
+                "preflight_seen": true
+              },
+              "public_test_receipt": true,
+              "dedicated_reader_command": true,
+              "native_receipt_sha256": "fe7cee6b7a110fa17c5ff6c89402b6a273ef09bbed0496e754d02fe53f0ba53e",
+              "oracle_checks": {
+                "only_requested_file_changed": true,
+                "contract_and_boundaries": true,
+                "head_unchanged": true
+              }
+            }
+          ]
+        },
+        {
+          "pair": "routed-r1",
+          "case": "routed",
+          "arm": "baseline",
+          "state": "passed",
+          "turns": [
+            {
+              "turn": 1,
+              "completed": true,
+              "quality_passed": true,
+              "costs": {
+                "seconds": 42.988,
+                "tool_items": 9,
+                "tool_output_bytes": 28580,
+                "input_tokens": 155439,
+                "cached_input_tokens": 137600,
+                "output_tokens": 1790,
+                "uncached_input_tokens": 17839
+              },
+              "usage_source": "native",
+              "reading": {
+                "contract_seen": true,
+                "eligibility_seen": true,
+                "updated_promotion_seen": false,
+                "distractor_documents_seen": 0,
+                "preflight_seen": true
+              },
+              "public_test_receipt": true,
+              "dedicated_reader_command": true,
+              "native_receipt_sha256": "2e2a3772284e9d276ea9df090b075bcbface3c16a2035c728f752d03cb625a1b",
+              "oracle_checks": {
+                "only_requested_file_changed": true,
+                "contract_and_boundaries": true,
+                "head_unchanged": true
+              }
+            }
+          ]
+        },
+        {
+          "pair": "routed-r1",
+          "case": "routed",
+          "arm": "candidate",
+          "state": "passed",
+          "turns": [
+            {
+              "turn": 1,
+              "completed": true,
+              "quality_passed": true,
+              "costs": {
+                "seconds": 40.871,
+                "tool_items": 14,
+                "tool_output_bytes": 32240,
+                "input_tokens": 155978,
+                "cached_input_tokens": 134400,
+                "output_tokens": 1640,
+                "uncached_input_tokens": 21578
+              },
+              "usage_source": "native",
+              "reading": {
+                "contract_seen": true,
+                "eligibility_seen": true,
+                "updated_promotion_seen": false,
+                "distractor_documents_seen": 0,
+                "preflight_seen": true
+              },
+              "public_test_receipt": true,
+              "dedicated_reader_command": false,
+              "native_receipt_sha256": "fb2ae28282110eb19f679b12dee41e230cb60b8574455def0c345082f9c18fa5",
+              "oracle_checks": {
+                "only_requested_file_changed": true,
+                "contract_and_boundaries": true,
+                "head_unchanged": true
+              }
+            }
+          ]
+        },
+        {
+          "pair": "stale-r1",
+          "case": "stale",
+          "arm": "candidate",
+          "state": "passed",
+          "turns": [
+            {
+              "turn": 1,
+              "completed": true,
+              "quality_passed": true,
+              "costs": {
+                "seconds": 55.146,
+                "tool_items": 14,
+                "tool_output_bytes": 32530,
+                "input_tokens": 138590,
+                "cached_input_tokens": 124416,
+                "output_tokens": 1298,
+                "uncached_input_tokens": 14174
+              },
+              "usage_source": "native",
+              "reading": {
+                "contract_seen": true,
+                "eligibility_seen": true,
+                "updated_promotion_seen": false,
+                "distractor_documents_seen": 0,
+                "preflight_seen": true
+              },
+              "public_test_receipt": true,
+              "dedicated_reader_command": false,
+              "native_receipt_sha256": "912eec3c231c2e05841238ce3b259895db04f23a9e254ca06608bbac2728b22b",
+              "oracle_checks": {
+                "only_requested_file_changed": true,
+                "contract_and_boundaries": true,
+                "head_unchanged": true
+              }
+            }
+          ]
+        },
+        {
+          "pair": "stale-r1",
+          "case": "stale",
+          "arm": "baseline",
+          "state": "passed",
+          "turns": [
+            {
+              "turn": 1,
+              "completed": true,
+              "quality_passed": true,
+              "costs": {
+                "seconds": 45.922,
+                "tool_items": 11,
+                "tool_output_bytes": 36876,
+                "input_tokens": 184021,
+                "cached_input_tokens": 160256,
+                "output_tokens": 1637,
+                "uncached_input_tokens": 23765
+              },
+              "usage_source": "native",
+              "reading": {
+                "contract_seen": true,
+                "eligibility_seen": true,
+                "updated_promotion_seen": false,
+                "distractor_documents_seen": 0,
+                "preflight_seen": true
+              },
+              "public_test_receipt": true,
+              "dedicated_reader_command": true,
+              "native_receipt_sha256": "492a8769a697fc22f309d5150b00fa47a02d782af76147a75fea5f441d2be8e0",
+              "oracle_checks": {
+                "only_requested_file_changed": true,
+                "contract_and_boundaries": true,
+                "head_unchanged": true
+              }
+            }
+          ]
+        }
+      ],
+      "paired_costs": [
+        {
+          "pair": "unrouted-r2",
+          "case": "unrouted",
+          "eligible": true,
+          "baseline": {
+            "seconds": 42.293,
+            "input_tokens": 152732,
+            "cached_input_tokens": 138368,
+            "uncached_input_tokens": 14364,
+            "output_tokens": 1719,
+            "tool_items": 12,
+            "tool_output_bytes": 24787
+          },
+          "candidate": {
+            "seconds": 43.813,
+            "input_tokens": 157181,
+            "cached_input_tokens": 136320,
+            "uncached_input_tokens": 20861,
+            "output_tokens": 1513,
+            "tool_items": 13,
+            "tool_output_bytes": 33207
+          }
+        },
+        {
+          "pair": "warm-r2",
+          "case": "warm",
+          "eligible": true,
+          "baseline": {
+            "seconds": 71.349,
+            "input_tokens": 323840,
+            "cached_input_tokens": 301952,
+            "uncached_input_tokens": 21888,
+            "output_tokens": 2491,
+            "tool_items": 18,
+            "tool_output_bytes": 43918
+          },
+          "candidate": {
+            "seconds": 72.85,
+            "input_tokens": 270292,
+            "cached_input_tokens": 249856,
+            "uncached_input_tokens": 20436,
+            "output_tokens": 2864,
+            "tool_items": 19,
+            "tool_output_bytes": 53458
+          }
+        },
+        {
+          "pair": "routed-r2",
+          "case": "routed",
+          "eligible": true,
+          "baseline": {
+            "seconds": 41.936,
+            "input_tokens": 137828,
+            "cached_input_tokens": 123776,
+            "uncached_input_tokens": 14052,
+            "output_tokens": 1702,
+            "tool_items": 10,
+            "tool_output_bytes": 32418
+          },
+          "candidate": {
+            "seconds": 42.405,
+            "input_tokens": 161507,
+            "cached_input_tokens": 134784,
+            "uncached_input_tokens": 26723,
+            "output_tokens": 1587,
+            "tool_items": 14,
+            "tool_output_bytes": 32172
+          }
+        },
+        {
+          "pair": "warm-r1",
+          "case": "warm",
+          "eligible": true,
+          "baseline": {
+            "seconds": 108.303,
+            "input_tokens": 288074,
+            "cached_input_tokens": 271104,
+            "uncached_input_tokens": 16970,
+            "output_tokens": 2471,
+            "tool_items": 18,
+            "tool_output_bytes": 50733
+          },
+          "candidate": {
+            "seconds": 72.68799999999999,
+            "input_tokens": 286591,
+            "cached_input_tokens": 254848,
+            "uncached_input_tokens": 31743,
+            "output_tokens": 2748,
+            "tool_items": 25,
+            "tool_output_bytes": 49537
+          }
+        },
+        {
+          "pair": "unrouted-r1",
+          "case": "unrouted",
+          "eligible": true,
+          "baseline": {
+            "seconds": 33.726,
+            "input_tokens": 132162,
+            "cached_input_tokens": 122368,
+            "uncached_input_tokens": 9794,
+            "output_tokens": 1371,
+            "tool_items": 6,
+            "tool_output_bytes": 25741
+          },
+          "candidate": {
+            "seconds": 59.061,
+            "input_tokens": 142519,
+            "cached_input_tokens": 130304,
+            "uncached_input_tokens": 12215,
+            "output_tokens": 1613,
+            "tool_items": 15,
+            "tool_output_bytes": 37232
+          }
+        },
+        {
+          "pair": "typo-r1",
+          "case": "typo",
+          "eligible": true,
+          "baseline": {
+            "seconds": 12.882,
+            "input_tokens": 45518,
+            "cached_input_tokens": 39296,
+            "uncached_input_tokens": 6222,
+            "output_tokens": 259,
+            "tool_items": 2,
+            "tool_output_bytes": 14
+          },
+          "candidate": {
+            "seconds": 10.802,
+            "input_tokens": 45485,
+            "cached_input_tokens": 39424,
+            "uncached_input_tokens": 6061,
+            "output_tokens": 247,
+            "tool_items": 2,
+            "tool_output_bytes": 14
+          }
+        },
+        {
+          "pair": "typo-r2",
+          "case": "typo",
+          "eligible": true,
+          "baseline": {
+            "seconds": 10.415,
+            "input_tokens": 45396,
+            "cached_input_tokens": 42112,
+            "uncached_input_tokens": 3284,
+            "output_tokens": 180,
+            "tool_items": 2,
+            "tool_output_bytes": 14
+          },
+          "candidate": {
+            "seconds": 10.466,
+            "input_tokens": 45477,
+            "cached_input_tokens": 42240,
+            "uncached_input_tokens": 3237,
+            "output_tokens": 240,
+            "tool_items": 2,
+            "tool_output_bytes": 14
+          }
+        },
+        {
+          "pair": "stale-r2",
+          "case": "stale",
+          "eligible": true,
+          "baseline": {
+            "seconds": 42.969,
+            "input_tokens": 134160,
+            "cached_input_tokens": 119552,
+            "uncached_input_tokens": 14608,
+            "output_tokens": 1672,
+            "tool_items": 11,
+            "tool_output_bytes": 28212
+          },
+          "candidate": {
+            "seconds": 45.185,
+            "input_tokens": 143737,
+            "cached_input_tokens": 119936,
+            "uncached_input_tokens": 23801,
+            "output_tokens": 1716,
+            "tool_items": 17,
+            "tool_output_bytes": 37850
+          }
+        },
+        {
+          "pair": "routed-r1",
+          "case": "routed",
+          "eligible": true,
+          "baseline": {
+            "seconds": 42.988,
+            "input_tokens": 155439,
+            "cached_input_tokens": 137600,
+            "uncached_input_tokens": 17839,
+            "output_tokens": 1790,
+            "tool_items": 9,
+            "tool_output_bytes": 28580
+          },
+          "candidate": {
+            "seconds": 40.871,
+            "input_tokens": 155978,
+            "cached_input_tokens": 134400,
+            "uncached_input_tokens": 21578,
+            "output_tokens": 1640,
+            "tool_items": 14,
+            "tool_output_bytes": 32240
+          }
+        },
+        {
+          "pair": "stale-r1",
+          "case": "stale",
+          "eligible": true,
+          "baseline": {
+            "seconds": 45.922,
+            "input_tokens": 184021,
+            "cached_input_tokens": 160256,
+            "uncached_input_tokens": 23765,
+            "output_tokens": 1637,
+            "tool_items": 11,
+            "tool_output_bytes": 36876
+          },
+          "candidate": {
+            "seconds": 55.146,
+            "input_tokens": 138590,
+            "cached_input_tokens": 124416,
+            "uncached_input_tokens": 14174,
+            "output_tokens": 1298,
+            "tool_items": 14,
+            "tool_output_bytes": 32530
+          }
+        }
+      ]
+    },
+    "index-final": {
+      "comparison": "index",
+      "seed": 20261109,
+      "repeats": 3,
+      "cases": [
+        "routed"
+      ],
+      "order": [
+        [
+          "routed-r2",
+          "candidate"
+        ],
+        [
+          "routed-r2",
+          "baseline"
+        ],
+        [
+          "routed-r3",
+          "baseline"
+        ],
+        [
+          "routed-r3",
+          "candidate"
+        ],
+        [
+          "routed-r1",
+          "baseline"
+        ],
+        [
+          "routed-r1",
+          "candidate"
+        ]
+      ],
+      "environment": {
+        "codex": "codex-cli 0.167.0",
+        "python": "3.12.3 (main, Aug 31 2026, 10:18:26) [GCC 13.3.0]",
+        "platform": "linux"
+      },
+      "bundle_manifest_hashes": {
+        "baseline": "2c8ba062056175b915ac08db0b19dccc6fffeedb3ae21f402e2931e5c737332c",
+        "candidate": "2c8ba062056175b915ac08db0b19dccc6fffeedb3ae21f402e2931e5c737332c"
+      },
+      "harness_manifest_hash": "09ed706e869d8c23821b672854d78ec3866c3f0d0056899199d7a5492f594e71",
+      "attempts": [
+        {
+          "pair": "routed-r2",
+          "case": "routed",
+          "arm": "candidate",
+          "state": "passed",
+          "turns": [
+            {
+              "turn": 1,
+              "completed": true,
+              "quality_passed": true,
+              "costs": {
+                "seconds": 41.06,
+                "tool_items": 14,
+                "tool_output_bytes": 30541,
+                "input_tokens": 135956,
+                "cached_input_tokens": 113152,
+                "output_tokens": 1643,
+                "uncached_input_tokens": 22804
+              },
+              "usage_source": "native",
+              "reading": {
+                "contract_seen": true,
+                "eligibility_seen": true,
+                "updated_promotion_seen": false,
+                "distractor_documents_seen": 0,
+                "preflight_seen": true
+              },
+              "public_test_receipt": true,
+              "dedicated_reader_command": false,
+              "native_receipt_sha256": "8a7caafa22f215f14cae7e63bf39201d592fd6566805e24b12f82087b1c8fdaf",
+              "oracle_checks": {
+                "only_requested_file_changed": true,
+                "contract_and_boundaries": true,
+                "head_unchanged": true
+              }
+            }
+          ]
+        },
+        {
+          "pair": "routed-r2",
+          "case": "routed",
+          "arm": "baseline",
+          "state": "passed",
+          "turns": [
+            {
+              "turn": 1,
+              "completed": true,
+              "quality_passed": true,
+              "costs": {
+                "seconds": 46.12,
+                "tool_items": 9,
+                "tool_output_bytes": 30451,
+                "input_tokens": 137321,
+                "cached_input_tokens": 122112,
+                "output_tokens": 1409,
+                "uncached_input_tokens": 15209
+              },
+              "usage_source": "native",
+              "reading": {
+                "contract_seen": true,
+                "eligibility_seen": true,
+                "updated_promotion_seen": false,
+                "distractor_documents_seen": 0,
+                "preflight_seen": true
+              },
+              "public_test_receipt": true,
+              "dedicated_reader_command": false,
+              "native_receipt_sha256": "4da50a2c809f4ae14f880212bfb3c5d7c81d8349cfad543d48ad46f668b95a08",
+              "oracle_checks": {
+                "only_requested_file_changed": true,
+                "contract_and_boundaries": true,
+                "head_unchanged": true
+              }
+            }
+          ]
+        },
+        {
+          "pair": "routed-r3",
+          "case": "routed",
+          "arm": "baseline",
+          "state": "passed",
+          "turns": [
+            {
+              "turn": 1,
+              "completed": true,
+              "quality_passed": true,
+              "costs": {
+                "seconds": 41.365,
+                "tool_items": 14,
+                "tool_output_bytes": 37720,
+                "input_tokens": 142783,
+                "cached_input_tokens": 130560,
+                "output_tokens": 1529,
+                "uncached_input_tokens": 12223
+              },
+              "usage_source": "native",
+              "reading": {
+                "contract_seen": true,
+                "eligibility_seen": true,
+                "updated_promotion_seen": false,
+                "distractor_documents_seen": 0,
+                "preflight_seen": true
+              },
+              "public_test_receipt": true,
+              "dedicated_reader_command": false,
+              "native_receipt_sha256": "798825543118d894679940a80839d90cf17738153f4a36f7398042636b350901",
+              "oracle_checks": {
+                "only_requested_file_changed": true,
+                "contract_and_boundaries": true,
+                "head_unchanged": true
+              }
+            }
+          ]
+        },
+        {
+          "pair": "routed-r3",
+          "case": "routed",
+          "arm": "candidate",
+          "state": "passed",
+          "turns": [
+            {
+              "turn": 1,
+              "completed": true,
+              "quality_passed": true,
+              "costs": {
+                "seconds": 38.472,
+                "tool_items": 13,
+                "tool_output_bytes": 29706,
+                "input_tokens": 136546,
+                "cached_input_tokens": 125952,
+                "output_tokens": 1531,
+                "uncached_input_tokens": 10594
+              },
+              "usage_source": "native",
+              "reading": {
+                "contract_seen": true,
+                "eligibility_seen": true,
+                "updated_promotion_seen": false,
+                "distractor_documents_seen": 0,
+                "preflight_seen": true
+              },
+              "public_test_receipt": true,
+              "dedicated_reader_command": false,
+              "native_receipt_sha256": "0b99456a220997e0af19f8d76d58886a8453f518eeb4e7e575a5f2a476ec1b03",
+              "oracle_checks": {
+                "only_requested_file_changed": true,
+                "contract_and_boundaries": true,
+                "head_unchanged": true
+              }
+            }
+          ]
+        },
+        {
+          "pair": "routed-r1",
+          "case": "routed",
+          "arm": "baseline",
+          "state": "passed",
+          "turns": [
+            {
+              "turn": 1,
+              "completed": true,
+              "quality_passed": true,
+              "costs": {
+                "seconds": 38.685,
+                "tool_items": 8,
+                "tool_output_bytes": 29613,
+                "input_tokens": 155696,
+                "cached_input_tokens": 140672,
+                "output_tokens": 1380,
+                "uncached_input_tokens": 15024
+              },
+              "usage_source": "native",
+              "reading": {
+                "contract_seen": true,
+                "eligibility_seen": true,
+                "updated_promotion_seen": false,
+                "distractor_documents_seen": 0,
+                "preflight_seen": true
+              },
+              "public_test_receipt": true,
+              "dedicated_reader_command": false,
+              "native_receipt_sha256": "0b03b193e44ecc139613e14eb049260fe5f66d1341af2a811ed7522c7fe68c52",
+              "oracle_checks": {
+                "only_requested_file_changed": true,
+                "contract_and_boundaries": true,
+                "head_unchanged": true
+              }
+            }
+          ]
+        },
+        {
+          "pair": "routed-r1",
+          "case": "routed",
+          "arm": "candidate",
+          "state": "passed",
+          "turns": [
+            {
+              "turn": 1,
+              "completed": true,
+              "quality_passed": true,
+              "costs": {
+                "seconds": 38.13,
+                "tool_items": 15,
+                "tool_output_bytes": 38111,
+                "input_tokens": 143516,
+                "cached_input_tokens": 131200,
+                "output_tokens": 1540,
+                "uncached_input_tokens": 12316
+              },
+              "usage_source": "native",
+              "reading": {
+                "contract_seen": true,
+                "eligibility_seen": true,
+                "updated_promotion_seen": false,
+                "distractor_documents_seen": 0,
+                "preflight_seen": true
+              },
+              "public_test_receipt": true,
+              "dedicated_reader_command": false,
+              "native_receipt_sha256": "ce11005c4d247730aa12e0f642a5c958851ed6960ce8ded3e0a8a137f25d6644",
+              "oracle_checks": {
+                "only_requested_file_changed": true,
+                "contract_and_boundaries": true,
+                "head_unchanged": true
+              }
+            }
+          ]
+        }
+      ],
+      "paired_costs": [
+        {
+          "pair": "routed-r2",
+          "case": "routed",
+          "eligible": true,
+          "baseline": {
+            "seconds": 46.12,
+            "input_tokens": 137321,
+            "cached_input_tokens": 122112,
+            "uncached_input_tokens": 15209,
+            "output_tokens": 1409,
+            "tool_items": 9,
+            "tool_output_bytes": 30451
+          },
+          "candidate": {
+            "seconds": 41.06,
+            "input_tokens": 135956,
+            "cached_input_tokens": 113152,
+            "uncached_input_tokens": 22804,
+            "output_tokens": 1643,
+            "tool_items": 14,
+            "tool_output_bytes": 30541
+          }
+        },
+        {
+          "pair": "routed-r3",
+          "case": "routed",
+          "eligible": true,
+          "baseline": {
+            "seconds": 41.365,
+            "input_tokens": 142783,
+            "cached_input_tokens": 130560,
+            "uncached_input_tokens": 12223,
+            "output_tokens": 1529,
+            "tool_items": 14,
+            "tool_output_bytes": 37720
+          },
+          "candidate": {
+            "seconds": 38.472,
+            "input_tokens": 136546,
+            "cached_input_tokens": 125952,
+            "uncached_input_tokens": 10594,
+            "output_tokens": 1531,
+            "tool_items": 13,
+            "tool_output_bytes": 29706
+          }
+        },
+        {
+          "pair": "routed-r1",
+          "case": "routed",
+          "eligible": true,
+          "baseline": {
+            "seconds": 38.685,
+            "input_tokens": 155696,
+            "cached_input_tokens": 140672,
+            "uncached_input_tokens": 15024,
+            "output_tokens": 1380,
+            "tool_items": 8,
+            "tool_output_bytes": 29613
+          },
+          "candidate": {
+            "seconds": 38.13,
+            "input_tokens": 143516,
+            "cached_input_tokens": 131200,
+            "uncached_input_tokens": 12316,
+            "output_tokens": 1540,
+            "tool_items": 15,
+            "tool_output_bytes": 38111
+          }
+        }
+      ]
+    }
+  },
+  "limits": [
+    "Synthetic quotation task with an injected adapter; no installed-skill discovery or production-scale claim.",
+    "Protocol experiment has two repeats and global arm alternation, not per-case counterbalancing. Its ordering limitation is retained; the runner was fixed for future plans and the index experiment.",
+    "Index experiment has three pairs and per-case arm alternation; provider/cache conditions remain uncontrolled.",
+    "Smoke observations and the stopped experiment containing concurrent unstaged checker edits are retained locally and excluded from release comparisons.",
+    "After native runs, the fixture generator added list markers to three existing map links to eliminate a wrapping warning. The final generator passed mechanical checks; native cost observations retain the preceding formatting snapshot. Skill protocol bytes are unchanged.",
+    "The final offline report separates primary time/input/output measures from cache/tool diagnostics; raw measurements and grading are unchanged."
+  ],
+  "release_harness_manifest": {
+    "run-performance-trials.py": "5e052ae6372b5eb30694534cbb3b2836bb447ebac53f3edff5ec0c1f1850ae12",
+    "benchmark/run.py": "e53ea9e8c0cb0650f5e58dfc3c17f372e48d90ffb4915a71dede4cf69756e148",
+    "benchmark/cases.py": "a5dcb0794035c39858b85f6dc8853e4c668f0077e791b283ed9e6f75adf81b64"
+  }
+}

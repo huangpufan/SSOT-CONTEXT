@@ -82,14 +82,6 @@ for doc in product architecture process gotchas glossary; do
   cp "$PROJ_BASE/ssot-bootstrap/assets/templates/$doc.md" "$SCENARIO2/project/SSOT/$doc.md"
 done
 mkdir -p "$SCENARIO2/project/SSOT/decisions"
-if python3 "$PROJ_BASE/ssot-preflight/assets/scripts/read-context.py" "$SCENARIO2/project/SSOT/README.md" >"$SCENARIO2/context.log" 2>&1 &&
-    grep -q '^## 5. Invariants$' "$SCENARIO2/context.log" &&
-    ! grep -q '^### Human-decision evidence$' "$SCENARIO2/context.log"; then
-  pass "scenario2: installed preflight reader returns bounded v4 context"
-else
-  fail "scenario2: installed preflight reader failed"
-  cat "$SCENARIO2/context.log"
-fi
 if python3 "$PROJ_BASE/ssot-doctor/assets/scripts/ssot-check.py" "$SCENARIO2/project/SSOT" >"$SCENARIO2/check.log" 2>&1; then
   pass "scenario2: installed checker accepts an SSOT built from installed zh templates"
 else

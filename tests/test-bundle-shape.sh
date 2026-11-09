@@ -173,7 +173,7 @@ budget() { # $1=label $2=value $3=limit $4=unit
 mapfile -t ENTRY_FILES < <(find "$SKILLS" -name SKILL.md | sort)
 mapfile -t RUNTIME_FILES < <(find "$SKILLS" \( -name SKILL.md -o -path '*/references/*.md' \) -type f | sort)
 budget "SKILL.md entrypoints" "$(words "${ENTRY_FILES[@]}")" 3600 words
-budget "runtime protocol (SKILL.md + references)" "$(words "${RUNTIME_FILES[@]}")" 13800 words
+budget "runtime protocol (SKILL.md + references)" "$(words "${RUNTIME_FILES[@]}")" 14000 words
 for lang in en zh; do
   budget "templates/$lang" "$(bytes "$TEMPLATES/$lang"/*)" 16384 bytes
 done

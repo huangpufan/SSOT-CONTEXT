@@ -21,11 +21,11 @@ reviewed_through: <commit you explored>
 
 ## Task routes
 
-<!-- Map the kinds of work this repository really sees to what to read first. Replace the example row. -->
+<!-- Use recurring tasks, direct owner sections, the question answered, and when to expand. Replace the example; keep facts in their owners. -->
 
-| When the task… | Read first | Also check |
+| When the task… | Read first and why | Expand when… |
 |---|---|---|
-| changes how payments are retried | [Architecture: retries](architecture.md#failure-and-recovery) | [INV-01](#invariants) |
+| changes payment retries | [Failure and recovery](architecture.md#failure-and-recovery): what survives a retry | shared state or side effects change: follow related owners and [INV-01](#invariants) |
 
 ## Invariants
 

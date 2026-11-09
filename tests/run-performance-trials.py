@@ -79,19 +79,25 @@ def snapshot(repo):
             and ".git" not in p.relative_to(repo).parts}
 
 
-def record_native(run_dir, turn, summary):
+def record_native(run_dir, turn, summary, home=None):
     """Resume's CLI totals are cumulative; retain per-turn native receipts."""
-    home = Path(os.environ.get("CODEX_HOME", str(Path.home() / ".codex")))
+    if not summary.get("thread_id"):
+        return
+    home = home or Path(os.environ.get("CODEX_HOME", str(Path.home() / ".codex")))
     for path in (home / "sessions").rglob(f'*{summary["thread_id"]}*.jsonl'):
         shutil.copy2(path, run_dir / f"{turn}.native.jsonl")
         records = [json.loads(line) for line in path.read_text().splitlines()]
+        turn_ids = list(dict.fromkeys(
+            r["payload"].get("root_turn_id", r["payload"].get("turn_id"))
+            for r in records if r.get("type") == "turn_context"))
         turns = {}
         for record in records:
             if record.get("type") == "token_usage_record":
                 payload = record["payload"]
-                turns[payload["turn_id"]] = payload.get("turn_token_usage")
-        if len(turns) >= turn:
-            summary["native_turn_usage"] = list(turns.values())[turn - 1]
+                turns[payload.get("root_turn_id", payload["turn_id"])] = payload.get("turn_token_usage")
+        if len(turn_ids) >= turn and turn_ids[turn - 1] in turns:
+            summary["native_turn_usage"] = turns[turn_ids[turn - 1]]
+            summary["native_turn_id"] = turn_ids[turn - 1]
         summary["native_models"] = sorted({record["payload"].get("model")
             for record in records if record.get("type") == "turn_context"
             and record.get("payload", {}).get("model")})
@@ -179,13 +185,22 @@ def run(root, arm, case, turn, cap):
                   + "\n用户任务：\n" + PROMPTS[case])
     else:
         prompt = WARM_PROMPT
-    command = sandbox(root, repo) + [shutil.which("codex"), "exec"]
+    summary = execute_turn(root, run_dir, repo, prompt, turn, cap)
+    print(json.dumps({"arm": arm, "case": case, "turn": turn, **summary}, ensure_ascii=False), flush=True)
+    if summary["returncode"] or not summary["completed"]:
+        raise RuntimeError("Trial incomplete; retain its evidence and diagnose before continuing")
+
+
+def execute_turn(root, run_dir, repo, prompt, turn, cap, sandbox_command=None,
+                 codex_home=None, capture_checkpoints=True):
+    """Shared native transport for the historical trials and reading benchmark."""
+    command = (sandbox_command or sandbox(root, repo)) + [shutil.which("codex"), "exec"]
     if turn > 1:
         command += ["resume"]
     command += ["--ignore-user-config", "--ignore-rules", "-m", MODEL,
                 "-c", "project_doc_max_bytes=0", "-c", 'model_reasoning_effort="medium"',
                 "-c", 'approval_policy="never"', "-c", 'sandbox_mode="danger-full-access"',
-                "--disable", "multi_agent", "--json", "-o", str(run_dir / f"{turn}.final.md")]
+                "--disable", "multi_agent", "--json"]
     if turn == 1:
         command += ["-C", str(repo)]
     else:
@@ -197,9 +212,12 @@ def run(root, arm, case, turn, cap):
     started = time.monotonic()
     checkpoints, events = [], []
     with (run_dir / f"{turn}.jsonl").open("w") as out, (run_dir / f"{turn}.stderr").open("w") as err:
+        environment = {**os.environ, "PYTHONDONTWRITEBYTECODE": "1"}
+        if codex_home:
+            environment["CODEX_HOME"] = str(codex_home)
         process = subprocess.Popen(["timeout", "--signal=TERM", "--kill-after=10", str(cap), *command],
                                    stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=err, text=True,
-                                   env={**os.environ, "PYTHONDONTWRITEBYTECODE": "1"})
+                                   env=environment)
         process.stdin.write(prompt)
         process.stdin.close()
         previous = before
@@ -208,10 +226,12 @@ def run(root, arm, case, turn, cap):
             out.flush()
             event = json.loads(line)
             events.append(event)
-            current = snapshot(repo)
-            if current != previous:
-                checkpoints.append({"event": len(events), "files": current})
-                previous = current
+            if capture_checkpoints:
+                current = snapshot(repo)
+                if current != previous:
+                    checkpoints.append({"event": len(events), "files": current})
+                    previous = current
+        process.stdout.close()
         code = process.wait()
     after = snapshot(repo)
     save(run_dir / f"{turn}.after.json", after)
@@ -226,11 +246,12 @@ def run(root, arm, case, turn, cap):
                "tool_output_bytes": sum(len(i.get("aggregated_output", "").encode()) for i in tools),
                "changed_paths": sorted(k for k in set(before) | set(after) if before.get(k) != after.get(k)),
                "command": command}
-    record_native(run_dir, turn, summary)
+    messages = [e["item"]["text"] for e in events if e.get("type") == "item.completed"
+                and e.get("item", {}).get("type") == "agent_message"]
+    (run_dir / f"{turn}.final.md").write_text(messages[-1] if messages else "")
+    record_native(run_dir, turn, summary, codex_home)
     save(run_dir / f"{turn}.summary.json", summary)
-    print(json.dumps({"arm": arm, "case": case, "turn": turn, **summary}, ensure_ascii=False), flush=True)
-    if code or not summary["completed"]:
-        raise RuntimeError("Trial incomplete; retain its evidence and diagnose before continuing")
+    return summary
 
 
 def main():

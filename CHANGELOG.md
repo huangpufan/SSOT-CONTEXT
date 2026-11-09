@@ -8,6 +8,22 @@ Entries up to 2.86 were derived from the v2 protocol-upgrade ledger, which is pr
 
 ## [Unreleased]
 
+## [4.4] - 2026-11-09
+
+### Changed
+- Retire the dedicated preflight reader and its tests. Read Markdown with ordinary file tools, follow owner-section routes and expand to related constraints; recover missing/stale routes through project entries and search. Keep the layout, writing and protected-departure references.
+- Refine the existing bilingual task-route templates with the question answered and the condition for further reading. Consumer format stays 4; no migration, generated index, persistent cache or installer change is required.
+- Raise the runtime protocol budget to 14,000 words for 82 added words of routing guidance, preserving unrelated rules. Installed skill content is smaller after removing the reader.
+
+### Added
+- An opt-in reading benchmark with frozen comparable task fixtures, isolated native sessions, independent executable outcome checks, repeated/counterbalanced runs, separate protocol and index comparisons, and offline Markdown/JSON/CSV reports. Native per-turn input, cached input, output, whole-task time and tool output stay separate; failures and missing usage remain visible.
+- Deterministic CI self-tests for fixtures, oracle counterexamples, fresh versus stale policy, usage attribution, immutable plans, returned reading evidence and failure accounting. CI never invokes billable models. See [the evidence report](tests/trials-4.4.md) for observed results and limits.
+
+### Evidence and limits
+- The protocol comparison passes 20 attempts / 24 turns: total time is 452.783 → 453.287 seconds, input 1,599,170 → 1,547,357, and uncached input 142,786 → 180,829. Its two repeats and imperfect per-case ordering are explicitly limited; the schedule producer is fixed for future runs. No general speed or billing improvement is claimed.
+- The separate index comparison passes six attempts using the same 4.4 skills: direct section routes have lower time and total input in all three pairs. Median time is 41.365 → 38.472 seconds and input 142,783 → 136,546; uncached input varies and its aggregate rises. This small synthetic sample supports targeted routing experiments, not indiscriminate index growth.
+- Local isolated validation passes 48 bundle checks, 114 checker regressions, ten benchmark self-tests, 107 installer checks, ShellCheck and Python compilation. Preserve raw runs, including the smoke test and a stopped campaign with an unrelated source change; [the report](tests/trials-4.4.md) and its machine-readable observations distinguish their scopes.
+
 ## [4.3] - 2026-11-09
 
 ### Changed
