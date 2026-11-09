@@ -2,13 +2,13 @@
 name: ssot-preflight
 description: Read the repository's SSOT before substantive work. Use this before code, config, documentation, review, debugging, refactoring, or planning work in a repository, to find the invariants and documents that bear on the task and to surface open questions that affect it. Skip it for non-repository chat, pure command runs, and typo or formatting edits that cannot change meaning.
 metadata:
-  protocol_version: "4.2"
+  protocol_version: "4.3"
   bundle: "SSOT Skill"
 ---
 
 # SSOT Preflight
 
-Before substantive work, find the entry point first. Load the [memory model](references/memory-model.md) only for the applicable route below.
+Find the entry point before loading the [memory model](references/memory-model.md).
 
 Explicit SSOT checks, reviews or catch-up require `$ssot-doctor` for that scope, including alongside implementation; preflight cannot replace it. Ordinary code reviews do not trigger Doctor.
 
@@ -20,7 +20,7 @@ Explicit SSOT checks, reviews or catch-up require `$ssot-doctor` for that scope,
 
 ## 2. Read what this task needs
 
-For v4, first read memory-model sections [1](references/memory-model.md#1-what-ssot-is-for), [3](references/memory-model.md#3-current-planned-and-unknown) and [5](references/memory-model.md#5-invariants), using bounded section reads. The writing sections are for closeout or setup. Read `SSOT/README.md`, then:
+Run `python3 <this skill directory>/assets/scripts/read-context.py SSOT/README.md` for entry and v4 rules; add `--entry-only` when rules remain current in context. Use [decision evidence](references/memory-model.md#human-decision-evidence) for acceptance or replacement; [writing rules](references/writing-memory.md) when writing. Then:
 
 1. **Invariants.** Find the rows whose rule this task could affect, and read the explanation each one links to. Section 3 says what to do when the change could break one.
 2. **Open questions.** If one blocks the path this task needs, say so. Only the work that depends on the answer waits; unrelated work goes ahead.
@@ -28,7 +28,7 @@ For v4, first read memory-model sections [1](references/memory-model.md#1-what-s
 4. **Routes.** Read the files the task routes point to. If no route fits, read the product and architecture entry documents. Do not read the whole tree.
 5. **What you rely on.** When an SSOT statement decides how you will implement something, check the evidence appropriate to its domain first (memory-model §3). Code shows implementation, not whether a human decision was accepted. Note the mismatch so closeout fixes the document, or so you can report the violation.
 
-Reuse retained skill instructions and model sections until an update or context loss. At each new task, reread the README and relevant project owners, including dirty and untracked content; unchanged `HEAD` is insufficient. Within that task, reuse unchanged passages; reread after edits, scope changes or uncertain freshness. Bound source and owner reads.
+Reuse retained instructions and model sections until updates or context loss. Each new task rereads README and relevant owners, including dirty and untracked content; unchanged `HEAD` is insufficient. Within a task, reuse unchanged passages; reread after edits, scope changes or uncertain freshness. Batch independent reads and bound excerpts.
 
 ## 3. Find what the change must preserve
 

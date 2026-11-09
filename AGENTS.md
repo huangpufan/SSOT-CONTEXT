@@ -65,7 +65,7 @@ Every model run that develops or tests SSOT Skill uses a cheap model: setup and 
 
 ## Writing Style (Global)
 
-KISS is the permanent SSOT design principle: choose the shortest **reliable path to understanding**, not the fewest words. Keep one fact in one owner and make tables serve prose rather than replace it; never compress away the context, causal story, boundary, current path, failure behavior, or current-versus-planned distinction a cold reader needs. Every SSOT document the bundle generates is first written for the stranger who lands tonight knowing nothing. That reader may be the next agent, or a person who delegates implementation without reading code: lead with the situation, the decision, the result they should see and the evidence that shows it, then when to stop and ask; explain unavoidable terms before exact tokens, commands, paths, or codes. Tables, codes and tags the reader cannot interpret are not paragraphs. The same rules apply to this repository's own docs. [`memory-model.md` §6](./skills/ssot-preflight/references/memory-model.md#6-writing-for-a-cold-reader) is the unique owner of the writing rules the bundle ships; templates and skills link to it rather than restating it.
+KISS is the permanent SSOT design principle: choose the shortest **reliable path to understanding**, not the fewest words. Keep one fact in one owner and make tables serve prose rather than replace it; never compress away the context, causal story, boundary, current path, failure behavior, or current-versus-planned distinction a cold reader needs. Every SSOT document the bundle generates is first written for the stranger who lands tonight knowing nothing. That reader may be the next agent, or a person who delegates implementation without reading code: lead with the situation, the decision, the result they should see and the evidence that shows it, then when to stop and ask; explain unavoidable terms before exact tokens, commands, paths, or codes. Tables, codes and tags the reader cannot interpret are not paragraphs. The same rules apply to this repository's own docs. [`writing-memory.md`](./skills/ssot-preflight/references/writing-memory.md) is the unique owner of the writing rules the bundle ships; templates and skills link to it rather than restating it.
 
 ## Key Files
 
@@ -80,6 +80,7 @@ KISS is the permanent SSOT design principle: choose the shortest **reliable path
 | `skills/ssot-bootstrap/references/bootstrap.md` | Creating an SSOT and preserving v2/v3 knowledge during migration |
 | `skills/*/agents/openai.yaml` | Agent metadata for each skill |
 | `skills/ssot-bootstrap/assets/templates/{en,zh}/` | Bootstrap templates |
+| `skills/ssot-preflight/assets/scripts/read-context.py` | Read-only entry and using-memory reader |
 | `skills/ssot-doctor/assets/scripts/ssot-check.py` | Read-only mechanical checker |
 | `tests/` | Bundle shape and budgets, checker, installer, and diagram tests |
 | `.github/workflows/ci.yml` | CI pipeline |

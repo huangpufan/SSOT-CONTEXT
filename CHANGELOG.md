@@ -8,6 +8,18 @@ Entries up to 2.86 were derived from the v2 protocol-upgrade ledger, which is pr
 
 ## [Unreleased]
 
+## [4.3] - 2026-11-09
+
+### Changed
+- Add a read-only preflight context reader that returns the project entry and required v4 using-memory rules in one command. Its `--entry-only` mode refreshes the entry when rules remain current in context; task owners, including dirty and untracked content, are still read. No persistent cache is introduced.
+- Move the existing layout, writing and protected-departure procedures into separate references, preserving their bodies, helper criterion and failure paths. The shared model falls from 3,940 to 1,887 words; initial using-memory text falls from 1,793 to 1,190 words. Decision-evidence rules load when assessing acceptance or replacement. Preflight batches independent reads and retains its freshness conditions.
+- Add an untracked-owner resumed trial, reader command tests on both CI platforms, and installer checks for the installed reader and all moved references. Consumer format, installer implementation, checker and budgets stay unchanged. Runtime text is 13,800 words within the existing cap.
+
+### Evidence and limits
+- [The performance report](tests/trials-4.3.md) records frozen baselines, final native observations, earlier regressions and source differences. The final two-turn routine observation is about 17% faster, but uses about 10% more total input and about 29% less uncached input. New-owner timing is slightly worse with slightly less input. Final decision capture is slower with more total input. Across the five final observations, time rises from 164.309 to 173.530 seconds and input from 647,818 to 705,980, while uncached input falls from 73,610 to 61,884. These small, partly reused comparisons do not establish overall speed, token or billing savings.
+- Native receipts show entry-only refresh, external dirty/untracked-owner reads, and saved user words reread before the dependent plan. Earlier-reader controls preserve protected-departure, formal-source, structural-rename, missing-SSOT, typo and explicit read-only boundaries; their snapshot limits are stated. Full bootstrap/migration, real helper dispatch, crash recovery and production-scale performance were not rerun.
+- Local verification passes 48 bundle checks, 114 checker regressions, 8 reader command tests and 108 installer checks, plus ShellCheck and Python syntax. Textual preservation and these checks do not prove general agent compliance. This is a bounded-reading improvement with mixed whole-task results, not a claim of universal performance improvement.
+
 ## [4.2] - 2026-11-09
 
 ### Changed

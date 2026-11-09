@@ -7,7 +7,7 @@ Thanks for your interest in improving the SSOT Skill bundle. Read [DESIGN.md](./
 | Area | Files | Review weight |
 |---|---|---|
 | Protocol | `skills/*/SKILL.md`, `skills/*/references/*.md`, templates | Protocol review (below) |
-| Engineering | `install.sh`, `skills/ssot-doctor/assets/scripts/`, `tests/`, `.github/workflows/` | Standard review |
+| Engineering | `install.sh`, `skills/*/assets/scripts/`, `tests/`, `.github/workflows/` | Standard review |
 | Docs | `README*`, `INSTALL.md`, `DESIGN.md`, `CHANGELOG.md` | Standard review |
 
 `skills/ssot-preflight/references/memory-model.md` owns what a consumer's `SSOT/` contains and how it is written. The `SKILL.md` files link to it rather than restating it.
@@ -65,11 +65,12 @@ Templates under `skills/ssot-bootstrap/assets/templates/{en,zh}/` are copied int
 ```bash
 bash tests/test-bundle-shape.sh        # shape, links, budgets
 python3 tests/test-ssot-check.py       # checker regression tests
+python3 tests/test-preflight-context.py # bounded reader command tests
 bash tests/test-installer-e2e.sh       # installer end to end
 shellcheck -S warning -e SC2034 install.sh tests/*.sh
 ```
 
-For opt-in native performance comparisons, use [the performance recorder and evidence guide](./tests/trials-4.2.md#reproduction-and-local-checks). It runs billable models only when explicitly invoked; CI compiles it without running trials.
+For opt-in native performance comparisons, use [the performance recorder and evidence guide](./tests/trials-4.3.md#reproduction-and-local-checks). It runs billable models only when explicitly invoked; CI compiles it without running trials.
 
 For diagram changes, install `mermaid@11.12.0` and `jsdom@26.1.0` into an isolated npm prefix, then run `node tests/test-mermaid-templates.mjs <prefix>/node_modules`.
 

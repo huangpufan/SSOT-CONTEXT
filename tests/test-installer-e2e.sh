@@ -40,6 +40,13 @@ assert_no_dir "scenario1: no en/ subdir in installed templates" "$CLAUDE_BASE/ss
 assert_no_dir "scenario1: no zh/ subdir in installed templates" "$CLAUDE_BASE/ssot-bootstrap/assets/templates/zh"
 assert_file "scenario1: root README template present" "$CLAUDE_BASE/ssot-bootstrap/assets/templates/ssot-readme.md"
 assert_file "scenario1: memory model reference installed" "$CLAUDE_BASE/ssot-preflight/references/memory-model.md"
+for reference in memory-layout writing-memory protection-departure; do
+  if cmp -s "$PROJECT_ROOT/skills/ssot-preflight/references/$reference.md" "$CLAUDE_BASE/ssot-preflight/references/$reference.md"; then
+    pass "scenario1: $reference reference installed intact"
+  else
+    fail "scenario1: $reference reference missing or changed"
+  fi
+done
 assert_file "scenario1: bootstrap reference installed" "$CLAUDE_BASE/ssot-bootstrap/references/bootstrap.md"
 # English-content check: should NOT contain CJK characters (python3 — macOS grep lacks -P)
 if python3 -c "import sys,re; sys.exit(0 if re.search(r'[一-龥]', open(sys.argv[1], encoding='utf-8').read()) else 1)" "$CLAUDE_BASE/ssot-bootstrap/assets/templates/architecture.md" 2>/dev/null; then
@@ -75,6 +82,14 @@ for doc in product architecture process gotchas glossary; do
   cp "$PROJ_BASE/ssot-bootstrap/assets/templates/$doc.md" "$SCENARIO2/project/SSOT/$doc.md"
 done
 mkdir -p "$SCENARIO2/project/SSOT/decisions"
+if python3 "$PROJ_BASE/ssot-preflight/assets/scripts/read-context.py" "$SCENARIO2/project/SSOT/README.md" >"$SCENARIO2/context.log" 2>&1 &&
+    grep -q '^## 5. Invariants$' "$SCENARIO2/context.log" &&
+    ! grep -q '^### Human-decision evidence$' "$SCENARIO2/context.log"; then
+  pass "scenario2: installed preflight reader returns bounded v4 context"
+else
+  fail "scenario2: installed preflight reader failed"
+  cat "$SCENARIO2/context.log"
+fi
 if python3 "$PROJ_BASE/ssot-doctor/assets/scripts/ssot-check.py" "$SCENARIO2/project/SSOT" >"$SCENARIO2/check.log" 2>&1; then
   pass "scenario2: installed checker accepts an SSOT built from installed zh templates"
 else

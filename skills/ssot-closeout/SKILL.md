@@ -5,7 +5,7 @@ description: Capture durable user decisions immediately, including discussion-on
 
 # SSOT Closeout
 
-Reconcile durable changes in their single owner. The [memory model](../ssot-preflight/references/memory-model.md) defines what belongs there; read its relevant sections when needed, reusing material still current in context.
+Reconcile durable changes in their single owner. Read only needed [model](../ssot-preflight/references/memory-model.md) sections; reuse current context.
 
 ## Before you start
 

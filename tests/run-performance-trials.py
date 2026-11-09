@@ -17,7 +17,7 @@ import time
 
 
 MODEL = "gpt-6.1-terra"
-CASES = ("missing", "routine", "capture", "typo", "legacy", "rename", "blocked", "formal")
+CASES = ("missing", "routine", "untracked", "capture", "typo", "legacy", "rename", "blocked", "formal")
 README = """---
 ssot_format: 4
 language: en
@@ -66,6 +66,7 @@ PROMPTS = {
     "legacy": "刚接受的长期决定是：维护报告必须说明实际检查范围，局部 PASS 不能描述成整个项目健康。当前只读，不修改任何文件；请说明这项决定的记录情况与下一步。",
 }
 WARM_PROMPT = "将 checker.py main 内局部变量 counts 改名为 finding_counts，保持输出行为，运行 python3 test_behavior.py 验证，并按项目当前维护约定汇报。"
+PROMPTS["untracked"] = PROMPTS["routine"]
 
 
 def save(path, value):
@@ -257,11 +258,19 @@ def main():
     order = ("candidate", "baseline") if args.case in ("routine", "typo") else ("baseline", "candidate")
     for arm in ((args.arm,) if args.arm else order):
         run(root, arm, args.case, 1, args.cap)
-        if args.case == "routine":
+        if args.case in ("routine", "untracked"):
             repo = root / "runs" / arm / args.case / "repo"
             # Simulate another writer without moving HEAD: cache checks must include dirty owners.
-            with (repo / "docs/maintenance.md").open("a") as owner:
-                owner.write("\n## Maintenance reports\n\nUser, 2026-11-09: every maintenance summary includes the exact phrase `scope: amber`.\n")
+            reporting = "\n## Maintenance reports\n\nUser, 2026-11-09: every maintenance summary includes the exact phrase `scope: amber`.\n"
+            if args.case == "untracked":
+                (repo / "docs/reporting.md").write_text(reporting.lstrip())
+                index = repo / "SSOT/README.md"
+                index.write_text(index.read_text().replace(
+                    "| Checker maintenance | [Maintenance](../docs/maintenance.md) |",
+                    "| Checker maintenance | [Maintenance](../docs/maintenance.md), [Reports](../docs/reporting.md) |"))
+            else:
+                with (repo / "docs/maintenance.md").open("a") as owner:
+                    owner.write(reporting)
             run(root, arm, args.case, 2, args.cap)
 
 

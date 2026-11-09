@@ -1,4 +1,4 @@
-# The SSOT Memory Model
+# SSOT Memory Model
 
 This file owns what a repository's `SSOT/` contains, where each kind of knowledge lives, and how it is written. The other SSOT skills link here.
 
@@ -58,67 +58,7 @@ When needed for that source record, you may separately label its actual capture 
 
 ## 4. Layout
 
-```text
-SSOT/
-├── README.md        required: entry point, task routes, invariants, open questions
-├── product.md       who uses it, what problem, promises, non-goals, main journeys
-├── architecture.md  parts, state ownership, key flows, failure and recovery, boundaries
-├── process.md       build, run, test, release, and deploy; required checks
-├── decisions/       one file per consequential decision: NNNN-short-title.md
-├── gotchas.md       traps: symptom, cause, what to do instead
-├── glossary.md      project terms that a newcomer would misread
-└── research/        investigations whose conclusions still guide decisions
-```
-
-This is a fallback layout for knowledge without an existing owner, not a required replacement for the repository’s documentation. Only `README.md` is required. Create the others when there is real content for them. Never create empty placeholder files. For new SSOT-owned documents, when a file grows past about 16,000 characters or covers clearly separate topics, turn it into a folder of the same name, with a `README.md` that introduces the topic and routes to one file per subtopic (for example `architecture/README.md` plus `architecture/payments.md`).
-
-Existing canonical owners follow their own size, index and writing rules; this fallback layout does not automatically split or reorganize them.
-
-Repositories that already use other names, such as v2's `01-product/` and `02-architecture/`, keep them. The README's routes decide where things are, so renaming is never required.
-
-### The README
-
-`SSOT/README.md` is the entry point every task starts from, so keep it short, around 8,000 characters, not counting the rows of the invariants register (section 5), which grows with the rules. It starts with front matter:
-
-```yaml
----
-ssot_format: 4
-language: en        # the language SSOT prose is written in, e.g. en or zh-CN
-reviewed_through: 1a2b3c4   # optional: the next catch-up starts after this commit
----
-```
-
-`reviewed_through` marks where the next catch-up starts. Setup sets it to the commit whose code it explored, and a `$ssot-doctor` catch-up moves it forward, segment by segment, to the last commit it has processed in full. It is a starting point, not a certificate: it does not say that every earlier fact was recorded or that SSOT is correct. Ordinary closeouts leave it alone, because they cover only their own batch, and commits made outside that workflow may still hold unrecorded facts.
-
-Then, in this order:
-
-1. **What this project is.** A few sentences of plain prose: who it is for, what it does, and what it deliberately does not do.
-2. **Map.** Which file answers which kind of question.
-3. **Task routes.** A table from task signals (for example "touches billing", "changes the CLI", "release") to the files to read first. A table fits here because readers look things up in it.
-4. **Invariants.** The register in section 5.
-5. **Open questions.** Unresolved decisions and known gaps that affect work. Each one gets a line saying what is open, what work it blocks, and where the details live. Remove an entry when it is resolved.
-
-### Decisions
-
-Write a decision record when a choice is consequential: costly to reverse, affecting more than one part, overturning an earlier decision, or likely to be questioned later. This applies to product and process choices as well as technical ones. Routine edits do not need one, and neither does a choice whose reasons already live in another owner.
-
-Each record says, in prose: the situation, the decision, the alternatives considered and why they lost, the consequences, the date, and who decided (a user directive, a team review, or an agent proposal that the user accepted). Its status is one of `accepted`, `superseded by NNNN`, or `retired`. A retired decision no longer applies and needs no successor. A superseded one names its replacement. Do not delete old decisions, because they explain why the rejected paths stay rejected. An accepted decision that a person made or approved binds like a rule: changing it takes that person's agreement, recorded as a new decision that supersedes it.
-
-### Research
-
-A research note records an investigation whose result still guides work. Keep the question, how it was investigated, what was found, including the approaches that failed, and what was not checked. A bare conclusion cannot be re-judged when circumstances change. Put the conclusion that a decision relies on in that decision, and link the note for the method.
-
-### Temporary workarounds and deferrals
-
-When a change adds a temporary workaround, a compatibility shim, or a `TODO`/`HACK` that future work must know about, note it in the owner of the affected part. Say why it exists and what established condition allows its removal. If no condition was decided, say so; section 3 distinguishes a proposal from a decision. When you defer a known problem, record what was deferred, why, and what would trigger revisiting it. "Later" on its own is not a record.
-
-### Existing task and evidence owners
-
-Task progress, research originals and running databases keep their existing owners. Link to them rather than copying changing state into SSOT. Read them only when the task route calls for them. Before resuming across sessions, verify repository and task identity, the authoritative progress record, completed side effects and the next safe action; do not infer identity from the newest file or replay completed effects. SSOT records and routes knowledge; it does not schedule or execute work.
-
-### Preserving content when reorganizing
-
-Before moving, merging, compressing or deleting documentation, make a temporary content account: each decision, exception, rejection reason, unique asset and source context has a destination, remains in place, or is explicitly proposed for removal. Compare the final saved text against this account and the original before deleting anything. Unaccounted content stays. Keep historical decisions and their provenance as history, including partial supersessions. This account is task scratch, not a permanent review ledger; moving facts does not expand write or deletion authority.
+See [layout rules](memory-layout.md).
 
 ## 5. Invariants
 
@@ -143,40 +83,11 @@ When a user states a lasting rule ("never X", "always Y", "from now on"), record
 
 **Recovering a rule from the code.** Many protected rules were never written down. Admit one as a candidate only when you can name the outcome it protects, the conditions under which it holds, and evidence that people protect it on purpose: a test that asserts the outcome for its own sake, a fix or revert commit that restored it, a guard whose comment or history says why, a promise in the user documentation, or a compatibility shim or migration that exists to keep it. A test's existence alone is not enough; it may pin an incidental detail, which a change may update. State the supported exceptions, if any. Exceptions and exclusions mark where this rule does not apply; their behavior is protected only with independent evidence meeting this section's admission rules. Give one concrete change that would violate the rule and one nearby change it permits. Search for evidence that contradicts its scope, and tell a legitimate exception from an existing violation. "No known exception" is acceptable, but it does not prove the rule holds everywhere. A rule people stated stays protected even where the code violates it; report the violation instead of rewriting the rule.
 
-**When to ask.** A protection you admit binds at once, like a registered candidate: preserve its outcome and scope. A new setting or mitigation does not authorize an exception. Before the first edit that could change a protected behavior, give a fresh helper (a sub-agent or a separate session) the relevant [human-decision evidence](#human-decision-evidence), including earlier acceptance and its answered question where available, and the path of `SSOT/`. For a protection not yet registered, include its outcome, conditions, exceptions and primary evidence; do not wait for closeout to make it visible to the helper. Pass evidence, not your acceptance judgment or implementation plan. Give it this criterion, word for word: "A request to implement behavior authorizes work only within existing protections, candidate or confirmed alike. Knowing the old behavior, naming its opposite, or saying nobody relies on it does not waive a protection. A departure is accepted only when human-decision evidence (section 3) establishes acceptance of the identified loss. Words in which the user says they accept the change, or that they know it breaks something, count as accepting the loss, even when they do not list who is affected; a request that only describes the new behavior does not. A new helper function, moved guard, rewritten test, or change outside the rule's conditions does not cross a protection."
-
-It applies the shared evidence rules to the register, relevant owner sections and supplied evidence, without exploring the codebase, and answers stop or go, with the rule, loss, who relies on it, accepted scope, and acceptance evidence or NONE; distinguish recorded acceptance from checked original words and state source limits. Wait for its answer; do not substitute your own acceptance judgment. On stop, leave that behavior and its rule unchanged, give the user the helper's answer as your question, and continue independent work. If a helper cannot run or answer, name the protection and consequence and ask the user to decide unless that departure is already accepted under section 3. Acceptance authorizes only its established scope; do not ask again or require another helper for a settled departure. Record the decision through preflight §4 and closeout step 2, marking unimplemented behavior as planned. A new conflict still needs its own decision.
-
-An open question blocks only the work that depends on its answer. Unrelated work continues.
+**When to ask.** Before changing protected behavior, read [departure review](protection-departure.md), including for newly admitted rules.
 
 ## 6. Writing for a cold reader
 
-Write every SSOT file for a reader who arrives knowing nothing about the project. That reader may be the next agent, or a person who delegates the implementation and does not read the code. A document that confuses a new person also misleads an agent.
-
-- **Lead with the situation.** Say who is doing what and why it matters before describing the mechanism. Then give the details: names, paths, and commands. An entry document (the README, or the top of an area) should explain the current path, what the user sees, and the main boundaries on its own; links are for depth, not for assembling the basic picture.
-- **Make it delegable.** For anything a reader might hand to an agent, say what result they should see, what evidence would show it, and when to stop and ask.
-- **Use plain words.** Prefer the ordinary word to the internal label. The first time you use a project-specific term, explain it in positive terms, enough for this paragraph to make sense. A link to the glossary adds the full definition but does not replace that local explanation. You may explain a term again in context, but do not give it a different meaning. Keep identifiers, enum values, commands, and quoted text exactly as they are, even in a document written in another language.
-- **Explain in prose, look up in tables.** Paragraphs carry reasons, causes, and consequences. Use tables for lookups and comparisons. If a cell needs a sentence of reasoning, that reasoning belongs in a paragraph.
-- **Be concrete.** One real example ("a retry after a gateway timeout") makes a rule easier to apply than an abstract description does.
-- **State the scope the code has.** Write "all", "only", "every", "never", or "always" only when domain evidence supports that scope; otherwise say "by default", "on Linux", "unless X", or name the exception. A statement that is right in the common case but leaves out the condition misleads a task as much as a wrong one.
-- **Keep one fact in one place.** Link instead of copying. When you change a fact, search routed owners, `SSOT/`, and the agent instruction files for older statements of it and fix them too.
-- **Write in the declared language.** Use the README's `language`.
-- **One paragraph, one line.** Do not break a paragraph or a list item across lines to fit a width. Editors and viewers wrap text themselves; a hard break shows up as a short, ragged line, and in Chinese or Japanese it can add a stray space mid-sentence.
-- **Make diagrams parse.** In Mermaid diagrams, write comments with Mermaid's own `%%` syntax, never `<!-- -->` inside the fence, because Mermaid rejects HTML comments.
-
-### Checking behavior claims
-
-For each behavior claim this batch adds or broadens, check the wording itself before the structural checker:
-
-1. Read the final changed passages. Copy each new or broader behavior sentence verbatim into scratch or tool input, keeping its input types, conditions and words such as "all" or "only".
-2. For human decisions, apply [human-decision evidence](#human-decision-evidence); for creative or research claims, check the canonical text or original sources and state unverified portions. For software behavior, find the code condition that would make that sentence true. Name the value the condition tests. When a guard tests a derived value, name that derived value in the sentence. Being convertible does not make an input satisfy the converted value's condition: a positive input can become zero during integer conversion.
-3. For software behavior, choose an input the sentence includes that might fail that condition. Run it and compare the result with the exact sentence, recording the claim, input and outcome together in scratch or tool output. A before/after differential checks preservation; it does not establish a new generalization's truth.
-4. Correct or narrow unsupported wording, or state what could not be checked. Carry the checked conditions into the final response too.
-
-Finish when every new or broader claim in the final saved text is matched to domain evidence and readback, or explicitly qualified as unchecked; software behavior claims additionally need their condition and probe result. A later wording change reopens only that sentence. Check this batch's claims, not every unchanged document. Scratch evidence belongs to the task, not a new SSOT ledger.
-
-
-Length is not the goal in either direction. Write as much as a newcomer needs to understand the point, and nothing that only restates the code.
+Read [writing rules](writing-memory.md) before writing.
 
 ## 7. The format marker and older layouts
 
