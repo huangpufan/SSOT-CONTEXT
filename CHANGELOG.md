@@ -8,6 +8,12 @@ Entries up to 2.86 were derived from the v2 protocol-upgrade ledger, which is pr
 
 ## [Unreleased]
 
+### Fixed
+- Isolate checker Git queries from inherited repository-routing variables. A caller's `GIT_DIR`, `GIT_COMMON_DIR` or object directory could otherwise select foreign history and silently pass an unauthorized confirmed-rule change; `GIT_WORK_TREE` could reject valid local memory. Regression checks exercise clean and changed rules under foreign routing, retaining alias and cross-repository boundaries. No consumer format or agent protocol changes.
+
+### Added
+- [Evolution and lifecycle review](docs/evolution-review-2026-11-10.md), separating completed directions, the checker repair, incomplete behavior evidence and separately scoped host/consumer work.
+
 ## [4.4] - 2026-11-09
 
 ### Changed

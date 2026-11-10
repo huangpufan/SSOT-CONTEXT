@@ -109,10 +109,10 @@ class CheckerTest(unittest.TestCase):
         self.write("README.md", README)
         self.write("architecture.md", ARCHITECTURE)
 
-    def run_checker(self, *args):
+    def run_checker(self, *args, env=None):
         before = tree_digest(self.repo)
         result = subprocess.run([sys.executable, CHECKER, *(args or [self.ssot])],
-                                capture_output=True, text=True, cwd=self.repo)
+                                capture_output=True, text=True, cwd=self.repo, env=env)
         self.assertEqual(before, tree_digest(self.repo), "checker must never write")
         return result.returncode, result.stdout + result.stderr
 
@@ -279,6 +279,105 @@ class CheckerTest(unittest.TestCase):
                 self.assertIn("README must belong to the same repository", out)
             finally:
                 os.unlink(link)
+
+    def test_physical_worktree_path_keeps_requested_alias(self):
+        self.valid()
+        self.git("init", "-q")
+        with tempfile.TemporaryDirectory() as aliases:
+            # macOS TMPDIR and a linked /tmp reach the same place by another name; git
+            # reports the physical path, which must not split the worktree in two.
+            alias = os.path.join(aliases, "system-root")
+            os.symlink(os.path.dirname(self.repo), alias)
+            code, out = self.run_checker(os.path.join(alias, os.path.basename(self.repo), "SSOT"))
+            self.assertEqual(code, 0, out)
+            # The same SSOT under the physical spelling is clean too.
+            code, out = self.run_checker(self.ssot)
+            self.assertEqual(code, 0, out)
+
+    def test_physical_path_through_another_repository_stays_foreign(self):
+        self.valid()
+        self.git("init", "-q")
+        with tempfile.TemporaryDirectory() as aliases, tempfile.TemporaryDirectory() as foreign:
+            subprocess.run(["git", "init", "-q", foreign], check=True)
+            target = os.path.join(foreign, "SSOT")
+            os.makedirs(target)
+            for name, content in (("README.md", README), ("architecture.md", ARCHITECTURE)):
+                with open(os.path.join(target, name), "w") as handle:
+                    handle.write(content)
+            alias = os.path.join(aliases, "system-root")
+            os.symlink(os.path.dirname(foreign), alias)
+            code, out = self.run_checker(os.path.join(alias, os.path.basename(foreign), "SSOT"))
+            self.assertEqual(code, 0, out)
+            code, out = self.run_checker(target)
+            self.assertEqual(code, 0, out)
+            link = os.path.join(self.repo, "linked")
+            os.symlink(target, link)
+            try:
+                # The requested repository stays the outer one even when git names the
+                # physical path of the repository behind the link.
+                code, out = self.run_checker(os.path.join(alias, os.path.basename(self.repo), "linked"))
+                self.assertEqual(code, 1, out)
+                self.assertIn("README must belong to the same repository", out)
+            finally:
+                os.unlink(link)
+
+    def test_shared_first_file_does_not_make_ssot_the_worktree_root(self):
+        # Sharing a file inode does not make its containing directories identical.
+        # Build README first so it can be the first entry in both directories.
+        with tempfile.TemporaryDirectory() as repo:
+            readme = os.path.join(repo, "README.md")
+            with open(readme, "w") as handle:
+                handle.write(README.replace("architecture.md", "../docs/owner.md"))
+            ssot = os.path.join(repo, "SSOT")
+            os.makedirs(ssot)
+            os.link(readme, os.path.join(ssot, "README.md"))
+            os.makedirs(os.path.join(repo, "docs"))
+            with open(os.path.join(repo, "docs", "owner.md"), "w") as handle:
+                handle.write(ARCHITECTURE)
+            subprocess.run(["git", "init", "-q", repo], check=True)
+            # Directory iteration order is unspecified. Exercise an allowed order
+            # that puts the genuinely shared file first, without faking its inode.
+            import contextlib
+            import runpy
+            from unittest.mock import patch
+            repository_root = runpy.run_path(CHECKER)["repository_root"]
+            real_scandir = os.scandir
+
+            @contextlib.contextmanager
+            def readme_first(path):
+                with real_scandir(path) as entries:
+                    ordered = sorted(entries, key=lambda entry: entry.name != "README.md")
+                yield iter(ordered)
+
+            with patch.object(os, "scandir", readme_first):
+                self.assertEqual(repository_root(ssot), os.path.realpath(repo))
+            code, out = self.run_checker(ssot)
+            self.assertEqual(code, 0, out)
+
+    def test_inherited_git_routing_cannot_select_a_foreign_repository(self):
+        self.repo_with()
+        with tempfile.TemporaryDirectory() as foreign:
+            subprocess.run(["git", "init", "-q", foreign], check=True)
+            environments = (
+                {"GIT_DIR": os.path.join(foreign, ".git")},
+                {"GIT_WORK_TREE": foreign},
+                {"GIT_DIR": os.path.join(foreign, ".git"), "GIT_WORK_TREE": foreign},
+                {"GIT_COMMON_DIR": os.path.join(foreign, ".git")},
+                {"GIT_INDEX_FILE": os.path.join(foreign, ".git", "index")},
+                {"GIT_OBJECT_DIRECTORY": os.path.join(foreign, ".git", "objects")},
+                {"GIT_SHALLOW_FILE": os.path.join(foreign, "missing-shallow")},
+            )
+            for routing in environments:
+                with self.subTest(routing=routing):
+                    self.edit_confirmed(self.CONFIRMED)
+                    env = dict(os.environ, **routing)
+                    code, out = self.run_checker(env=env)
+                    self.assertEqual(code, 0, out)
+                    self.edit_confirmed(self.CONFIRMED.replace("never charges twice", "may charge twice"))
+                    code, out = self.run_checker(env=env)
+                    self.assertEqual(code, 1, out)
+                    self.assertIn("confirmed invariant INV-01 changed its rule", out)
+                    self.edit_confirmed(self.CONFIRMED)
 
     def test_format3_to_format4_migration_keeps_confirmed_rule_guard(self):
         self.valid()

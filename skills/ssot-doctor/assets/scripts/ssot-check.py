@@ -507,7 +507,15 @@ def check_invariants(report, readme, text, ssot_dir):
 # The checker never writes. These settings stop git from writing or running
 # anything on its behalf: no optional index refresh, no filesystem-monitor hook,
 # and no fetching of missing objects in a partial clone.
-GIT_ENV = dict(os.environ, GIT_OPTIONAL_LOCKS="0", GIT_NO_LAZY_FETCH="1")
+# Hooks and callers may export another worktree's Git routing. Every command
+# here must inspect the requested repository, including its own history/index.
+GIT_ROUTING_ENV = {
+    "GIT_DIR", "GIT_WORK_TREE", "GIT_COMMON_DIR", "GIT_INDEX_FILE",
+    "GIT_OBJECT_DIRECTORY", "GIT_ALTERNATE_OBJECT_DIRECTORIES", "GIT_SHALLOW_FILE",
+    "GIT_PREFIX", "GIT_IMPLICIT_WORK_TREE",
+}
+GIT_ENV = {key: value for key, value in os.environ.items() if key not in GIT_ROUTING_ENV}
+GIT_ENV.update(GIT_OPTIONAL_LOCKS="0", GIT_NO_LAZY_FETCH="1")
 GIT_SAFE = ("-c", "core.fsmonitor=false", "-c", "core.quotepath=off")
 
 
