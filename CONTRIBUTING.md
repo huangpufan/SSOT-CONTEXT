@@ -70,8 +70,11 @@ python3 tests/test-ssot-check.py       # checker regression tests
 python3 tests/benchmark/test_benchmark.py # benchmark oracle and accounting; no model calls
 python3 tests/test-migration-trials.py # migration fixtures, oracle and CI billing guard; no model calls
 bash tests/test-installer-e2e.sh       # installer end to end
+python3 tests/test-installer-recovery.py # replacement faults, cancellation, locking and recovery
 shellcheck -S warning -e SC2034 install.sh tests/*.sh
 ```
+
+The recovery tests invoke Bash 4+ from `PATH`; on macOS, set `SSOT_TEST_BASH="$(brew --prefix)/bin/bash"` when the default `bash` is older.
 
 For opt-in native performance comparisons, use [the reading benchmark](./tests/benchmark/README.md). It runs billable models only when explicitly invoked; CI compiles it without running trials.
 

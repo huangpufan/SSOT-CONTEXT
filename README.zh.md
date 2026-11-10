@@ -162,6 +162,8 @@ curl -fsSL https://raw.githubusercontent.com/huangpufan/SSOT-SKILL/main/install.
 
 更新后重启 Agent。替换安装的 Skill 本身不会改动 `SSOT/`。卸载时，让 Agent 按指南移除指定范围的安装，并检查是否还有过时的触发指令。
 
+安装或升级报错、中断时，按[恢复说明](./INSTALL.md#failed-or-interrupted-replacement)核对安装状态与保留的备份。
+
 升级时还要按指南[核对版本转换](./INSTALL.md#check-the-transition-not-only-the-new-installation)，处理旧指令和工具接线，包括自定义脚本对已退役的 4.3 reader 的调用。同格式的技能包升级无需重写项目记忆。
 
 ### 从 2.x 或 3.x 升级

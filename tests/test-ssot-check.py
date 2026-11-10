@@ -6,6 +6,7 @@ checker as a subprocess, and asserts on its exit code and output. Run:
     python3 tests/test-ssot-check.py
 """
 
+import ast
 import hashlib
 import os
 import subprocess
@@ -82,6 +83,21 @@ def tree_digest(path):
 
 
 class CheckerTest(unittest.TestCase):
+    def test_regression_names_are_unique(self):
+        with open(__file__, encoding="utf-8") as handle:
+            tree = ast.parse(handle.read())
+        duplicates = []
+        for node in ast.walk(tree):
+            if not isinstance(node, ast.ClassDef):
+                continue
+            seen = set()
+            for method in node.body:
+                if isinstance(method, (ast.FunctionDef, ast.AsyncFunctionDef)) and method.name.startswith("test_"):
+                    if method.name in seen:
+                        duplicates.append(f"{node.name}.{method.name}:{method.lineno}")
+                    seen.add(method.name)
+        self.assertFalse(duplicates, "duplicate regression methods are silently overwritten: " + ", ".join(duplicates))
+
     def setUp(self):
         self.tmp = tempfile.TemporaryDirectory()
         self.repo = os.path.realpath(self.tmp.name)
@@ -320,20 +336,6 @@ class CheckerTest(unittest.TestCase):
                 self.assertIn("README must belong to the same repository", out)
             finally:
                 os.unlink(link)
-
-    def test_physical_worktree_path_keeps_requested_alias(self):
-        self.valid()
-        self.git("init", "-q")
-        with tempfile.TemporaryDirectory() as aliases:
-            # macOS TMPDIR and a linked /tmp reach the same place by another name; git
-            # reports the physical path, which must not split the worktree in two.
-            alias = os.path.join(aliases, "system-root")
-            os.symlink(os.path.dirname(self.repo), alias)
-            code, out = self.run_checker(os.path.join(alias, os.path.basename(self.repo), "SSOT"))
-            self.assertEqual(code, 0, out)
-            # The same SSOT under the physical spelling is clean too.
-            code, out = self.run_checker(self.ssot)
-            self.assertEqual(code, 0, out)
 
     def test_shared_first_file_does_not_make_ssot_the_worktree_root(self):
         # Sharing a file inode does not make its containing directories identical.

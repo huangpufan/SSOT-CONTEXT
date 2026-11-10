@@ -9,11 +9,15 @@ Entries up to 2.86 were derived from the v2 protocol-upgrade ledger, which is pr
 ## [Unreleased]
 
 ### Changed
-- Raise the checker budget from 48 to 50 KiB. macOS resolves a temporary directory to its `/private/var` spelling, so the worktree root no longer matched the requested path and one entry was read as an external owner. A regression now holds both platforms to the same requested worktree. The checker grows by 1,712 bytes, with no unrelated rules cut. The test and `CONTRIBUTING.md` limits move together.
+- The checker budget is 50 KiB as set in `146beb8`, with matching test and `CONTRIBUTING.md` limits. That commit changes the limit and adds a duplicate of an existing alias regression; it does not change the resolver or add 1,712 checker bytes. Keep the existing alias regression and reject duplicate test method names so unittest cannot silently replace it.
 
 ### Added
 - [Continuity trials](tests/trials-continuity.md) for v2 ledger extraction, incompatible-writer refusal, partial user correction, read-only capture and an observed process interruption followed by fresh-session migration recovery. Portable fixtures, oracle counterexamples and frozen native observations distinguish knowledge preservation from protocol/format upgrades; the installed 4.5 protocol is unchanged.
 - An optional owned-child interruption hook in the opt-in native recorder. Ordinary reading trials leave it unset; model calls remain forbidden in CI.
+
+### Fixed
+- Keep previous skill directories and owned companions until replacement commits; roll back failures and INT/TERM cancellation. Preserve recovery metadata/backups after an incomplete rollback or SIGKILL and refuse destructive reruns. A per-location lock also guards concurrent install/upgrade/uninstall, including locations whose primary skill is temporarily absent.
+- Distinguish committed replacement from post-commit cleanup failure, preserve unowned dangling companion links, and find pending recovery under literal project paths containing glob characters. [Recovery guidance](INSTALL.md#failed-or-interrupted-replacement) and [end-to-end fault evidence](tests/installer-recovery.md) cover these boundaries; skill protocol and consumer format are unchanged.
 
 ## [4.5] - 2026-11-10
 

@@ -151,6 +151,22 @@ After removal, verify the bundle files are absent. Preserve generated `SSOT/` do
 
 After an update, repeat verification and reconcile the instruction block, then request a session restart. Installing new skill files never changes the repository's `SSOT/` by itself.
 
+### Failed or interrupted replacement
+
+Replacement is recoverable per installation location. The installer prepares the new bundle first, then keeps the previous skill directories and owned companions as backups until every replacement succeeds. An error before commit, or an INT/TERM cancellation, restores that location's previous installation. Locations already completed by a multi-location command remain updated. The lock prevents another install, upgrade or uninstall from modifying the same location while it is active; it does not make the separate directory moves invisible to concurrent readers.
+
+If the error says **installation changes completed**, replacement already committed and only temporary-file or lock cleanup failed. Verify the complete installed bundle before cleaning the reported owned artifacts; a nonzero exit alone does not mean the old version is still installed.
+
+If rollback cannot finish, or an installer is killed with SIGKILL, keep the reported recovery directory. Further operations refuse to overwrite pending recovery state. A regular `.ssot-skill-lock` file records the installer PID followed by its staging directory; that directory's `.ssot-transaction` records the installation location, PID and intended slots. The PID is a clue, not proof that the same process is still running. Establish that the owning installer has stopped before clearing its lock or recovering its files.
+
+For an active recovery marker, work within the existing installation write authorization and preserve evidence:
+
+1. Create an owned recovery directory on the same filesystem, for example with `mktemp -d "$ssot_skills_dir/.ssot-skill-recovered.XXXXXX"`. Read the transaction first and limit recovery to its SSOT skill/companion names. Leave unrelated skills, shared-root files and project memory alone.
+2. Each entry in `.backup/` is a previous entry: move any current entry of the same name into the recovery directory, then rename the backup back into place. Preserve symlinks as links. If a slot has a `.touched/` marker but no `.had-old/` marker, it was absent before this attempt; move its current entry aside too. Untouched slots, and prior entries already restored without a remaining backup, stay in place. Stop if the saved state cannot account for a slot or a move fails; preserve the remaining files.
+3. Verify the recovered previous bundle, language, companion ownership and shared instruction identity. Move the resolved transaction directory into the owned recovery directory, outside the scanned `.ssot-skill-install.*` names. Clear only a lock whose directory field still names that stopped transaction; another installer's lock stays. Retry the original command and verify the new installed files and integrations before removing the retained owned recovery artifacts.
+
+Without an active transaction marker, staging may be from preparation or from a completed replacement whose cleanup failed. Inspect and verify the current installation; do not infer that it needs rollback merely because backup files exist. The installer never guesses that a lock is stale or discards another attempt's backups automatically. These steps recover filesystem replacement, not a consumer's SSOT migration or an intentionally cancelled uninstall.
+
 ### Check the transition, not only the new installation
 
 Before replacing an older bundle, note its installed version and any repository instructions, hooks or scripts that call its tools. Afterward, verify those integrations against the files actually installed. A successful copy does not prove the old workflow still runs. Preserve the existing blocking/nonblocking behavior and run each changed command; do not substitute a health check for a migration operation or a Markdown reader.

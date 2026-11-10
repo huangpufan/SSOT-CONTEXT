@@ -162,6 +162,8 @@ Read https://raw.githubusercontent.com/huangpufan/SSOT-SKILL/main/INSTALL.md and
 
 Restart the agent afterward. Replacing the installed skills never changes `SSOT/` by itself. To uninstall, ask the agent to follow the guide's removal steps for the chosen scope, including checking for obsolete trigger instructions.
 
+If installation or upgrade fails or is interrupted, follow the [recovery instructions](./INSTALL.md#failed-or-interrupted-replacement) to inspect the installed state and retained backups.
+
 Use the guide's [upgrade transition checks](./INSTALL.md#check-the-transition-not-only-the-new-installation) for old instruction/tooling remnants, including custom calls to the retired 4.3 reader. A same-format bundle upgrade does not require rewriting project memory.
 
 ### Upgrading from 2.x or 3.x

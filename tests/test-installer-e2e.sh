@@ -440,7 +440,7 @@ git -C "$SCENARIO21/source" symbolic-ref HEAD refs/heads/main
 git -C "$SCENARIO21/source" add skills VERSION
 git -C "$SCENARIO21/source" -c core.hooksPath=/dev/null -c commit.gpgsign=false \
   -c user.name=SSOT-test -c user.email=ssot-test@example.invalid commit -qm 'installer source fixture'
-for utility in bash git dirname mkdir mktemp rm tr cp mv tput head grep awk sed find basename tar curl; do
+for utility in bash git dirname mkdir mktemp rm tr cp mv ln cat tput head grep awk sed find basename tar curl; do
   ln -s "$(command -v "$utility")" "$SCENARIO21/bin/$utility"
 done
 if (cd "$SCENARIO21/project" && env -u SOURCE_DIR PATH="$SCENARIO21/bin" TMPDIR="$SCENARIO21/tmp" \

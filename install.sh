@@ -60,6 +60,10 @@ ARG_REF=""
 SOURCE_DIR="${SOURCE_DIR:-}"
 FETCHED_SOURCE_DIR=""
 INSTALL_STAGE=""
+INSTALL_BASE=""
+INSTALL_LOCK=""
+INSTALL_REPLACING=0
+INSTALL_ENTRIES=()
 
 # Will be filled by detect_agents
 DETECTED_AGENTS=()
@@ -85,7 +89,23 @@ VERSION="$(read_version_file)"
 # One cleanup owner for fetched source, staged copies, and the terminal cursor.
 # -----------------------------------------------------------------------------
 cleanup() {
-  [[ -z "$INSTALL_STAGE" ]] || rm -rf -- "$INSTALL_STAGE"
+  # Finish compensation without a second INT/TERM interrupting its bookkeeping.
+  # SIGKILL cannot be trapped; the journal and backups then remain for recovery.
+  trap '' INT TERM
+  local keep_stage=0
+  if [[ "$INSTALL_REPLACING" -eq 1 && -f "$INSTALL_STAGE/.ssot-transaction" ]]; then
+    if ! rollback_install; then
+      keep_stage=1
+      err "rollback incomplete; preserve recovery files at $INSTALL_STAGE"
+    elif ! rm -f -- "$INSTALL_STAGE/.ssot-transaction"; then
+      keep_stage=1
+      err "rollback completed but its recovery marker could not be cleared at $INSTALL_STAGE"
+    fi
+  fi
+  if [[ -n "$INSTALL_STAGE" && "$keep_stage" -eq 0 ]]; then
+    rm -rf -- "$INSTALL_STAGE" || err "could not remove staging files at $INSTALL_STAGE"
+  fi
+  [[ -z "$INSTALL_LOCK" ]] || release_install_lock || err "could not release installation lock at $INSTALL_LOCK"
   [[ -z "$FETCHED_SOURCE_DIR" ]] || rm -rf -- "$FETCHED_SOURCE_DIR"
   tput cnorm 2>/dev/null || true
 }
@@ -1002,7 +1022,7 @@ guard_bundle_root_files() {
   for companion in "${BUNDLE_ROOT_FILES[@]}"; do
     [[ -f "$SOURCE_DIR/skills/$companion" ]] || continue
     target="$base/$companion"
-    if [[ -e "$target" ]] && ! bundle_companion_is_owned "$target"; then
+    if [[ -e "$target" || -L "$target" ]] && ! bundle_companion_is_owned "$target"; then
       if bundle_companion_is_legacy_owned "$base" "$target"; then
         warn "migrating legacy bundle companion ownership: $target"
       else
@@ -1069,16 +1089,107 @@ skill_protocol_version() {
 # -----------------------------------------------------------------------------
 # Install / copy
 # -----------------------------------------------------------------------------
+begin_install_stage() {
+  mkdir -p "$1"
+  INSTALL_BASE="$(cd "$1" && pwd -P)"
+  INSTALL_STAGE="$(mktemp -d "$INSTALL_BASE/.ssot-skill-install.XXXXXX")"
+  INSTALL_REPLACING=0
+  INSTALL_ENTRIES=()
+  mkdir "$INSTALL_STAGE/.backup" "$INSTALL_STAGE/.had-old" "$INSTALL_STAGE/.touched"
+  printf 'Installer PID: %s\n%s\n' "$$" "$INSTALL_STAGE" > "$INSTALL_STAGE/.lock-owner"
+}
+
+release_install_lock() {
+  # The lock is a hard link to our prepared token. Its content stays readable
+  # after staging is removed, and another install's token is never removed.
+  local owner
+  if [[ -f "$INSTALL_LOCK" && ! -L "$INSTALL_LOCK" ]]; then
+    owner="$(sed '1d' "$INSTALL_LOCK")" || return $?
+    if [[ "$owner" == "$INSTALL_STAGE" ]]; then
+      rm -f -- "$INSTALL_LOCK" || return $?
+    fi
+  fi
+  INSTALL_LOCK=""
+}
+
+lock_install_stage() {
+  INSTALL_LOCK="$INSTALL_BASE/.ssot-skill-lock"
+  local owner journal
+  # ln fails atomically for another installer's regular lock file. A preexisting
+  # directory must be rejected explicitly, since ln would otherwise link into it.
+  if [[ -d "$INSTALL_LOCK" ]] || ! ln "$INSTALL_STAGE/.lock-owner" "$INSTALL_LOCK" 2>/dev/null; then
+    [[ -e "$INSTALL_LOCK" || -L "$INSTALL_LOCK" ]] || die "cannot create installation lock at $INSTALL_LOCK"
+    owner="$(sed '1d' "$INSTALL_LOCK" 2>/dev/null || true)"
+    [[ "$owner" == "$INSTALL_BASE"/.ssot-skill-install.* ]] || owner="unknown; inspect the lock"
+    die "installation locked at $INSTALL_LOCK (transaction: $owner); wait for the active installer or recover the interrupted installation"
+  fi
+  for journal in "$INSTALL_BASE"/.ssot-skill-install.*/.ssot-transaction; do
+    [[ -f "$journal" && "$journal" != "$INSTALL_STAGE/.ssot-transaction" ]] || continue
+    die "unfinished installation; preserve and recover ${journal%/.ssot-transaction} before retrying"
+  done
+}
+
+replace_install_entry() {
+  local name="$1" target="$INSTALL_BASE/$1"
+  # Record prior presence before the first rename. If a signal arrives between
+  # rename and the next shell statement, the backup itself proves what moved.
+  if [[ -e "$target" || -L "$target" ]]; then
+    : > "$INSTALL_STAGE/.had-old/$name"
+  fi
+  : > "$INSTALL_STAGE/.touched/$name"
+  INSTALL_ENTRIES+=("$name")
+  if [[ -f "$INSTALL_STAGE/.had-old/$name" ]]; then
+    mv -- "$target" "$INSTALL_STAGE/.backup/$name"
+  fi
+  if [[ -e "$INSTALL_STAGE/$name" || -L "$INSTALL_STAGE/$name" ]]; then
+    mv -- "$INSTALL_STAGE/$name" "$target"
+  fi
+}
+
+rollback_install() {
+  local index name target failed=0
+  for ((index=${#INSTALL_ENTRIES[@]}-1; index>=0; index--)); do
+    name="${INSTALL_ENTRIES[$index]}"
+    target="$INSTALL_BASE/$name"
+    if [[ -e "$INSTALL_STAGE/.backup/$name" || -L "$INSTALL_STAGE/.backup/$name" ]]; then
+      if ! { rm -rf -- "$target" && mv -- "$INSTALL_STAGE/.backup/$name" "$target"; }; then
+        err "could not restore $name from $INSTALL_STAGE/.backup/$name"
+        failed=1
+      fi
+    elif [[ ! -f "$INSTALL_STAGE/.had-old/$name" ]]; then
+      rm -rf -- "$target" || failed=1
+    fi
+  done
+  return "$failed"
+}
+
+finish_install_stage() {
+  # The transaction marker has already been removed at the commit point, so
+  # a cleanup error here must never roll back the now-complete new bundle.
+  local status
+  if rm -rf -- "$INSTALL_STAGE"; then :; else
+    status=$?
+    err "installation changes completed; staging cleanup failed at $INSTALL_STAGE"
+    return "$status"
+  fi
+  if release_install_lock; then :; else
+    status=$?
+    err "installation changes completed; lock cleanup failed at $INSTALL_LOCK"
+    return "$status"
+  fi
+  INSTALL_STAGE=""
+  INSTALL_BASE=""
+  INSTALL_ENTRIES=()
+}
+
 copy_bundle() {
   local base="$1"
   local lang="$2"
   local stage
   validate_bundle_source
   read_wire_block "$lang" >/dev/null
-  mkdir -p "$base"
-  guard_bundle_root_files "$base"
-  stage="$(mktemp -d "$base/.ssot-skill-install.XXXXXX")"
-  INSTALL_STAGE="$stage"
+  begin_install_stage "$base"
+  stage="$INSTALL_STAGE"
 
   local skill source companion
   for skill in "${BUNDLE_SKILLS[@]}"; do
@@ -1110,6 +1221,14 @@ copy_bundle() {
   find "$stage" -type d -name "__pycache__" -prune -exec rm -rf {} +
   find "$stage" -type f \( -name "*.pyc" -o -name ".DS_Store" \) -delete
 
+  lock_install_stage
+  guard_bundle_root_files "$INSTALL_BASE"
+  for skill in "${BUNDLE_SKILLS[@]}"; do
+    if [[ -e "$INSTALL_BASE/$skill" || -L "$INSTALL_BASE/$skill" ]] && [[ ! -d "$INSTALL_BASE/$skill" ]]; then
+      die "refusing to replace non-directory skill path: $INSTALL_BASE/$skill"
+    fi
+  done
+
   # Cross-format replacements change how agents treat existing SSOT folders.
   local old_version="" new_version=""
   old_version="$(skill_protocol_version "$base/$PRIMARY_SKILL/SKILL.md")"
@@ -1126,25 +1245,31 @@ copy_bundle() {
   for companion in "${BUNDLE_ROOT_FILES[@]}"; do
     [[ -f "$stage/$companion" ]] && continue
     if bundle_companion_is_owned "$base/$companion" || bundle_companion_is_legacy_owned "$base" "$base/$companion"; then
-      retired+=("$base/$companion")
+      retired+=("$companion")
     fi
   done
 
+  {
+    printf 'SSOT-SKILL installation transaction\nLocation: %s\nInstaller PID: %s\n' "$INSTALL_BASE" "$$"
+    printf 'Old entries are in .backup; .had-old records prior presence; .touched records attempted slots.\n'
+    printf 'Preserve this directory if rollback fails or the process is killed.\n'
+    printf 'Planned skill slots: %s\n' "${BUNDLE_SKILLS[*]}"
+  } > "$stage/.ssot-transaction"
+  INSTALL_REPLACING=1
   for skill in "${BUNDLE_SKILLS[@]}"; do
-    local target="$base/$skill"
-    [[ -d "$target" ]] && rm -rf "$target"
-    mv "$stage/$skill" "$target"
+    replace_install_entry "$skill"
   done
   for companion in "${BUNDLE_ROOT_FILES[@]}"; do
-    [[ -f "$stage/$companion" ]] && mv "$stage/$companion" "$base/$companion"
+    [[ ! -f "$stage/$companion" ]] || replace_install_entry "$companion"
   done
   local path
   for path in "${retired[@]+"${retired[@]}"}"; do  # empty-array safe under set -u on bash < 4.4
-    rm -f "$path" # companion an older bundle installed and this one no longer ships
+    replace_install_entry "$path" # no new file: retire it by keeping its backup until commit
   done
 
-  rm -rf "$stage"
-  INSTALL_STAGE=""
+  rm -f -- "$stage/.ssot-transaction" # commit only after every replacement succeeds
+  INSTALL_REPLACING=0
+  finish_install_stage
 }
 
 install_to() {
@@ -1158,6 +1283,9 @@ install_to() {
 # -----------------------------------------------------------------------------
 remove_bundle() {
   local base="$1"
+  [[ -d "$base" ]] || return 0
+  begin_install_stage "$base"
+  lock_install_stage
   local skill target companion
   for skill in "${BUNDLE_SKILLS[@]}"; do
     target="$base/$skill"
@@ -1170,11 +1298,22 @@ remove_bundle() {
       warn "preserving unowned bundle companion: $base/$companion"
     fi
   done
+  finish_install_stage
 }
 
 # -----------------------------------------------------------------------------
 # Upgrade helpers
 # -----------------------------------------------------------------------------
+bundle_location_exists() {
+  local base="$1" journal
+  [[ ! -d "$base/$PRIMARY_SKILL" && ! -e "$base/.ssot-skill-lock" && ! -L "$base/.ssot-skill-lock" ]] || return 0
+  # Quote the literal directory prefix: project names may contain glob tokens.
+  for journal in "$base"/.ssot-skill-install.*/.ssot-transaction; do
+    [[ ! -f "$journal" ]] || return 0
+  done
+  return 1
+}
+
 detect_installed_lang() {
   local base="$1"
   local probe
@@ -1215,7 +1354,7 @@ scan_upgrade_targets() {
       base="$(agent_base_for "$agent" "$scope")"
       [[ -n "$base" ]] || continue
       [[ "$scope" != "project" ]] || base="$PWD/$base"
-      [[ -d "$base/$PRIMARY_SKILL" ]] || continue
+      bundle_location_exists "$base" || continue
       probe="$(cd "$base" && pwd -P)"
       [[ "$probe" != "$source_skills" && -z "${seen[$probe]+x}" ]] || continue
       seen[$probe]=1
