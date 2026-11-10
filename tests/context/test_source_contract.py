@@ -18,7 +18,7 @@ SCRIPT = Path(os.environ.get("SSOT_CONTEXT_CONNECTOR", str(Path(__file__).resolv
 class ConnectorContract(unittest.TestCase):
     def setUp(self):
         self.temp = tempfile.TemporaryDirectory(prefix="ssot-source-contract-", dir="/tmp")
-        self.root = Path(self.temp.name)
+        self.root = Path(self.temp.name).resolve()
         self.state = self.root / "state.json"
         self.source = self.root / "original.json"
         self.source.write_text(source_cases.export([source_cases.METHOD]))
