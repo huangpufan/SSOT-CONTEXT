@@ -162,13 +162,15 @@ Read https://raw.githubusercontent.com/huangpufan/SSOT-SKILL/main/INSTALL.md and
 
 Restart the agent afterward. Replacing the installed skills never changes `SSOT/` by itself. To uninstall, ask the agent to follow the guide's removal steps for the chosen scope, including checking for obsolete trigger instructions.
 
-If installation or upgrade fails or is interrupted, follow the [recovery instructions](./INSTALL.md#failed-or-interrupted-replacement) to inspect the installed state and retained backups.
+Installation and upgrade keep previous entries as backups until replacement succeeds. Errors during replacement and INT/TERM cancellation trigger rollback per installation location; a lock prevents competing install, upgrade or uninstall operations there. Incomplete rollback or SIGKILL leaves recovery state that blocks reruns. Follow the [recovery instructions](./INSTALL.md#failed-or-interrupted-replacement) to inspect retained backups and distinguish incomplete replacement from a completed installation whose cleanup failed.
 
 Use the guide's [upgrade transition checks](./INSTALL.md#check-the-transition-not-only-the-new-installation) for old instruction/tooling remnants, including custom calls to the retired 4.3 reader. A same-format bundle upgrade does not require rewriting project memory.
 
 ### Upgrading from 2.x or 3.x
 
-Version 4.0 uses `ssot_format: 4` so maintained repository-local documents can remain authoritative outside `SSOT/`. Agents read v2 and v3 memory but do not update it until you agree to a preservation-aware migration: ask "Migrate this repository's SSOT to v4." All installations that write this repository must use v4 before migration. The v3 migration keeps existing knowledge and paths; v2 migration also extracts durable content before removing the old ledgers and repoints scripts that used retired v2 tools. Migration needs your agreement and is one commit. To stay on v2, install with `--ref v2-final`; to retain v3, choose a v3 release with `--ref`.
+Version 4.0 uses `ssot_format: 4` so maintained repository-local documents can remain authoritative outside `SSOT/`. Agents read v2 and v3 memory but do not update it until you agree to a preservation-aware migration: ask "Migrate this repository's SSOT to v4." All installations that write this repository must use v4 before migration.
+
+Both migration routes reconcile old instructions (including unmarked directives), inbound links and retired tool calls. The v3 route keeps existing knowledge, owner paths and the record of the last reviewed commit; it does not run v2 ledger deletion. The v2 route extracts durable content before removing those ledgers. An interrupted agreed migration resumes from `SSOT/BOOTSTRAP.md`, checked against the actual tree. Migration needs your agreement and is one commit. To stay on v2, install with `--ref v2-final`; to retain v3, choose a v3 release with `--ref`.
 
 <details> <summary>Manual update and removal commands</summary>
 
@@ -199,6 +201,7 @@ Bare `--upgrade` updates all detected installations in the current project and g
 - [Install guide](./INSTALL.md) — agent-driven setup, instruction wiring, and network fallback.
 - [Design](./DESIGN.md) — why the bundle is shaped this way, and what version 3 removed.
 - [Changelog](./CHANGELOG.md) and [current protocol version](./VERSION) — what changed in the bundle.
+- [Migration trials](./tests/trials-4.5.md), [decision and interruption continuity](./tests/trials-continuity.md), and [installer recovery evidence](./tests/installer-recovery.md) — reproducible scenarios, observations and explicit limits, rather than a guarantee for every repository or failure.
 - [Contributing](./CONTRIBUTING.md) — how to propose changes and run local checks.
 - [AGENTS.md](./AGENTS.md) — instructions for agents maintaining **this bundle repository**.
 - [Security policy](./SECURITY.md) — how to report a vulnerability.

@@ -46,6 +46,7 @@ The consumer instruction block lives in the bootstrap adapter template ([English
 - `skills/*/agents/openai.yaml` must stay in sync with each skill.
 - `VERSION` and `skills/ssot-preflight/SKILL.md` `metadata.protocol_version` must match (CI enforces).
 - `CHANGELOG.md` follows Keep a Changelog format.
+- Before completing a repository change or committing, follow [README reconciliation](./CONTRIBUTING.md#readme-reconciliation).
 
 ## Commit Discipline (Global)
 

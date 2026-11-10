@@ -162,13 +162,15 @@ curl -fsSL https://raw.githubusercontent.com/huangpufan/SSOT-SKILL/main/install.
 
 更新后重启 Agent。替换安装的 Skill 本身不会改动 `SSOT/`。卸载时，让 Agent 按指南移除指定范围的安装，并检查是否还有过时的触发指令。
 
-安装或升级报错、中断时，按[恢复说明](./INSTALL.md#failed-or-interrupted-replacement)核对安装状态与保留的备份。
+安装和升级会保留原有条目的备份，直到替换成功。替换过程中报错，或收到 INT/TERM 取消信号，会触发该安装位置的回滚；同一位置的锁会阻止并发安装、升级或卸载。回滚未完成或进程被 SIGKILL 终止时，会留下恢复状态并阻止再次操作。按[恢复说明](./INSTALL.md#failed-or-interrupted-replacement)核对保留的备份，并区分替换未完成与安装已完成但清理失败。
 
 升级时还要按指南[核对版本转换](./INSTALL.md#check-the-transition-not-only-the-new-installation)，处理旧指令和工具接线，包括自定义脚本对已退役的 4.3 reader 的调用。同格式的技能包升级无需重写项目记忆。
 
 ### 从 2.x 或 3.x 升级
 
-4.0 使用 `ssot_format: 4`，允许仓库内 `SSOT/` 以外的持续维护文档保留权威归属。Agent 会读 v2 和 v3 记忆，但迁移前不会更新它们。你同意后，可以说“把这个项目的 SSOT 迁移到 v4”；迁移前，所有会写入这个项目的安装都应使用 v4。v3 迁移保留原有知识和路径；v2 迁移还会先提取长期内容，再移除旧账本，并改接调用退役工具的脚本。迁移需经你同意，作为一个提交。继续使用 v2 可指定 `--ref v2-final`；保留 v3 可用 `--ref` 指定一个 v3 版本。
+4.0 使用 `ssot_format: 4`，允许仓库内 `SSOT/` 以外的持续维护文档保留权威归属。Agent 会读 v2 和 v3 记忆，但迁移前不会更新它们。你同意后，可以说“把这个项目的 SSOT 迁移到 v4”；迁移前，所有会写入这个项目的安装都应使用 v4。
+
+两条迁移路径都会核对旧指令（包括没有标记的指令）、指向旧内容的链接和退役工具调用。v3 路径保留原有知识、权威文档路径，以及上次复查到哪个提交的记录，不执行 v2 的账本删除；v2 路径会先提取长期内容，再移除旧账本。已获同意的迁移若中断，从 `SSOT/BOOTSTRAP.md` 续接，并核对实际工作树。迁移需经你同意，作为一个提交。继续使用 v2 可指定 `--ref v2-final`；保留 v3 可用 `--ref` 指定一个 v3 版本。
 
 <details> <summary>手动更新与卸载命令</summary>
 
@@ -199,6 +201,7 @@ curl -fsSL https://raw.githubusercontent.com/huangpufan/SSOT-SKILL/main/install.
 - [安装指南](./INSTALL.md)：由 Agent 完成安装、写入触发指令，以及网络异常时的备用方式。
 - [更新日志](./CHANGELOG.md)与[当前协议版本](./VERSION)：Skill 包的变更记录。
 - [设计说明](./DESIGN.md)：Skill 包为什么是现在这个形态，以及 3.0 去掉了什么。
+- [迁移试验](./tests/trials-4.5.md)、[决定与中断续接试验](./tests/trials-continuity.md)及[安装器恢复证据](./tests/installer-recovery.md)：可复现的场景、观察和明确的限制，不代表所有仓库或故障都已得到验证。
 - [贡献指南](./CONTRIBUTING.md)：怎样提交改进，以及运行本地检查。
 - [AGENTS.md](./AGENTS.md)：Agent 维护**本 Skill 包源仓库**时应遵循的指令。
 - [安全政策](./SECURITY.md)：怎样报告安全漏洞。

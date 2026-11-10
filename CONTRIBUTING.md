@@ -62,6 +62,12 @@ A budget is a reason to rethink responsibilities, never a reason to cut a recove
 
 Templates under `skills/ssot-bootstrap/assets/templates/{en,zh}/` are copied into consumer repositories. Keep both languages in file-name parity. They are prompts for prose, not forms: avoid tables that invite one-word cells, and in Mermaid diagrams use `%%` comments, never HTML comments.
 
+## README reconciliation
+
+Before completing or committing any repository change, compare the resulting behavior with `README.md` and `README.zh.md` without waiting for a user reminder. Update both in the same change when it affects the bundle's purpose or capabilities, normal usage, installation, upgrade, uninstall, migration, recovery, prerequisites, compatibility or material limitations. Keep detailed procedures and evidence in their existing owners and link to them from the READMEs.
+
+This check is complete when both READMEs describe the verified current behavior, agree in meaning, and their affected links and commands match the authoritative guides. Internal refactors, test-only changes and typo fixes can leave them untouched when the existing user-facing description remains accurate.
+
 ## Local verification
 
 ```bash
@@ -88,7 +94,7 @@ For diagram changes, install `mermaid@11.12.0` and `jsdom@26.1.0` into an isolat
 - [ ] Local verification passes, including budgets
 - [ ] `VERSION` and `CHANGELOG.md` updated for protocol changes
 - [ ] `en/` and `zh/` templates updated together
-- [ ] `README.md` and `README.zh.md` kept in sync for user-facing changes
+- [ ] [README reconciliation](#readme-reconciliation) assessed; required updates included
 
 ## Code of conduct
 
