@@ -126,7 +126,7 @@ def grade(repo, case, before, watermark):
     rows = lambda text: [line for line in text.splitlines() if line.startswith("| INV-")]
     expected_block = (checker.parents[3] / "ssot-bootstrap/assets/templates/en/adapter-thin.md").read_text()
     def block(text):
-        return text.partition("<!-- SSOT-SKILL:BEGIN -->")[2].partition("<!-- SSOT-SKILL:END -->")[0]
+        return text.partition("<!-- SSOT-CONTEXT:BEGIN -->")[2].partition("<!-- SSOT-CONTEXT:END -->")[0]
     return {
         "format4": "ssot_format: 4" in index,
         "review_watermark_preserved": f"reviewed_through: {watermark}" in index,
@@ -136,8 +136,10 @@ def grade(repo, case, before, watermark):
         "credential_rule_preserved": "Never publish payment credentials." in instructions,
         "legacy_instructions_removed": all(token not in instructions for token in
                                            ("SSOT/STATUS.md", "tracked_protocol", "protocol lag")),
-        "one_current_instruction_block": instructions.count("<!-- SSOT-SKILL:BEGIN -->") == 1
-                                         and block(instructions).strip() == block(expected_block).strip(),
+        "one_current_instruction_block": instructions.count("<!-- SSOT-CONTEXT:BEGIN -->") == 1
+                                         and block(instructions).strip() == block(expected_block).strip()
+                                         and "SSOT-SKILL:BEGIN" not in instructions
+                                         and "SSOT-SKILL:END" not in instructions,
         "obsolete_wrapper_replaced_and_runs": "ssot-lint.sh" not in after.get("check-memory.sh", "")
                                                and wrapper.returncode == 0 and "ssot-check: PASS" in wrapper.stdout,
         "checker_passes": checked.returncode == 0 and "ssot-check: PASS" in checked.stdout,
@@ -194,7 +196,7 @@ def main():
     turn_tasks = continuity_cases.tasks(args.case) if args.case in continuity_cases.CASES else [tasks[args.case]]
     if args.case in continuity_cases.CASES:
         adapter = (bundle / "skills/ssot-bootstrap/assets/templates/en/adapter-thin.md").read_text()
-        block = adapter[adapter.index("<!-- SSOT-SKILL:BEGIN -->"):adapter.index("<!-- SSOT-SKILL:END -->")]
+        block = adapter[adapter.index("<!-- SSOT-CONTEXT:BEGIN -->"):adapter.index("<!-- SSOT-CONTEXT:END -->")]
         prompt += block + "\nUser task:\n"
     prompt += turn_tasks[0]
     plan = {"case": args.case, "model": bench.transport.MODEL, "watermark": watermark,

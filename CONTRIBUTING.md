@@ -1,6 +1,6 @@
-# Contributing to SSOT Skill
+# Contributing to SSOT-CONTEXT
 
-Thanks for your interest in improving the SSOT Skill bundle. Read [DESIGN.md](./DESIGN.md) first: it explains why the bundle is small and what it deliberately does not do.
+Thanks for your interest in improving the SSOT-CONTEXT bundle. Read [DESIGN.md](./DESIGN.md) first: it explains why the bundle is small and what it deliberately does not do.
 
 ## What lives where
 

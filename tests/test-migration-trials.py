@@ -35,11 +35,17 @@ class MigrationTrialsTest(unittest.TestCase):
         index = self.repo / "SSOT/README.md"
         index.write_text(index.read_text().replace("ssot_format: 3", "ssot_format: 4"))
         template = (HERE.parent / "skills/ssot-bootstrap/assets/templates/en/adapter-thin.md").read_text()
-        block = template[template.index("<!-- SSOT-SKILL:BEGIN -->"):template.index("<!-- SSOT-SKILL:END -->")]
+        block = template[template.index("<!-- SSOT-CONTEXT:BEGIN -->"):template.index("<!-- SSOT-CONTEXT:END -->")]
         (self.repo / "AGENTS.md").write_text("# Project instructions\n\nNever publish payment credentials.\n\n"
-                                              + block + "<!-- SSOT-SKILL:END -->\n")
+                                              + block + "<!-- SSOT-CONTEXT:END -->\n")
         (self.repo / "check-memory.sh").write_text("#!/bin/sh\npython3 .agents/skills/ssot-doctor/assets/scripts/ssot-check.py SSOT\n")
         (self.repo / "SSOT/BOOTSTRAP.md").unlink()
+
+    def test_current_block_does_not_allow_leftover_legacy_marker_block(self):
+        self.complete()
+        instructions = self.repo / "AGENTS.md"
+        instructions.write_text(instructions.read_text() + "\n<!-- SSOT-SKILL:BEGIN -->\nOld workflow\n<!-- SSOT-SKILL:END -->\n")
+        self.assertFalse(self.grade()["one_current_instruction_block"])
 
     def test_fixture_is_valid_legacy_memory_not_malformed_markdown(self):
         checker = self.repo / ".agents/skills/ssot-doctor/assets/scripts/ssot-check.py"
@@ -148,8 +154,8 @@ class ContinuityTrialsTest(unittest.TestCase):
         (self.repo / "SSOT/.bootstrap").rmdir()
         c.write(self.repo, "docs/guide.md", "# Guide\n\n[Questions](../SSOT/README.md#open-questions) affect export work.")
         adapter = (HERE.parent / "skills/ssot-bootstrap/assets/templates/en/adapter-thin.md").read_text()
-        block = adapter[adapter.index("<!-- SSOT-SKILL:BEGIN -->"):adapter.index("<!-- SSOT-SKILL:END -->")]
-        c.write(self.repo, "AGENTS.md", "# Project instructions\n\nNever publish payment credentials.\n\n" + block + "<!-- SSOT-SKILL:END -->")
+        block = adapter[adapter.index("<!-- SSOT-CONTEXT:BEGIN -->"):adapter.index("<!-- SSOT-CONTEXT:END -->")]
+        c.write(self.repo, "AGENTS.md", "# Project instructions\n\nNever publish payment credentials.\n\n" + block + "<!-- SSOT-CONTEXT:END -->")
         c.write(self.repo, "check-memory.sh", "#!/bin/sh\npython3 .agents/skills/ssot-doctor/assets/scripts/ssot-check.py SSOT")
 
     def test_v2_fixture_is_readable_legacy_and_mixed_writer_guard_checks_changes(self):

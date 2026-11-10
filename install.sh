@@ -9,9 +9,10 @@ if (( ${BASH_VERSINFO[0]:-0} < 4 )); then
   exit 1
 fi
 
-# SSOT Skill bundle installer.
+# SSOT-CONTEXT bundle installer.
 
-REPO_URL="${SSOT_SKILL_REPO_URL:-https://github.com/huangpufan/SSOT-SKILL.git}"
+REPO_OVERRIDE="${SSOT_CONTEXT_REPO_URL:-${SSOT_SKILL_REPO_URL:-}}"
+REPO_URL="${REPO_OVERRIDE:-https://github.com/huangpufan/SSOT-CONTEXT.git}"
 # Branch or tag to install from (--ref / SSOT_REF). Tags pin a protocol
 # generation, e.g. --ref v2-final keeps the v2 protocol after main moved on.
 REPO_REF="main"
@@ -34,6 +35,7 @@ BUNDLE_ROOT_FILES=(
 # Compatibility names that route elsewhere; the instruction block need not
 # mention them.
 SHIM_SKILLS=("ssot-skill" "ssot-audit")
+# Keep legacy ownership and transaction names so old installs remain recoverable.
 BUNDLE_COMPANION_MARKER='<!-- SSOT-SKILL bundle companion; owned by install.sh -->'
 
 BOLD='\033[1m'
@@ -158,19 +160,19 @@ t() {
       YES_INSTALL) echo "是，安装" ;;
       NO_CANCEL) echo "否，取消" ;;
       CANCELLED) echo "已取消" ;;
-      FETCHING) echo "正在拉取最新 SSOT Skill bundle..." ;;
+      FETCHING) echo "正在拉取最新 SSOT-CONTEXT bundle..." ;;
       FETCHED) echo "拉取完成" ;;
-      INSTALLED) echo "SSOT Skill bundle 已安装" ;;
+      INSTALLED) echo "SSOT-CONTEXT bundle 已安装" ;;
       RESTART_TIP) echo "合并下方项目指令后，重启 Agent 会话以加载 Skill 和指令。" ;;
       PREFLIGHT_TIP) echo "之后照常提需求；Agent 会在实质性工作前自动使用 \$ssot-preflight。" ;;
       CLOSEOUT_TIP) echo "Agent 会在实质性变更批次的最终回复或提交前自动使用 \$ssot-closeout。" ;;
-      UPGRADE_V3_NOTE) echo "这里原来装的是 SSOT Skill 2.x，现在换成 3.x：使用 v2 SSOT 的仓库在迁移前对 Agent 只读，调用 ssot-lint.sh 的脚本会失效。迁移方法见 https://github.com/huangpufan/SSOT-SKILL/blob/main/INSTALL.md#upgrading-from-2x-or-3x-to-40 ；想留在 v2，请带 --ref v2-final 重新运行。" ;;
-      UPGRADE_V4_NOTE) echo "SSOT Skill 2.x / 3.x 现在升级到 4.x：旧 v2 / v3 SSOT 在经用户同意迁移前对 Agent 只读。安装技能不迁移项目文档；保留知识、规则状态与原有路径，迁移前将全部写入端升级为 v4。迁移说明：https://github.com/huangpufan/SSOT-SKILL/blob/main/INSTALL.md#upgrading-from-2x-or-3x-to-40 。" ;;
+      UPGRADE_V3_NOTE) echo "这里原来装的是 SSOT-CONTEXT 2.x，现在换成 3.x：使用 v2 SSOT 的仓库在迁移前对 Agent 只读，调用 ssot-lint.sh 的脚本会失效。迁移方法见 https://github.com/huangpufan/SSOT-CONTEXT/blob/main/INSTALL.md#upgrading-from-2x-or-3x-to-40 ；想留在 v2，请带 --ref v2-final 重新运行。" ;;
+      UPGRADE_V4_NOTE) echo "SSOT-CONTEXT 2.x / 3.x 现在升级到 4.x：旧 v2 / v3 SSOT 在经用户同意迁移前对 Agent 只读。安装技能不迁移项目文档；保留知识、规则状态与原有路径，迁移前将全部写入端升级为 v4。迁移说明：https://github.com/huangpufan/SSOT-CONTEXT/blob/main/INSTALL.md#upgrading-from-2x-or-3x-to-40 。" ;;
       PROJECT_NOTE) echo "项目级安装仅在 Agent 在该项目根启动时生效。" ;;
       ALSO_GLOBAL_HINT) echo "如需同时全局安装，重新跑命令并追加 --scope global。" ;;
       WIRE_HEADER) echo "下一步：让 Agent 将这段触发指令合并到本仓库的指令文件" ;;
       WIRE_TARGET_HINT) echo "目标文件：CLAUDE.md / AGENTS.md / .cursorrules / GEMINI.md / 等（按你用的 Agent 选）" ;;
-      WIRE_SEE_README) echo "由 Agent 合并指令并验证安装：https://github.com/huangpufan/SSOT-SKILL/blob/main/INSTALL.md#4-wire-the-skills-into-the-repos-agent-instructions-file" ;;
+      WIRE_SEE_README) echo "由 Agent 合并指令并验证安装：https://github.com/huangpufan/SSOT-CONTEXT/blob/main/INSTALL.md#4-wire-the-skills-into-the-repos-agent-instructions-file" ;;
       NO_AGENT_DETECTED) echo "未检测到已安装的 Agent" ;;
       SHOWING_ALL) echo "显示所有支持的目标" ;;
       NO_AGENT_SELECTED) echo "未选择任何 Agent" ;;
@@ -181,7 +183,7 @@ t() {
       CONFIRM_UNINSTALL) echo "确认卸载？" ;;
       UNINSTALLED) echo "已卸载" ;;
       UPGRADE_SCANNING) echo "正在扫描已安装位置..." ;;
-      UPGRADE_NONE_FOUND) echo "未找到 SSOT Skill 安装位置；请改用 install" ;;
+      UPGRADE_NONE_FOUND) echo "未找到 SSOT-CONTEXT 安装位置；请改用 install" ;;
       UPGRADE_TARGETS) echo "升级目标:" ;;
     esac
   else
@@ -197,19 +199,19 @@ t() {
       YES_INSTALL) echo "Yes, install" ;;
       NO_CANCEL) echo "No, cancel" ;;
       CANCELLED) echo "Cancelled" ;;
-      FETCHING) echo "Fetching latest SSOT Skill bundle..." ;;
+      FETCHING) echo "Fetching latest SSOT-CONTEXT bundle..." ;;
       FETCHED) echo "Fetched source" ;;
-      INSTALLED) echo "SSOT Skill bundle installed" ;;
+      INSTALLED) echo "SSOT-CONTEXT bundle installed" ;;
       RESTART_TIP) echo "Merge the project instructions below, then restart the Agent session to load skills and instructions." ;;
       PREFLIGHT_TIP) echo "Then describe tasks normally; the Agent uses \$ssot-preflight automatically before substantive work." ;;
       CLOSEOUT_TIP) echo "The Agent uses \$ssot-closeout automatically before a substantive batch's final response or commit." ;;
-      UPGRADE_V3_NOTE) echo "SSOT Skill 2.x was installed here and is now replaced by 3.x: repositories with a v2 SSOT are read-only for agents until migrated, and scripts that call ssot-lint.sh stop working. Migration: https://github.com/huangpufan/SSOT-SKILL/blob/main/INSTALL.md#upgrading-from-2x-or-3x-to-40 . To stay on v2, re-run with --ref v2-final." ;;
-      UPGRADE_V4_NOTE) echo "SSOT Skill 2.x / 3.x is now replaced by 4.x: repositories with a v2 or v3 SSOT are read-only for agents until migrated with user agreement. Installing skills does not migrate project documents; preserve knowledge, rule statuses, and owner paths, and upgrade all writers to v4 first. Migration: https://github.com/huangpufan/SSOT-SKILL/blob/main/INSTALL.md#upgrading-from-2x-or-3x-to-40 ." ;;
+      UPGRADE_V3_NOTE) echo "SSOT-CONTEXT 2.x was installed here and is now replaced by 3.x: repositories with a v2 SSOT are read-only for agents until migrated, and scripts that call ssot-lint.sh stop working. Migration: https://github.com/huangpufan/SSOT-CONTEXT/blob/main/INSTALL.md#upgrading-from-2x-or-3x-to-40 . To stay on v2, re-run with --ref v2-final." ;;
+      UPGRADE_V4_NOTE) echo "SSOT-CONTEXT 2.x / 3.x is now replaced by 4.x: repositories with a v2 or v3 SSOT are read-only for agents until migrated with user agreement. Installing skills does not migrate project documents; preserve knowledge, rule statuses, and owner paths, and upgrade all writers to v4 first. Migration: https://github.com/huangpufan/SSOT-CONTEXT/blob/main/INSTALL.md#upgrading-from-2x-or-3x-to-40 ." ;;
       PROJECT_NOTE) echo "Project installs apply only when the Agent starts in this project root." ;;
       ALSO_GLOBAL_HINT) echo "To also install globally, re-run with --scope global appended." ;;
       WIRE_HEADER) echo "Next: ask your Agent to merge this trigger block into this repo's instructions" ;;
       WIRE_TARGET_HINT) echo "Target file: CLAUDE.md / AGENTS.md / .cursorrules / GEMINI.md / etc. (whichever your agent uses)" ;;
-      WIRE_SEE_README) echo "Ask your agent to merge the instructions and verify setup: https://github.com/huangpufan/SSOT-SKILL/blob/main/INSTALL.md#4-wire-the-skills-into-the-repos-agent-instructions-file" ;;
+      WIRE_SEE_README) echo "Ask your agent to merge the instructions and verify setup: https://github.com/huangpufan/SSOT-CONTEXT/blob/main/INSTALL.md#4-wire-the-skills-into-the-repos-agent-instructions-file" ;;
       NO_AGENT_DETECTED) echo "No installed Agent detected" ;;
       SHOWING_ALL) echo "Showing all supported targets" ;;
       NO_AGENT_SELECTED) echo "No Agent selected" ;;
@@ -220,7 +222,7 @@ t() {
       CONFIRM_UNINSTALL) echo "Confirm uninstall?" ;;
       UNINSTALLED) echo "Uninstalled" ;;
       UPGRADE_SCANNING) echo "Scanning installed locations..." ;;
-      UPGRADE_NONE_FOUND) echo "No SSOT Skill installation found; use install instead" ;;
+      UPGRADE_NONE_FOUND) echo "No SSOT-CONTEXT installation found; use install instead" ;;
       UPGRADE_TARGETS) echo "Upgrade targets:" ;;
     esac
   fi
@@ -230,7 +232,7 @@ t() {
 # Output helpers
 # -----------------------------------------------------------------------------
 banner() {
-  local title="SSOT Skill Installer v${VERSION}"
+  local title="SSOT-CONTEXT Installer v${VERSION}"
   local sub="split lifecycle skill bundle"
   local title_len=${#title}
   local sub_len=${#sub}
@@ -931,12 +933,12 @@ ensure_source() {
   FETCHED_SOURCE_DIR="$SOURCE_DIR"
 
   local -a mirrors=()
-  if [[ -n "${SSOT_SKILL_REPO_URL:-}" ]]; then
-    mirrors=("$SSOT_SKILL_REPO_URL")
+  if [[ -n "${REPO_OVERRIDE:-}" ]]; then
+    mirrors=("$REPO_OVERRIDE")
   else
     mirrors=(
-      "https://github.com/huangpufan/SSOT-SKILL.git"
-      "https://gh-proxy.com/https://github.com/huangpufan/SSOT-SKILL.git"
+      "https://github.com/huangpufan/SSOT-CONTEXT.git"
+      "https://gh-proxy.com/https://github.com/huangpufan/SSOT-CONTEXT.git"
     )
   fi
 
@@ -957,11 +959,11 @@ ensure_source() {
     FETCHED_SOURCE_DIR="$SOURCE_DIR"
   done
 
-  if [[ $ok_clone -eq 0 && -z "${SSOT_SKILL_REPO_URL:-}" ]]; then
+  if [[ $ok_clone -eq 0 && -z "${REPO_OVERRIDE:-}" ]]; then
     # tar.gz fallbacks
     local -a tars=(
-      "https://github.com/huangpufan/SSOT-SKILL/archive/${REPO_REF}.tar.gz"
-      "https://gh-proxy.com/https://github.com/huangpufan/SSOT-SKILL/archive/${REPO_REF}.tar.gz"
+      "https://github.com/huangpufan/SSOT-CONTEXT/archive/${REPO_REF}.tar.gz"
+      "https://gh-proxy.com/https://github.com/huangpufan/SSOT-CONTEXT/archive/${REPO_REF}.tar.gz"
     )
     local tar_url
     for tar_url in "${tars[@]}"; do
@@ -1065,11 +1067,11 @@ read_wire_block() {
   template="${template_dir:-$SOURCE_DIR/skills/ssot-bootstrap/assets/templates}/adapter-thin.md"
   [[ -f "$template" ]] || { err "missing SSOT instruction template: $template"; return 1; }
   block="$(awk '
-    $0 == "<!-- SSOT-SKILL:BEGIN -->" { starts++; active = 1 }
+    $0 ~ /^<!-- SSOT-(CONTEXT|SKILL):BEGIN -->$/ { starts++; active = 1; closing = $0; sub(/:BEGIN/, ":END", closing) }
     active { block = block $0 ORS }
-    $0 == "<!-- SSOT-SKILL:END -->" { ends++; active = 0 }
+    $0 ~ /^<!-- SSOT-(CONTEXT|SKILL):END -->$/ { ends++; if ($0 != closing) mismatch = 1; active = 0 }
     END {
-      if (starts != 1 || ends != 1 || active) exit 1
+      if (starts != 1 || ends != 1 || active || mismatch) exit 1
       printf "%s", block
     }
   ' "$template")" || { err "invalid SSOT instruction block: $template"; return 1; }
@@ -1250,7 +1252,7 @@ copy_bundle() {
   done
 
   {
-    printf 'SSOT-SKILL installation transaction\nLocation: %s\nInstaller PID: %s\n' "$INSTALL_BASE" "$$"
+    printf 'SSOT-CONTEXT installation transaction\nLocation: %s\nInstaller PID: %s\n' "$INSTALL_BASE" "$$"
     printf 'Old entries are in .backup; .had-old records prior presence; .touched records attempted slots.\n'
     printf 'Preserve this directory if rollback fails or the process is killed.\n'
     printf 'Planned skill slots: %s\n' "${BUNDLE_SKILLS[*]}"
@@ -1368,7 +1370,7 @@ scan_upgrade_targets() {
 # -----------------------------------------------------------------------------
 usage() {
   cat <<'EOF'
-SSOT Skill installer
+SSOT-CONTEXT installer
 
 USAGE:
   install.sh [OPTIONS]
@@ -1400,10 +1402,12 @@ ENVIRONMENT:
   SSOT_AGENT, SSOT_SCOPE, SSOT_LANG, SSOT_UI_LANG, SSOT_REF
   SSOT_YES=1, SSOT_NONINTERACTIVE=1
   SOURCE_DIR                Local source checkout (skip git clone)
+  SSOT_CONTEXT_REPO_URL     Source repository override
+  SSOT_SKILL_REPO_URL       Legacy fallback for SSOT_CONTEXT_REPO_URL
 
 EXAMPLES:
   # Quickstart (recommended for agents) — project-local, autodetected:
-  curl -fsSL https://raw.githubusercontent.com/huangpufan/SSOT-SKILL/main/install.sh | bash -s -- --quickstart
+  curl -fsSL https://raw.githubusercontent.com/huangpufan/SSOT-CONTEXT/main/install.sh | bash -s -- --quickstart
 
   # Interactive (recommended): pick scope, agents, and language with arrow keys
   curl -fsSL <url>/install.sh | bash

@@ -1,6 +1,6 @@
 # Changelog
 
-All notable changes to the SSOT Skill bundle protocol.
+All notable changes to the SSOT-CONTEXT bundle protocol.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and the project adheres to a simple `MAJOR.MINOR` versioning scheme tied to the bundle protocol. The single source of truth for the current version is `metadata.protocol_version` in `skills/ssot-preflight/SKILL.md`; the `VERSION` file at the repository root is the physical mirror enforced by `tests/test-bundle-shape.sh`.
 
@@ -9,6 +9,7 @@ Entries up to 2.86 were derived from the v2 protocol-upgrade ledger, which is pr
 ## [Unreleased]
 
 ### Changed
+- Rename the project and repository to SSOT-CONTEXT; update installation URLs, badges, bundle metadata and instruction markers. Keep existing skill names, legacy installer ownership/transaction names and the old source override compatible. The new `SSOT_CONTEXT_REPO_URL` source override takes precedence.
 - The checker budget is 50 KiB as set in `146beb8`, with matching test and `CONTRIBUTING.md` limits. That commit changes the limit and adds a duplicate of an existing alias regression; it does not change the resolver or add 1,712 checker bytes. Keep the existing alias regression and reject duplicate test method names so unittest cannot silently replace it.
 
 ### Added
@@ -779,14 +780,14 @@ Method, per-question scores, and limits are in `tests/trials-3.0.md`.
 - **`skills/ssot-preflight/SKILL.md`** `metadata.protocol_version` -> `2.38`; `semantic_impact: medium`.
 - **`skills/ssot-preflight/references/source-material.md`**: adds lifecycle classes, downgrade fields, audited exclusions, and public-thin owner requirements.
 - **`skills/ssot-preflight/references/area-model.md`** and **`architecture.md`**: sharpen product intent vs architecture implementation response, and define Runtime Owner Map as the default architecture IA.
-- **`skills/ssot-closeout/references/{update-routing.md,inline-update-guide.md}`**: route systemic consumer docs/IA problems through SSOT-SKILL first and then consumer migration.
+- **`skills/ssot-closeout/references/{update-routing.md,inline-update-guide.md}`**: route systemic consumer docs/IA problems through SSOT-CONTEXT first and then consumer migration.
 - **`skills/ssot-bootstrap/assets/templates/{en,zh}/{status.md,recon-report.md,bootstrap-session.md,architecture-readme.md,architecture-domain-readme.md}`**: add lifecycle inventory fields and replace checklist-heavy architecture templates with owner-map templates.
 - **`skills/ssot-doctor/references/doctor.md`**, **`skills/ssot-doctor/assets/scripts/ssot-lint.sh`**, and **`run-tests.sh`**: add v2.38 source lifecycle checks and Runtime Owner Map drift heuristics.
 - **`skills/ssot-audit/references/current-upgrade.md`** and **`archive/index.md`**: add the standalone v2.38 medium-impact upgrade entry.
 
 ## [2.37] - 2026-06
 
-`semantic_impact: medium` - applies the v2.36 KISS principle to SSOT-SKILL's own protocol surfaces. STATUS and closeout routing now lead with prose decision paths and keep wide tables as appendices; bootstrap STATUS/manifest/recon templates default to thin registers; architecture protocol requires a mental model, owner boundary, and evidence direction before optional matrices; protocol upgrade history is split into a small router, `current-upgrade.md`, and archive range files so ordinary audits no longer load the whole historical ledger.
+`semantic_impact: medium` - applies the v2.36 KISS principle to SSOT-CONTEXT's own protocol surfaces. STATUS and closeout routing now lead with prose decision paths and keep wide tables as appendices; bootstrap STATUS/manifest/recon templates default to thin registers; architecture protocol requires a mental model, owner boundary, and evidence direction before optional matrices; protocol upgrade history is split into a small router, `current-upgrade.md`, and archive range files so ordinary audits no longer load the whole historical ledger.
 
 ### Changed
 - **`VERSION`** -> `2.37`.
@@ -1118,7 +1119,7 @@ Method, per-question scores, and limits are in `tests/trials-3.0.md`.
 ## [2.17] - 2026
 
 ### Added
-- SSOT Skill bundle: formal entry skill `ssot-preflight`; process skills `ssot-bootstrap`, `ssot-closeout`, `ssot-audit`, `ssot-doctor`; legacy `ssot-skill` retained only as a lightweight compatibility shim.
+- SSOT-CONTEXT bundle: formal entry skill `ssot-preflight`; process skills `ssot-bootstrap`, `ssot-closeout`, `ssot-audit`, `ssot-doctor`; legacy `ssot-skill` retained only as a lightweight compatibility shim.
 - Open adjudication parser: canonical heading `## 开放裁决项`, with backward compatibility for `## 待裁决项`.
 - Doctor label `[SKILL-SPLIT]` for bundles missing the formal entry, a process skill, the shim, the protocol owner or process trigger descriptions.
 
@@ -1224,14 +1225,14 @@ Method, per-question scores, and limits are in `tests/trials-3.0.md`.
 
 ---
 
-[Unreleased]: https://github.com/huangpufan/SSOT-SKILL/compare/v4.0...HEAD
-[4.0]: https://github.com/huangpufan/SSOT-SKILL/releases/tag/v4.0
-[2.21]: https://github.com/huangpufan/SSOT-SKILL/releases/tag/v2.21
-[2.19]: https://github.com/huangpufan/SSOT-SKILL/releases/tag/v2.19
-[2.18]: https://github.com/huangpufan/SSOT-SKILL/releases/tag/v2.18
-[2.17]: https://github.com/huangpufan/SSOT-SKILL/releases/tag/v2.17
-[2.16]: https://github.com/huangpufan/SSOT-SKILL/releases/tag/v2.16
-[2.15]: https://github.com/huangpufan/SSOT-SKILL/releases/tag/v2.15
-[2.14]: https://github.com/huangpufan/SSOT-SKILL/releases/tag/v2.14
-[2.13]: https://github.com/huangpufan/SSOT-SKILL/releases/tag/v2.13
-[2.12]: https://github.com/huangpufan/SSOT-SKILL/releases/tag/v2.12
+[Unreleased]: https://github.com/huangpufan/SSOT-CONTEXT/compare/v4.0...HEAD
+[4.0]: https://github.com/huangpufan/SSOT-CONTEXT/releases/tag/v4.0
+[2.21]: https://github.com/huangpufan/SSOT-CONTEXT/releases/tag/v2.21
+[2.19]: https://github.com/huangpufan/SSOT-CONTEXT/releases/tag/v2.19
+[2.18]: https://github.com/huangpufan/SSOT-CONTEXT/releases/tag/v2.18
+[2.17]: https://github.com/huangpufan/SSOT-CONTEXT/releases/tag/v2.17
+[2.16]: https://github.com/huangpufan/SSOT-CONTEXT/releases/tag/v2.16
+[2.15]: https://github.com/huangpufan/SSOT-CONTEXT/releases/tag/v2.15
+[2.14]: https://github.com/huangpufan/SSOT-CONTEXT/releases/tag/v2.14
+[2.13]: https://github.com/huangpufan/SSOT-CONTEXT/releases/tag/v2.13
+[2.12]: https://github.com/huangpufan/SSOT-CONTEXT/releases/tag/v2.12

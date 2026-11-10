@@ -99,7 +99,7 @@ if [[ -d "$TEMPLATES/en" && -d "$TEMPLATES/zh" ]]; then
       fail "$lang: README template lacks ssot_format: 4 or language"
     fi
     adapter="$TEMPLATES/$lang/adapter-thin.md"
-    if [[ "$(grep -c '^<!-- SSOT-SKILL:BEGIN -->$' "$adapter")" == 1 && "$(grep -c '^<!-- SSOT-SKILL:END -->$' "$adapter")" == 1 ]]; then
+    if [[ "$(grep -c '^<!-- SSOT-CONTEXT:BEGIN -->$' "$adapter")" == 1 && "$(grep -c '^<!-- SSOT-CONTEXT:END -->$' "$adapter")" == 1 ]]; then
       pass "$lang: instruction block has exactly one marker pair"
     else
       fail "$lang: instruction block markers are missing or repeated"

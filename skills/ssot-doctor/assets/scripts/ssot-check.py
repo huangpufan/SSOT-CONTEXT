@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Mechanical checks for a repository SSOT/ directory (SSOT Skill v4).
+"""Mechanical checks for a repository SSOT/ directory (SSOT-CONTEXT v4).
 
 Usage: ssot-check.py [SSOT_DIR] [--since COMMIT]      (default: ./SSOT)
 

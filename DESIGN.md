@@ -1,10 +1,10 @@
-# Design: why SSOT Skill is shaped this way
+# Design: why SSOT-CONTEXT is shaped this way
 
 This file records the design inherited from version 3 and the ownership changes in version 4, so that later changes do not quietly rebuild what it removed. How to change the protocol is in [CONTRIBUTING.md](./CONTRIBUTING.md#changing-the-protocol). What a consumer's `SSOT/` contains is in [memory-model.md](./skills/ssot-preflight/references/memory-model.md).
 
 ## The job
 
-A coding agent starts every session without the history of the project. SSOT Skill gives each repository a small, maintained memory: what the project is for, how it works, which rules people decided, why things are the way they are, and where the traps are. The next agent reads it before working and updates it when something durable changes. The bundle's value is that this reading and updating cost less than the mistakes they prevent.
+A coding agent starts every session without the history of the project. SSOT-CONTEXT gives each repository a small, maintained memory: what the project is for, how it works, which rules people decided, why things are the way they are, and where the traps are. The next agent reads it before working and updates it when something durable changes. The bundle's value is that this reading and updating cost less than the mistakes they prevent.
 
 ## What happened in v2
 

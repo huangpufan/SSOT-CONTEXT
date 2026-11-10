@@ -74,8 +74,8 @@ def run(root, arm, case, turn, cap):
                                   and case in ('chat', 'chat-origin-positive', 'newcomer') else arm)
     if turn == 1:
         adapter = (bundle / 'skills/ssot-bootstrap/assets/templates/zh/adapter-thin.md').read_text()
-        start = adapter.index('<!-- SSOT-SKILL:BEGIN -->')
-        end = adapter.index('<!-- SSOT-SKILL:END -->') + len('<!-- SSOT-SKILL:END -->')
+        start = adapter.index('<!-- SSOT-CONTEXT:BEGIN -->')
+        end = adapter.index('<!-- SSOT-CONTEXT:END -->') + len('<!-- SSOT-CONTEXT:END -->')
         prompt = ('这是隔离的真实项目摘录试验；只读写当前工作目录，禁止联网、提交、推送、调用其他模型或读取其他项目。'
                   '当前未提供的项目文件不代表不存在，不声称覆盖完整项目。'
                   'SSOT技能只从以下冻结目录按需读取，不使用宿主其他技能：\n' + str(bundle / 'skills') + '\n'

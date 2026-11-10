@@ -1,20 +1,22 @@
 <div align="center">
 
-# SSOT Skill
+# SSOT-CONTEXT
+
+The project was previously named SSOT-SKILL. Existing skill names remain compatible; see [rename compatibility](./INSTALL.md#project-rename-compatibility).
 
 **Humans define the invariants. Agents evolve the code.**
 
-[![CI](https://github.com/huangpufan/SSOT-SKILL/actions/workflows/ci.yml/badge.svg)](https://github.com/huangpufan/SSOT-SKILL/actions/workflows/ci.yml) [![License: MIT](https://img.shields.io/badge/license-MIT-blue.svg)](./LICENSE) [![Agents](https://img.shields.io/badge/agents-70%2B-purple)](#supported-agents) [![Stars](https://img.shields.io/github/stars/huangpufan/SSOT-SKILL?style=social)](https://github.com/huangpufan/SSOT-SKILL/stargazers)
+[![CI](https://github.com/huangpufan/SSOT-CONTEXT/actions/workflows/ci.yml/badge.svg)](https://github.com/huangpufan/SSOT-CONTEXT/actions/workflows/ci.yml) [![License: MIT](https://img.shields.io/badge/license-MIT-blue.svg)](./LICENSE) [![Agents](https://img.shields.io/badge/agents-70%2B-purple)](#supported-agents) [![Stars](https://img.shields.io/github/stars/huangpufan/SSOT-CONTEXT?style=social)](https://github.com/huangpufan/SSOT-CONTEXT/stargazers)
 
 [English](./README.md) · [中文](./README.zh.md) · [Install guide](./INSTALL.md) · [Protocol version](./VERSION) · [Changelog](./CHANGELOG.md)
 
 </div>
 
-We believe coding agents will evolve toward automating design, implementation, and code review. SSOT Skill explores and adapts to that paradigm shift: **humans define a project's invariants. When a change to those invariants is proposed, humans assess whether it is correct and appropriate, then decide whether to accept it.** Invariants are the promises an implementation must preserve: API compatibility, tenant isolation, or never charging twice on a retry.
+We believe coding agents will evolve toward automating design, implementation, and code review. SSOT-CONTEXT explores and adapts to that paradigm shift: **humans define a project's invariants. When a change to those invariants is proposed, humans assess whether it is correct and appropriate, then decide whether to accept it.** Invariants are the promises an implementation must preserve: API compatibility, tenant isolation, or never charging twice on a retry.
 
 Within those boundaries, agents do the work, supported by the **harness**: the tools, checks, and execution controls around them.
 
-**SSOT Skill gives those invariants and decisions a durable home.** It maintains a version-controlled entry at `SSOT/README.md`, routing to the single owners of constraints, their rationale, architecture, decisions, and known pitfalls. Existing maintained repository documents can remain those owners. Across sessions and agents, the work starts from the same explicit agreements.
+**SSOT-CONTEXT gives those invariants and decisions a durable home.** It maintains a version-controlled entry at `SSOT/README.md`, routing to the single owners of constraints, their rationale, architecture, decisions, and known pitfalls. Existing maintained repository documents can remain those owners. Across sessions and agents, the work starts from the same explicit agreements.
 
 **SSOT** means **Single Source of Truth**: each durable fact has one maintained home; other documents link to it. The bundle provides six skills, Markdown templates, and a local checker inside your existing coding agent. It maintains the shared knowledge; your harness and tests execute and verify the work.
 
@@ -25,7 +27,7 @@ Within those boundaries, agents do the work, supported by the **harness**: the t
 Open that repository in your coding agent and paste:
 
 ```text
-Read https://raw.githubusercontent.com/huangpufan/SSOT-SKILL/main/INSTALL.md and follow it.
+Read https://raw.githubusercontent.com/huangpufan/SSOT-CONTEXT/main/INSTALL.md and follow it.
 ```
 
 The agent follows the [install guide](./INSTALL.md) to identify its installation target, install and verify all six skills, and merge lifecycle instructions into the repository's `AGENTS.md`, `CLAUDE.md`, or equivalent file. The default is **the current project only**, preserving an existing template language or choosing `en` / `zh` from your conversation. You can specify a different language or explicitly request a global installation in the same message.
@@ -38,7 +40,7 @@ Run this from the root of the repository you want to document:
 
 ```bash
 set -o pipefail
-curl -fsSL https://raw.githubusercontent.com/huangpufan/SSOT-SKILL/main/install.sh | bash -s -- --quickstart --scope project --lang en
+curl -fsSL https://raw.githubusercontent.com/huangpufan/SSOT-CONTEXT/main/install.sh | bash -s -- --quickstart --scope project --lang en
 ```
 
 Use `--lang zh` for Chinese templates. `--quickstart` detects the agent and skips interactive prompts. If detection is ambiguous or you want to choose explicitly, append `--agent codex`, `--agent claude-code`, or another [supported key](#supported-agents).
@@ -147,7 +149,7 @@ List all keys and installation paths without installing anything:
 
 ```bash
 set -o pipefail
-curl -fsSL https://raw.githubusercontent.com/huangpufan/SSOT-SKILL/main/install.sh | bash -s -- --list-agents
+curl -fsSL https://raw.githubusercontent.com/huangpufan/SSOT-CONTEXT/main/install.sh | bash -s -- --list-agents
 ```
 
 An installation path in the registry does not establish identical skill discovery or behavior across agent versions. Restart the agent after installation and verify that it can discover the skills.
@@ -157,7 +159,7 @@ An installation path in the registry does not establish identical skill discover
 Ask your agent to handle updates through the same guide:
 
 ```text
-Read https://raw.githubusercontent.com/huangpufan/SSOT-SKILL/main/INSTALL.md and update SSOT Skill for this agent in the current project. Preserve the template language.
+Read https://raw.githubusercontent.com/huangpufan/SSOT-CONTEXT/main/INSTALL.md and update SSOT-CONTEXT for this agent in the current project. Preserve the template language.
 ```
 
 Restart the agent afterward. Replacing the installed skills never changes `SSOT/` by itself. To uninstall, ask the agent to follow the guide's removal steps for the chosen scope, including checking for obsolete trigger instructions.
@@ -178,7 +180,7 @@ For a project-local Codex installation, run from the consuming repository:
 
 ```bash
 set -o pipefail
-curl -fsSL https://raw.githubusercontent.com/huangpufan/SSOT-SKILL/main/install.sh | bash -s -- --upgrade --agent codex --scope project
+curl -fsSL https://raw.githubusercontent.com/huangpufan/SSOT-CONTEXT/main/install.sh | bash -s -- --upgrade --agent codex --scope project
 ```
 
 To pin the frozen v2 protocol instead of the current release, add `--ref v2-final` to the install or upgrade command.
@@ -187,7 +189,7 @@ To remove it:
 
 ```bash
 set -o pipefail
-curl -fsSL https://raw.githubusercontent.com/huangpufan/SSOT-SKILL/main/install.sh | bash -s -- --uninstall --agent codex --scope project --yes
+curl -fsSL https://raw.githubusercontent.com/huangpufan/SSOT-CONTEXT/main/install.sh | bash -s -- --uninstall --agent codex --scope project --yes
 ```
 
 Choose the same key and scope used during installation. Agents sharing a skills directory also share the installed bundle, so removal affects that shared location. The command leaves your `SSOT/` documents and agent-instructions file in place; remove obsolete SSOT trigger instructions yourself if you stop using the bundle.
@@ -208,9 +210,9 @@ Bare `--upgrade` updates all detected installations in the current project and g
 
 ## Star History
 
-<a href="https://www.star-history.com/#huangpufan/SSOT-SKILL&Date"> <picture>
-    <source media="(prefers-color-scheme: dark)" srcset="https://api.star-history.com/svg?repos=huangpufan/SSOT-SKILL&type=Date&theme=dark" />
-    <source media="(prefers-color-scheme: light)" srcset="https://api.star-history.com/svg?repos=huangpufan/SSOT-SKILL&type=Date" /> <img alt="Star History Chart" src="https://api.star-history.com/svg?repos=huangpufan/SSOT-SKILL&type=Date" /> </picture> </a>
+<a href="https://www.star-history.com/#huangpufan/SSOT-CONTEXT&Date"> <picture>
+    <source media="(prefers-color-scheme: dark)" srcset="https://api.star-history.com/svg?repos=huangpufan/SSOT-CONTEXT&type=Date&theme=dark" />
+    <source media="(prefers-color-scheme: light)" srcset="https://api.star-history.com/svg?repos=huangpufan/SSOT-CONTEXT&type=Date" /> <img alt="Star History Chart" src="https://api.star-history.com/svg?repos=huangpufan/SSOT-CONTEXT&type=Date" /> </picture> </a>
 
 ## License
 

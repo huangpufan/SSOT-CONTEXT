@@ -4,7 +4,7 @@
 
 ## What This Repo Is
 
-SSOT-SKILL is a skill bundle that gives a project repository a small, maintained memory entered through `SSOT/README.md`, with repository-local knowledge owners: what the project is for, how it works, the rules people decided, why things are the way they are, and the traps. [DESIGN.md](./DESIGN.md) explains why it is shaped this way, including what version 3 removed. The bundle contains six skills:
+SSOT-CONTEXT is a skill bundle that gives a project repository a small, maintained memory entered through `SSOT/README.md`, with repository-local knowledge owners: what the project is for, how it works, the rules people decided, why things are the way they are, and the traps. [DESIGN.md](./DESIGN.md) explains why it is shaped this way, including what version 3 removed. The bundle contains six skills:
 
 | Skill | Role |
 |-------|------|
@@ -20,7 +20,7 @@ SSOT-SKILL is a skill bundle that gives a project repository a small, maintained
 When a user asks you to install or reinstall this bundle, follow [`INSTALL.md`](./INSTALL.md). The short form:
 
 ```bash
-curl -fsSL https://raw.githubusercontent.com/huangpufan/SSOT-SKILL/main/install.sh | bash -s -- --quickstart
+curl -fsSL https://raw.githubusercontent.com/huangpufan/SSOT-CONTEXT/main/install.sh | bash -s -- --quickstart
 ```
 
 For upgrade or uninstall, see `bash install.sh --help`.
@@ -29,7 +29,7 @@ For upgrade or uninstall, see `bash install.sh --help`.
 
 In consuming repositories, complete the instruction wiring in [`INSTALL.md`](./INSTALL.md), then restart the agent session. Users describe tasks normally; the agent selects the matching skills automatically.
 
-The consumer instruction block lives in the bootstrap adapter template ([English](./skills/ssot-bootstrap/assets/templates/en/adapter-thin.md), [中文](./skills/ssot-bootstrap/assets/templates/zh/adapter-thin.md)), between the `SSOT-SKILL:BEGIN` / `SSOT-SKILL:END` markers. The installer prints that same block; maintain its wording there. Each skill's `SKILL.md` owns the detailed protocol.
+The consumer instruction block lives in the bootstrap adapter template ([English](./skills/ssot-bootstrap/assets/templates/en/adapter-thin.md), [中文](./skills/ssot-bootstrap/assets/templates/zh/adapter-thin.md)), between the `SSOT-CONTEXT:BEGIN` / `SSOT-CONTEXT:END` markers. The installer prints that same block; maintain its wording there. Each skill's `SKILL.md` owns the detailed protocol.
 
 ## Language
 
@@ -62,7 +62,7 @@ Every modification to this repository — code, templates, docs, installer, test
 
 ## Models for Development and Trials
 
-Every model run that develops or tests SSOT Skill uses a cheap model: setup and migration runs, trial subjects, judges, reviewers, and helper agents. Claude models (the `claude` CLI, Claude subagents) and other expensive model tiers are not allowed for this work. The user named two that are allowed: `deepseek-v4.1-flash` through dsh, and `gpt-6.1-terra` through codex. Ask the user before using any other model whose cost is unclear. The maintainer session that coordinates the runs and judges their results is not covered by this rule (user directive, 2026-10-27).
+Every model run that develops or tests SSOT-CONTEXT uses a cheap model: setup and migration runs, trial subjects, judges, reviewers, and helper agents. Claude models (the `claude` CLI, Claude subagents) and other expensive model tiers are not allowed for this work. The user named two that are allowed: `deepseek-v4.1-flash` through dsh, and `gpt-6.1-terra` through codex. Ask the user before using any other model whose cost is unclear. The maintainer session that coordinates the runs and judges their results is not covered by this rule (user directive, 2026-10-27).
 
 ## Writing Style (Global)
 

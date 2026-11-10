@@ -1,9 +1,9 @@
 ---
 name: ssot-skill
-description: Compatibility name for the SSOT Skill bundle. Use only when a prompt or an instruction file explicitly asks for $ssot-skill; it routes to the SSOT skill that fits the current moment.
+description: Compatibility name for the SSOT-CONTEXT bundle. Use only when a prompt or an instruction file explicitly asks for $ssot-skill; it routes to the SSOT skill that fits the current moment.
 ---
 
-# SSOT Skill (compatibility name)
+# SSOT-CONTEXT (compatibility name)
 
 Route by the moment:
 

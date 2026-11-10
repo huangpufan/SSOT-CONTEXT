@@ -444,9 +444,9 @@ for utility in bash git dirname mkdir mktemp rm tr cp mv ln cat tput head grep a
   ln -s "$(command -v "$utility")" "$SCENARIO21/bin/$utility"
 done
 if (cd "$SCENARIO21/project" && env -u SOURCE_DIR PATH="$SCENARIO21/bin" TMPDIR="$SCENARIO21/tmp" \
-  SSOT_SKILL_REPO_URL="$SCENARIO21/source" bash "$SCENARIO21/install.sh" \
+  SSOT_CONTEXT_REPO_URL="$SCENARIO21/source" SSOT_SKILL_REPO_URL="$SCENARIO21/must-not-be-used" bash "$SCENARIO21/install.sh" \
   --quickstart --agent claude-code --scope project --lang en) >"$SCENARIO21/check.log" 2>&1; then
-  pass "scenario21: fetched-source installation works without GNU timeout"
+  pass "scenario21: new source override wins over legacy override without GNU timeout"
 else
   fail "scenario21: fetched-source installation failed without GNU timeout"
   cat "$SCENARIO21/check.log"
@@ -550,7 +550,7 @@ import subprocess
 import sys
 
 root, work = map(Path, sys.argv[1:])
-begin, end = '<!-- SSOT-SKILL:BEGIN -->', '<!-- SSOT-SKILL:END -->'
+begin, end = '<!-- SSOT-CONTEXT:BEGIN -->', '<!-- SSOT-CONTEXT:END -->'
 source = work / 'source'
 shutil.copytree(root / 'skills', source / 'skills')
 shutil.copy2(root / 'VERSION', source / 'VERSION')
@@ -645,6 +645,10 @@ REF_SRC="$SCENARIO24/source"
 mkdir -p "$REF_SRC" "$SCENARIO24/home"
 cp -R "$PROJECT_ROOT/skills" "$REF_SRC/skills"
 cp "$PROJECT_ROOT/VERSION" "$REF_SRC/VERSION"
+for lang in en zh; do
+  sed -i.bak 's/SSOT-CONTEXT:/SSOT-SKILL:/g' "$REF_SRC/skills/ssot-bootstrap/assets/templates/$lang/adapter-thin.md"
+  rm -f "$REF_SRC/skills/ssot-bootstrap/assets/templates/$lang/adapter-thin.md.bak"
+done
 sed -i.bak 's/protocol_version: "[^"]*"/protocol_version: "2.99-fixture"/' "$REF_SRC/skills/ssot-preflight/SKILL.md"
 rm -f "$REF_SRC/skills/ssot-preflight/SKILL.md.bak"
 printf '%s\n# old style guide\n' '<!-- SSOT-SKILL bundle companion; owned by install.sh -->' > "$REF_SRC/skills/SKILL_STYLE.md"

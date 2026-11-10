@@ -1,4 +1,4 @@
 interface:
-  display_name: "SSOT Skill (compatibility)"
+  display_name: "SSOT-CONTEXT (compatibility)"
   short_description: "Route old SSOT requests"
   default_prompt: "Use $ssot-skill only to route an older prompt to the right SSOT skill."

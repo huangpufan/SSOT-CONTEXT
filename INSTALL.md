@@ -1,6 +1,6 @@
 # Install Guide (Agent-facing)
 
-Use this guide when a user asks you to install, reinstall, update, or remove SSOT Skill. Work in the **user's target repository**, preserve existing instructions, and respond in the user's language.
+Use this guide when a user asks you to install, reinstall, update, or remove SSOT-CONTEXT. Work in the **user's target repository**, preserve existing instructions, and respond in the user's language.
 
 For a new installation, finish the setup: install the bundle, verify the installed files, and merge the lifecycle instructions. Skill discovery is confirmed only after the agent session restarts.
 
@@ -43,7 +43,7 @@ ssot_scope='<project-or-global>'
 ssot_install_dir="$(mktemp -d)"
 printf 'Installer directory: %s\n' "$ssot_install_dir"
 if ! curl -fsSL --connect-timeout 10 --max-time 60 --retry 2 \
-  https://raw.githubusercontent.com/huangpufan/SSOT-SKILL/main/install.sh \
+  https://raw.githubusercontent.com/huangpufan/SSOT-CONTEXT/main/install.sh \
   -o "$ssot_install_dir/install.sh"; then
   printf 'Installer download failed; setup has not run.\n' >&2
   exit 1
@@ -62,12 +62,12 @@ Check the download and installer results separately. Retain the printed temporar
 If the download fails for network reasons, the existing mirror is:
 
 ```text
-https://gh-proxy.com/https://raw.githubusercontent.com/huangpufan/SSOT-SKILL/main/install.sh
+https://gh-proxy.com/https://raw.githubusercontent.com/huangpufan/SSOT-CONTEXT/main/install.sh
 ```
 
 Retry the download using that URL, then run the same installer command. Do not treat invalid arguments, missing prerequisites, or verification failures as network problems.
 
-If the user supplied a local SSOT-SKILL checkout, use its `install.sh` with `SOURCE_DIR` set to that checkout instead of downloading another copy. The installer normally fetches the current `main` bundle; `--ref <branch-or-tag>` fetches another one, and `SOURCE_DIR` selects a local source. The two cannot be combined.
+If the user supplied a local SSOT-CONTEXT checkout, use its `install.sh` with `SOURCE_DIR` set to that checkout instead of downloading another copy. The installer normally fetches the current `main` bundle; `--ref <branch-or-tag>` fetches another one, and `SOURCE_DIR` selects a local source. The two cannot be combined.
 
 If the user requested both scopes, run the installation once for each scope and verify both locations. Installation does not create or migrate the target repository's `SSOT/`.
 
@@ -93,7 +93,7 @@ These checks verify the installation, not the health of the user's repository do
 
 ## 4. Wire the skills into the repo's agent-instructions file
 
-The installer prints the `SSOT-SKILL:BEGIN` / `SSOT-SKILL:END` block from the selected-language bootstrap `adapter-thin.md` template. That template is the shared source for installation and later bootstrap; the skill protocols own the detailed behavior. Merge the printed block into the target repository's existing instructions; discovery alone does not establish when a skill should run. A global-only installation without a target repository stops after verification and reports that each consuming repository still needs these instructions; it does not authorize editing global agent instructions.
+The installer prints the `SSOT-CONTEXT:BEGIN` / `SSOT-CONTEXT:END` block from the selected-language bootstrap `adapter-thin.md` template. That template is the shared source for installation and later bootstrap; the skill protocols own the detailed behavior. Merge the printed block into the target repository's existing instructions; discovery alone does not establish when a skill should run. When upgrading an installation with `SSOT-SKILL:BEGIN` / `SSOT-SKILL:END` markers, replace that old block with the new one rather than appending a second block. A global-only installation without a target repository stops after verification and reports that each consuming repository still needs these instructions; it does not authorize editing global agent instructions.
 
 Make clear that these are instructions for the agent: apply the skills automatically when their conditions match, without waiting for the user to name each skill. Users should be able to describe ordinary repository tasks after setup and restart. Explicit skill invocation remains an optional way to request a focused check or diagnose a missed trigger.
 
@@ -116,7 +116,7 @@ Before finishing, reread the resulting file and confirm it covers:
 - for a 4.x installation, no leftover instructions from an older SSOT setup, such as running `$ssot-audit` for protocol lag, advancing `tracked_*` fields, or reading `STATUS.md` first (a v2 installation keeps those, and uses the block from its own `adapter-thin.md`);
 - preserving existing project rules, user decisions, and commit/push authorization.
 
-Do not copy or apply SSOT-SKILL's own `AGENTS.md` to the user's repository. It governs maintenance of the bundle source, including its release and commit conventions.
+Do not copy or apply SSOT-CONTEXT's own `AGENTS.md` to the user's repository. It governs maintenance of the bundle source, including its release and commit conventions.
 
 ## 5. Report the result and restart step
 
@@ -195,3 +195,7 @@ Version 4.0 uses `ssot_format: 4`: `SSOT/README.md` routes to maintained reposit
 bash "$ssot_install_dir/install.sh" --upgrade --agent "$ssot_agent" --scope "$ssot_scope" --ref v2-final
 ```
 
+
+## Project rename compatibility
+
+SSOT-CONTEXT was previously named SSOT-SKILL. The six skill directory names remain stable, including the `ssot-skill` compatibility router, so existing prompts and installations continue to work. `SSOT_CONTEXT_REPO_URL` overrides the installer source; the legacy `SSOT_SKILL_REPO_URL` remains a fallback, and the new variable takes precedence when both are set. Installer lock, staging and companion ownership names retain their legacy spelling so upgrades still detect interrupted transactions and remove only companions they own. The project memory directory remains `SSOT/`.

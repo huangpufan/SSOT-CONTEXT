@@ -1,6 +1,6 @@
 # 项目记忆审计与 4.0 改进方案
 
-本次审计关注一个具体问题：项目已经有约束、决定、研究材料和工作记录，SSOT Skill 怎样让下一位 Agent 找到并维护它们，同时保住用户决定，减少重复文档与重复劳动？审计选择了 Calliope 的项目控制与创作资料维护、核心目标项目 dsh-personal-agent 的用户决定与派工验收，以及 DSH 集合的插件开发和后续验证文档。结论是保留项目既有权威，令 SSOT 成为入口和必要知识的承载处；把对话中刚确认的决定及时写到正确 owner，并在整理和恢复时保住其范围与身份。
+本次审计关注一个具体问题：项目已经有约束、决定、研究材料和工作记录，SSOT-CONTEXT 怎样让下一位 Agent 找到并维护它们，同时保住用户决定，减少重复文档与重复劳动？审计选择了 Calliope 的项目控制与创作资料维护、核心目标项目 dsh-personal-agent 的用户决定与派工验收，以及 DSH 集合的插件开发和后续验证文档。结论是保留项目既有权威，令 SSOT 成为入口和必要知识的承载处；把对话中刚确认的决定及时写到正确 owner，并在整理和恢复时保住其范围与身份。
 
 这是一次有边界的本地材料审计，不是对这些项目全部文件、用户诉求或运行行为的完整认证。下文用仓库名和仓库内相对路径定位，行号指审计时读到的版本；消费项目未作为本报告附件发布，这些定位不是读者可直接复演的便携证据。报告只摘述工作约束及文档机制，不公开私人作品素材和完整用户对话。本报告是此次研究产物，不建立永久覆盖台账。
 
@@ -18,7 +18,7 @@ Calliope 的入口是 `AGENTS.md`。重点读取 `docs/创作示例/02_谁准长
 
 DSH 集合与宿主侧读取了 `dsh-plugins/AGENTS.md`、`docs/plugin-development.md`、`docs/plugin-walkthrough.md`、`docs/followups.md`，以及 `deepseek-harness/AGENTS.md`、`docs/AGENTS.md` 和 `docs/subsystems/plan.zh.md` 的相关部分。由此判断文档与工具的责任边界，不声称已验证插件加载、常驻服务、计划模式或恢复实现。
 
-协议基线是 SSOT Skill 3.15，核心依据为 `DESIGN.md`、`CONTRIBUTING.md`、四个主 skill、`memory-model.md` 与 bootstrap 引用。4.0 方案是本次已选定的协议方向；其实现和试验结果由实际 diff、检查输出和试验记录证明，本报告不把方案选择写成行为已改善。
+协议基线是 SSOT-CONTEXT 3.15，核心依据为 `DESIGN.md`、`CONTRIBUTING.md`、四个主 skill、`memory-model.md` 与 bootstrap 引用。4.0 方案是本次已选定的协议方向；其实现和试验结果由实际 diff、检查输出和试验记录证明，本报告不把方案选择写成行为已改善。
 
 ## 真实诉求与协议覆盖
 

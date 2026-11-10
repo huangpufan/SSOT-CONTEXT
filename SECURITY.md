@@ -19,7 +19,7 @@ You can expect an acknowledgement within 48 hours. After triage we will coordina
 
 ## Threat Surface
 
-SSOT-SKILL ships:
+SSOT-CONTEXT ships:
 
 - A Bash installer (`install.sh`) that copies skill bundles into an agent's config directory and may shell out to `git`, `curl`, and standard POSIX utilities.
 - Test scaffolding under `tests/` and the read-only checker (`ssot-check.py`).

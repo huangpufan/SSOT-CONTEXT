@@ -178,7 +178,7 @@ def run(root, arm, case, turn, cap):
             raise RuntimeError(f"Refusing to overwrite {repo}")
         fixture(repo, bundle, case)
         adapter = (bundle / "skills/ssot-bootstrap/assets/templates/en/adapter-thin.md").read_text()
-        block = adapter[adapter.index("<!-- SSOT-SKILL:BEGIN -->"):adapter.index("<!-- SSOT-SKILL:END -->")]
+        block = adapter[adapter.index("<!-- SSOT-CONTEXT:BEGIN -->"):adapter.index("<!-- SSOT-CONTEXT:END -->")]
         prompt = ("这是隔离的可执行试验仓库。只在当前仓库工作；技能只从 " + str(bundle / "skills")
                   + " 按需读取，按下列正常路由使用。可以读取所需章节。禁止提交、推送、安装依赖、读取其他项目或调用其他模型。"
                   "技能没有专用调用工具时直接读其 SKILL.md；不需要替代的技能调用事件。\n" + block

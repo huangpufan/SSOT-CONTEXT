@@ -1,20 +1,22 @@
 <div align="center">
 
-# SSOT Skill
+# SSOT-CONTEXT
+
+本项目原名 SSOT-SKILL。已有技能名称保持兼容；详见[改名兼容说明](./INSTALL.md#project-rename-compatibility)。
 
 **人定义不变量，Agent 演进代码。**
 
-[![CI](https://github.com/huangpufan/SSOT-SKILL/actions/workflows/ci.yml/badge.svg)](https://github.com/huangpufan/SSOT-SKILL/actions/workflows/ci.yml) [![License: MIT](https://img.shields.io/badge/license-MIT-blue.svg)](./LICENSE) [![Agents](https://img.shields.io/badge/agents-70%2B-purple)](#支持的-agent) [![Stars](https://img.shields.io/github/stars/huangpufan/SSOT-SKILL?style=social)](https://github.com/huangpufan/SSOT-SKILL/stargazers)
+[![CI](https://github.com/huangpufan/SSOT-CONTEXT/actions/workflows/ci.yml/badge.svg)](https://github.com/huangpufan/SSOT-CONTEXT/actions/workflows/ci.yml) [![License: MIT](https://img.shields.io/badge/license-MIT-blue.svg)](./LICENSE) [![Agents](https://img.shields.io/badge/agents-70%2B-purple)](#支持的-agent) [![Stars](https://img.shields.io/github/stars/huangpufan/SSOT-CONTEXT?style=social)](https://github.com/huangpufan/SSOT-CONTEXT/stargazers)
 
 [English](./README.md) · [中文](./README.zh.md) · [安装指南](./INSTALL.md) · [协议版本](./VERSION) · [更新日志](./CHANGELOG.md)
 
 </div>
 
-我们的判断是：Coding Agent 会向设计、实现和代码审查的自动化持续演进。SSOT Skill 探索并适应这种范式变化：**人参与定义项目的不变量；当出现修改不变量的建议时，由人判断修改是否正确、是否合适，并决定是否接受。** 不变量是实现无论怎样演进都必须守住的承诺，例如接口兼容、租户数据隔离、重试不能重复扣款。
+我们的判断是：Coding Agent 会向设计、实现和代码审查的自动化持续演进。SSOT-CONTEXT 探索并适应这种范式变化：**人参与定义项目的不变量；当出现修改不变量的建议时，由人判断修改是否正确、是否合适，并决定是否接受。** 不变量是实现无论怎样演进都必须守住的承诺，例如接口兼容、租户数据隔离、重试不能重复扣款。
 
 在这些边界内，Agent 执行任务，外层 **Harness**（围绕 Agent 的工具、检查与执行控制）支撑自动化。
 
-**SSOT Skill 让这些不变量和决策有据可循。** 它以随代码版本管理的 `SSOT/README.md` 为入口，指向约束及其理由、架构、决策和已知陷阱的唯一维护位置。仓库内已有且持续维护的文档可以保留权威归属，让不同会话、不同 Agent 从同一组明确的共识出发。
+**SSOT-CONTEXT 让这些不变量和决策有据可循。** 它以随代码版本管理的 `SSOT/README.md` 为入口，指向约束及其理由、架构、决策和已知陷阱的唯一维护位置。仓库内已有且持续维护的文档可以保留权威归属，让不同会话、不同 Agent 从同一组明确的共识出发。
 
 **SSOT** 是 **Single Source of Truth（单一事实源）**：每条长期事实只在一个位置维护，其他文档通过链接引用。本项目提供六个 Skill、Markdown 模板和本地检查脚本，在你已有的编程 Agent 中维护这份共享知识；任务的执行与验证由你的 Harness 和测试设施承担。
 
@@ -25,7 +27,7 @@
 用编程 Agent 打开那个项目，把下面这句话发给它：
 
 ```text
-请阅读 https://raw.githubusercontent.com/huangpufan/SSOT-SKILL/main/INSTALL.md 并按照指南安装。
+请阅读 https://raw.githubusercontent.com/huangpufan/SSOT-CONTEXT/main/INSTALL.md 并按照指南安装。
 ```
 
 Agent 会按[安装指南](./INSTALL.md)识别安装位置，安装并验证全部六个 Skill，再把日常触发指令合并到项目的 `AGENTS.md`、`CLAUDE.md` 等文件中。默认**只安装到当前项目**，沿用已有模板语言；首次安装时根据对话语言选择 `en` 或 `zh`。你也可以在同一句话里指定其他语言，或明确要求全局安装。
@@ -38,7 +40,7 @@ Agent 会按[安装指南](./INSTALL.md)识别安装位置，安装并验证全�
 
 ```bash
 set -o pipefail
-curl -fsSL https://raw.githubusercontent.com/huangpufan/SSOT-SKILL/main/install.sh | bash -s -- --quickstart --scope project --lang zh
+curl -fsSL https://raw.githubusercontent.com/huangpufan/SSOT-CONTEXT/main/install.sh | bash -s -- --quickstart --scope project --lang zh
 ```
 
 需要英文模板时改用 `--lang en`。`--quickstart` 会识别 Agent 并跳过交互选择。如果识别结果不唯一，或你希望明确指定安装对象，可以追加 `--agent codex`、`--agent claude-code` 或其他[支持的标识](#支持的-agent)。
@@ -147,7 +149,7 @@ Agent 根据任务和项目状态，从四个 Skill 中选择；另外两个名�
 
 ```bash
 set -o pipefail
-curl -fsSL https://raw.githubusercontent.com/huangpufan/SSOT-SKILL/main/install.sh | bash -s -- --list-agents
+curl -fsSL https://raw.githubusercontent.com/huangpufan/SSOT-CONTEXT/main/install.sh | bash -s -- --list-agents
 ```
 
 登记了安装路径，不等于已经证明各 Agent 版本的 Skill 发现机制和执行行为完全一致。安装后请重启 Agent，并确认它能发现这些 Skill。
@@ -157,7 +159,7 @@ curl -fsSL https://raw.githubusercontent.com/huangpufan/SSOT-SKILL/main/install.
 更新时，也让 Agent 按同一份指南处理：
 
 ```text
-请阅读 https://raw.githubusercontent.com/huangpufan/SSOT-SKILL/main/INSTALL.md，为当前 Agent 更新本项目的 SSOT Skill，保留原模板语言。
+请阅读 https://raw.githubusercontent.com/huangpufan/SSOT-CONTEXT/main/INSTALL.md，为当前 Agent 更新本项目的 SSOT-CONTEXT，保留原模板语言。
 ```
 
 更新后重启 Agent。替换安装的 Skill 本身不会改动 `SSOT/`。卸载时，让 Agent 按指南移除指定范围的安装，并检查是否还有过时的触发指令。
@@ -174,11 +176,11 @@ curl -fsSL https://raw.githubusercontent.com/huangpufan/SSOT-SKILL/main/install.
 
 <details> <summary>手动更新与卸载命令</summary>
 
-例如，在使用 SSOT Skill 的项目根目录更新项目级 Codex 安装：
+例如，在使用 SSOT-CONTEXT 的项目根目录更新项目级 Codex 安装：
 
 ```bash
 set -o pipefail
-curl -fsSL https://raw.githubusercontent.com/huangpufan/SSOT-SKILL/main/install.sh | bash -s -- --upgrade --agent codex --scope project
+curl -fsSL https://raw.githubusercontent.com/huangpufan/SSOT-CONTEXT/main/install.sh | bash -s -- --upgrade --agent codex --scope project
 ```
 
 想固定在已冻结的 v2 协议而不是当前版本，在安装或更新命令后加 `--ref v2-final`。
@@ -187,7 +189,7 @@ curl -fsSL https://raw.githubusercontent.com/huangpufan/SSOT-SKILL/main/install.
 
 ```bash
 set -o pipefail
-curl -fsSL https://raw.githubusercontent.com/huangpufan/SSOT-SKILL/main/install.sh | bash -s -- --uninstall --agent codex --scope project --yes
+curl -fsSL https://raw.githubusercontent.com/huangpufan/SSOT-CONTEXT/main/install.sh | bash -s -- --uninstall --agent codex --scope project --yes
 ```
 
 请使用安装时对应的 Agent 标识和范围。共享同一 Skill 目录的 Agent 也共享这份安装，卸载会影响该共享位置。命令会保留 `SSOT/` 文档和 Agent 指令文件；停止使用本 Skill 包时，请自行移除不再适用的 SSOT 触发指令。
@@ -208,9 +210,9 @@ curl -fsSL https://raw.githubusercontent.com/huangpufan/SSOT-SKILL/main/install.
 
 ## Star 趋势
 
-<a href="https://www.star-history.com/#huangpufan/SSOT-SKILL&Date"> <picture>
-    <source media="(prefers-color-scheme: dark)" srcset="https://api.star-history.com/svg?repos=huangpufan/SSOT-SKILL&type=Date&theme=dark" />
-    <source media="(prefers-color-scheme: light)" srcset="https://api.star-history.com/svg?repos=huangpufan/SSOT-SKILL&type=Date" /> <img alt="Star History Chart" src="https://api.star-history.com/svg?repos=huangpufan/SSOT-SKILL&type=Date" /> </picture> </a>
+<a href="https://www.star-history.com/#huangpufan/SSOT-CONTEXT&Date"> <picture>
+    <source media="(prefers-color-scheme: dark)" srcset="https://api.star-history.com/svg?repos=huangpufan/SSOT-CONTEXT&type=Date&theme=dark" />
+    <source media="(prefers-color-scheme: light)" srcset="https://api.star-history.com/svg?repos=huangpufan/SSOT-CONTEXT&type=Date" /> <img alt="Star History Chart" src="https://api.star-history.com/svg?repos=huangpufan/SSOT-CONTEXT&type=Date" /> </picture> </a>
 
 ## 许可证
 

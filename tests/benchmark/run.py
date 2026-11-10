@@ -135,7 +135,7 @@ def isolated_command(repo, bundle, home):
 
 def prompt(bundle, case):
     adapter = (bundle / "skills/ssot-bootstrap/assets/templates/en/adapter-thin.md").read_text()
-    block = adapter[adapter.index("<!-- SSOT-SKILL:BEGIN -->"):adapter.index("<!-- SSOT-SKILL:END -->")]
+    block = adapter[adapter.index("<!-- SSOT-CONTEXT:BEGIN -->"):adapter.index("<!-- SSOT-CONTEXT:END -->")]
     task = "Only correct maintenence to maintenance in note.txt." if case == "typo" else cases.TASK
     return (f"Work only in the current isolated repository. Skills are available at {bundle / 'skills'}. "
             "Read their SKILL.md directly when routed; no dedicated skill tool is needed. "
