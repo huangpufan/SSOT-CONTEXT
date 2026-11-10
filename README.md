@@ -162,6 +162,8 @@ Read https://raw.githubusercontent.com/huangpufan/SSOT-SKILL/main/INSTALL.md and
 
 Restart the agent afterward. Replacing the installed skills never changes `SSOT/` by itself. To uninstall, ask the agent to follow the guide's removal steps for the chosen scope, including checking for obsolete trigger instructions.
 
+Use the guide's [upgrade transition checks](./INSTALL.md#check-the-transition-not-only-the-new-installation) for old instruction/tooling remnants, including custom calls to the retired 4.3 reader. A same-format bundle upgrade does not require rewriting project memory.
+
 ### Upgrading from 2.x or 3.x
 
 Version 4.0 uses `ssot_format: 4` so maintained repository-local documents can remain authoritative outside `SSOT/`. Agents read v2 and v3 memory but do not update it until you agree to a preservation-aware migration: ask "Migrate this repository's SSOT to v4." All installations that write this repository must use v4 before migration. The v3 migration keeps existing knowledge and paths; v2 migration also extracts durable content before removing the old ledgers and repoints scripts that used retired v2 tools. Migration needs your agreement and is one commit. To stay on v2, install with `--ref v2-final`; to retain v3, choose a v3 release with `--ref`.

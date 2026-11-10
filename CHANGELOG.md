@@ -8,6 +8,16 @@ Entries up to 2.86 were derived from the v2 protocol-upgrade ledger, which is pr
 
 ## [Unreleased]
 
+## [4.5] - 2026-11-10
+
+### Changed
+- Complete the v3 migration route by sharing existing instruction, inbound-link and retired-tool reconciliation; preserve owner paths, rule statuses and review watermarks without running v2 ledger deletion. Progress templates can identify v3 migration.
+- Distinguish retired mechanical checks, migration operations and the removed 4.3 reader. Installation guidance separates bundle upgrade from memory migration and same-format integration repair. Consumer format and protocol budgets stay unchanged; [trial evidence and limits](tests/trials-4.5.md) do not imply automatic migration or full recovery coverage.
+
+### Added
+- Opt-in isolated native migration/resume/read-only trials with frozen sources, preserved failures, executable outcome checks and no billable CI calls. Seven offline self-tests check fixtures and oracle counterexamples.
+- An installer upgrade regression that preserves existing consumer memory, decisions, progress, shared instruction wiring and integration callers while removing retired executable files.
+
 ### Fixed
 - Isolate checker Git queries from inherited repository-routing variables. A caller's `GIT_DIR`, `GIT_COMMON_DIR` or object directory could otherwise select foreign history and silently pass an unauthorized confirmed-rule change; `GIT_WORK_TREE` could reject valid local memory. Regression checks exercise clean and changed rules under foreign routing, retaining alias and cross-repository boundaries. No consumer format or agent protocol changes.
 

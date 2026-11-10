@@ -1,0 +1,283 @@
+{
+  "schema": 1,
+  "observations": [
+    {
+      "observation": "exploratory baseline",
+      "local_evidence_directory": "ssot-migration-probe-20261110",
+      "included_in_final_scenarios": false,
+      "bundle_digest": "b4b41c93564f73598309210f7651c9e04fe821e241306050cfe758d9789550b3",
+      "harness_manifest": null,
+      "seconds": 72.795,
+      "native_models": [
+        "gpt-6.1-terra"
+      ],
+      "native_turn_usage": {
+        "input_tokens": 303025,
+        "cached_input_tokens": 280704,
+        "cache_write_input_tokens": 0,
+        "output_tokens": 2408,
+        "reasoning_output_tokens": 98,
+        "total_tokens": 305433
+      },
+      "returncode": 0,
+      "completed": true,
+      "changed_paths": [
+        "AGENTS.md",
+        "SSOT/BOOTSTRAP.md",
+        "SSOT/README.md",
+        "check-memory.sh"
+      ],
+      "verdict": null,
+      "native_receipt_sha256": "c92a45df1458b598c7c52d4cdff8e4ef6f46f1098a90a081526ca2c7d3543082"
+    },
+    {
+      "observation": "malformed fixture, excluded",
+      "local_evidence_directory": "ssot-migration-candidate-resume-20261110",
+      "included_in_final_scenarios": false,
+      "bundle_digest": "9995caa2e3b92ad21a8020a90b0dc4605d91d203412cb39e375ed12d88745cf0",
+      "harness_manifest": {
+        "benchmark/cases.py": "a5dcb0794035c39858b85f6dc8853e4c668f0077e791b283ed9e6f75adf81b64",
+        "benchmark/run.py": "e53ea9e8c0cb0650f5e58dfc3c17f372e48d90ffb4915a71dede4cf69756e148",
+        "run-migration-trials.py": "eed92b4da6e31cbbdbb3eaf5960a0ef24efeac760b3deb670542914843f12343",
+        "run-performance-trials.py": "5e052ae6372b5eb30694534cbb3b2836bb447ebac53f3edff5ec0c1f1850ae12"
+      },
+      "seconds": 67.745,
+      "native_models": [
+        "gpt-6.1-terra"
+      ],
+      "native_turn_usage": {
+        "input_tokens": 267804,
+        "cached_input_tokens": 224768,
+        "cache_write_input_tokens": 0,
+        "output_tokens": 2396,
+        "reasoning_output_tokens": 122,
+        "total_tokens": 270200
+      },
+      "returncode": 0,
+      "completed": true,
+      "changed_paths": [
+        "AGENTS.md",
+        "SSOT/BOOTSTRAP.md",
+        "SSOT/README.md",
+        "SSOT/architecture.md",
+        "check-memory.sh"
+      ],
+      "verdict": {
+        "checks": {
+          "format4": true,
+          "review_watermark_preserved": true,
+          "rules_sources_statuses_preserved": false,
+          "owner_bytes_preserved": false,
+          "open_question_preserved": true,
+          "credential_rule_preserved": true,
+          "legacy_instructions_removed": true,
+          "one_current_instruction_block": true,
+          "obsolete_wrapper_replaced_and_runs": true,
+          "checker_passes": true,
+          "checkpoint_removed_last_state": true,
+          "write_scope": false,
+          "native_completion": true,
+          "allowed_model": true,
+          "frozen_inputs": true
+        },
+        "pass": false
+      },
+      "native_receipt_sha256": "1c0d738b79746acca6985b49a9f1e41a00621c84d00f5187a4fc29d15002baca"
+    },
+    {
+      "observation": "candidate resume",
+      "local_evidence_directory": "ssot-migration-candidate-resume-r2-20261110",
+      "included_in_final_scenarios": true,
+      "bundle_digest": "9995caa2e3b92ad21a8020a90b0dc4605d91d203412cb39e375ed12d88745cf0",
+      "harness_manifest": {
+        "benchmark/cases.py": "a5dcb0794035c39858b85f6dc8853e4c668f0077e791b283ed9e6f75adf81b64",
+        "benchmark/run.py": "e53ea9e8c0cb0650f5e58dfc3c17f372e48d90ffb4915a71dede4cf69756e148",
+        "run-migration-trials.py": "2e673c39604e2e93e58ab7f1568e0b06caff92c9f20595c1f86a11e59036e018",
+        "run-performance-trials.py": "5e052ae6372b5eb30694534cbb3b2836bb447ebac53f3edff5ec0c1f1850ae12"
+      },
+      "seconds": 74.674,
+      "native_models": [
+        "gpt-6.1-terra"
+      ],
+      "native_turn_usage": {
+        "input_tokens": 308185,
+        "cached_input_tokens": 264064,
+        "cache_write_input_tokens": 0,
+        "output_tokens": 2790,
+        "reasoning_output_tokens": 117,
+        "total_tokens": 310975
+      },
+      "returncode": 0,
+      "completed": true,
+      "changed_paths": [
+        "AGENTS.md",
+        "SSOT/BOOTSTRAP.md",
+        "SSOT/README.md",
+        "check-memory.sh"
+      ],
+      "verdict": {
+        "checks": {
+          "format4": true,
+          "review_watermark_preserved": true,
+          "rules_sources_statuses_preserved": true,
+          "owner_bytes_preserved": true,
+          "open_question_preserved": true,
+          "credential_rule_preserved": true,
+          "legacy_instructions_removed": true,
+          "one_current_instruction_block": true,
+          "obsolete_wrapper_replaced_and_runs": true,
+          "checker_passes": true,
+          "checkpoint_removed_last_state": true,
+          "write_scope": true,
+          "native_completion": true,
+          "allowed_model": true,
+          "frozen_inputs": true
+        },
+        "pass": true
+      },
+      "native_receipt_sha256": "01899400b11706911bdf723ce621d09906b0ed75992ae7fb9998878e012266d4"
+    },
+    {
+      "observation": "candidate readonly",
+      "local_evidence_directory": "ssot-migration-candidate-readonly-20261110",
+      "included_in_final_scenarios": true,
+      "bundle_digest": "9995caa2e3b92ad21a8020a90b0dc4605d91d203412cb39e375ed12d88745cf0",
+      "harness_manifest": {
+        "benchmark/cases.py": "a5dcb0794035c39858b85f6dc8853e4c668f0077e791b283ed9e6f75adf81b64",
+        "benchmark/run.py": "e53ea9e8c0cb0650f5e58dfc3c17f372e48d90ffb4915a71dede4cf69756e148",
+        "run-migration-trials.py": "2e673c39604e2e93e58ab7f1568e0b06caff92c9f20595c1f86a11e59036e018",
+        "run-performance-trials.py": "5e052ae6372b5eb30694534cbb3b2836bb447ebac53f3edff5ec0c1f1850ae12"
+      },
+      "seconds": 55.504,
+      "native_models": [
+        "gpt-6.1-terra"
+      ],
+      "native_turn_usage": {
+        "input_tokens": 153974,
+        "cached_input_tokens": 139520,
+        "cache_write_input_tokens": 0,
+        "output_tokens": 2000,
+        "reasoning_output_tokens": 93,
+        "total_tokens": 155974
+      },
+      "returncode": 0,
+      "completed": true,
+      "changed_paths": [],
+      "verdict": {
+        "checks": {
+          "all_files_unchanged": true,
+          "native_completion": true,
+          "allowed_model": true,
+          "frozen_inputs": true
+        },
+        "pass": true
+      },
+      "native_receipt_sha256": "0f239a9d0fb0b90c6abda68c94d92b97ba8d6107d0452bafd1b7b1de21738903"
+    },
+    {
+      "observation": "candidate migrate",
+      "local_evidence_directory": "ssot-migration-candidate-new-20261110",
+      "included_in_final_scenarios": true,
+      "bundle_digest": "9995caa2e3b92ad21a8020a90b0dc4605d91d203412cb39e375ed12d88745cf0",
+      "harness_manifest": {
+        "benchmark/cases.py": "a5dcb0794035c39858b85f6dc8853e4c668f0077e791b283ed9e6f75adf81b64",
+        "benchmark/run.py": "e53ea9e8c0cb0650f5e58dfc3c17f372e48d90ffb4915a71dede4cf69756e148",
+        "run-migration-trials.py": "2e673c39604e2e93e58ab7f1568e0b06caff92c9f20595c1f86a11e59036e018",
+        "run-performance-trials.py": "5e052ae6372b5eb30694534cbb3b2836bb447ebac53f3edff5ec0c1f1850ae12"
+      },
+      "seconds": 65.4,
+      "native_models": [
+        "gpt-6.1-terra"
+      ],
+      "native_turn_usage": {
+        "input_tokens": 283990,
+        "cached_input_tokens": 261888,
+        "cache_write_input_tokens": 0,
+        "output_tokens": 2175,
+        "reasoning_output_tokens": 105,
+        "total_tokens": 286165
+      },
+      "returncode": 0,
+      "completed": true,
+      "changed_paths": [
+        "AGENTS.md",
+        "SSOT/README.md",
+        "check-memory.sh"
+      ],
+      "verdict": {
+        "checks": {
+          "format4": true,
+          "review_watermark_preserved": true,
+          "rules_sources_statuses_preserved": true,
+          "owner_bytes_preserved": true,
+          "open_question_preserved": true,
+          "credential_rule_preserved": true,
+          "legacy_instructions_removed": true,
+          "one_current_instruction_block": true,
+          "obsolete_wrapper_replaced_and_runs": true,
+          "checker_passes": true,
+          "checkpoint_removed_last_state": true,
+          "write_scope": true,
+          "native_completion": true,
+          "allowed_model": true,
+          "frozen_inputs": true
+        },
+        "pass": true
+      },
+      "native_receipt_sha256": "9e426e37fdfde1a60ad15e2cb15c04ee9c6f3bc06309c6ebc68a774d45587b89"
+    },
+    {
+      "observation": "baseline resume",
+      "local_evidence_directory": "ssot-migration-baseline-resume-r2-20261110",
+      "included_in_final_scenarios": true,
+      "bundle_digest": "b4b41c93564f73598309210f7651c9e04fe821e241306050cfe758d9789550b3",
+      "harness_manifest": {
+        "benchmark/cases.py": "a5dcb0794035c39858b85f6dc8853e4c668f0077e791b283ed9e6f75adf81b64",
+        "benchmark/run.py": "e53ea9e8c0cb0650f5e58dfc3c17f372e48d90ffb4915a71dede4cf69756e148",
+        "run-migration-trials.py": "2e673c39604e2e93e58ab7f1568e0b06caff92c9f20595c1f86a11e59036e018",
+        "run-performance-trials.py": "5e052ae6372b5eb30694534cbb3b2836bb447ebac53f3edff5ec0c1f1850ae12"
+      },
+      "seconds": 73.604,
+      "native_models": [
+        "gpt-6.1-terra"
+      ],
+      "native_turn_usage": {
+        "input_tokens": 292258,
+        "cached_input_tokens": 269824,
+        "cache_write_input_tokens": 0,
+        "output_tokens": 2571,
+        "reasoning_output_tokens": 123,
+        "total_tokens": 294829
+      },
+      "returncode": 0,
+      "completed": true,
+      "changed_paths": [
+        "AGENTS.md",
+        "SSOT/BOOTSTRAP.md",
+        "SSOT/README.md",
+        "check-memory.sh"
+      ],
+      "verdict": {
+        "checks": {
+          "format4": true,
+          "review_watermark_preserved": true,
+          "rules_sources_statuses_preserved": true,
+          "owner_bytes_preserved": true,
+          "open_question_preserved": true,
+          "credential_rule_preserved": true,
+          "legacy_instructions_removed": true,
+          "one_current_instruction_block": true,
+          "obsolete_wrapper_replaced_and_runs": true,
+          "checker_passes": true,
+          "checkpoint_removed_last_state": true,
+          "write_scope": true,
+          "native_completion": true,
+          "allowed_model": true,
+          "frozen_inputs": true
+        },
+        "pass": true
+      },
+      "native_receipt_sha256": "0e0c81517cadc4b42b79570d6a5c533773e9df527af1ea2a36cf5ec3b179563f"
+    }
+  ]
+}

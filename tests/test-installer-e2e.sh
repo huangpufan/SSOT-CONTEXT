@@ -718,6 +718,52 @@ else
   fail "scenario24: --ref from a local checkout failed"; cat "$SCENARIO24/checkout.log"
 fi
 
+# Scenario 25: upgrading skills never migrates consumer knowledge or rewrites
+# integration callers, even when the old bundle's executable disappears.
+SCENARIO25="$WORK_ROOT/scenario25"
+ref_install "$SCENARIO25" --ref v3-gen >"$SCENARIO24/preservation-setup.log" 2>&1 || fail "scenario25: old bundle setup failed"
+if python3 - "$SCENARIO25" "$INSTALLER" "$REF_SRC" "$SCENARIO24/home" <<'PY'
+import hashlib
+import os
+from pathlib import Path
+import subprocess
+import sys
+
+project, installer, source, home = map(Path, sys.argv[1:])
+files = {
+    'SSOT/README.md': '---\nssot_format: 3\nlanguage: zh-CN\n---\n# 旧项目\n\n已确认约束与候选规则必须保留。\n',
+    'SSOT/decisions/original.md': '# 决定\n\n用户原话、范围、拒绝理由与后续部分更正。\n',
+    'SSOT/BOOTSTRAP.md': '# 迁移进行中\n\n保留当前进度，升级技能不代表迁移完成。\n',
+    'AGENTS.md': '# Project rules\n\nKeep unrelated rules.\n\n<!-- SSOT-SKILL:BEGIN -->\nOld workflow\n<!-- SSOT-SKILL:END -->\n',
+    'read-memory.sh': '#!/bin/sh\npython3 .claude/skills/ssot-preflight/assets/scripts/read-context.py SSOT/README.md\n',
+}
+for name, text in files.items():
+    path = project / name
+    path.parent.mkdir(parents=True, exist_ok=True)
+    path.write_text(text)
+(project / 'CLAUDE.md').symlink_to('AGENTS.md')
+retired = project / '.claude/skills/ssot-preflight/assets/scripts/read-context.py'
+retired.parent.mkdir(parents=True, exist_ok=True)
+retired.write_text('# old reader integration\n')
+before = {name: hashlib.sha256((project / name).read_bytes()).hexdigest() for name in files}
+env = dict(os.environ, HOME=str(home), SSOT_SKILL_REPO_URL=str(source))
+env.pop('SOURCE_DIR', None)
+result = subprocess.run(['bash', str(installer), '--upgrade', '--agent', 'claude-code',
+                         '--scope', 'project', '--ref', 'main'], cwd=project, env=env,
+                        capture_output=True, text=True)
+assert result.returncode == 0, result.stdout + result.stderr
+assert before == {name: hashlib.sha256((project / name).read_bytes()).hexdigest() for name in files}
+assert (project / 'CLAUDE.md').is_symlink() and os.readlink(project / 'CLAUDE.md') == 'AGENTS.md'
+assert not retired.exists(), 'a retired executable must not survive inside a replaced skill'
+assert 'ssot_format: 3' in (project / 'SSOT/README.md').read_text()
+print('  verified: upgrade preserves memory, progress, shared wiring and integration callers')
+PY
+then
+  pass "scenario25: bundle upgrade preserves consumer state and removes retired tool files"
+else
+  fail "scenario25: upgrade rewrote consumer state or retained a retired tool"
+fi
+
 echo
 echo "=== RESULT: pass=$PASS fail=$FAIL ==="
 [[ $FAIL -eq 0 ]] && exit 0 || exit 1

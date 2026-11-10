@@ -162,6 +162,8 @@ curl -fsSL https://raw.githubusercontent.com/huangpufan/SSOT-SKILL/main/install.
 
 更新后重启 Agent。替换安装的 Skill 本身不会改动 `SSOT/`。卸载时，让 Agent 按指南移除指定范围的安装，并检查是否还有过时的触发指令。
 
+升级时还要按指南[核对版本转换](./INSTALL.md#check-the-transition-not-only-the-new-installation)，处理旧指令和工具接线，包括自定义脚本对已退役的 4.3 reader 的调用。同格式的技能包升级无需重写项目记忆。
+
 ### 从 2.x 或 3.x 升级
 
 4.0 使用 `ssot_format: 4`，允许仓库内 `SSOT/` 以外的持续维护文档保留权威归属。Agent 会读 v2 和 v3 记忆，但迁移前不会更新它们。你同意后，可以说“把这个项目的 SSOT 迁移到 v4”；迁移前，所有会写入这个项目的安装都应使用 v4。v3 迁移保留原有知识和路径；v2 迁移还会先提取长期内容，再移除旧账本，并改接调用退役工具的脚本。迁移需经你同意，作为一个提交。继续使用 v2 可指定 `--ref v2-final`；保留 v3 可用 `--ref` 指定一个 v3 版本。

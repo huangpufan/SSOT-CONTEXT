@@ -151,6 +151,19 @@ After removal, verify the bundle files are absent. Preserve generated `SSOT/` do
 
 After an update, repeat verification and reconcile the instruction block, then request a session restart. Installing new skill files never changes the repository's `SSOT/` by itself.
 
+### Check the transition, not only the new installation
+
+Before replacing an older bundle, note its installed version and any repository instructions, hooks or scripts that call its tools. Afterward, verify those integrations against the files actually installed. A successful copy does not prove the old workflow still runs. Preserve the existing blocking/nonblocking behavior and run each changed command; do not substitute a health check for a migration operation or a Markdown reader.
+
+| Transition | Required reconciliation |
+| --- | --- |
+| v2 memory → format 4 | With migration agreement, follow bootstrap section 7: extract unique ledger content, retain decisions and rule status, reconcile all instruction entries and inbound links, and replace retired tool calls before finishing. |
+| v3 memory → format 4 | Follow bootstrap section 8, including instruction/tooling reconciliation. Keep existing owners and the review watermark; do not perform v2 ledger deletion merely because the bundle was old. |
+| Protocol upgrade within format 4 | Verify installed tools and instruction wiring. Do not rewrite memory, advance a watermark or initiate history catch-up solely because the bundle version changed. |
+| 4.3 reader → 4.4 or later | If local integration calls `ssot-preflight/assets/scripts/read-context.py`, replace that call with ordinary Markdown reads under preflight's current reading rules. `ssot-check.py` is a checker, not a reader replacement. No data-format migration is needed. |
+
+The installer prints the current block but does not edit project instructions or callers. A marked block can be replaced in place; inspect unmarked legacy directives and shared instruction owners too. Preserve unrelated project rules and show proposed edits outside the block before applying them, within existing authorization. If the user requested only a bundle update, leave old-format memory unchanged and report migration as a separate step. An interrupted agreed migration resumes from `SSOT/BOOTSTRAP.md`, checking that record against the actual tree before continuing.
+
 ### Upgrading from 2.x or 3.x to 4.0
 
 Version 4.0 uses `ssot_format: 4`: `SSOT/README.md` routes to maintained repository-local owners, including documents outside `SSOT/`. Explain the boundary before upgrading:

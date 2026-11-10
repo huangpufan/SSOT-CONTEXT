@@ -68,11 +68,14 @@ Templates under `skills/ssot-bootstrap/assets/templates/{en,zh}/` are copied int
 bash tests/test-bundle-shape.sh        # shape, links, budgets
 python3 tests/test-ssot-check.py       # checker regression tests
 python3 tests/benchmark/test_benchmark.py # benchmark oracle and accounting; no model calls
+python3 tests/test-migration-trials.py # migration fixtures, oracle and CI billing guard; no model calls
 bash tests/test-installer-e2e.sh       # installer end to end
 shellcheck -S warning -e SC2034 install.sh tests/*.sh
 ```
 
 For opt-in native performance comparisons, use [the reading benchmark](./tests/benchmark/README.md). It runs billable models only when explicitly invoked; CI compiles it without running trials.
+
+For old-format migration and read-only behavior, [the 4.5 trial guide](./tests/trials-4.5.md) documents the separate opt-in native scenarios. They check transitions, not performance.
 
 For diagram changes, install `mermaid@11.12.0` and `jsdom@26.1.0` into an isolated npm prefix, then run `node tests/test-mermaid-templates.mjs <prefix>/node_modules`.
 
