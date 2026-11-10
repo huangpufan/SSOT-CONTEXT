@@ -321,6 +321,20 @@ class CheckerTest(unittest.TestCase):
             finally:
                 os.unlink(link)
 
+    def test_physical_worktree_path_keeps_requested_alias(self):
+        self.valid()
+        self.git("init", "-q")
+        with tempfile.TemporaryDirectory() as aliases:
+            # macOS TMPDIR and a linked /tmp reach the same place by another name; git
+            # reports the physical path, which must not split the worktree in two.
+            alias = os.path.join(aliases, "system-root")
+            os.symlink(os.path.dirname(self.repo), alias)
+            code, out = self.run_checker(os.path.join(alias, os.path.basename(self.repo), "SSOT"))
+            self.assertEqual(code, 0, out)
+            # The same SSOT under the physical spelling is clean too.
+            code, out = self.run_checker(self.ssot)
+            self.assertEqual(code, 0, out)
+
     def test_shared_first_file_does_not_make_ssot_the_worktree_root(self):
         # Sharing a file inode does not make its containing directories identical.
         # Build README first so it can be the first entry in both directories.

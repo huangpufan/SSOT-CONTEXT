@@ -43,7 +43,7 @@ Detailed shared material belongs in a reference, read at the point of use. `SKIL
 | All `SKILL.md` files together | 3,600 words |
 | Everything an agent may read at runtime (`SKILL.md` + `references/`) | 14,000 words |
 | Templates, per language | 16 KiB |
-| `ssot-check.py` | 48 KiB |
+| `ssot-check.py` | 50 KiB |
 | All of `skills/` | 160 KiB |
 
 Version 4.0 raises entrypoints to 3,600 words, runtime protocol to 13,000 words, and the checker to 48 KiB for immediate decision capture, accessible conversation-source recovery, external-owner routes, preservation-aware migration, and checks on those routes. Measured template and whole-bundle sizes fit their existing limits, which remain unchanged.
