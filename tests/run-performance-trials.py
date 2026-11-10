@@ -192,7 +192,7 @@ def run(root, arm, case, turn, cap):
 
 
 def execute_turn(root, run_dir, repo, prompt, turn, cap, sandbox_command=None,
-                 codex_home=None, capture_checkpoints=True):
+                 codex_home=None, capture_checkpoints=True, interrupt_when=None):
     """Shared native transport for the historical trials and reading benchmark."""
     command = (sandbox_command or sandbox(root, repo)) + [shutil.which("codex"), "exec"]
     if turn > 1:
@@ -211,6 +211,7 @@ def execute_turn(root, run_dir, repo, prompt, turn, cap, sandbox_command=None,
     (run_dir / f"{turn}.prompt.txt").write_text(prompt)
     started = time.monotonic()
     checkpoints, events = [], []
+    interruption = None
     with (run_dir / f"{turn}.jsonl").open("w") as out, (run_dir / f"{turn}.stderr").open("w") as err:
         environment = {**os.environ, "PYTHONDONTWRITEBYTECODE": "1"}
         if codex_home:
@@ -226,11 +227,15 @@ def execute_turn(root, run_dir, repo, prompt, turn, cap, sandbox_command=None,
             out.flush()
             event = json.loads(line)
             events.append(event)
-            if capture_checkpoints:
+            if capture_checkpoints or interrupt_when:
                 current = snapshot(repo)
-                if current != previous:
+                if capture_checkpoints and current != previous:
                     checkpoints.append({"event": len(events), "files": current})
                     previous = current
+                if (interrupt_when and interruption is None and interrupt_when(current, event)
+                        and process.poll() is None):
+                    process.terminate()
+                    interruption = {"event": len(events), "signal": "SIGTERM"}
         process.stdout.close()
         code = process.wait()
     after = snapshot(repo)
@@ -246,6 +251,8 @@ def execute_turn(root, run_dir, repo, prompt, turn, cap, sandbox_command=None,
                "tool_output_bytes": sum(len(i.get("aggregated_output", "").encode()) for i in tools),
                "changed_paths": sorted(k for k in set(before) | set(after) if before.get(k) != after.get(k)),
                "command": command}
+    if interruption:
+        summary["intentional_interruption"] = interruption
     messages = [e["item"]["text"] for e in events if e.get("type") == "item.completed"
                 and e.get("item", {}).get("type") == "agent_message"]
     (run_dir / f"{turn}.final.md").write_text(messages[-1] if messages else "")

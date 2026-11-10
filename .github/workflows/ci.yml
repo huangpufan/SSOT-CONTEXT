@@ -23,7 +23,7 @@ jobs:
           [[ "${{ runner.os }}" == "macOS" ]] && BASH_BIN=/opt/homebrew/bin/bash
           for f in install.sh tests/*.sh; do "$BASH_BIN" -n "$f"; done
       - name: Python compile
-        run: python3 -m py_compile skills/ssot-doctor/assets/scripts/ssot-check.py tests/test-ssot-check.py tests/run-performance-trials.py tests/run-migration-trials.py tests/test-migration-trials.py tests/benchmark/*.py
+        run: python3 -m py_compile skills/ssot-doctor/assets/scripts/ssot-check.py tests/test-ssot-check.py tests/run-performance-trials.py tests/run-migration-trials.py tests/continuity_cases.py tests/test-migration-trials.py tests/benchmark/*.py
 
   shellcheck:
     name: shellcheck

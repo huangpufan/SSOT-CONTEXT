@@ -9,12 +9,16 @@ import shutil
 import subprocess
 import sys
 
+import continuity_cases
+
 HERE = Path(__file__).resolve().parent
 sys.path.insert(0, str(HERE / "benchmark"))
 import run as bench
 
 
 def fixture(repo, case):
+    if case in continuity_cases.CASES:
+        return continuity_cases.fixture(repo, case)
     repo.mkdir();(repo/'SSOT').mkdir();(repo/'docs').mkdir()
     (repo/'SSOT/README.md').write_text('''---
     ssot_format: 3
@@ -108,6 +112,8 @@ def fixture(repo, case):
 
 
 def grade(repo, case, before, watermark):
+    if case in continuity_cases.CASES:
+        return continuity_cases.grade(repo, case, before, watermark)
     after = bench.transport.snapshot(repo)
     if case == "readonly":
         return {"all_files_unchanged": before == after}
@@ -145,7 +151,7 @@ def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--bundle", type=Path, required=True)
     parser.add_argument("--output", type=Path, required=True)
-    parser.add_argument("--case", choices=("migrate", "resume", "readonly"), default="resume")
+    parser.add_argument("--case", choices=("migrate", "resume", "readonly", *continuity_cases.CASES), default="resume")
     parser.add_argument("--run-models", action="store_true")
     parser.add_argument("--cap", type=int, default=240)
     args = parser.parse_args()
@@ -160,7 +166,7 @@ def main():
     shutil.copytree(args.bundle.resolve() / "skills", bundle / "skills", ignore=shutil.ignore_patterns("__pycache__"))
     harness = root / "harness"
     (harness / "benchmark").mkdir(parents=True)
-    for path in (HERE / "run-migration-trials.py", HERE / "run-performance-trials.py",
+    for path in (HERE / "run-migration-trials.py", HERE / "run-performance-trials.py", HERE / "continuity_cases.py",
                  HERE / "benchmark/run.py", HERE / "benchmark/cases.py"):
         shutil.copy2(path, harness / path.relative_to(HERE))
     repo = root / "repo"
@@ -172,8 +178,11 @@ def main():
     checker = repo / ".agents/skills/ssot-doctor/assets/scripts/ssot-check.py"
     precheck = subprocess.run([sys.executable, "-B", str(checker), str(repo / "SSOT")],
                              capture_output=True, text=True)
-    if precheck.returncode != 3 or "ERROR" in precheck.stdout or "v3 layout" not in precheck.stdout:
-        raise RuntimeError("Fixture must be well-formed legacy memory before any model call: " + precheck.stdout)
+    version = "2" if args.case in ("v2", "v2-interrupt", "mixed-writers") else "4" if args.case in ("partial", "capture-readonly") else "3"
+    expected_code = 0 if version == "4" else 3
+    expected_verdict = "ssot-check: PASS" if version == "4" else f"v{version} layout"
+    if precheck.returncode != expected_code or "ERROR" in precheck.stdout or expected_verdict not in precheck.stdout:
+        raise RuntimeError("Fixture must be well-formed memory before any model call: " + precheck.stdout)
     prompt = (f"Work only in the current isolated repository. Skills are at {bundle / 'skills'} and .agents/skills. "
               "Read SKILL.md when needed. Do not commit, push, install dependencies, access other projects or invoke other models. "
               "Helpers are unavailable.\nUser task: ")
@@ -182,10 +191,15 @@ def main():
         "migrate": "I agree to migrate SSOT from v3 to v4 and authorize changes to SSOT, AGENTS.md and check-memory.sh, including removing obsolete SSOT instructions outside the managed block. All writer installations support format 4. Retain owners, rule IDs/statuses and review watermark; reconcile instruction/tooling remnants and verify. No source conversation export is supplied. Do not mine new rules. Use your own newcomer review because helpers are unavailable.",
         "readonly": "Review only what upgrading these v3 repository documents to v4 would require. This task is strictly read-only: do not migrate, create a checkpoint or edit any file. Separate a bundle upgrade from memory migration and report the needed changes.",
     }
-    prompt += tasks[args.case]
+    turn_tasks = continuity_cases.tasks(args.case) if args.case in continuity_cases.CASES else [tasks[args.case]]
+    if args.case in continuity_cases.CASES:
+        adapter = (bundle / "skills/ssot-bootstrap/assets/templates/en/adapter-thin.md").read_text()
+        block = adapter[adapter.index("<!-- SSOT-SKILL:BEGIN -->"):adapter.index("<!-- SSOT-SKILL:END -->")]
+        prompt += block + "\nUser task:\n"
+    prompt += turn_tasks[0]
     plan = {"case": args.case, "model": bench.transport.MODEL, "watermark": watermark,
             "bundle_manifest": bench.manifest(bundle), "harness_manifest": bench.manifest(harness),
-            "fixture": before, "prompt": prompt, "cap": args.cap}
+            "fixture": before, "prompt": prompt, "followups": turn_tasks[1:], "cap": args.cap}
     bench.save(root / "plan.json", plan)
     if not args.run_models:
         print(f"Prepared {args.case} in {root}; no models called. Use a new output with --run-models for a live run.")
@@ -194,11 +208,40 @@ def main():
     run_dir.mkdir()
     home = root / "home"
     command = bench.isolated_command(repo, bundle, home)
-    summary = bench.transport.execute_turn(root, run_dir, repo, prompt, 1, args.cap,
-                                           sandbox_command=command, codex_home=home)
+    summaries = []
+    for turn, request in enumerate([prompt, *turn_tasks[1:]], 1):
+        interrupt_when = (lambda current, event: continuity_cases.migration_in_flight(before, current)) if args.case == "v2-interrupt" else None
+        summary = bench.transport.execute_turn(root, run_dir, repo, request, turn, args.cap,
+                                               sandbox_command=command, codex_home=home, interrupt_when=interrupt_when)
+        summaries.append(summary)
+        if summary["returncode"] or not summary["completed"]:
+            break
+    interrupted = None
+    if args.case == "v2-interrupt":
+        interrupted = summaries[0]
+        bench.save(root / "interrupted-state.json", bench.transport.snapshot(repo))
+        if interrupted.get("intentional_interruption") and interrupted["returncode"] != 0 and not interrupted["completed"]:
+            # A new session must discover the persisted checkpoint; it gets no
+            # private reasoning or claimed completed-unit list from the killed turn.
+            recovery_dir = run_dir / "recovery"
+            recovery_dir.mkdir()
+            recovery_home = root / "recovery-home"
+            request = ("Continue the agreed migration recorded in SSOT/BOOTSTRAP.md. The prior process was interrupted; "
+                       "verify the saved record and actual tree, preserve completed work and original content, and finish safely. "
+                       "The original authorization still applies. Do not commit, push, install dependencies or access other projects. "
+                       f"Skills are available at {bundle / 'skills'}. Helpers are unavailable; no new rule mining is needed.")
+            recovery = bench.transport.execute_turn(root, recovery_dir, repo, request, 1, args.cap,
+                       sandbox_command=bench.isolated_command(repo, bundle, recovery_home), codex_home=recovery_home)
+            summaries = [recovery]
     checks = grade(repo, args.case, before, watermark)
-    checks["native_completion"] = summary["returncode"] == 0 and summary["completed"]
-    checks["allowed_model"] = summary.get("native_models") == [bench.transport.MODEL]
+    if interrupted is not None:
+        checks["observed_process_interruption"] = bool(interrupted.get("intentional_interruption")) and interrupted["returncode"] != 0 and not interrupted["completed"]
+        checks["persisted_migration_checkpoint"] = "SSOT/BOOTSTRAP.md" in json.loads((root / "interrupted-state.json").read_text())
+    if args.case == "partial" and len(summaries) == 2:
+        for turn, quote in enumerate((continuity_cases.ACCEPT, continuity_cases.CORRECTION), 1):
+            checks[f"saved_owner_read_before_plan_turn_{turn}"] = continuity_cases.capture_order(run_dir, turn, quote)
+    checks["native_completion"] = len(summaries) == len(turn_tasks) and all(s["returncode"] == 0 and s["completed"] for s in summaries)
+    checks["allowed_model"] = all(s.get("native_models") == [bench.transport.MODEL] for s in summaries)
     checks["frozen_inputs"] = bench.manifest(bundle) == plan["bundle_manifest"] and bench.manifest(harness) == plan["harness_manifest"]
     bench.save(root / "verdict.json", {"checks": checks, "pass": all(checks.values())})
     print(json.dumps({"case": args.case, "checks": checks}, indent=2))

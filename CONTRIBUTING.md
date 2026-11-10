@@ -75,7 +75,7 @@ shellcheck -S warning -e SC2034 install.sh tests/*.sh
 
 For opt-in native performance comparisons, use [the reading benchmark](./tests/benchmark/README.md). It runs billable models only when explicitly invoked; CI compiles it without running trials.
 
-For old-format migration and read-only behavior, [the 4.5 trial guide](./tests/trials-4.5.md) documents the separate opt-in native scenarios. They check transitions, not performance.
+For old-format migration and read-only behavior, [the 4.5 trial guide](./tests/trials-4.5.md) documents the separate opt-in native scenarios. [Continuity trials](./tests/trials-continuity.md) add v2 extraction, incompatible-writer refusal, partial decision correction and an observed process interruption. They check transitions, not performance.
 
 For diagram changes, install `mermaid@11.12.0` and `jsdom@26.1.0` into an isolated npm prefix, then run `node tests/test-mermaid-templates.mjs <prefix>/node_modules`.
 

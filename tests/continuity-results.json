@@ -1,0 +1,415 @@
+{
+  "schema": 1,
+  "protocol_commit": "590977a5bd6edfd9b29843cbf607a6aa3fcc877e",
+  "observations": [
+    {
+      "case": "v2",
+      "local_evidence_directory": "ssot-continuity-v2-live-20261110",
+      "bundle_digest": "9995caa2e3b92ad21a8020a90b0dc4605d91d203412cb39e375ed12d88745cf0",
+      "harness_manifest": {
+        "benchmark/cases.py": "a5dcb0794035c39858b85f6dc8853e4c668f0077e791b283ed9e6f75adf81b64",
+        "benchmark/run.py": "e53ea9e8c0cb0650f5e58dfc3c17f372e48d90ffb4915a71dede4cf69756e148",
+        "continuity_cases.py": "a4d26a752746cdab36d9775eb30f2cf96e0c9493bb2c88f91a10040f4d37a2f7",
+        "run-migration-trials.py": "88bbab839fbfe6468fe5321689de66c0939c22490b846de08c10e4ab8f81b0e6",
+        "run-performance-trials.py": "5e052ae6372b5eb30694534cbb3b2836bb447ebac53f3edff5ec0c1f1850ae12"
+      },
+      "original_verdict": {
+        "checks": {
+          "checker_passes": true,
+          "watermark_preserved": true,
+          "unrelated_instruction_preserved": true,
+          "format4": true,
+          "old_owners_and_shared_entry_preserved": true,
+          "existing_rule_authority_preserved": true,
+          "offline_directive_is_confirmed": false,
+          "gaps_and_questions_preserved": true,
+          "unique_ledger_knowledge_preserved": true,
+          "human_words_preserved": true,
+          "subject_status_retained_in_prose": true,
+          "subject_frontmatter_removed": true,
+          "ledgers_and_checkpoint_removed": true,
+          "old_instruction_workflow_removed": true,
+          "wrapper_runs": true,
+          "inbound_links_repaired": true,
+          "one_time_pilot_not_promoted": true,
+          "rejected_proposal_not_promoted": true,
+          "native_completion": true,
+          "allowed_model": true,
+          "frozen_inputs": true
+        },
+        "pass": false
+      },
+      "oracle_repair": {
+        "checks": {
+          "checker_passes": true,
+          "watermark_preserved": true,
+          "unrelated_instruction_preserved": true,
+          "format4": true,
+          "old_owners_and_shared_entry_preserved": true,
+          "existing_rule_authority_preserved": true,
+          "offline_directive_is_confirmed": true,
+          "gaps_and_questions_preserved": true,
+          "unique_ledger_knowledge_preserved": true,
+          "human_words_preserved": true,
+          "subject_status_retained_in_prose": true,
+          "subject_frontmatter_removed": true,
+          "ledgers_and_checkpoint_removed": true,
+          "old_instruction_workflow_removed": true,
+          "wrapper_runs": true,
+          "inbound_links_repaired": true,
+          "one_time_pilot_not_promoted": true,
+          "rejected_proposal_not_promoted": true,
+          "native_completion": true,
+          "allowed_model": true,
+          "frozen_inputs": true
+        },
+        "pass": true,
+        "original_verdict": {
+          "checks": {
+            "checker_passes": true,
+            "watermark_preserved": true,
+            "unrelated_instruction_preserved": true,
+            "format4": true,
+            "old_owners_and_shared_entry_preserved": true,
+            "existing_rule_authority_preserved": true,
+            "offline_directive_is_confirmed": false,
+            "gaps_and_questions_preserved": true,
+            "unique_ledger_knowledge_preserved": true,
+            "human_words_preserved": true,
+            "subject_status_retained_in_prose": true,
+            "subject_frontmatter_removed": true,
+            "ledgers_and_checkpoint_removed": true,
+            "old_instruction_workflow_removed": true,
+            "wrapper_runs": true,
+            "inbound_links_repaired": true,
+            "one_time_pilot_not_promoted": true,
+            "rejected_proposal_not_promoted": true,
+            "native_completion": true,
+            "allowed_model": true,
+            "frozen_inputs": true
+          },
+          "pass": false
+        },
+        "grader_sha256": "803aea6f6b14254e77e35f6ea574632ec6e05cf88be0fc60b45dad47ae5decd0",
+        "reason": "Accept documented rule ID prefixes and retired-row/successor representation; preserve original verdict."
+      },
+      "effective_pass": true,
+      "native_turns": [
+        {
+          "relative_summary": "run/1.summary.json",
+          "returncode": 0,
+          "completed": true,
+          "seconds": 98.788,
+          "model": [
+            "gpt-6.1-terra"
+          ],
+          "native_turn_usage": {
+            "input_tokens": 378805,
+            "cached_input_tokens": 325888,
+            "cache_write_input_tokens": 0,
+            "output_tokens": 4039,
+            "reasoning_output_tokens": 174,
+            "total_tokens": 382844
+          },
+          "usage_scope": "completed native turn",
+          "intentional_interruption": null,
+          "native_receipt_sha256": "63197e285ed567910e464839e02aacf3daf552c3b6b880989ca89972b76779cf"
+        }
+      ]
+    },
+    {
+      "case": "partial",
+      "local_evidence_directory": "ssot-continuity-partial-live-20261110",
+      "bundle_digest": "9995caa2e3b92ad21a8020a90b0dc4605d91d203412cb39e375ed12d88745cf0",
+      "harness_manifest": {
+        "benchmark/cases.py": "a5dcb0794035c39858b85f6dc8853e4c668f0077e791b283ed9e6f75adf81b64",
+        "benchmark/run.py": "e53ea9e8c0cb0650f5e58dfc3c17f372e48d90ffb4915a71dede4cf69756e148",
+        "continuity_cases.py": "a4d26a752746cdab36d9775eb30f2cf96e0c9493bb2c88f91a10040f4d37a2f7",
+        "run-migration-trials.py": "88bbab839fbfe6468fe5321689de66c0939c22490b846de08c10e4ab8f81b0e6",
+        "run-performance-trials.py": "5e052ae6372b5eb30694534cbb3b2836bb447ebac53f3edff5ec0c1f1850ae12"
+      },
+      "original_verdict": {
+        "checks": {
+          "checker_passes": true,
+          "watermark_preserved": true,
+          "unrelated_instruction_preserved": true,
+          "unaffected_rules_identical": true,
+          "history_and_source_words_preserved": true,
+          "format_rule_remains_confirmed": false,
+          "partial_scope_in_current_rule": false,
+          "plan_obeys_partial_scope": true,
+          "single_owner": true,
+          "write_scope": true,
+          "saved_owner_read_before_plan_turn_1": true,
+          "saved_owner_read_before_plan_turn_2": true,
+          "native_completion": true,
+          "allowed_model": true,
+          "frozen_inputs": true
+        },
+        "pass": false
+      },
+      "oracle_repair": {
+        "checks": {
+          "checker_passes": true,
+          "watermark_preserved": true,
+          "unrelated_instruction_preserved": true,
+          "unaffected_rules_identical": true,
+          "history_and_source_words_preserved": true,
+          "format_rule_remains_confirmed": true,
+          "partial_scope_in_current_rule": true,
+          "plan_obeys_partial_scope": true,
+          "single_owner": true,
+          "write_scope": true,
+          "saved_owner_read_before_plan_turn_1": true,
+          "saved_owner_read_before_plan_turn_2": true,
+          "native_completion": true,
+          "allowed_model": true,
+          "frozen_inputs": true
+        },
+        "pass": true,
+        "original_verdict": {
+          "checks": {
+            "checker_passes": true,
+            "watermark_preserved": true,
+            "unrelated_instruction_preserved": true,
+            "unaffected_rules_identical": true,
+            "history_and_source_words_preserved": true,
+            "format_rule_remains_confirmed": false,
+            "partial_scope_in_current_rule": false,
+            "plan_obeys_partial_scope": true,
+            "single_owner": true,
+            "write_scope": true,
+            "saved_owner_read_before_plan_turn_1": true,
+            "saved_owner_read_before_plan_turn_2": true,
+            "native_completion": true,
+            "allowed_model": true,
+            "frozen_inputs": true
+          },
+          "pass": false
+        },
+        "grader_sha256": "803aea6f6b14254e77e35f6ea574632ec6e05cf88be0fc60b45dad47ae5decd0",
+        "reason": "Accept documented rule ID prefixes and retired-row/successor representation; preserve original verdict."
+      },
+      "effective_pass": true,
+      "native_turns": [
+        {
+          "relative_summary": "run/1.summary.json",
+          "returncode": 0,
+          "completed": true,
+          "seconds": 54.25,
+          "model": [
+            "gpt-6.1-terra"
+          ],
+          "native_turn_usage": {
+            "input_tokens": 177758,
+            "cached_input_tokens": 147072,
+            "cache_write_input_tokens": 0,
+            "output_tokens": 1720,
+            "reasoning_output_tokens": 38,
+            "total_tokens": 179478
+          },
+          "usage_scope": "completed native turn",
+          "intentional_interruption": null,
+          "native_receipt_sha256": "1c77c09486cc7732fb95b973886213195083a80468d90c9c50208bd0f44f3be4"
+        },
+        {
+          "relative_summary": "run/2.summary.json",
+          "returncode": 0,
+          "completed": true,
+          "seconds": 49.351,
+          "model": [
+            "gpt-6.1-terra"
+          ],
+          "native_turn_usage": {
+            "input_tokens": 195264,
+            "cached_input_tokens": 182656,
+            "cache_write_input_tokens": 0,
+            "output_tokens": 1796,
+            "reasoning_output_tokens": 40,
+            "total_tokens": 197060
+          },
+          "usage_scope": "completed native turn",
+          "intentional_interruption": null,
+          "native_receipt_sha256": "bc7c497145600da06bd294a64449d5093358caffaa25bae2ad046b4dd9c554ea"
+        }
+      ]
+    },
+    {
+      "case": "mixed-writers",
+      "local_evidence_directory": "ssot-continuity-mixed-live-20261110",
+      "bundle_digest": "9995caa2e3b92ad21a8020a90b0dc4605d91d203412cb39e375ed12d88745cf0",
+      "harness_manifest": {
+        "benchmark/cases.py": "a5dcb0794035c39858b85f6dc8853e4c668f0077e791b283ed9e6f75adf81b64",
+        "benchmark/run.py": "e53ea9e8c0cb0650f5e58dfc3c17f372e48d90ffb4915a71dede4cf69756e148",
+        "continuity_cases.py": "70ac12054c7e5140b87de8953cafc72816496810eb6a13883145c62af7049129",
+        "run-migration-trials.py": "88bbab839fbfe6468fe5321689de66c0939c22490b846de08c10e4ab8f81b0e6",
+        "run-performance-trials.py": "5e052ae6372b5eb30694534cbb3b2836bb447ebac53f3edff5ec0c1f1850ae12"
+      },
+      "original_verdict": {
+        "checks": {
+          "repository_content_unchanged": true,
+          "native_completion": true,
+          "allowed_model": true,
+          "frozen_inputs": true
+        },
+        "pass": true
+      },
+      "oracle_repair": null,
+      "effective_pass": true,
+      "native_turns": [
+        {
+          "relative_summary": "run/1.summary.json",
+          "returncode": 0,
+          "completed": true,
+          "seconds": 29.309,
+          "model": [
+            "gpt-6.1-terra"
+          ],
+          "native_turn_usage": {
+            "input_tokens": 71471,
+            "cached_input_tokens": 55936,
+            "cache_write_input_tokens": 0,
+            "output_tokens": 538,
+            "reasoning_output_tokens": 49,
+            "total_tokens": 72009
+          },
+          "usage_scope": "completed native turn",
+          "intentional_interruption": null,
+          "native_receipt_sha256": "bac70b547e2941ef21c322bce1070032ed9d3307568ff25adb6b574621a6cc72"
+        }
+      ]
+    },
+    {
+      "case": "capture-readonly",
+      "local_evidence_directory": "ssot-continuity-readonly-live-20261110",
+      "bundle_digest": "9995caa2e3b92ad21a8020a90b0dc4605d91d203412cb39e375ed12d88745cf0",
+      "harness_manifest": {
+        "benchmark/cases.py": "a5dcb0794035c39858b85f6dc8853e4c668f0077e791b283ed9e6f75adf81b64",
+        "benchmark/run.py": "e53ea9e8c0cb0650f5e58dfc3c17f372e48d90ffb4915a71dede4cf69756e148",
+        "continuity_cases.py": "70ac12054c7e5140b87de8953cafc72816496810eb6a13883145c62af7049129",
+        "run-migration-trials.py": "88bbab839fbfe6468fe5321689de66c0939c22490b846de08c10e4ab8f81b0e6",
+        "run-performance-trials.py": "5e052ae6372b5eb30694534cbb3b2836bb447ebac53f3edff5ec0c1f1850ae12"
+      },
+      "original_verdict": {
+        "checks": {
+          "repository_content_unchanged": true,
+          "native_completion": true,
+          "allowed_model": true,
+          "frozen_inputs": true
+        },
+        "pass": true
+      },
+      "oracle_repair": null,
+      "effective_pass": true,
+      "native_turns": [
+        {
+          "relative_summary": "run/1.summary.json",
+          "returncode": 0,
+          "completed": true,
+          "seconds": 27.42,
+          "model": [
+            "gpt-6.1-terra"
+          ],
+          "native_turn_usage": {
+            "input_tokens": 87540,
+            "cached_input_tokens": 75648,
+            "cache_write_input_tokens": 0,
+            "output_tokens": 623,
+            "reasoning_output_tokens": 24,
+            "total_tokens": 88163
+          },
+          "usage_scope": "completed native turn",
+          "intentional_interruption": null,
+          "native_receipt_sha256": "96f8d7d29b9c70f85fd56d3ec569be8b1b37d6cedbc2da5391fbae025e57f0ed"
+        }
+      ]
+    },
+    {
+      "case": "v2-interrupt",
+      "local_evidence_directory": "ssot-continuity-interrupt-live-20261110",
+      "bundle_digest": "9995caa2e3b92ad21a8020a90b0dc4605d91d203412cb39e375ed12d88745cf0",
+      "harness_manifest": {
+        "benchmark/cases.py": "a5dcb0794035c39858b85f6dc8853e4c668f0077e791b283ed9e6f75adf81b64",
+        "benchmark/run.py": "e53ea9e8c0cb0650f5e58dfc3c17f372e48d90ffb4915a71dede4cf69756e148",
+        "continuity_cases.py": "097e0a59bc9773f565dfede088c62386f29e6456c3ca078c1f518488ed24bbe5",
+        "run-migration-trials.py": "5810d3d040b7aca0f27e664ec486a3a720ae69acf670fa576d50f09eb4accf64",
+        "run-performance-trials.py": "825b61b575e7ea2dfd9d2f0d9549928fe0cd7ca9ec9655f77a51b440af77e080"
+      },
+      "original_verdict": {
+        "checks": {
+          "checker_passes": true,
+          "watermark_preserved": true,
+          "unrelated_instruction_preserved": true,
+          "format4": true,
+          "old_owners_and_shared_entry_preserved": true,
+          "existing_rule_authority_preserved": true,
+          "offline_directive_is_confirmed": true,
+          "gaps_and_questions_preserved": true,
+          "unique_ledger_knowledge_preserved": true,
+          "human_words_preserved": true,
+          "subject_status_retained_in_prose": true,
+          "subject_frontmatter_removed": true,
+          "ledgers_and_checkpoint_removed": true,
+          "old_instruction_workflow_removed": true,
+          "wrapper_runs": true,
+          "inbound_links_repaired": true,
+          "one_time_pilot_not_promoted": true,
+          "rejected_proposal_not_promoted": true,
+          "observed_process_interruption": true,
+          "persisted_migration_checkpoint": true,
+          "native_completion": true,
+          "allowed_model": true,
+          "frozen_inputs": true
+        },
+        "pass": true
+      },
+      "oracle_repair": null,
+      "effective_pass": true,
+      "native_turns": [
+        {
+          "relative_summary": "run/1.summary.json",
+          "returncode": -15,
+          "completed": false,
+          "seconds": 78.63,
+          "model": [
+            "gpt-6.1-terra"
+          ],
+          "native_turn_usage": {
+            "input_tokens": 236940,
+            "cached_input_tokens": 198912,
+            "cache_write_input_tokens": 0,
+            "output_tokens": 2920,
+            "reasoning_output_tokens": 178,
+            "total_tokens": 239860
+          },
+          "usage_scope": "last observed before termination",
+          "intentional_interruption": {
+            "event": 19,
+            "signal": "SIGTERM"
+          },
+          "native_receipt_sha256": "50cc013de3ae42ed825b6450ea3194b511cfed35171a86892ea3657dd178f700"
+        },
+        {
+          "relative_summary": "run/recovery/1.summary.json",
+          "returncode": 0,
+          "completed": true,
+          "seconds": 60.735,
+          "model": [
+            "gpt-6.1-terra"
+          ],
+          "native_turn_usage": {
+            "input_tokens": 224891,
+            "cached_input_tokens": 178432,
+            "cache_write_input_tokens": 0,
+            "output_tokens": 2042,
+            "reasoning_output_tokens": 106,
+            "total_tokens": 226933
+          },
+          "usage_scope": "completed native turn",
+          "intentional_interruption": null,
+          "native_receipt_sha256": "1942d772552588dcdfcf1ba88e312ad6bd9cd2c32a6b3b0984dec173e1d62787"
+        }
+      ]
+    }
+  ]
+}

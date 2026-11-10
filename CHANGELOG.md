@@ -8,6 +8,10 @@ Entries up to 2.86 were derived from the v2 protocol-upgrade ledger, which is pr
 
 ## [Unreleased]
 
+### Added
+- [Continuity trials](tests/trials-continuity.md) for v2 ledger extraction, incompatible-writer refusal, partial user correction, read-only capture and an observed process interruption followed by fresh-session migration recovery. Portable fixtures, oracle counterexamples and frozen native observations distinguish knowledge preservation from protocol/format upgrades; the installed 4.5 protocol is unchanged.
+- An optional owned-child interruption hook in the opt-in native recorder. Ordinary reading trials leave it unset; model calls remain forbidden in CI.
+
 ## [4.5] - 2026-11-10
 
 ### Changed
