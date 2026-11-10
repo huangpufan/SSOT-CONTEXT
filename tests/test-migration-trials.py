@@ -241,9 +241,11 @@ class ContinuityTrialsTest(unittest.TestCase):
         run_dir = Path(self.tmp.name) / "run"
         run_dir.mkdir()
         signalled = []
+        commands = []
 
         class NativeProcess:
             def __init__(process, *args, **kwargs):
+                commands.append(args[0])
                 process.stdin = io.StringIO()
                 process.stdout = io.StringIO('{"type":"item.completed","item":{}}\n')
                 (self.repo / "SSOT/BOOTSTRAP.md").write_text("started")
@@ -261,7 +263,13 @@ class ContinuityTrialsTest(unittest.TestCase):
         with patch.object(migration.bench.transport.subprocess, "Popen", NativeProcess):
             result = migration.bench.transport.execute_turn(Path(self.tmp.name), run_dir, self.repo,
                      "task", 1, 10, sandbox_command=["isolated"],
-                     interrupt_when=lambda current, event: migration.continuity_cases.migration_in_flight(self.before, current))
+                     interrupt_when=lambda current, event: migration.continuity_cases.migration_in_flight(self.before, current),
+                     model="gpt-6.1-sol", allow_no_git=True, installed_mode=True)
+        self.assertEqual(commands[0][commands[0].index("-m") + 1], "gpt-6.1-sol")
+        self.assertIn("--skip-git-repo-check", commands[0])
+        self.assertNotIn("project_doc_max_bytes=0", commands[0])
+        self.assertTrue(result["installed_mode"])
+        self.assertEqual(result["requested_model"], "gpt-6.1-sol")
         self.assertEqual(len(signalled), 1)
         self.assertEqual(result["returncode"], 143)
         self.assertFalse(result["completed"])

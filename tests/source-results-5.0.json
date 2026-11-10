@@ -1,0 +1,186 @@
+{
+  "schema": 1,
+  "baseline": {
+    "commit": "7c15dd872e360c5586d00aae415323e01515395c",
+    "bundle": "4.5"
+  },
+  "environment": {
+    "system": "Linux",
+    "python": "3.12.3",
+    "codex_cli_observed": "0.167.0"
+  },
+  "source_cli": {
+    "final_sha256": "42037ea5a61a4dfa1a956b7328443330cc0835678969272af789e8f9f2e4af61",
+    "native_v4_sha256": "ee86a3f13a0bdf2358690471c02b07d310cdaf82ec74d8e56cb68105b1b781f1",
+    "post_native_delta": [
+      "item_view and successors expose operation metadata",
+      "source marker and scoped historical reading clarification"
+    ],
+    "targeted_final_cli_observation": "status, latest scoped withdrawal, authorized read-only history operation metadata"
+  },
+  "mechanical_observations": [
+    {
+      "command": "python3 tests/test-context-source.py",
+      "tests": 15,
+      "passed": true
+    },
+    {
+      "command": "python3 tests/context/test_source_contract.py",
+      "tests": 12,
+      "passed": true
+    },
+    {
+      "command": "python3 tests/test-ssot-check.py",
+      "tests": 125,
+      "passed": true
+    },
+    {
+      "command": "python3 tests/test-migration-trials.py",
+      "tests": 16,
+      "passed": true
+    },
+    {
+      "command": "python3 tests/benchmark/test_benchmark.py",
+      "tests": 12,
+      "passed": true
+    },
+    {
+      "command": "bash tests/test-installer-e2e.sh",
+      "checks": 109,
+      "passed": true
+    },
+    {
+      "command": "python3 tests/test-installer-recovery.py",
+      "tests": 18,
+      "passed": true
+    },
+    {
+      "command": "bash tests/test-bundle-shape.sh",
+      "checks": 48,
+      "passed": true
+    },
+    {
+      "command": "python3 tests/context/test_context.py",
+      "tests": 11,
+      "passed": true
+    }
+  ],
+  "native_results_owner": "context/results/context-evolution-5.0-2026-11-10.json",
+  "artifacts": {
+    "source-counterexamples-v1/events.json": {
+      "local_path": "/var/tmp/ssot-context-implementation-20261110/source-counterexamples-v1/events.json",
+      "sha256": "0e8cabaf85c1f2013550afb1400052a5c5a642b485c25e3de91ab9ec88c822ab"
+    },
+    "inflight-rebind-before/evidence.json": {
+      "local_path": "/var/tmp/ssot-context-implementation-20261110/inflight-rebind-before/evidence.json",
+      "sha256": "d931abc3267825f198a8dc181a48662dd753b972e6b2ea42bd3ad0fa50ee5ee0"
+    },
+    "sibling-revisions-before/evidence.json": {
+      "local_path": "/var/tmp/ssot-context-implementation-20261110/sibling-revisions-before/evidence.json",
+      "sha256": "347834ade9e95a29e338a302b9783e3aa35b4dae80f8e6b99f3560f770b93ffb"
+    },
+    "target-shrink-before/evidence.json": {
+      "local_path": "/var/tmp/ssot-context-implementation-20261110/target-shrink-before/evidence.json",
+      "sha256": "f5cf22d97533dfdf718cc8361009594fefa6173f0aa15ea4f842726479e231eb"
+    },
+    "operation-history-final/evidence.json": {
+      "local_path": "/var/tmp/ssot-context-implementation-20261110/operation-history-final/evidence.json",
+      "sha256": "cb40ff7dc0f8be494c1d39fde6f04558dd85c20d260907abff3a194d730e8eaf"
+    },
+    "installer-e2e-after.log": {
+      "local_path": "/var/tmp/ssot-context-implementation-20261110/installer-e2e-after.log",
+      "sha256": "ade37c8941c33decb5aa62cfd08567ae581b0a6983b9fc98f061c722cfbeabab"
+    },
+    "c07-final-checker.json": {
+      "local_path": "/var/tmp/ssot-context-implementation-20261110/c07-final-checker.json",
+      "sha256": "04be651e43a1ba4875764202db9ea93ee899542c73fc23d1a27f572b6882a0de"
+    }
+  },
+  "limits": [
+    "mechanical observations do not establish native semantics or whole-task costs",
+    "raw artifacts retained locally; portable regressions live in the repository",
+    "CI configuration is not an observed exact-commit CI pass",
+    "POSIX reference CLI; Windows unverified"
+  ],
+  "final_document_link_observation": {
+    "changed_markdown_files": 24,
+    "link_targets": 199,
+    "errors": 0,
+    "warnings": 0,
+    "scope": "all task-changed Markdown at final staging"
+  },
+  "external_reviews": [
+    {
+      "id": "architecture-opus",
+      "state": "effective",
+      "model": "Opus 5.5",
+      "reasoning": "high",
+      "local_artifact": "/tmp/ssot-context-architecture-review-nq4o31w4/opus.answer.md",
+      "sha256": "9e4fe1db82486a432ff7e926e4e154b1351bd87cd4aa8b01be83dddf188d8c1e",
+      "scope_basis": "coordinator-supplied run identity; actual artifact hashed"
+    },
+    {
+      "id": "architecture-fable",
+      "state": "effective",
+      "model": "Fable 5.1",
+      "reasoning": "medium",
+      "local_artifact": "/tmp/ssot-context-architecture-review-nq4o31w4/fable.answer.md",
+      "sha256": "6d1fd6529fb37f45a8129f7755bfe1e65160978af0ecc3be1254cf966fff5603",
+      "scope_basis": "coordinator-supplied run identity; actual artifact hashed"
+    },
+    {
+      "id": "code-sonnet-v3",
+      "state": "effective",
+      "model": "Sonnet 5.5",
+      "reasoning": "high",
+      "local_artifact": "/tmp/ssot-context-review-v3-ephdbjpw/sonnet.answer.md",
+      "sha256": "fddcd4fed6fb6e20de343bcd594149c97f8ef2bd409fcf124484bd4a3c353f9b",
+      "scope_basis": "coordinator-supplied run identity; actual artifact hashed"
+    },
+    {
+      "id": "code-sonnet-v1",
+      "state": "effective",
+      "model": "Sonnet 5.5",
+      "reasoning": "high",
+      "local_directory": "/tmp/ssot-context-code-review-o3ljq2eb",
+      "scope_basis": "coordinator inspected actual review answer"
+    },
+    {
+      "id": "code-kimi-flash-v1",
+      "state": "unavailable",
+      "reason": "TRANSPORT; no usable review",
+      "local_directory": "/tmp/ssot-context-code-review-o3ljq2eb"
+    },
+    {
+      "id": "code-kimi-flash-v3",
+      "state": "unavailable",
+      "reason": "600-second budget; no answer",
+      "local_directory": "/tmp/ssot-context-review-v3-ephdbjpw"
+    },
+    {
+      "id": "code-flash-v4-small",
+      "state": "unavailable",
+      "reason": "180-second budget; no answer",
+      "local_directory": "/tmp/ssot-context-source-review-v4-z62xqo9g"
+    }
+  ],
+  "checker_final_sha256": "cdd917767a79ce25787e4c009f2bd0d02779769904c7ab8dc3ff54bc9a1a3688",
+  "post_native_checker_deltas": [
+    "formats 4/5 help description",
+    "format5 absolute filesystem target metadata checks and direct local-owner inclusion",
+    "protected-rules Chinese heading alias activates register validation/history guards"
+  ],
+  "ci_mode_selftests": {
+    "environment": "CI=1",
+    "model_calls": false,
+    "commands": [
+      "python3 tests/benchmark/test_benchmark.py",
+      "python3 tests/test-migration-trials.py",
+      "python3 tests/context/test_context.py",
+      "python3 tests/context/test_source_contract.py",
+      "python3 tests/test-context-source.py",
+      "python3 tests/test-installer-recovery.py"
+    ],
+    "scope": "actual offline tests; hosted CI remains a separate observation"
+  }
+}

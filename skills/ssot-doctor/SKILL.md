@@ -1,15 +1,17 @@
 ---
 name: ssot-doctor
-description: Check the health of a repository's SSOT, review it against domain evidence, or catch it up on commits and supplied decision sources. Use when the user asks for an SSOT health check, review, or catch-up (for example "sync SSOT with the recent commits"), or when another SSOT skill routes here. Runs the mechanical checker plus an agent review of the requested scope, and reports exactly what was checked.
+description: Check, review or catch up maintained repository or general-space context against its domain evidence and supplied sources. Use for an explicit context health check, review or catch-up, or when another SSOT skill routes here. Runs mechanical checks plus an agent review of the requested scope and reports exactly what was checked.
 ---
 
 # SSOT Doctor
+
+Inspect the explicit entry or default `SSOT/README.md`: 5 uses [general context spaces](../ssot-preflight/references/context-spaces.md), especially Doctor/catch-up; 4 uses the repository route below; known v2/v3 stays read-only pending agreed migration. Unknown/future formats stay read-only without downgrade. Explicit source processing uses the conditional [source contract](references/source-integration.md). Ordinary undeclared chat/research/creation skips this skill; non-Git context is not failed repository setup.
 
 Find where `SSOT/` is wrong, missing, contradictory, or hard to use, and say exactly how far your check went. The model you check against is [`memory-model.md`](../ssot-preflight/references/memory-model.md).
 
 ## 1. Agree on the scope
 
-If `SSOT/README.md` has no `ssot_format: 4` (including v2 or v3), review read-only and offer migration with `$ssot-bootstrap`. Do not write to it.
+For known v2/v3, review read-only and offer an agreed `$ssot-bootstrap` migration. Unknown/future formats remain read-only; identify their writer rather than proposing downgrade.
 
 The scope includes named supplied decision sources (conversation excerpts, accepted proposals or decision history), not only git. Identify the available source set and gaps; without those sources, never claim complete decision coverage. Reconcile provided decisions through closeout’s [capture route](../ssot-closeout/references/decision-capture.md). The scope is the whole routed memory, one area or file, a catch-up from a given commit, or mining one area's protected rules (follow `../ssot-bootstrap/references/mining.md`, with separate agents). State it in your report. Findings, and any statement that something is healthy, cover only that scope.
 

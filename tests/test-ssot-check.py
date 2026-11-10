@@ -151,6 +151,77 @@ class CheckerTest(unittest.TestCase):
         out = self.assert_clean()
         self.assertIn("ssot-check: PASS - 0 error(s), 0 warning(s)", out)
 
+    def test_format5_without_git_checks_only_selected_entry_and_direct_owners(self):
+        self.valid()
+        self.write("README.md", README.replace("ssot_format: 4", "ssot_format: 5"))
+        self.write("private-unrouted.md", "# Unrelated\n\n[Broken](missing-original.md)\n")
+        out = self.assert_clean()
+        self.assertIn("selected entry and direct local owners", out)
+        self.assertNotIn("missing-original", out)
+        self.assertFalse(os.path.exists(os.path.join(self.repo, ".git")))
+        self.write("architecture.md", ARCHITECTURE + "\n[Broken](missing-owner.md)\n")
+        self.assert_error("broken link: missing-owner.md")
+
+    def test_format5_external_owner_is_a_reported_route_without_implicit_read(self):
+        self.valid()
+        self.write("README.md", README.replace("ssot_format: 4", "ssot_format: 5").replace(
+            "architecture.md#failure-and-recovery", "../external.md#failure-and-recovery"))
+        with open(os.path.join(self.repo, "external.md"), "w") as handle:
+            handle.write("# External\n\n[Broken](not-accessed.md)\n")
+        out = self.assert_clean()
+        self.assertIn("external explanation not checked", out)
+        self.assertIn("external-space route not read", out)
+        self.assertNotIn("not-accessed", out)
+        os.remove(os.path.join(self.repo, "external.md"))
+        self.assert_error("missing external-space target")
+
+    def test_format5_named_entry_retains_confirmed_history_guard(self):
+        self.valid()
+        self.write("context.md", README.replace("ssot_format: 4", "ssot_format: 5"))
+        os.remove(os.path.join(self.ssot, "README.md"))
+        self.git("init", "-q")
+        self.commit()
+        self.write("context.md", README.replace("ssot_format: 4", "ssot_format: 5").replace(
+            "A retry never charges twice", "A retry may charge twice"))
+        code, out = self.run_checker(os.path.join(self.ssot, "context.md"))
+        self.assertEqual(code, 1, out)
+        self.assertIn("confirmed invariant INV-01 changed its rule", out)
+
+    def test_format5_absolute_external_target_is_statted_without_crawling(self):
+        self.valid()
+        external = os.path.join(self.repo, "external-owner.md")
+        with open(external, "w") as handle:
+            handle.write("# External owner\n\n[Uncrawled](private-missing.md)\n")
+        link = f"\n[External owner]({external})\n"
+        self.write("README.md", README.replace("ssot_format: 4", "ssot_format: 5") + link)
+        out = self.assert_clean()
+        self.assertIn("absolute link path is machine-specific", out)
+        self.assertIn("external-space route not read", out)
+        self.assertNotIn("private-missing", out)
+        os.remove(external)
+        self.assert_error("missing external-space target")
+        self.write("README.md", README + link)
+        out = self.assert_clean()  # existing format-4 absolute-link warning stays compatible
+        self.assertNotIn("missing external-space target", out)
+
+    def test_format5_absolute_local_owner_is_checked_as_a_direct_owner(self):
+        self.valid()
+        owner = self.write("absolute-owner.md", "# Local owner\n\n[Broken](missing-local.md)\n")
+        self.write("README.md", README.replace("ssot_format: 4", "ssot_format: 5") + f"\n[Owner]({owner})\n")
+        self.assert_error("broken link: missing-local.md")
+
+    def test_protected_rules_heading_checks_the_same_register_and_history(self):
+        self.valid()
+        translated = README.replace("## Invariants", "## 保护规则")
+        self.write("README.md", translated)
+        self.assertNotIn("no Invariants section", self.assert_clean())
+        self.write("README.md", translated.replace("| confirmed |", "| merely-observed |"))
+        self.assert_error("must be confirmed, candidate, or retired")
+        self.write("README.md", translated)
+        self.git("init", "-q");self.commit()
+        self.write("README.md", translated.replace("A retry never charges twice", "A retry may charge twice"))
+        self.assert_error("confirmed invariant INV-01 changed its rule")
+
     def test_v3_fixture_is_legacy_not_format4_pass(self):
         self.write("README.md", README_V3)
         self.write("architecture.md", ARCHITECTURE)

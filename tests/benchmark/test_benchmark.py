@@ -94,6 +94,30 @@ class BenchmarkTest(unittest.TestCase):
         self.assertEqual(summary['native_turn_usage']['input_tokens'], 30)
         self.assertEqual(summary['native_turn_id'], 'b')
 
+    def test_explicit_model_costs_require_matching_request_and_native_receipt(self):
+        summary = {'seconds': 3, 'tool_items': 2, 'tool_output_bytes': 9,
+                   'requested_model': 'gpt-6.1-sol', 'native_models': ['gpt-6.1-sol'],
+                   'native_turn_usage': {'input_tokens': 100, 'cached_input_tokens': 80, 'output_tokens': 12}}
+        self.assertIsNone(run.costs(summary))
+        self.assertEqual(run.costs(summary, 'gpt-6.1-sol')['input_tokens'], 100)
+        summary['requested_model'] = run.transport.MODEL
+        self.assertIsNone(run.costs(summary, 'gpt-6.1-sol'))
+
+    def test_explicit_model_is_frozen_and_cannot_change_at_execution(self):
+        source = self.root/'source'
+        (source/'skills').mkdir(parents=True)
+        (source/'skills/example.md').write_text('frozen source\n')
+        args = Namespace(output=self.root/'experiment', comparison='index', baseline=None, candidate=source,
+                         repeats=1, documents=0, cap=30, seed=20261109, cases=['routed'], model='gpt-6.1-sol')
+        run.prepare(args)
+        self.assertEqual(json.loads((args.output/'plan.json').read_text())['model'], 'gpt-6.1-sol')
+        # Exercise model identity separately from the independently tested CI
+        # billing guard; stop before transport even if mismatch handling regresses.
+        with patch.dict(run.os.environ, {'CI': ''}), \
+                patch.object(run, 'validate_frozen', side_effect=AssertionError('must reject before execution')):
+            with self.assertRaisesRegex(ValueError, 'Model differs'):
+                run.run_models(Namespace(output=args.output, model=run.transport.MODEL))
+
     def test_report_keeps_failure_cost_and_excludes_failed_pairs(self):
         run.save(self.root/'plan.json', {'comparison': 'protocol', 'cases': ['routed'], 'pairs': [{'id': 'x', 'case': 'routed'}]})
         for arm, state in (('baseline', 'passed'), ('candidate', 'failed_quality')):

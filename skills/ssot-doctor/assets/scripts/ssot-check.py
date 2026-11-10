@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
-"""Mechanical checks for a repository SSOT/ directory (SSOT-CONTEXT v4).
+"""Mechanical checks for development format 4 and general context format 5.
 
-Usage: ssot-check.py [SSOT_DIR] [--since COMMIT]      (default: ./SSOT)
+Usage: ssot-check.py [SSOT_DIR|FORMAT5_ENTRY] [--since COMMIT] (default: ./SSOT)
 
 --since COMMIT lists only mentions of files removed after COMMIT or in
 uncommitted changes, and counts the older ones in one line; it also compares
@@ -46,7 +46,7 @@ FORMAT = "4"
 README_WARN_CHARS = 8000
 DOC_WARN_CHARS = 16000
 INVARIANT_STATUSES = {"confirmed", "candidate", "retired"}
-INVARIANT_HEADINGS = ("invariants", "不变量")
+INVARIANT_HEADINGS = ("invariants", "不变量", "保护规则")
 INVARIANT_COLUMNS = "ID | Kind | Rule | Explained in | Status | Source"
 INVARIANT_HEADERS = (  # accepted header names per column, compared case-insensitively
     ("id",), ("kind", "类型"), ("rule", "规则"), ("explained in", "解释位置"),
@@ -225,6 +225,7 @@ def slug(text):
 
 _anchor_cache = {}
 REPO_ROOT = [os.sep]  # set in main(): the repository containing SSOT/
+GENERAL = [False]  # format 5 checks selected entry/direct local owners only
 
 
 def anchors(path):
@@ -322,9 +323,21 @@ def check_link(report, doc, number, target):
         return  # external URLs and mailto: are outside this checker's scope
     if unquote(target).startswith("/"):
         report.add("WARN", doc, number, f"absolute link path is machine-specific: {target}")
-        return
+        if not GENERAL[0]:
+            return
     resolved, fragment = resolve(doc, target)
     if not repository_local(resolved):
+        if GENERAL[0]:
+            try:
+                os.stat(resolved)
+            except FileNotFoundError:
+                report.add("ERROR", doc, number, f"missing external-space target: {target}")
+                return
+            except OSError as error:
+                report.unchecked.append(f"external-space target {target}: {error}")
+                return
+            report.add("INFO", doc, number, f"external-space route not read by this check: {target}")
+            return
         report.add("WARN", doc, number,
                    f"link leaves the repository and only works where the same folders sit beside it: {target}")
         return
@@ -491,6 +504,9 @@ def check_invariants(report, readme, text, ssot_dir):
                 report.add("ERROR", readme, number, f"invariant {ident} needs a link to where it is explained")
             for target in targets:
                 path = None if SCHEME_RE.match(target) else resolve(readme, target)[0]
+                if GENERAL[0] and (path is None or not repository_local(path)):
+                    report.add("INFO", readme, number, f"external explanation not checked: {target}")
+                    continue
                 if path is None or not repository_local(path) or not path.lower().endswith(".md"):
                     report.add("ERROR", readme, number,
                                f"invariant {ident} needs a Markdown explanation in the same repository ({target}); "
@@ -791,8 +807,9 @@ DATE_RE = re.compile(r"\b\d{4}-\d{2}-\d{2}\b")
 
 def check_confirmed(report, readme, text, since):
     base, directory = since or "HEAD", os.path.dirname(readme)
+    entry = os.path.basename(readme)
     try:
-        code, stderr = git(directory, "rev-parse", "--verify", "--quiet", f"{base}:./README.md")
+        code, stderr = git(directory, "rev-parse", "--verify", "--quiet", f"{base}:./{entry}")
         if code == GIT_NO:
             return  # no commit yet, or the README is newer than the base
         if code != 0:
@@ -801,8 +818,8 @@ def check_confirmed(report, readme, text, since):
             else:
                 report.unchecked.append(f"confirmed invariants: git failed ({stderr.strip() or code})")
             return
-        old = git_output(directory, "cat-file", "blob", f"{base}:./README.md")
-        if front_matter(old).get("ssot_format") not in {"3", FORMAT}:
+        old = git_output(directory, "cat-file", "blob", f"{base}:./{entry}")
+        if front_matter(old).get("ssot_format") not in {"3", FORMAT, "5"}:
             return  # a v2 base has other columns; the migration's own check covers its rows
         old = register_rows(old)
     except OSError:
@@ -927,10 +944,10 @@ def repository_local(path):
 
 def checked_documents(ssot_dir, readme, report):
     """SSOT plus direct README Markdown owners; their links are checked, not crawled."""
-    documents = set(markdown_files(ssot_dir, report))
+    documents = {readme} if GENERAL[0] else set(markdown_files(ssot_dir, report))
     if os.path.isfile(readme) and repository_local(readme):
         for _, target in link_targets(read_text(readme)):
-            if SCHEME_RE.match(target) or unquote(target).startswith("/"):
+            if SCHEME_RE.match(target) or (unquote(target).startswith("/") and not GENERAL[0]):
                 continue
             path, _ = resolve(readme, target)
             if path.lower().endswith(".md") and repository_local(path) and os.path.isfile(path):
@@ -961,13 +978,16 @@ def main(argv):
     if len(args) > 1 or since == "" or (since and since.startswith("-")) or any(a.startswith("-") for a in args):
         print((__doc__ or "").strip())
         return 2
-    ssot_dir = os.path.abspath(args[0] if args else "SSOT")
+    selected = os.path.abspath(args[0] if args else "SSOT")
+    named_entry = os.path.isfile(selected)
+    ssot_dir = os.path.dirname(selected) if named_entry else selected
     if not os.path.isdir(ssot_dir):
         print(f"ERROR no SSOT directory at {ssot_dir}")
         return 2
     report = Report(ssot_dir)
     REPO_ROOT[0] = repository_root(ssot_dir)
-    readme = os.path.join(ssot_dir, "README.md")
+    readme = selected if named_entry else os.path.join(ssot_dir, "README.md")
+    GENERAL[0] = False
 
     is_v2 = any(os.path.exists(os.path.join(ssot_dir, name)) for name in V2_LEDGERS)
     legacy = False
@@ -978,7 +998,13 @@ def main(argv):
     else:
         text = read_text(readme)
         meta = front_matter(text)
-        if meta.get("ssot_format") == FORMAT:
+        GENERAL[0] = meta.get("ssot_format") == "5"
+        if GENERAL[0]:
+            REPO_ROOT[0] = os.path.realpath(ssot_dir)
+            report.add("INFO", readme, None, "format 5: selected entry and direct local owners; external routes are not read")
+        if named_entry and not GENERAL[0]:
+            report.add("ERROR", readme, 1, "a named entry file requires ssot_format: 5; use a directory for older formats")
+        if meta.get("ssot_format") in {FORMAT, "5"}:
             if not meta.get("language"):
                 report.add("ERROR", readme, 1, "front matter needs `language:` (for example en or zh-CN)")
             check_invariants(report, readme, text, ssot_dir)
@@ -994,7 +1020,7 @@ def main(argv):
             report.add("INFO", readme, None, f"v{version} layout; use ssot-bootstrap to migrate to format 4")
             report.unchecked.append("legacy SSOT requires migration; format 4 ownership was not checked")
         else:
-            report.add("ERROR", readme, 1, "front matter needs `ssot_format: 4`")
+            report.add("ERROR", readme, 1, "front matter needs supported `ssot_format: 4` or `ssot_format: 5`")
 
     if os.path.isfile(os.path.join(ssot_dir, "BOOTSTRAP.md")):
         report.add("INFO", os.path.join(ssot_dir, "BOOTSTRAP.md"), None,

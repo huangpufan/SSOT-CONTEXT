@@ -64,7 +64,8 @@ def prepare(args):
     for name in ("run.py", "cases.py"):
         shutil.copy2(HERE / name, harness / "benchmark" / name)
     shutil.copy2(HERE.parent / "run-performance-trials.py", harness / "run-performance-trials.py")
-    plan = {"schema": 1, "comparison": args.comparison, "model": transport.MODEL, "reasoning": "medium",
+    plan = {"schema": 1, "comparison": args.comparison,
+            "model": transport.requested_model(getattr(args, "model", None)), "reasoning": "medium",
             "seed": args.seed, "repeats": args.repeats, "documents": args.documents, "cap": args.cap,
             "cases": args.cases, "harness_manifest": manifest(harness), "bundles": {}, "pairs": [], "order": []}
     for arm in ("baseline", "candidate"):
@@ -143,9 +144,12 @@ def prompt(bundle, case):
             "Helpers are unavailable.\n" + block + "\nUser task:\n" + task)
 
 
-def costs(summary):
+def costs(summary, expected_model=None):
     usage = summary.get("native_turn_usage")
-    if not usage or summary.get("native_models") != [transport.MODEL]:
+    expected_model = transport.requested_model(expected_model)
+    if not usage or summary.get("native_models") != [expected_model]:
+        return None
+    if summary.get("requested_model", expected_model) != expected_model:
         return None
     fields = ("input_tokens", "cached_input_tokens", "output_tokens")
     if any(not isinstance(usage.get(k), int) or usage[k] < 0 for k in fields):
@@ -192,6 +196,8 @@ def run_models(args):
         raise ValueError("Billable model runs are disabled in CI")
     root = args.output.resolve()
     plan = json.loads((root / "plan.json").read_text())
+    if getattr(args, "model", None) is not None and args.model != plan["model"]:
+        raise ValueError("Model differs from the frozen plan; prepare a new experiment")
     validate_frozen(root, plan)
     for name in ("codex", "bwrap", "timeout", "git"):
         if not shutil.which(name):
@@ -230,7 +236,8 @@ def run_models(args):
                 text = prompt(bundle, pair["case"]) if turn == 1 else cases.WARM_TASK
                 head = subprocess.check_output(["git", "rev-parse", "HEAD"], cwd=repo)
                 summary = transport.execute_turn(root, run_dir, repo, text, turn, plan["cap"],
-                                                 sandbox_command=sandbox, codex_home=home, capture_checkpoints=False)
+                                                 sandbox_command=sandbox, codex_home=home,
+                                                 capture_checkpoints=False, model=plan["model"])
                 before = json.loads((run_dir / f"{turn}.before.json").read_text())
                 after = json.loads((run_dir / f"{turn}.after.json").read_text())
                 verdict = cases.grade(repo, pair["case"], p, before, after)
@@ -238,8 +245,8 @@ def run_models(args):
                 verdict["passed"] = all(verdict["checks"].values())
                 save(run_dir / f"{turn}.verdict.json", verdict)
                 result["turns"].append({"turn": turn, "completed": summary["completed"] and summary["returncode"] == 0,
-                                        "quality_passed": verdict["passed"], "costs": costs(summary),
-                                        "usage_source": "native" if costs(summary) else "missing_or_wrong_model",
+                                        "quality_passed": verdict["passed"], "costs": costs(summary, plan["model"]),
+                                        "usage_source": "native" if costs(summary, plan["model"]) else "missing_or_wrong_model",
                                         "reading": reading_observations(run_dir, turn)})
                 if not result["turns"][-1]["completed"]:
                     break
@@ -337,6 +344,7 @@ def main():
     parser.add_argument("--documents", type=int, default=24)
     parser.add_argument("--seed", type=int, default=20261109)
     parser.add_argument("--cap", type=int, default=240)
+    parser.add_argument("--model", help="authorized model for preparation; execution uses the frozen plan")
     args = parser.parse_args()
     if args.prepare:
         prepare(args)

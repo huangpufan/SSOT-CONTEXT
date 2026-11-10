@@ -156,7 +156,10 @@ def main():
     parser.add_argument("--case", choices=("migrate", "resume", "readonly", *continuity_cases.CASES), default="resume")
     parser.add_argument("--run-models", action="store_true")
     parser.add_argument("--cap", type=int, default=240)
+    parser.add_argument("--model", default=bench.transport.MODEL,
+                        help="explicit authorized experiment model; default: %(default)s")
     args = parser.parse_args()
+    model = bench.transport.requested_model(args.model)
     if args.run_models and os.environ.get("CI"):
         parser.error("Model calls are forbidden in CI")
     root = args.output.resolve()
@@ -199,7 +202,7 @@ def main():
         block = adapter[adapter.index("<!-- SSOT-CONTEXT:BEGIN -->"):adapter.index("<!-- SSOT-CONTEXT:END -->")]
         prompt += block + "\nUser task:\n"
     prompt += turn_tasks[0]
-    plan = {"case": args.case, "model": bench.transport.MODEL, "watermark": watermark,
+    plan = {"case": args.case, "model": model, "watermark": watermark,
             "bundle_manifest": bench.manifest(bundle), "harness_manifest": bench.manifest(harness),
             "fixture": before, "prompt": prompt, "followups": turn_tasks[1:], "cap": args.cap}
     bench.save(root / "plan.json", plan)
@@ -214,7 +217,8 @@ def main():
     for turn, request in enumerate([prompt, *turn_tasks[1:]], 1):
         interrupt_when = (lambda current, event: continuity_cases.migration_in_flight(before, current)) if args.case == "v2-interrupt" else None
         summary = bench.transport.execute_turn(root, run_dir, repo, request, turn, args.cap,
-                                               sandbox_command=command, codex_home=home, interrupt_when=interrupt_when)
+                                               sandbox_command=command, codex_home=home,
+                                               interrupt_when=interrupt_when, model=model)
         summaries.append(summary)
         if summary["returncode"] or not summary["completed"]:
             break
@@ -233,7 +237,8 @@ def main():
                        "The original authorization still applies. Do not commit, push, install dependencies or access other projects. "
                        f"Skills are available at {bundle / 'skills'}. Helpers are unavailable; no new rule mining is needed.")
             recovery = bench.transport.execute_turn(root, recovery_dir, repo, request, 1, args.cap,
-                       sandbox_command=bench.isolated_command(repo, bundle, recovery_home), codex_home=recovery_home)
+                       sandbox_command=bench.isolated_command(repo, bundle, recovery_home),
+                       codex_home=recovery_home, model=model)
             summaries = [recovery]
     checks = grade(repo, args.case, before, watermark)
     if interrupted is not None:
@@ -243,7 +248,8 @@ def main():
         for turn, quote in enumerate((continuity_cases.ACCEPT, continuity_cases.CORRECTION), 1):
             checks[f"saved_owner_read_before_plan_turn_{turn}"] = continuity_cases.capture_order(run_dir, turn, quote)
     checks["native_completion"] = len(summaries) == len(turn_tasks) and all(s["returncode"] == 0 and s["completed"] for s in summaries)
-    checks["allowed_model"] = all(s.get("native_models") == [bench.transport.MODEL] for s in summaries)
+    checks["allowed_model"] = all(s.get("requested_model") == model and s.get("native_models") == [model]
+                                  for s in summaries)
     checks["frozen_inputs"] = bench.manifest(bundle) == plan["bundle_manifest"] and bench.manifest(harness) == plan["harness_manifest"]
     bench.save(root / "verdict.json", {"checks": checks, "pass": all(checks.values())})
     print(json.dumps({"case": args.case, "checks": checks}, indent=2))

@@ -1,8 +1,8 @@
 ---
 name: ssot-preflight
-description: Read the repository's SSOT before substantive work. Use this before code, config, documentation, review, debugging, refactoring, or planning work in a repository, to find the invariants and documents that bear on the task and to surface open questions that affect it. Skip it for non-repository chat, pure command runs, and typo or formatting edits that cannot change meaning.
+description: Read relevant maintained context before substantive repository work or work in a declared context space. Find protected rules, owners and blocking questions for code, configuration, documentation, review, debugging or planning. Use for an explicit request to maintain non-repository context; ordinary chat, research answers or creative writing without a declared space do not trigger setup. Skip pure commands and meaning-preserving typo or formatting edits.
 metadata:
-  protocol_version: "4.5"
+  protocol_version: "5.0"
   bundle: "SSOT-CONTEXT"
 ---
 
@@ -10,13 +10,15 @@ metadata:
 
 Find the entry point before loading the [memory model](references/memory-model.md).
 
+Inspect the explicit entry or default `SSOT/README.md` first. Format 5 uses [general context spaces](references/context-spaces.md); format 4 uses the repository steps below. Known v2/v3 uses the legacy read-only route. Unknown/future markers stay read-only: identify/upgrade the writer, never downgrade the data. Explicit new general-space setup also uses the general branch. Ordinary undeclared non-repository chat, research or creation skips this skill.
+
 Explicit SSOT checks, reviews or catch-up require `$ssot-doctor` for that scope, including alongside implementation; preflight cannot replace it. Ordinary code reviews do not trigger Doctor.
 
 ## 1. Find the entry point
 
 - **No `SSOT/` directory.** Tell the user the repository has no SSOT and offer to create one with `$ssot-bootstrap`. Setup writes a documentation tree and can take more than one session, so it needs the user's yes. If they decline or defer, do the task without the SSOT steps, and do not offer again this session.
 - **`SSOT/BOOTSTRAP.md` exists.** Setup is unfinished. Offer to continue it, and meanwhile use what is already written.
-- **`SSOT/README.md` has no `ssot_format: 4`.** This SSOT uses an older or unrecognized model, including v2 and v3. Read it as knowledge. Its coverage labels and review records are historical, but its adjudications, user constraints, limits, and open questions that bear on the task still bind you. Do not write to it. Tell the user once that `$ssot-bootstrap` can migrate it or set it up in the v4 format.
+- **Known v2/v3 layout.** Read it as knowledge. Its coverage labels and review records are historical, but relevant adjudications, user constraints, limits and open questions still bind. Keep it read-only and offer the agreed preservation-aware migration through `$ssot-bootstrap`; do not apply that offer to unknown/future formats.
 
 ## 2. Read what this task needs
 

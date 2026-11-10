@@ -1,9 +1,11 @@
 ---
 name: ssot-bootstrap
-description: Create, continue, or migrate a repository's SSOT. Use when the user agrees to create SSOT for a repository that has none, when SSOT/BOOTSTRAP.md shows setup is unfinished, or when the user agrees to migrate an SSOT whose README lacks ssot_format 4 (usually the v2 layout with SSOT/STATUS.md). Builds an entry point from repository evidence while retaining existing canonical owners. Do not use for normal task preflight or closeout.
+description: Create, continue or migrate maintained context with the user's agreement. Use for a repository's missing or unfinished SSOT, an agreed legacy migration, or explicit setup of a bounded general context space. Retain canonical owners and current development format 4; ordinary non-repository conversation does not trigger setup. Do not use for normal preflight or closeout.
 ---
 
 # SSOT Bootstrap
+
+Inspect the explicit entry or default `SSOT/README.md`: 5 uses [general context spaces](../ssot-preflight/references/context-spaces.md), especially Bootstrap; 4 keeps the repository route below; known v2/v3 keeps its agreed migration route. Unknown/future formats stay read-only without downgrade. Explicit new general-space setup uses the general branch without Git or non-software mining requirements. Ordinary undeclared chat/research/creation skips this skill; a bundle upgrade never requires format conversion.
 
 Build the repository’s memory from domain evidence, existing canonical documents, history and available user decisions. A filled template is not knowledge. What to store and how to write it is defined in [`memory-model.md`](../ssot-preflight/references/memory-model.md).
 

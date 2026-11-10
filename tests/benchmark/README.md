@@ -20,7 +20,7 @@ The oracle probes 144 combinations per code task, including exact threshold edge
 
 ## Prepare and run
 
-Requirements for live runs: Linux, `bwrap`, `timeout`, Git, Python 3.10+ and an authenticated `codex` CLI with access to `gpt-6.1-terra`. The tested CLI version is recorded in each experiment. Preparation, reporting and self-tests make no model calls. Live execution requires `--run-models` and refuses to run when `CI` is set. The model and medium reasoning setting are fixed by the recorder; changing them requires a separately versioned experiment.
+Requirements for live runs: Linux, `bwrap`, `timeout`, Git, Python 3.10+ and an authenticated `codex` CLI with access to the selected model (default `gpt-6.1-terra`). The tested CLI version is recorded in each experiment. Preparation, reporting and self-tests make no model calls. Live execution requires `--run-models` and refuses to run when `CI` is set. An authorized experiment can select `--model MODEL` during preparation; model and medium reasoning are frozen in the plan and checked against native receipts. Execution cannot change that model. A model parameter does not grant authorization under the repository's model policy.
 
 Supply two repository directories containing `skills/`. For a historical baseline, export its commit into a temporary directory, then prepare the plan. Replace `BASELINE_REF` with the commit or tag you want to compare.
 

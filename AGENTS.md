@@ -4,7 +4,7 @@
 
 ## What This Repo Is
 
-SSOT-CONTEXT is a skill bundle that gives a project repository a small, maintained memory entered through `SSOT/README.md`, with repository-local knowledge owners: what the project is for, how it works, the rules people decided, why things are the way they are, and the traps. [DESIGN.md](./DESIGN.md) explains why it is shaped this way, including what version 3 removed. The bundle contains six skills:
+SSOT-CONTEXT maintains small routed context for development repositories and explicitly declared general spaces. Development consumers retain format 4; general spaces use format 5 with named content owners and no Git prerequisite. [DESIGN.md](./DESIGN.md) explains the boundaries and what version 3 removed. The bundle contains six skills:
 
 | Skill | Role |
 |-------|------|
@@ -40,7 +40,7 @@ The consumer instruction block lives in the bootstrap adapter template ([English
 ## Repo Boundaries
 
 - `install.sh` is the installer entrypoint; change it only for the skill list, the agent registry, or how sources are fetched (`--ref`).
-- `skills/*/SKILL.md` is the protocol authority for each skill; `skills/ssot-preflight/references/memory-model.md` owns the consumer memory model they share.
+- `skills/*/SKILL.md` is the protocol authority; `memory-model.md` owns development format 4, and conditional `context-spaces.md` owns general format 5, under `skills/ssot-preflight/references/`.
 - Protocol changes follow [CONTRIBUTING.md](./CONTRIBUTING.md#changing-the-protocol), including the budgets CI enforces.
 - `skills/ssot-bootstrap/assets/templates/{en,zh}/` contains template files; keep `en/` and `zh/` in file-name parity.
 - `skills/*/agents/openai.yaml` must stay in sync with each skill.
@@ -78,6 +78,8 @@ KISS is the permanent SSOT design principle: choose the shortest **reliable path
 | `CHANGELOG.md` | Version history |
 | `skills/*/SKILL.md` | Skill protocol and instructions |
 | `skills/ssot-preflight/references/memory-model.md` | What consumer memory holds, its owners, and how it is written |
+| `skills/ssot-preflight/references/context-spaces.md` | General-space format 5, ownership, authorized records and lifecycle |
+| `skills/ssot-doctor/references/source-integration.md` | Conditional source contract and reference CLI |
 | `skills/ssot-bootstrap/references/bootstrap.md` | Creating an SSOT and preserving v2/v3 knowledge during migration |
 | `skills/*/agents/openai.yaml` | Agent metadata for each skill |
 | `skills/ssot-bootstrap/assets/templates/{en,zh}/` | Bootstrap templates |

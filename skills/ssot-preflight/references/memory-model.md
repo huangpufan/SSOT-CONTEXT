@@ -1,5 +1,7 @@
 # SSOT Memory Model
 
+This is the development format-4 model, which remains supported for normal reading and writing. Declared general format-5 spaces use the conditional [space model](context-spaces.md); the shared decision-evidence and protective-rule definitions below retain their meaning.
+
 This file owns what a repository's `SSOT/` contains, where each kind of knowledge lives, and how it is written. The other SSOT skills link here.
 
 ## 1. What SSOT is for

@@ -4,7 +4,7 @@
 
 本项目原名 SSOT-SKILL。已有技能名称保持兼容；详见[改名兼容说明](./INSTALL.md#project-rename-compatibility)。
 
-**人定义不变量，Agent 演进代码。**
+**长期 context 有归属，人的决定受保护。**
 
 [![CI](https://github.com/huangpufan/SSOT-CONTEXT/actions/workflows/ci.yml/badge.svg)](https://github.com/huangpufan/SSOT-CONTEXT/actions/workflows/ci.yml) [![License: MIT](https://img.shields.io/badge/license-MIT-blue.svg)](./LICENSE) [![Agents](https://img.shields.io/badge/agents-70%2B-purple)](#支持的-agent) [![Stars](https://img.shields.io/github/stars/huangpufan/SSOT-CONTEXT?style=social)](https://github.com/huangpufan/SSOT-CONTEXT/stargazers)
 
@@ -12,13 +12,13 @@
 
 </div>
 
-我们的判断是：Coding Agent 会向设计、实现和代码审查的自动化持续演进。SSOT-CONTEXT 探索并适应这种范式变化：**人参与定义项目的不变量；当出现修改不变量的建议时，由人判断修改是否正确、是否合适，并决定是否接受。** 不变量是实现无论怎样演进都必须守住的承诺，例如接口兼容、租户数据隔离、重试不能重复扣款。
+SSOT-CONTEXT 帮助 Agent 为开发仓库，以及明确声明的研究、创作、人生领域和组织空间维护长期 context。**每条事实或记录有一个维护 owner；人的决定保留原有范围和决定权。** 入口把下一项任务引向相关 owner，减少每次重新还原历史的工作。
 
-在这些边界内，Agent 执行任务，外层 **Harness**（围绕 Agent 的工具、检查与执行控制）支撑自动化。
+它从一项开发承诺开始：人定义不变量，Agent 在边界内演进代码。接口兼容、租户隔离和重试不能重复扣款等约束仍受保护。原有流程继续使用消费者 format 4；升级 bundle 不要求迁移。
 
-**SSOT-CONTEXT 让这些不变量和决策有据可循。** 它以随代码版本管理的 `SSOT/README.md` 为入口，指向约束及其理由、架构、决策和已知陷阱的唯一维护位置。仓库内已有且持续维护的文档可以保留权威归属，让不同会话、不同 Agent 从同一组明确的共识出发。
+通用空间使用消费者 format 5 和明确接线的入口，保留既有 owner 与目录，不强制 Git 或统一大目录。Agent 区分事实、假设、已接受的选择、偏好、经历与变化中的状态。授权保存的经历可以因纪念价值保留；人格推断和研究假设不会变成默认约束行为的 candidate 规则。
 
-**SSOT** 是 **Single Source of Truth（单一事实源）**：每条长期事实只在一个位置维护，其他文档通过链接引用。本项目提供六个 Skill、Markdown 模板和本地检查脚本，在你已有的编程 Agent 中维护这份共享知识；任务的执行与验证由你的 Harness 和测试设施承担。
+**SSOT** 是 **Single Source of Truth（单一事实源）**：每条维护内容有一个 owner，其他文档通过链接引用。本项目提供四个主 Skill、两个兼容名、模板、机械检查器和可选的来源进度 CLI。执行、访问和调度由 Agent/宿主提供；技能不后台采集不可见材料，也不保证删除全部副本。
 
 ## 快速开始
 
@@ -81,14 +81,30 @@ curl -fsSL https://raw.githubusercontent.com/huangpufan/SSOT-CONTEXT/main/instal
 
 </details>
 
+## 通用 context 空间
+
+安装同一套 bundle 后，明确要维护的主题和工作位置。例如：
+
+```text
+把当前文件夹作为这项研究的 context 空间。保留现有原始资料和 findings owner，只建立有用的入口及确实缺少的 context。
+```
+
+你同意后，Bootstrap 使用 format 5，通过所选语言的 `context-adapter.md` 接线实际入口，保留已有规范 owner。顶层空间可以维护跨域优先级和取舍；子域细节、原始材料、现场状态及任务进度仍归原 owner。路由不授予跨空间读写权限。未声明空间的普通聊天、研究回答和创作跳过工作流。
+
+已知 format-5 writer 需要 bundle 5.0+。旧 writer 必须能发现只读入口，并升级 bundle；不能为了满足旧检查器把数据降为 4。已有开发 format 4 和独立授权的 owner 记录流程继续遵循原有规则。归属、授权记录及撤回/删除的区别见[空间模型](./skills/ssot-preflight/references/context-spaces.md)。
+
+对于可重复导出，可选的 POSIX/Python [来源契约与 CLI](./skills/ssot-doctor/references/source-integration.md) 管理稳定条目/修订身份、声明的 owner 和冲突。更新必须保存后读回才确认；经判断无需更新的结果须保留理由。Agent 理解来源并更新 owner；状态只存元数据和定位，不缓存来源正文。它能停止使用并定位已登记影响，包括未确认捕获，但不声称找到所有下游副本。单次明确记事只需正常 owner 写入/读回。[Context 试验](./tests/context/README.md) 区分受控行为、真实安装发现和来源接入证据。
+
+[原生验证报告](./tests/context/trials-5.0.md) 保留实际结果、失败、冻结身份与成本。小型配对样本中的开发 token 成本有所增加，不声称性能优化。后续元数据/检查器修正有独立机械证据；报告同时说明未覆盖范围与写作质量的限度。
+
 ## Agent 怎样选择 Skill？
 
 Agent 根据任务和项目状态，从四个 Skill 中选择；另外两个名字用来兼容旧的提示词。下表仅供了解。
 
 | 情境 | Skill | 作用 |
 |---|---|---|
-| 开始一项实质性的项目任务 | [`ssot-preflight`](./skills/ssot-preflight/SKILL.md) | 读取相关记忆，以及约束这次任务的规则 |
-| 新建、继续建立或迁移 `SSOT/` | [`ssot-bootstrap`](./skills/ssot-bootstrap/SKILL.md) | 从项目的代码、历史和文档中建立记忆 |
+| 开始实质性的仓库或已声明空间工作 | [`ssot-preflight`](./skills/ssot-preflight/SKILL.md) | 读取相关 context 和受保护规则 |
+| 经同意建立、继续或迁移 | [`ssot-bootstrap`](./skills/ssot-bootstrap/SKILL.md) | 从主题的证据与既有 owner 建立 context |
 | 接受长期决定，或完成一批实质性改动 | [`ssot-closeout`](./skills/ssot-closeout/SKILL.md) | 记下长期有效的变化；没有就什么都不写 |
 | 检查健康、对照领域证据审查、追平提交与对话来源 | [`ssot-doctor`](./skills/ssot-doctor/SKILL.md) | 运行检查器、对照领域证据审查，并说明查到了哪一步 |
 | 旧提示词里的 `$ssot-audit` 或 `$ssot-skill` | [`ssot-audit`](./skills/ssot-audit/SKILL.md)、[`ssot-skill`](./skills/ssot-skill/SKILL.md) | 转到上面对应的 Skill |

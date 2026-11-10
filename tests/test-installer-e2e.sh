@@ -659,6 +659,9 @@ REF_GIT=(git -C "$REF_SRC" -c core.hooksPath=/dev/null -c commit.gpgsign=false -
 sed -i.bak 's/protocol_version: "[^"]*"/protocol_version: "3.99-fixture"/' "$REF_SRC/skills/ssot-preflight/SKILL.md"
 rm -f "$REF_SRC/skills/ssot-preflight/SKILL.md.bak"
 "${REF_GIT[@]}" add -A && "${REF_GIT[@]}" commit -qm 'v3 generation' && "${REF_GIT[@]}" tag v3-gen
+sed -i.bak 's/protocol_version: "[^"]*"/protocol_version: "4.99-fixture"/' "$REF_SRC/skills/ssot-preflight/SKILL.md"
+rm -f "$REF_SRC/skills/ssot-preflight/SKILL.md.bak"
+"${REF_GIT[@]}" add skills/ssot-preflight/SKILL.md && "${REF_GIT[@]}" commit -qm 'v4 generation' && "${REF_GIT[@]}" tag v4-gen
 rm -rf "$REF_SRC/skills" && cp -R "$PROJECT_ROOT/skills" "$REF_SRC/skills"
 "${REF_GIT[@]}" add -A && "${REF_GIT[@]}" commit -qm 'current generation'
 CURRENT_VERSION="$(tr -d '[:space:]' < "$PROJECT_ROOT/VERSION")"
@@ -689,7 +692,14 @@ ref_install "$SCENARIO24/legacy-chain" --ref old-gen >"$SCENARIO24/chain-old.log
 ref_install "$SCENARIO24/legacy-chain" --ref v3-gen >"$SCENARIO24/chain-v3.log" 2>&1 || fail "scenario24: legacy 2-to-3 upgrade failed"
 assert_grep "scenario24: legacy 2-to-3 warning preserved" "$SCENARIO24/chain-v3.log" "read-only for agents until migrated"
 ref_install "$SCENARIO24/legacy-chain" --ref main >"$SCENARIO24/chain-v4.log" 2>&1 || fail "scenario24: 3-to-4 upgrade failed"
-assert_grep "scenario24: 3-to-4 warns about old memory" "$SCENARIO24/chain-v4.log" "v2 or v3 SSOT are read-only"
+assert_grep "scenario24: legacy-to-current warns about old memory" "$SCENARIO24/chain-v4.log" "v2 or v3 SSOT are read-only"
+ref_install "$SCENARIO24/development-v4" --ref v4-gen >"$SCENARIO24/chain-dev4.log" 2>&1 || fail "scenario24: development v4 setup failed"
+ref_install "$SCENARIO24/development-v4" --ref main >"$SCENARIO24/chain-dev-current.log" 2>&1 || fail "scenario24: development v4 upgrade failed"
+if grep -q "read-only for agents until migrated" "$SCENARIO24/chain-dev-current.log"; then
+  fail "scenario24: existing development format 4 must not receive a migration requirement"
+else
+  pass "scenario24: development format 4 keeps normal upkeep without migration"
+fi
 ref_install "$SCENARIO24/legacy-chain" --ref main >"$SCENARIO24/chain-same.log" 2>&1 || fail "scenario24: same-major reinstall failed"
 if grep -q 'read-only for agents until migrated' "$SCENARIO24/chain-same.log"; then
   fail "scenario24: same-major reinstall emits a migration warning"

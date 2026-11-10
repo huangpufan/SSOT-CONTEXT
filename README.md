@@ -4,7 +4,7 @@
 
 The project was previously named SSOT-SKILL. Existing skill names remain compatible; see [rename compatibility](./INSTALL.md#project-rename-compatibility).
 
-**Humans define the invariants. Agents evolve the code.**
+**Maintained context. Protected human choices.**
 
 [![CI](https://github.com/huangpufan/SSOT-CONTEXT/actions/workflows/ci.yml/badge.svg)](https://github.com/huangpufan/SSOT-CONTEXT/actions/workflows/ci.yml) [![License: MIT](https://img.shields.io/badge/license-MIT-blue.svg)](./LICENSE) [![Agents](https://img.shields.io/badge/agents-70%2B-purple)](#supported-agents) [![Stars](https://img.shields.io/github/stars/huangpufan/SSOT-CONTEXT?style=social)](https://github.com/huangpufan/SSOT-CONTEXT/stargazers)
 
@@ -12,13 +12,13 @@ The project was previously named SSOT-SKILL. Existing skill names remain compati
 
 </div>
 
-We believe coding agents will evolve toward automating design, implementation, and code review. SSOT-CONTEXT explores and adapts to that paradigm shift: **humans define a project's invariants. When a change to those invariants is proposed, humans assess whether it is correct and appropriate, then decide whether to accept it.** Invariants are the promises an implementation must preserve: API compatibility, tenant isolation, or never charging twice on a retry.
+SSOT-CONTEXT helps agents maintain long-term context for development repositories and explicitly declared research, creative, personal or organizational spaces. **Each fact or record has one maintained owner; human decisions keep their scope and authority.** An entry routes the next task to relevant owners rather than requiring each session to reconstruct the history.
 
-Within those boundaries, agents do the work, supported by the **harness**: the tools, checks, and execution controls around them.
+It began with a development promise: people define invariants, and agents evolve code within them. API compatibility, tenant isolation and never charging twice on a retry stay protected. That workflow remains available under consumer format 4; a bundle upgrade does not require migration.
 
-**SSOT-CONTEXT gives those invariants and decisions a durable home.** It maintains a version-controlled entry at `SSOT/README.md`, routing to the single owners of constraints, their rationale, architecture, decisions, and known pitfalls. Existing maintained repository documents can remain those owners. Across sessions and agents, the work starts from the same explicit agreements.
+General spaces use consumer format 5 and an explicitly wired entry, retaining existing owners and directories without requiring Git or a unified root. The agent distinguishes facts, hypotheses, accepted choices, preferences, experiences and changing state. An authorized experience record can be preserved for its own sake; a personality inference or research hypothesis does not become a protective candidate rule.
 
-**SSOT** means **Single Source of Truth**: each durable fact has one maintained home; other documents link to it. The bundle provides six skills, Markdown templates, and a local checker inside your existing coding agent. It maintains the shared knowledge; your harness and tests execute and verify the work.
+**SSOT** means **Single Source of Truth**: each maintained item has one owner; other documents link to it. The bundle provides four primary skills, two compatibility names, templates, a mechanical checker and an optional source-progress CLI. Your agent/host supplies execution, access and scheduling; skills do not collect unseen material in the background or guarantee erasure of every copy.
 
 ## Quickstart
 
@@ -81,14 +81,30 @@ Naming a skill explicitly is also available, for example `Use $ssot-doctor to ch
 
 </details>
 
+## General context spaces
+
+Install the same bundle, then explicitly name the subject and workspace to maintain. For example:
+
+```text
+Use this folder as the context space for this research project. Preserve the existing source files and findings owner; create only a useful entry and genuinely missing context.
+```
+
+With your agreement, Bootstrap uses format 5 and wires the actual entry through the selected-language `context-adapter.md`. Existing canonical owners remain in place. Top-level spaces can own cross-domain priorities and tradeoffs; child details, original materials, live state and task progress retain their owners. Routing never grants access or writes to another space. Ordinary undeclared chat, research answers and creative writing skip the workflow.
+
+Known format-5 writers need bundle 5.0+. Older writers must discover a read-only entry and upgrade their bundle; do not downgrade data to satisfy an older checker. Existing development format 4 and independently authorized owner-recording workflows keep their normal rules. See the [space model](./skills/ssot-preflight/references/context-spaces.md) for ownership, authorized records and withdrawal/deletion distinctions.
+
+For repeatable exports, the optional POSIX/Python [source contract and CLI](./skills/ssot-doctor/references/source-integration.md) tracks stable item/revision identity, declared owners and conflicts. Updates require saved-owner readback before acknowledgement; considered no-update outcomes need a reason. The agent interprets sources and updates owners; state retains metadata/locators rather than source prose. It can stop use and locate registered effects, including unfinished captures, without claiming every downstream copy. Single requested records need only normal owner write/readback. [Context trials](./tests/context/README.md) distinguish controlled behavior, installed discovery and source integration evidence.
+
+The [native validation report](./tests/context/trials-5.0.md) retains actual outcomes, failures, frozen identities and costs. Observed developer token costs increased in the small paired sample; no performance improvement is claimed. Later metadata/checker fixes have separate mechanical evidence, and the report states remaining scope and writing-quality limits.
+
 ## How the agent selects skills
 
 The agent selects from four skills according to the task and repository state; two more names keep older prompts working. This table explains the routing for reference.
 
 | Situation | Skill | Purpose |
 |---|---|---|
-| Starting a substantive repository task | [`ssot-preflight`](./skills/ssot-preflight/SKILL.md) | Read the relevant memory and the rules that bind the task |
-| Creating, continuing, or migrating `SSOT/` | [`ssot-bootstrap`](./skills/ssot-bootstrap/SKILL.md) | Build the memory from the repository's code, history, and documents |
+| Starting substantive repository or declared-space work | [`ssot-preflight`](./skills/ssot-preflight/SKILL.md) | Read relevant context and protected rules |
+| Agreed setup, continuation or migration | [`ssot-bootstrap`](./skills/ssot-bootstrap/SKILL.md) | Build from the subject's evidence and existing owners |
 | Accepting a durable decision, or finishing a substantive change batch | [`ssot-closeout`](./skills/ssot-closeout/SKILL.md) | Record what changed for good, or write nothing |
 | Checking health, reviewing, or catching up on commits and conversation sources | [`ssot-doctor`](./skills/ssot-doctor/SKILL.md) | Run the checker, review against domain evidence, and report what was checked |
 | Older prompts naming `$ssot-audit` or `$ssot-skill` | [`ssot-audit`](./skills/ssot-audit/SKILL.md), [`ssot-skill`](./skills/ssot-skill/SKILL.md) | Route to the skills above |

@@ -11,12 +11,23 @@ import hashlib
 import json
 import os
 from pathlib import Path
+import re
 import shutil
 import subprocess
 import time
 
 
 MODEL = "gpt-6.1-terra"
+
+
+def requested_model(value=None):
+    """An explicit experiment parameter; authorization remains the caller's duty."""
+    value = MODEL if value is None else value
+    if not isinstance(value, str) or not re.fullmatch(r"[A-Za-z0-9][A-Za-z0-9._:-]*", value):
+        raise ValueError("model must be a nonempty model identifier")
+    return value
+
+
 CASES = ("missing", "routine", "untracked", "capture", "typo", "legacy", "rename", "blocked", "formal")
 README = """---
 ssot_format: 4
@@ -168,7 +179,7 @@ print("behavior preserved")
         raise RuntimeError("Fixture precheck failed: " + checked.stdout + checked.stderr)
 
 
-def run(root, arm, case, turn, cap):
+def run(root, arm, case, turn, cap, model=None):
     run_dir = root / "runs" / arm / case
     run_dir.mkdir(parents=True, exist_ok=True)
     repo = run_dir / "repo"
@@ -185,20 +196,26 @@ def run(root, arm, case, turn, cap):
                   + "\n用户任务：\n" + PROMPTS[case])
     else:
         prompt = WARM_PROMPT
-    summary = execute_turn(root, run_dir, repo, prompt, turn, cap)
+    summary = execute_turn(root, run_dir, repo, prompt, turn, cap, model=model)
     print(json.dumps({"arm": arm, "case": case, "turn": turn, **summary}, ensure_ascii=False), flush=True)
     if summary["returncode"] or not summary["completed"]:
         raise RuntimeError("Trial incomplete; retain its evidence and diagnose before continuing")
 
 
 def execute_turn(root, run_dir, repo, prompt, turn, cap, sandbox_command=None,
-                 codex_home=None, capture_checkpoints=True, interrupt_when=None):
+                 codex_home=None, capture_checkpoints=True, interrupt_when=None, model=None,
+                 allow_no_git=False, installed_mode=False):
     """Shared native transport for the historical trials and reading benchmark."""
+    model = requested_model(model)
     command = (sandbox_command or sandbox(root, repo)) + [shutil.which("codex"), "exec"]
     if turn > 1:
         command += ["resume"]
-    command += ["--ignore-user-config", "--ignore-rules", "-m", MODEL,
-                "-c", "project_doc_max_bytes=0", "-c", 'model_reasoning_effort="medium"',
+    if allow_no_git:
+        command += ["--skip-git-repo-check"]
+    command += ["--ignore-user-config", "--ignore-rules", "-m", model]
+    if not installed_mode:
+        command += ["-c", "project_doc_max_bytes=0"]
+    command += ["-c", 'model_reasoning_effort="medium"',
                 "-c", 'approval_policy="never"', "-c", 'sandbox_mode="danger-full-access"',
                 "--disable", "multi_agent", "--json"]
     if turn == 1:
@@ -243,7 +260,8 @@ def execute_turn(root, run_dir, repo, prompt, turn, cap, sandbox_command=None,
     save(run_dir / f"{turn}.checkpoints.json", checkpoints)
     tools = [e["item"] for e in events if e.get("type") == "item.completed"
              and e.get("item", {}).get("type") in ("command_execution", "file_change", "mcp_tool_call")]
-    summary = {"requested_model": MODEL, "seconds": round(time.monotonic() - started, 3),
+    summary = {"requested_model": model, "allow_no_git": allow_no_git, "installed_mode": installed_mode,
+               "seconds": round(time.monotonic() - started, 3),
                "returncode": code, "completed": any(e.get("type") == "turn.completed" for e in events),
                "thread_id": next((e.get("thread_id") for e in events if e.get("thread_id")), None),
                "usage": next((e["usage"] for e in reversed(events) if "usage" in e), None),
@@ -269,9 +287,16 @@ def main():
     parser.add_argument("--case", choices=CASES, required=True)
     parser.add_argument("--arm", choices=("baseline", "candidate"))
     parser.add_argument("--cap", type=int, default=240)
+    parser.add_argument("--model", help="explicit authorized experiment model; default: %(default)s", default=MODEL)
     args = parser.parse_args()
+    model = requested_model(args.model)
     root = args.output.resolve()
     root.mkdir(parents=True, exist_ok=True)
+    experiment = {"model": model, "reasoning": "medium"}
+    model_path = root / "experiment.json"
+    if model_path.exists() and json.loads(model_path.read_text()) != experiment:
+        raise RuntimeError("Experiment model changed; use a new output directory")
+    save(model_path, experiment)
     for arm, source in (("baseline", args.baseline), ("candidate", args.candidate)):
         target = root / "bundles" / arm
         if not target.exists():
@@ -285,7 +310,7 @@ def main():
     # Reverse this case's order to avoid always making the candidate run second.
     order = ("candidate", "baseline") if args.case in ("routine", "typo") else ("baseline", "candidate")
     for arm in ((args.arm,) if args.arm else order):
-        run(root, arm, args.case, 1, args.cap)
+        run(root, arm, args.case, 1, args.cap, model=model)
         if args.case in ("routine", "untracked"):
             repo = root / "runs" / arm / args.case / "repo"
             # Simulate another writer without moving HEAD: cache checks must include dirty owners.
@@ -299,7 +324,7 @@ def main():
             else:
                 with (repo / "docs/maintenance.md").open("a") as owner:
                     owner.write(reporting)
-            run(root, arm, args.case, 2, args.cap)
+            run(root, arm, args.case, 2, args.cap, model=model)
 
 
 if __name__ == "__main__":

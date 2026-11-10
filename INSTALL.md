@@ -1,6 +1,6 @@
 # Install Guide (Agent-facing)
 
-Use this guide when a user asks you to install, reinstall, update, or remove SSOT-CONTEXT. Work in the **user's target repository**, preserve existing instructions, and respond in the user's language.
+Use this guide when a user asks you to install, reinstall, update, or remove SSOT-CONTEXT. Work in the **user's target repository or explicitly selected context workspace**, preserve existing instructions, and respond in the user's language. General context setup does not require Git; installer fetching prerequisites and the optional POSIX source CLI are separate from that data model.
 
 For a new installation, finish the setup: install the bundle, verify the installed files, and merge the lifecycle instructions. Skill discovery is confirmed only after the agent session restarts.
 
@@ -81,7 +81,7 @@ for ssot_skill in ssot-preflight ssot-bootstrap ssot-closeout ssot-audit ssot-do
   test -f "$ssot_skills_dir/$ssot_skill/SKILL.md" || exit 1
   test -f "$ssot_skills_dir/$ssot_skill/agents/openai.yaml" || exit 1
 done
-# 4.x (the default): the checker must start.
+# Current bundle (development format 4 and general format 5): the checker must start.
 python3 "$ssot_skills_dir/ssot-doctor/assets/scripts/ssot-check.py" --help >/dev/null
 # v2 (installed with --ref v2-final) instead:
 #   SSOT_TEST_PACKAGE_SHAPE_ONLY=1 bash "$ssot_skills_dir/ssot-doctor/assets/scripts/test/run-tests.sh"
@@ -94,6 +94,8 @@ These checks verify the installation, not the health of the user's repository do
 ## 4. Wire the skills into the repo's agent-instructions file
 
 The installer prints the `SSOT-CONTEXT:BEGIN` / `SSOT-CONTEXT:END` block from the selected-language bootstrap `adapter-thin.md` template. That template is the shared source for installation and later bootstrap; the skill protocols own the detailed behavior. Merge the printed block into the target repository's existing instructions; discovery alone does not establish when a skill should run. When upgrading an installation with `SSOT-SKILL:BEGIN` / `SSOT-SKILL:END` markers, replace that old block with the new one rather than appending a second block. A global-only installation without a target repository stops after verification and reports that each consuming repository still needs these instructions; it does not authorize editing global agent instructions.
+
+For an explicitly requested general space, use the installed selected-language `context-adapter.md` instead, replacing ENTRY with its actual entry and preserving the authorized instruction owner. General setup follows `context-spaces.md`, uses format 5 and creates only real-content owners. Name known writers and their upgrade/read-only arrangement: older bundles require a discoverable read-only entry and must upgrade rather than convert 5 to 4. Repository format 4 keeps its existing adapter and normal upkeep. A standalone chat, poem or research answer does not authorize creating a space or editing startup instructions.
 
 Make clear that these are instructions for the agent: apply the skills automatically when their conditions match, without waiting for the user to name each skill. Users should be able to describe ordinary repository tasks after setup and restart. Explicit skill invocation remains an optional way to request a focused check or diagnose a missed trigger.
 
@@ -176,6 +178,8 @@ Before replacing an older bundle, note its installed version and any repository 
 | v2 memory → format 4 | With migration agreement, follow bootstrap section 7: extract unique ledger content, retain decisions and rule status, reconcile all instruction entries and inbound links, and replace retired tool calls before finishing. |
 | v3 memory → format 4 | Follow bootstrap section 8, including instruction/tooling reconciliation. Keep existing owners and the review watermark; do not perform v2 ledger deletion merely because the bundle was old. |
 | Protocol upgrade within format 4 | Verify installed tools and instruction wiring. Do not rewrite memory, advance a watermark or initiate history catch-up solely because the bundle version changed. |
+| Bundle 5.0 with existing development format 4 | Keep format 4, its owners and normal authorized writing. No format-5 conversion is required. |
+| Explicit new general space or agreed generalization to format 5 | Preserve owners/content, use the general adapter with the actual entry, require known writers to upgrade or remain discoverably read-only, and validate source/record semantics. Do not downgrade to satisfy an older checker. |
 | 4.3 reader → 4.4 or later | If local integration calls `ssot-preflight/assets/scripts/read-context.py`, replace that call with ordinary Markdown reads under preflight's current reading rules. `ssot-check.py` is a checker, not a reader replacement. No data-format migration is needed. |
 
 The installer prints the current block but does not edit project instructions or callers. A marked block can be replaced in place; inspect unmarked legacy directives and shared instruction owners too. Preserve unrelated project rules and show proposed edits outside the block before applying them, within existing authorization. If the user requested only a bundle update, leave old-format memory unchanged and report migration as a separate step. An interrupted agreed migration resumes from `SSOT/BOOTSTRAP.md`, checking that record against the actual tree before continuing.
@@ -198,4 +202,4 @@ bash "$ssot_install_dir/install.sh" --upgrade --agent "$ssot_agent" --scope "$ss
 
 ## Project rename compatibility
 
-SSOT-CONTEXT was previously named SSOT-SKILL. The six skill directory names remain stable, including the `ssot-skill` compatibility router, so existing prompts and installations continue to work. `SSOT_CONTEXT_REPO_URL` overrides the installer source; the legacy `SSOT_SKILL_REPO_URL` remains a fallback, and the new variable takes precedence when both are set. Installer lock, staging and companion ownership names retain their legacy spelling so upgrades still detect interrupted transactions and remove only companions they own. The project memory directory remains `SSOT/`.
+SSOT-CONTEXT was previously named SSOT-SKILL. The six skill directory names remain stable, including the `ssot-skill` compatibility router, so existing prompts and installations continue to work. `SSOT_CONTEXT_REPO_URL` overrides the installer source; the legacy `SSOT_SKILL_REPO_URL` remains a fallback, and the new variable takes precedence when both are set. Installer lock, staging and companion ownership names retain their legacy spelling so upgrades still detect interrupted transactions and remove only companions they own. Development memory keeps `SSOT/`; a general space can retain its explicitly wired entry and current owners.

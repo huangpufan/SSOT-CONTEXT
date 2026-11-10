@@ -1,4 +1,4 @@
 interface:
   display_name: "SSOT Bootstrap"
   short_description: "Create, continue, or migrate SSOT"
-  default_prompt: "Use $ssot-bootstrap to create, continue, or migrate this repository's SSOT, with the user's agreement."
+  default_prompt: "Use $ssot-bootstrap to create, continue or migrate this repository or general space's context, with the user's agreement."

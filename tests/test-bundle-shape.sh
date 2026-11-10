@@ -173,12 +173,12 @@ budget() { # $1=label $2=value $3=limit $4=unit
 mapfile -t ENTRY_FILES < <(find "$SKILLS" -name SKILL.md | sort)
 mapfile -t RUNTIME_FILES < <(find "$SKILLS" \( -name SKILL.md -o -path '*/references/*.md' \) -type f | sort)
 budget "SKILL.md entrypoints" "$(words "${ENTRY_FILES[@]}")" 3600 words
-budget "runtime protocol (SKILL.md + references)" "$(words "${RUNTIME_FILES[@]}")" 14000 words
+budget "runtime protocol (SKILL.md + references)" "$(words "${RUNTIME_FILES[@]}")" 17000 words
 for lang in en zh; do
   budget "templates/$lang" "$(bytes "$TEMPLATES/$lang"/*)" 16384 bytes
 done
 budget "checker" "$(bytes "$SKILLS/ssot-doctor/assets/scripts/ssot-check.py")" 51200 bytes
-budget "skills/ total" "$(git -C "$PROJECT_ROOT" ls-files -co --exclude-standard -z -- skills | xargs -0 cat | wc -c | tr -d ' ')" 163840 bytes
+budget "skills/ total" "$(git -C "$PROJECT_ROOT" ls-files -co --exclude-standard -z -- skills | xargs -0 cat | wc -c | tr -d ' ')" 225280 bytes
 
 echo
 echo "=== RESULT: pass=$PASS fail=$FAIL ==="

@@ -5,12 +5,14 @@ description: Capture durable user decisions immediately, including discussion-on
 
 # SSOT Closeout
 
+Inspect the explicit entry or default `SSOT/README.md`: 5 uses [general context spaces](../ssot-preflight/references/context-spaces.md), especially Closeout/lifecycle; 4 uses the gates below; known v2/v3 stays read-only pending agreed migration. Unknown/future formats stay read-only without downgrade. Independently authorized owner workflows retain their own rules. Ordinary undeclared non-repository chat/research/creation skips this skill unless a record is explicitly requested.
+
 Reconcile durable changes in their single owner. Read only needed [model](../ssot-preflight/references/memory-model.md) sections; reuse current context.
 
 ## Before you start
 
 - **No `SSOT/` directory.** Do not create one without agreement (`$ssot-bootstrap`). Existing project-authorized owner recording can still use the immediate route.
-- **Not v4** (`SSOT/README.md` has no `ssot_format: 4`, including v2 or v3). Do not write the older SSOT or migrate it. List the durable facts from this batch for the user, explain that SSOT stays read-only until it is migrated, and offer the migration with `$ssot-bootstrap`.
+- **Known v2/v3.** Do not write or migrate it. List this batch's durable facts, disclose the recording gap and offer an agreed `$ssot-bootstrap` migration. Unknown/future formats receive no downgrade offer.
 - **Existing project workflow.** The gates above restrict SSOT protocol writes, not an existing recording process with explicit prior write authorization or the current user’s direct request to record in that owner. Follow that owner’s rules; this exception does not authorize changing an older SSOT format, reorganizing it, or inferring wider permission. A user’s read-only restriction still forbids writing; report an uncaptured decision without claiming persistence.
 - **Setup unfinished** (`SSOT/BOOTSTRAP.md` exists). Update documents that already exist. Note anything else in `BOOTSTRAP.md` so setup picks it up.
 
