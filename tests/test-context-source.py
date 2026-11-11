@@ -315,8 +315,71 @@ class SourceContract(unittest.TestCase):
         self.action("resolve-fork", "a", "3", "--reason", "selection cannot fix conflicting version identity")
         self.inspect(revision="3", code=1)
         self.action("targets", "a", "3", "--owner", "one", code=2)
+        continuation = self.export("continuation.json", [
+            self.item(revision="4", operation="correction", replaces="3")])
+        self.acquire(continuation)
+        self.inspect(revision="4")
+        error = self.action("no-update", "a", "4", "--reason", "cannot bypass selected branch conflict", code=2)
+        self.assertIn("ancestor", error["error"])
         self.call("withdraw-source", "--reason", "withdraw source")
         self.action("resolve-fork", "a", "2", "--reason", "cannot reopen withdrawn source", code=2)
+
+    def test_conflicted_ancestor_blocks_progress_across_two_generations(self):
+        self.seed_capture()
+        revisions = self.export("chain.json", [
+            self.item(revision="2", operation="correction", replaces="1"),
+            self.item(revision="3", operation="correction", replaces="2")])
+        self.acquire(revisions)
+        current = self.inspect(revision="3")
+        self.targets(["one"], revision="3")
+        self.one.write_text(self.one.read_text() + "\nCurrent correction.\n" + current["marker"])
+        receipt = self.readback(revision="3")
+        # The conflict arrives after valid readback, not just before initial routing.
+        conflict = self.export("conflict.json", [self.item(content="Different bytes under revision 1")])
+        self.acquire(conflict, code=1)
+        saved_owner = self.one.read_bytes()
+        operations = [("targets", "--owner", "one"), ("readback", "--owner", "one"),
+                      ("complete", "--receipt", receipt), ("no-update", "--reason", "skip")]
+        for command, *args in operations:
+            with self.subTest(command=command):
+                self.inspect(revision="3", retry=True)
+                error = self.action(command, "a", "3", *args, code=2)
+                self.assertIn("ancestor", error["error"])
+                self.assertNotEqual(self.status(revision="3")["status"], "completed")
+                self.assertEqual(self.one.read_bytes(), saved_owner)
+        self.assertEqual(self.status()["status"], "conflict")
+        # An independent item still reaches a legitimate no-update outcome.
+        other = self.export("other.json", [self.item("b")])
+        self.acquire(other)
+        self.inspect("b")
+        result = self.action("no-update", "b", "1", "--reason", "transient, no durable change")
+        self.assertEqual(result["status"], "completed")
+
+    def test_conflict_before_inspection_cannot_be_dismissed_by_a_successor(self):
+        original = self.export("original.json", [self.item()])
+        self.acquire(original)
+        conflict = self.export("conflict.json", [self.item(content="Conflicting original")])
+        self.acquire(conflict, code=1)
+        newer = self.export("newer.json", [self.item(revision="2", operation="withdrawal", replaces="1")])
+        self.acquire(newer)
+        self.inspect(revision="2")
+        error = self.action("no-update", "a", "2", "--reason", "no known owners", code=2)
+        self.assertIn("ancestor", error["error"])
+        self.assertNotEqual(self.status(revision="2")["status"], "completed")
+
+    def test_completion_replay_ignores_receipt_order_but_preserves_history(self):
+        _, _, receipts = self.seed_capture(("one", "two"))
+        saved_record = self.status()
+        saved_owners = self.one.read_bytes(), self.two.read_bytes()
+        self.complete(list(reversed(receipts)))
+        self.assertEqual(self.status(), saved_record)
+        self.assertEqual((self.one.read_bytes(), self.two.read_bytes()), saved_owners)
+        # Order independence must not accept stale bytes or rewrite completed history.
+        self.one.write_text(self.one.read_text() + "\nLater owner edit.\n")
+        self.complete(list(reversed(receipts)), code=2)
+        renewed = self.readback("one")
+        self.complete([receipts[1], renewed], code=2)
+        self.assertEqual(self.status(), saved_record | {"receipts": saved_record["receipts"] + [renewed]})
 
 
 if __name__ == "__main__":

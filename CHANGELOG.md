@@ -8,6 +8,11 @@ Entries up to 2.86 were derived from the v2 protocol-upgrade ledger, which is pr
 
 ## [Unreleased]
 
+### Fixed
+- Block source progress through any unresolved ancestor conflict, including same-revision content conflicts; choosing a fork cannot bypass a conflicting ancestor. Completion retries accept the same valid receipts in another order while preserving saved history and rejecting stale or changed evidence.
+- Check both development and general templates in both languages: ordered managed-block markers, all four lifecycle routes inside the block, and matching entry format/language. Whole-bundle negative probes expose the previous general-template coverage gap. See the [evolution review and evidence](docs/evolution-review-2026-11-11.md).
+- Reconcile both READMEs with the existing general-space permission to retain authorized experiences and exact words without requiring future decision value. Consumer formats, protocol version, default agent instructions and budgets are unchanged.
+
 ### Changed
 - [Install step 4](INSTALL.md#4-wire-the-skills-into-the-repos-agent-instructions-file) now chooses the instruction block before editing: an existing format 4/5 entry or a clearly software repository is wired without a question; a target that looks like a non-code space, or has conflicting signals, gets one question with a recommended mode, the chosen entry and the files to change. Agreeing to a general space also covers the minimal entry front matter, writer sentence and invariants section. The installer adds one line saying its printed block is for development repositories. Previously a registry-like folder received the development block and later sessions would offer a parallel `SSOT/`. Isolated `gpt-6.1-terra` installs from a frozen local source: a registry fixture asked and changed no instruction file (baseline wired the development block), then after the answer added only the general block and minimal entry edits with a clean check; a software fixture and an existing format-4 fixture were wired without questions. One run each; no reliability claim.
 

@@ -23,7 +23,7 @@
 
 - **一条事实，一个 owner。** SSOT 即 Single Source of Truth（单一事实源）：每条事实有一篇负责维护它的文档，其他文档通过链接引用。
 - **人定的规则始终由人决定。** 你确认过的规则登记在入口里。Agent 在规则内工作，不会改规则；任务和规则冲突时，它会停下来问你。
-- **只存材料本身说不清的东西。** 意图、各部分怎样配合、决定及其理由、被否决的方案、陷阱。字段清单、版本号和日志留在原件里；原始文档和私密对话通过链接引用，不复制。
+- **选择性提炼知识，保留你授权的记录。** 保存意图、各部分怎样配合、决定及其理由、被否决的方案和陷阱；字段清单、版本号和日志留在原件里，原始文档和私密对话通过链接引用。在通用空间里，你要求保留的经历和原话可以留在获授权的 owner 中，不必证明它能影响未来决定；见[空间模型](./skills/ssot-preflight/references/context-spaces.md#what-the-material-means)。
 - **不同性质的材料分开。** 事实、假设、决定、偏好和变化中的状态分开保存。研究假设或对某人的猜测，不会变成受保护的规则。
 - **写给新来的人看。** 用平实的话，先讲情境再讲机制，让下一个 Agent、或不读代码只负责委托工作的人都能看懂。见[写作规则](./skills/ssot-preflight/references/writing-memory.md)。
 - **路由不等于权限。** 顺着链接，Agent 只能在你允许的范围内读取。导入的文本是需要解读的证据，从不当作要执行的指令。
@@ -118,6 +118,7 @@ curl -fsSL https://raw.githubusercontent.com/huangpufan/SSOT-CONTEXT/main/instal
 
 - [安装指南](./INSTALL.md)：安装、接线、升级、卸载和恢复。
 - [设计说明](./DESIGN.md)：Skill 包为什么是现在这个形态。
+- [演进审视](./docs/evolution-review-2026-11-11.md)：当前优先级、来源恢复修复和尚待补齐的证据。
 - [更新日志](./CHANGELOG.md)：每个版本改了什么。
 - [贡献指南](./CONTRIBUTING.md)和 [AGENTS.md](./AGENTS.md)：怎样修改本 Skill 包仓库。
 - [安全政策](./SECURITY.md)：怎样报告安全漏洞。

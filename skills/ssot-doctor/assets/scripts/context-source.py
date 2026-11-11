@@ -352,9 +352,11 @@ def process(args, state):
                 "existing_captures": known_captures(state, record)}
     if record.get("conflicts"):
         raise ValueError("source version has unresolved conflicts; inspect/status retain their details")
-    if any(conflict.get("kind") in {"unknown-target", "ambiguous-revision", "cyclic-revisions", "fork"}
-           for old in ancestors(state, record) for conflict in old.get("conflicts", [])):
-        raise ValueError("ancestor revision relationship is unresolved; reconcile it before advancing")
+    for old in ancestors(state, record):
+        # Content identity conflicts also invalidate descendants, not just graph conflicts.
+        if old.get("conflicts"):
+            raise ValueError(f"ancestor revision {old['item']['revision']} has unresolved conflicts; "
+                             "reconcile it before advancing")
     if args.command in {"defer", "fail"}:
         if record["status"] == "completed":
             raise ValueError("completed history stays recorded; import a correction/withdrawal revision")
@@ -422,8 +424,10 @@ def process(args, state):
         for impact in impacts(state, old) if any(e != "declared-target" for e in impact["evidence"])}
     if not affected.issubset({r["owner"] for r in references}):
         raise ValueError("read back every known affected owner before completing this revision")
-    if record["status"] == "completed" and record.get("references") != references:
-        raise ValueError("completed references are immutable; use a new revision")
+    if record["status"] == "completed":
+        if {encoded(ref) for ref in record.get("references", [])} != {encoded(ref) for ref in references}:
+            raise ValueError("completed references are immutable; use a new revision")
+        return item_view(state, record)  # Retry order does not rewrite saved history.
     record["references"] = references
     record["status"], record["outcome"] = "completed", "recorded"
     return item_view(state, record)

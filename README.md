@@ -23,7 +23,7 @@ The project was previously named SSOT-SKILL; old skill names still work ([detail
 
 - **One fact, one owner.** SSOT means Single Source of Truth: each fact has one document responsible for keeping it correct, and other documents link to it.
 - **People's rules stay people's decisions.** Rules you confirm are listed in the entry. The agent works within them, never changes them, and stops to ask when a task conflicts with one.
-- **Store only what the material cannot tell you.** Intent, how the parts fit together, decisions and their reasons, rejected options, traps. Field lists, version numbers and logs stay in their originals; original documents and private conversations are linked, not copied.
+- **Extract knowledge selectively; preserve records you authorize.** Keep intent, how the parts fit together, decisions and their reasons, rejected options and traps. Field lists, version numbers and logs stay in their originals; link to original documents and private conversations. In a general space, experiences and exact words you ask to preserve can stay with their authorized owner even without future decision value; see the [space model](./skills/ssot-preflight/references/context-spaces.md#what-the-material-means).
 - **Keep kinds of material apart.** Facts, hypotheses, decisions, preferences and changing state are kept distinct. A research hypothesis or a guess about a person never becomes a protected rule.
 - **Write for someone new.** Plain words and the situation before the mechanism, so the next agent, or a person who delegates work without reading code, can follow it. See the [writing guide](./skills/ssot-preflight/references/writing-memory.md).
 - **Routes are not permissions.** Following a link lets the agent read only within the scope you allowed. Imported text is evidence to interpret, never instructions to execute.
@@ -118,6 +118,7 @@ Updating never rewrites your context documents. Existing repositories stay on fo
 
 - [Install guide](./INSTALL.md): setup, wiring, upgrade, removal and recovery.
 - [Design](./DESIGN.md): why the bundle is shaped this way.
+- [Evolution review](./docs/evolution-review-2026-11-11.md): current priorities, source recovery repairs and remaining evidence gaps.
 - [Changelog](./CHANGELOG.md): what changed in each version.
 - [Contributing](./CONTRIBUTING.md) and [AGENTS.md](./AGENTS.md): how to change this bundle repository.
 - [Security policy](./SECURITY.md): how to report a vulnerability.

@@ -83,6 +83,35 @@ done < <(find "$SKILLS" -type f \( -name SKILL.md -o -path '*/references/*.md' \
 
 # 5. Templates: both languages, same file names, nothing stray at the root,
 # and the shapes other parts of the bundle depend on.
+check_adapter() {
+  python3 - "$1" "${LIFECYCLE_SKILLS[@]}" <<'PY'
+import pathlib, re, sys
+lines = pathlib.Path(sys.argv[1]).read_text().splitlines()
+begin, end = "<!-- SSOT-CONTEXT:BEGIN -->", "<!-- SSOT-CONTEXT:END -->"
+if lines.count(begin) != 1 or lines.count(end) != 1 or lines.index(begin) >= lines.index(end):
+    sys.exit("instruction block needs exactly one ordered marker pair")
+block = "\n".join(lines[lines.index(begin) + 1:lines.index(end)])
+missing = [skill for skill in sys.argv[2:] if not re.search(r"\$" + re.escape(skill) + r"(?![\w-])", block)]
+if missing:
+    sys.exit("instruction block is missing routes: " + ", ".join(missing))
+PY
+}
+adapter_probe="$PROBE_DIR/adapter.md"
+{
+  printf '<!-- SSOT-CONTEXT:BEGIN -->\n'
+  printf '$%s\n' "${LIFECYCLE_SKILLS[@]}"
+  printf '<!-- SSOT-CONTEXT:END -->\n'
+} > "$adapter_probe"
+check_adapter "$adapter_probe" >/dev/null 2>&1 && pass "adapter check accepts managed lifecycle routes" || fail "adapter check rejected valid routes"
+sed '/SSOT-CONTEXT:END/d' "$adapter_probe" > "$PROBE_DIR/missing-marker.md"
+check_adapter "$PROBE_DIR/missing-marker.md" >/dev/null 2>&1 && fail "adapter check accepted missing marker" || pass "adapter check rejects missing marker"
+sed -e 's/SSOT-CONTEXT:BEGIN/SSOT-CONTEXT:TEMP/' -e 's/SSOT-CONTEXT:END/SSOT-CONTEXT:BEGIN/' -e 's/SSOT-CONTEXT:TEMP/SSOT-CONTEXT:END/' "$adapter_probe" > "$PROBE_DIR/reversed.md"
+check_adapter "$PROBE_DIR/reversed.md" >/dev/null 2>&1 && fail "adapter check accepted reversed markers" || pass "adapter check rejects reversed markers"
+{
+  printf '<!-- SSOT-CONTEXT:BEGIN -->\n<!-- SSOT-CONTEXT:END -->\n'
+  printf '$%s\n' "${LIFECYCLE_SKILLS[@]}"
+} > "$PROBE_DIR/outside-routes.md"
+check_adapter "$PROBE_DIR/outside-routes.md" >/dev/null 2>&1 && fail "adapter check accepted routes outside block" || pass "adapter check rejects routes outside block"
 if [[ -d "$TEMPLATES/en" && -d "$TEMPLATES/zh" ]]; then
   if diff <(cd "$TEMPLATES/en" && find . -type f | sort) <(cd "$TEMPLATES/zh" && find . -type f | sort) >/dev/null; then
     pass "templates en/zh file parity"
@@ -92,20 +121,20 @@ if [[ -d "$TEMPLATES/en" && -d "$TEMPLATES/zh" ]]; then
   STRAY="$(find "$TEMPLATES" -maxdepth 1 -type f | head -1)"
   [[ -z "$STRAY" ]] && pass "no stray templates at the root" || fail "stray template at the root: $STRAY"
   for lang in en zh; do
-    readme="$TEMPLATES/$lang/ssot-readme.md"
-    if head -5 "$readme" | grep -q '^ssot_format: 4$' && head -5 "$readme" | grep -q '^language: '; then
-      pass "$lang: README template carries the format marker and language"
-    else
-      fail "$lang: README template lacks ssot_format: 4 or language"
-    fi
-    adapter="$TEMPLATES/$lang/adapter-thin.md"
-    if [[ "$(grep -c '^<!-- SSOT-CONTEXT:BEGIN -->$' "$adapter")" == 1 && "$(grep -c '^<!-- SSOT-CONTEXT:END -->$' "$adapter")" == 1 ]]; then
-      pass "$lang: instruction block has exactly one marker pair"
-    else
-      fail "$lang: instruction block markers are missing or repeated"
-    fi
-    for skill in "${LIFECYCLE_SKILLS[@]}"; do
-      grep -q "\\\$$skill" "$adapter" || fail "$lang: instruction block does not route \$$skill"
+    for spec in ssot-readme.md:4 context-readme.md:5; do
+      readme="$TEMPLATES/$lang/${spec%:*}"
+      if head -5 "$readme" | grep -q "^ssot_format: ${spec#*:}$" && head -5 "$readme" | grep -q '^language: '; then
+        pass "$lang: ${spec%:*} carries format ${spec#*:} and language"
+      else
+        fail "$lang: ${spec%:*} lacks format ${spec#*:} or language"
+      fi
+    done
+    for name in adapter-thin.md context-adapter.md; do
+      if check_adapter "$TEMPLATES/$lang/$name"; then
+        pass "$lang: $name has ordered markers and managed lifecycle routes"
+      else
+        fail "$lang: $name has invalid markers or lifecycle routes"
+      fi
     done
   done
 else
