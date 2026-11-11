@@ -8,6 +8,15 @@ Entries up to 2.86 were derived from the v2 protocol-upgrade ledger, which is pr
 
 ## [Unreleased]
 
+## [5.2] - 2026-11-12
+
+### Fixed
+- Explicit unknown format markers now take precedence over legacy filenames in the checker. A retained `STATUS.md` beside format 6 no longer produces a downgrade-to-4 migration recommendation; markerless v2 remains recognizable.
+- Source withdrawal and status expose missing or unreadable bound owners without delaying revocation or scanning beyond configured bindings. Repeated withdrawal preserves its original reason while refreshing availability; unavailable owners remain distinct from known derived effects.
+
+### Changed
+- Installation guidance and both READMEs explain discovery from independently launched child repositories. Actual Codex probes found parent-only project installations invisible across a child Git boundary; authorized child installation and existing parent/child routes restored discovery. [Six native observations](tests/context/trials-5.2.md) also tested two path-resolution clauses; both failed their routing criterion and were withdrawn. Consumer formats, skill routing and protection rules remain unchanged.
+
 ## [5.1] - 2026-11-12
 
 ### Added

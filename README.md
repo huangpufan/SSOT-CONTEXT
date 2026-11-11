@@ -106,6 +106,8 @@ set -o pipefail
 curl -fsSL https://raw.githubusercontent.com/huangpufan/SSOT-CONTEXT/main/install.sh | bash -s -- --list-agents
 ```
 
+When starting agents inside independent child repositories, a parent installation may be invisible. [Verify discovery at the intended launch roots](./INSTALL.md); routes to parent context and skill installation are separate requirements.
+
 ## Update or uninstall
 
 ```text

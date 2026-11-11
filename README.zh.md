@@ -106,6 +106,8 @@ set -o pipefail
 curl -fsSL https://raw.githubusercontent.com/huangpufan/SSOT-CONTEXT/main/install.sh | bash -s -- --list-agents
 ```
 
+从独立子仓库启动 Agent 时，父目录安装的 Skill 可能不可见。[按实际启动位置确认发现结果](./INSTALL.md)；指向父级上下文的路由和 Skill 安装是两项独立条件。
+
 ## 更新与卸载
 
 ```text

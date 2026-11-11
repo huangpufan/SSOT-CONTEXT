@@ -230,6 +230,22 @@ class CheckerTest(unittest.TestCase):
         self.assertIn("v3 layout", out)
         self.assertNotIn("ssot-check: PASS", out)
 
+    def test_explicit_unknown_format_is_not_overridden_by_legacy_files(self):
+        for version in ("6", "vendor-next"):
+            with self.subTest(version=version):
+                self.write("README.md", f"---\nssot_format: {version}\nlanguage: en\n---\n# Future space\n")
+                self.write("STATUS.md", "# Retained history\n")
+                out = self.assert_error("ssot_format")
+                self.assertNotIn("migrate to format 4", out)
+                self.assertNotIn("legacy SSOT requires migration", out)
+
+    def test_markerless_legacy_files_still_identify_v2(self):
+        self.write("README.md", "# Historical space\n")
+        self.write("STATUS.md", "# Old progress ledger\n")
+        code, out = self.run_checker()
+        self.assertEqual(code, 3, out)
+        self.assertIn("v2 layout", out)
+
     def external_owner(self, content):
         self.valid()
         self.write("../docs/owner.md", content)

@@ -142,12 +142,13 @@ def refresh_relationships(state):
             record["status"] = record.pop("before_conflict", "pending")
 
 
-def known_captures(state, record):
+def owner_observations(state, record=None):
+    """Report unavailable bindings and, for a version, located capture markers."""
     captures = []
     for alias, filename in state["owners"].items():
         try:
             data = Path(filename).read_bytes()
-            count = data.count(marker(record).encode())
+            count = data.count(marker(record).encode()) if record else 0
             if count:
                 captures.append({"owner": alias, "path": filename, "marker_count": count,
                                  "file_digest": digest(data)})
@@ -174,7 +175,7 @@ def impacts(state, record):
     for receipt_id in record.get("receipts", []):
         ref = state["receipts"][receipt_id]
         add(ref["owner"], ref["path"], "readback", receipt_id=receipt_id)
-    for capture in known_captures(state, record):
+    for capture in owner_observations(state, record):
         if capture.get("marker_count"):
             add(capture["owner"], capture["path"], "located-capture", marker_count=capture["marker_count"])
         elif capture["owner"] in record.get("targets", []) and not capture.get("missing"):
@@ -307,11 +308,14 @@ def process(args, state):
                 "source_status": state.get("source_status", "active"),
                 "withdrawal_reason": state.get("withdrawal_reason"),
                 "last_error": state.get("last_error"),
+                "unavailable_owners": owner_observations(state),
                 "known_impacts": [impact for record in state["items"].values() for impact in impacts(state, record)],
                 "items": [item_view(state, record) for record in state["items"].values()]}
     if args.command == "withdraw-source":
-        state["source_status"], state["withdrawal_reason"] = "withdrawn", args.reason
-        return {"source_status": "withdrawn", "reason": args.reason,
+        if state.get("source_status") != "withdrawn":
+            state["source_status"], state["withdrawal_reason"] = "withdrawn", args.reason
+        return {"source_status": "withdrawn", "reason": state["withdrawal_reason"],
+                "unavailable_owners": owner_observations(state),
                 "known_references": [impact for record in state["items"].values() for impact in impacts(state, record)],
                 "evidence_limit": "source processing stopped; reconcile listed owners separately; originals retained"}
     if state.get("source_status") == "withdrawn":
@@ -349,7 +353,7 @@ def process(args, state):
                 "ancestor_impacts": [impact for old in history(state, record) for impact in impacts(state, old)],
                 "history_versions": [old["item"] for old in history(state, record)],
                 "artifact_verification": "export item/locator only; artifact bytes are not opened or hashed",
-                "existing_captures": known_captures(state, record)}
+                "existing_captures": owner_observations(state, record)}
     if record.get("conflicts"):
         raise ValueError("source version has unresolved conflicts; inspect/status retain their details")
     for old in ancestors(state, record):

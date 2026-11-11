@@ -131,6 +131,60 @@ class ConnectorContract(unittest.TestCase):
         visit(result)
         self.assertTrue({str(self.a), str(self.b)} <= paths, result)
 
+    def test_missing_owner_is_reported_without_blocking_source_withdrawal(self):
+        self.complete(self.receipts())
+        moved = self.root / "moved-research.md"
+        self.a.rename(moved)  # An external move has not repaired the binding.
+        result = self.cli("withdraw-source", "--reason", "Permission withdrawn")
+        self.assertEqual(result["source_status"], "withdrawn")
+        gap = result["unavailable_owners"][0]
+        self.assertEqual((gap["owner"], gap["path"], gap["missing"]), ("a", str(self.a), True))
+        self.assertIn(str(self.a), {r["path"] for r in result["known_references"]})
+        self.assertNotIn(str(moved), {r["path"] for r in result["known_references"]})
+        self.assertEqual(self.cli("status")["unavailable_owners"], result["unavailable_owners"])
+        self.cli("inspect", "--item", "method", "--revision", "r1", expected=2)
+        self.assertTrue(moved.exists())
+
+    def test_repeated_withdrawal_keeps_original_reason_and_refreshes_gaps(self):
+        self.imported()
+        first = self.cli("withdraw-source", "--reason", "User revoked research use")
+        self.assertEqual(first["unavailable_owners"], [])
+        self.a.unlink()
+        repeated = self.cli("withdraw-source", "--reason", "Retry after interruption")
+        self.assertEqual(repeated["reason"], first["reason"])
+        self.assertTrue(repeated["unavailable_owners"][0]["missing"])
+        self.assertEqual(self.cli("status")["withdrawal_reason"], first["reason"])
+
+    def test_missing_unused_target_does_not_prevent_no_update(self):
+        self.imported()
+        self.a.unlink()
+        self.cli("inspect", "--item", "method", "--revision", "r1")
+        self.cli("targets", "--item", "method", "--revision", "r1", "--owner", "a")
+        result = self.cli("no-update", "--item", "method", "--revision", "r1", "--reason", "No derived record was needed")
+        self.assertEqual(result["outcome"], "no-update")
+        self.assertTrue(self.cli("status")["unavailable_owners"][0]["missing"])
+
+    def test_unreadable_binding_does_not_become_an_empty_success(self):
+        self.imported()
+        self.a.unlink()
+        self.a.mkdir()  # Reading a directory fails even in a privileged test process.
+        self.cli("inspect", "--item", "method", "--revision", "r1")
+        self.cli("targets", "--item", "method", "--revision", "r1", "--owner", "a")
+        self.cli("no-update", "--item", "method", "--revision", "r1", "--reason", "Nothing found", expected=2)
+        result = self.cli("withdraw-source", "--reason", "Permission withdrawn")
+        self.assertFalse(result["unavailable_owners"][0]["missing"])
+        self.assertEqual(result["source_status"], "withdrawn")
+
+    def test_repaired_move_is_not_reported_as_an_unavailable_current_owner(self):
+        self.complete(self.receipts())
+        moved = self.root / "moved-research.md"
+        self.a.rename(moved)
+        self.cli("bind", "--owner", f"a={moved}", "--reason", "Authorized owner move")
+        result = self.cli("withdraw-source", "--reason", "Permission withdrawn")
+        self.assertEqual(result["unavailable_owners"], [])
+        self.assertIn(str(moved), {r["path"] for r in result["known_references"]})
+        self.assertIn(str(self.a), {r["path"] for r in result["known_references"]})
+
     def test_revoked_import_does_not_open_the_payload(self):
         self.imported()
         self.cli("withdraw-source", "--reason", "No further acquisition authorized")

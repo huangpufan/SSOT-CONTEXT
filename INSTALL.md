@@ -4,6 +4,8 @@ Use this guide when a user asks you to install, reinstall, update, or remove SSO
 
 For a new installation, finish the setup: install the bundle, verify the installed files, and merge the lifecycle instructions. Skill discovery is confirmed only after the agent session restarts.
 
+For an authorized workspace with independently launched child repositories, check discovery from each intended launch root. A parent installation and a link to parent context are separate: in Codex, project skills installed only above a child's Git root were absent from child-start sessions. Use an existing visible global installation or install at the authorized child root, and retain the child's instruction routes to its own and relevant parent context. Do not assume directory nesting makes either skills or parent instructions visible, or install into unrelated children. See the [child-start evidence](tests/context/trials-5.2.md).
+
 For an update or removal, resolve the choices and download the installer, then follow [the maintenance section](#update-or-remove-an-existing-installation) instead of running a fresh installation.
 
 ## 1. Resolve the installation choices

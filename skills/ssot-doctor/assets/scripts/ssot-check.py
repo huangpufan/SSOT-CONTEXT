@@ -1022,13 +1022,14 @@ def main(argv):
                 if os.path.exists(os.path.join(ssot_dir, name)):
                     report.add("WARN", os.path.join(ssot_dir, name), None,
                                "v2 ledger left after migration; extract anything still valid, then remove it")
-        elif meta.get("ssot_format") in {"2", "3"} or is_v2:
+        elif meta.get("ssot_format") in {"2", "3"} or ("ssot_format" not in meta and is_v2):
             legacy = True
             version = meta.get("ssot_format", "2")
             report.add("INFO", readme, None, f"v{version} layout; use ssot-bootstrap to migrate to format 4")
             report.unchecked.append("legacy SSOT requires migration; format 4 ownership was not checked")
         else:
-            report.add("ERROR", readme, 1, "front matter needs supported `ssot_format: 4` or `ssot_format: 5`")
+            report.add("ERROR", readme, 1, "front matter needs supported `ssot_format: 4` or `ssot_format: 5`; "
+                       "for an unknown format, identify/upgrade its writer without downgrading the data")
 
     if os.path.isfile(os.path.join(ssot_dir, "BOOTSTRAP.md")):
         report.add("INFO", os.path.join(ssot_dir, "BOOTSTRAP.md"), None,

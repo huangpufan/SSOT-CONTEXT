@@ -1,0 +1,232 @@
+{
+  "schema": 1,
+  "purpose": "Retained discovery and rejected path-rule experiments; no final 5.2 behavior improvement claim",
+  "baseline": "d34aca5",
+  "codex": "0.167.1",
+  "model": "gpt-6.1-terra",
+  "reasoning": "medium",
+  "probes": [
+    {
+      "name": "parent",
+      "artifact": "/tmp/ssot-r2-child-discovery/parent-probe.json",
+      "sha256": "9a080801431ab972073a8a5a26e5ed498184527869d44623b779fa13364c70b2",
+      "returncode": 0,
+      "skills_seen": true,
+      "parent_instructions_seen": true,
+      "child_instructions_seen": false
+    },
+    {
+      "name": "child",
+      "artifact": "/tmp/ssot-r2-child-discovery/child-probe.json",
+      "sha256": "1a63afa4507faca1cdee9add059a9cb97b7dcab84aaccb9eed75df1efcea1656",
+      "returncode": 0,
+      "skills_seen": false,
+      "parent_instructions_seen": false,
+      "child_instructions_seen": true
+    },
+    {
+      "name": "nested",
+      "artifact": "/tmp/ssot-r2-child-discovery/nested-probe.json",
+      "sha256": "d223a96823b3c1d2c70f15f2cbc67b3d4ee35b6e1c9757df628b3d61546c8a29",
+      "returncode": 0,
+      "skills_seen": false,
+      "parent_instructions_seen": false,
+      "child_instructions_seen": true
+    },
+    {
+      "name": "nested-fixed",
+      "artifact": "/tmp/ssot-r2-child-discovery/nested-fixed-probe.json",
+      "sha256": "5de0365a8b401a9f8a3954cd9edbbce3b79c4da10150857955cb16fb01839b06",
+      "returncode": 0,
+      "skills_seen": true,
+      "parent_instructions_seen": false,
+      "child_instructions_seen": true
+    },
+    {
+      "name": "non-git-nested-ancestor-only",
+      "artifact": "/tmp/ssot-evolution-20261112-r2/named-baseline/discovery.json",
+      "sha256": "6f86e1432cb5899ea83d6a654382cdc5596b04fe63df2323e3201d6a0d9a63ce",
+      "returncode": 0,
+      "skills_seen": false,
+      "instructions_seen": false,
+      "model_called": false
+    }
+  ],
+  "native_trials": [
+    {
+      "name": "initial-child",
+      "raw_root": "/tmp/ssot-r2-child-discovery/native",
+      "model": [
+        "gpt-6.1-terra"
+      ],
+      "completed": true,
+      "seconds": 47.995,
+      "usage": {
+        "input_tokens": 186753,
+        "cached_input_tokens": 174976,
+        "cache_write_input_tokens": 0,
+        "output_tokens": 1451,
+        "reasoning_output_tokens": 110,
+        "total_tokens": 188204
+      },
+      "changed_paths": [
+        "repos/payments/payment.py"
+      ],
+      "artifacts": {
+        "1.jsonl": "b90931ee165b0474a3f2d6fcd0808c16d4c62555b37a92aa9b20f77a2c6555f4",
+        "1.summary.json": "9d59797096deb1c7d43a8f64d91592330c988e9561836bff763c13397a6e337d",
+        "workspace.before.json": "8f73e70f0745904a9949d7a02f782c5da3b586b140f13ceb7c4eab648e658df0",
+        "workspace.after.json": "43d0fea50f9406d61ba92cf08ce0faa8200dfe3f42162ed54adba4ed36803b1d",
+        "plan.json": "6aecf97cf7794cd8f8343387ef94eb4d52ada7844b7c8827c32de90bf7651ecd"
+      },
+      "evidence_limit": "Full-workspace before/after snapshots used; recorder changed_paths covers only launch subdirectory."
+    },
+    {
+      "name": "candidate-1",
+      "raw_root": "/tmp/ssot-evolution-20261112-r2/child-candidate",
+      "model": [
+        "gpt-6.1-terra"
+      ],
+      "completed": true,
+      "seconds": 49.0,
+      "usage": {
+        "input_tokens": 187007,
+        "cached_input_tokens": 175616,
+        "cache_write_input_tokens": 0,
+        "output_tokens": 1732,
+        "reasoning_output_tokens": 121,
+        "total_tokens": 188739
+      },
+      "changed_paths": [
+        "repos/payments/payment.py"
+      ],
+      "artifacts": {
+        "1.jsonl": "6fe61cfb090ea455f340c11158908222b369723341c86c63922adeced84a0928",
+        "1.summary.json": "b3e97eed30f166ab82eaf6d2eda9627ca5046975229746475d45a42c3935033e",
+        "workspace.before.json": "8f73e70f0745904a9949d7a02f782c5da3b586b140f13ceb7c4eab648e658df0",
+        "workspace.after.json": "43d0fea50f9406d61ba92cf08ce0faa8200dfe3f42162ed54adba4ed36803b1d",
+        "plan.json": "82497993e9b238bec0a107a61fad9938042a973f53bcb88e6b2f567ab3c722c5"
+      },
+      "evidence_limit": "Full-workspace before/after snapshots used; recorder changed_paths covers only launch subdirectory."
+    },
+    {
+      "name": "baseline-2",
+      "raw_root": "/tmp/ssot-evolution-20261112-r2/child-baseline-v2",
+      "model": [
+        "gpt-6.1-terra"
+      ],
+      "completed": true,
+      "seconds": 46.231,
+      "usage": {
+        "input_tokens": 185055,
+        "cached_input_tokens": 162944,
+        "cache_write_input_tokens": 0,
+        "output_tokens": 1508,
+        "reasoning_output_tokens": 88,
+        "total_tokens": 186563
+      },
+      "changed_paths": [
+        "repos/payments/payment.py"
+      ],
+      "artifacts": {
+        "1.jsonl": "2eb672d2104cedac3d7244963905cc189ec1a31f2752dbbe9bb9473459d5642b",
+        "1.summary.json": "906923d26f3c33f4467024797f9755964a2cd0466ade53fec613dc1eb325b651",
+        "workspace.before.json": "8f73e70f0745904a9949d7a02f782c5da3b586b140f13ceb7c4eab648e658df0",
+        "workspace.after.json": "43d0fea50f9406d61ba92cf08ce0faa8200dfe3f42162ed54adba4ed36803b1d",
+        "plan.json": "72a824eab812efae6d00da1fcd53da88e6964d26e0bb2e05a7758f584d3722f2"
+      },
+      "evidence_limit": "Full-workspace before/after snapshots used; recorder changed_paths covers only launch subdirectory."
+    },
+    {
+      "name": "candidate-2",
+      "raw_root": "/tmp/ssot-evolution-20261112-r2/child-candidate-v2",
+      "model": [
+        "gpt-6.1-terra"
+      ],
+      "completed": true,
+      "seconds": 48.401,
+      "usage": {
+        "input_tokens": 187933,
+        "cached_input_tokens": 176384,
+        "cache_write_input_tokens": 0,
+        "output_tokens": 1575,
+        "reasoning_output_tokens": 101,
+        "total_tokens": 189508
+      },
+      "changed_paths": [
+        "repos/payments/payment.py"
+      ],
+      "artifacts": {
+        "1.jsonl": "283500713df164b2de216549080b278efcf3634bd59ff349a926a1ca210016e2",
+        "1.summary.json": "2731c1d1d68daf6f6e4397ad741e7f83130bfb6c0f3cc9e051e6ade57d155cc1",
+        "workspace.before.json": "8f73e70f0745904a9949d7a02f782c5da3b586b140f13ceb7c4eab648e658df0",
+        "workspace.after.json": "43d0fea50f9406d61ba92cf08ce0faa8200dfe3f42162ed54adba4ed36803b1d",
+        "plan.json": "8846e836b17983f8fd6542a29e6b4cf5530a664ec8c63b97a435aac77db43bed"
+      },
+      "evidence_limit": "Full-workspace before/after snapshots used; recorder changed_paths covers only launch subdirectory."
+    },
+    {
+      "name": "named-baseline",
+      "raw_root": "/tmp/ssot-evolution-20261112-r2/named-baseline-v2",
+      "model": [
+        "gpt-6.1-terra"
+      ],
+      "completed": true,
+      "seconds": 27.322,
+      "usage": {
+        "input_tokens": 90883,
+        "cached_input_tokens": 82432,
+        "cache_write_input_tokens": 0,
+        "output_tokens": 638,
+        "reasoning_output_tokens": 76,
+        "total_tokens": 91521
+      },
+      "changed_paths": [
+        "work/drafts/deliverables/checklist.md"
+      ],
+      "artifacts": {
+        "1.jsonl": "9e863296695ed2ac2848cfaf4884cbfe9fe3e5cfaf40181b7eb8ebf4e57cd81a",
+        "1.summary.json": "7b2cbf54342d6b07aac9125d0d9294e53ec425387b122769c5d3484e3f925e7e",
+        "workspace.before.json": "c5322823b800b467854649542fdd9e962d203815bbffd03464681d3a3a8ac6fe",
+        "workspace.after.json": "f6eb291b1b4b9255a959716c7a49d8c7755a47f8cfeae44d1a0fc09c88459749",
+        "plan.json": "222ae4d130f6c2b3ab2e1b0e18b1d316e4ac66d5ef4850a1cf42ed5b1d04694e"
+      },
+      "evidence_limit": "Full-workspace before/after snapshots used; recorder changed_paths covers only launch subdirectory."
+    },
+    {
+      "name": "named-candidate",
+      "raw_root": "/tmp/ssot-evolution-20261112-r2/named-candidate-v2",
+      "model": [
+        "gpt-6.1-terra"
+      ],
+      "completed": true,
+      "seconds": 33.704,
+      "usage": {
+        "input_tokens": 91819,
+        "cached_input_tokens": 83328,
+        "cache_write_input_tokens": 0,
+        "output_tokens": 883,
+        "reasoning_output_tokens": 66,
+        "total_tokens": 92702
+      },
+      "changed_paths": [
+        "work/drafts/deliverables/checklist.md"
+      ],
+      "artifacts": {
+        "1.jsonl": "037271cd6aab600972bfec8801a87f842b7335c44e018f1b33dfd20f37c90693",
+        "1.summary.json": "5f0a03efcb864ef9a8e8a61e0c07b6e36c07312c57e9fc397723f10c8edab21c",
+        "workspace.before.json": "c5322823b800b467854649542fdd9e962d203815bbffd03464681d3a3a8ac6fe",
+        "workspace.after.json": "f3ececa8f1eacc654fcddf7b87f4288ec7469f752a2139ac264d6c9b09b3d02b",
+        "plan.json": "549f112faa50c1be7ce5b4e7b3d15621eab1881bd730b4d9c1999c204dbd85ba"
+      },
+      "evidence_limit": "Full-workspace before/after snapshots used; recorder changed_paths covers only launch subdirectory."
+    }
+  ],
+  "limitations": [
+    "Single synthetic observation per variant; not randomized repetitions or a performance estimate.",
+    "Initial child compared a different parent installation language; use baseline-2/candidate-2 for the same configured fixture.",
+    "Both candidate path-rule variants were withdrawn after continuing wrong-base reads.",
+    "Original raw logs remain local; hashes identify exactly inspected evidence.",
+    "Non-Git fixture discovery failed before a model call; repaired at the intended launch scope and retained as a separate attempt."
+  ]
+}
