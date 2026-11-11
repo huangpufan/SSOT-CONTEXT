@@ -55,6 +55,11 @@ jobs:
         run: python3 tests/context/test_context.py
       - name: Run independent source CLI contracts (no model calls)
         run: python3 tests/context/test_source_contract.py
+      - name: Calibrate continuation, large-register and source oracles (no model calls)
+        run: |
+          python3 tests/context/test_continuation.py
+          python3 tests/context/test_register.py
+          python3 tests/context/test_source_oracle.py
 
   mermaid-templates:
     name: parse template diagrams

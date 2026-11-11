@@ -705,16 +705,24 @@ def check_removed_paths(report, ssot_dir, mentions, since):
     try:
         top = git_output(ssot_dir, "rev-parse", "--show-toplevel").rstrip("\n")
     except FileNotFoundError:
-        report.add("INFO", None, None, "git is not available, so mentions of removed files were not checked")
+        if since:
+            report.unchecked.append(f"--since {since}: git is not available")
+        else:
+            report.add("INFO", None, None, "git is not available, so mentions of removed files were not checked")
         return
     except GitError as error:
         if "not a git repository" in str(error):
-            report.add("INFO", None, None, "not in a git work tree, so mentions of removed files were not checked")
+            if since:
+                report.unchecked.append(f"--since {since}: not in a git work tree")
+            else:
+                report.add("INFO", None, None, "not in a git work tree, so mentions of removed files were not checked")
         else:
             report.unchecked.append(f"mentions of removed files: git failed ({error})")
         return
     head, stderr = git(top, "rev-parse", "--verify", "--quiet", "HEAD")
     if head == GIT_NO:
+        if since:
+            report.unchecked.append(f"--since {since}: repository has no commits")
         return  # no commits yet, so nothing has been removed
     if head != 0:
         report.unchecked.append(f"mentions of removed files: git failed ({stderr.strip() or head})")

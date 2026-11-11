@@ -80,6 +80,9 @@ python3 tests/test-migration-trials.py # migration fixtures, oracle and CI billi
 python3 tests/test-context-source.py  # POSIX source/owner/readback contract; no model calls
 python3 tests/context/test_context.py # general-context fixtures/oracles; no model calls
 python3 tests/context/test_source_contract.py # independent source CLI contracts; no model calls
+python3 tests/context/test_continuation.py # continuation oracle; no model calls
+python3 tests/context/test_register.py # large-register outcomes; no model calls
+python3 tests/context/test_source_oracle.py # public source-state oracle; no model calls
 bash tests/test-installer-e2e.sh       # installer end to end
 python3 tests/test-installer-recovery.py # replacement faults, cancellation, locking and recovery
 shellcheck -S warning -e SC2034 install.sh tests/*.sh

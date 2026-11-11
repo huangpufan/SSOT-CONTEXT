@@ -11,10 +11,10 @@ python3 tests/context/test_context.py
 python3 tests/context/test_source_contract.py
 ```
 
-Prepare from an exported baseline. Preparation freezes tasks, fixtures, oracle, harness and baseline bundle before billable calls. It refuses existing output directories and requires an explicit authorized model. The November context-evolution experiment fixes `gpt-6.1-sol` under that task's user authorization; this does not change the repository's standing model policy. Both arms use the frozen model and medium reasoning, and record actual native model/usage receipts. CI refuses billable calls.
+Prepare from an exported baseline. Preparation freezes tasks, fixtures, oracle, harness and baseline bundle before billable calls. It refuses existing output directories and requires an explicit authorized model. The commands below use the standing authorized `gpt-6.1-terra` model. The historical November 10 experiment used `gpt-6.1-sol` under its separate task authorization; that exception does not apply to new runs. Both arms use the frozen model and medium reasoning, and record actual native model/usage receipts. CI refuses billable calls.
 
 ```bash
-python3 tests/context/run.py --prepare --baseline /tmp/exported-4.5 --model gpt-6.1-sol --cases C01 D03 --output /tmp/context-smoke
+python3 tests/context/run.py --prepare --baseline /tmp/exported-4.5 --model gpt-6.1-terra --cases C01 D03 --output /tmp/context-smoke
 python3 /tmp/context-smoke/harness/context/run.py --output /tmp/context-smoke --run-models --arm baseline
 python3 /tmp/context-smoke/harness/context/run.py --output /tmp/context-smoke --attach-candidate /path/to/frozen-candidate
 python3 /tmp/context-smoke/harness/context/run.py --output /tmp/context-smoke --run-models --arm candidate
@@ -31,3 +31,9 @@ Use `installed_run.py` separately for actual installed discovery. It runs the of
 The installed setup follows official [skill discovery](https://learn.chatgpt.com/docs/build-skills) and [AGENTS discovery](https://learn.chatgpt.com/docs/agent-configuration/agents-md), but the actual CLI probe and native receipts establish what happened in this experiment. The normal comparison transport suppresses project-document injection and supplies an adapter; installed mode intentionally retains actual AGENTS discovery. Keep those evidence levels distinct.
 
 `report.py --evidence-root PATH --output PATH` regenerates the compact inventory from retained evidence, including corrected grader files without overwriting original verdicts. It deduplicates manifests and includes the semantic report's hash when present. It never runs models.
+
+Use `installed_run.py --prepare --candidate PATH --model gpt-6.1-terra --continuation --output /tmp/NEW-RUN` for four fresh sessions sharing one installed general space: capture, limited correction, an unrelated typo and cold retrieval for a concrete deliverable. Run its frozen `harness/context/installed_run.py --output /tmp/NEW-RUN --run-models`. `--large-register conflict` and `--large-register typo` instead install a development fixture with 80 protected rules. Each mode requires a separate new output directory. Offline calibration is in `test_continuation.py`, `test_register.py` and `test_source_oracle.py`; semantic content and actual reading still require direct review. These are candidate observations, not performance comparisons or real longitudinal use.
+
+C06 now requires the original method's successful two-owner completion to remain observable, and prevents its correction from completing while the original identity is conflicted. It checks the actual completed references against submitted readback receipts, allowing old invalidated receipts to remain in history. The historical 5.0 report used its frozen helper/oracle; its r2-completed result does not validate today's ancestor-conflict contract.
+
+The [5.1 continuation and source handoff report](trials-5.1.md) retains failed and prepared-only attempts, calibrated oracle changes and installed development controls. Its [inventory](results/context-evolution-5.1-2026-11-12.json) records actual Terra versions, frozen identities and costs.

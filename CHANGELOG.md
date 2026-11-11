@@ -8,13 +8,25 @@ Entries up to 2.86 were derived from the v2 protocol-upgrade ledger, which is pr
 
 ## [Unreleased]
 
-### Fixed
-- Block source progress through any unresolved ancestor conflict, including same-revision content conflicts; choosing a fork cannot bypass a conflicting ancestor. Completion retries accept the same valid receipts in another order while preserving saved history and rejecting stale or changed evidence.
-- Check both development and general templates in both languages: ordered managed-block markers, all four lifecycle routes inside the block, and matching entry format/language. Whole-bundle negative probes expose the previous general-template coverage gap. See the [evolution review and evidence](docs/evolution-review-2026-11-11.md).
-- Reconcile both READMEs with the existing general-space permission to retain authorized experiences and exact words without requiring future decision value. Consumer formats, protocol version, default agent instructions and budgets are unchanged.
+## [5.1] - 2026-11-12
+
+### Added
+- Reusable opt-in installed trials for four cold sessions sharing a general space, and 80-rule development registers with protected-departure and typo controls. Host-side checks, independent semantic review and frozen identities distinguish actual outcomes from model self-report; CI runs only offline calibration.
 
 ### Changed
+- General-space closeout returns after its own lifecycle and shared references, instead of falling through into the development batch recipe; its model supplies the plain structural-check command without a Git prerequisite. An actual installed four-session task exposed unnecessary Git comparison in a non-Git space. Frozen before/after behavior evidence and development controls are recorded in the [evolution review](docs/evolution-review-2026-11-12.md); development format 4, general format 5 and their authorization boundaries stay unchanged.
+- Explain task-local source recovery after actual renewed permission or authoritative byte-identity reconciliation: preserve prior state and known impacts, reuse source/item identities, reconcile current owners and obtain new readbacks. A fresh state grants no authority and is not an ordinary retry shortcut.
 - [Install step 4](INSTALL.md#4-wire-the-skills-into-the-repos-agent-instructions-file) now chooses the instruction block before editing: an existing format 4/5 entry or a clearly software repository is wired without a question; a target that looks like a non-code space, or has conflicting signals, gets one question with a recommended mode, the chosen entry and the files to change. Agreeing to a general space also covers the minimal entry front matter, writer sentence and invariants section. The installer adds one line saying its printed block is for development repositories. Previously a registry-like folder received the development block and later sessions would offer a parallel `SSOT/`. Isolated `gpt-6.1-terra` installs from a frozen local source: a registry fixture asked and changed no instruction file (baseline wired the development block), then after the answer added only the general block and minimal entry edits with a clean check; a software fixture and an existing format-4 fixture were wired without questions. One run each; no reliability claim.
+
+### Fixed
+- An explicit `--since` request now returns INCOMPLETE when Git/history is unavailable, while ordinary non-Git checks remain supported and existing content errors stay visible.
+- Repeated source `no-update` completion preserves the original recorded reason; late captures still require reconciliation.
+- Require successful source target admission before dependent owner writes. Actual C06 baseline runs wrote after a rejected ancestor-conflict check; the candidate preserves blocked owners while continuing independent items.
+- Clarify the installed trial fixture's prohibition on agent delegation, which one subject misread as forbidding checker scripts. Calibrate structural-check ordering and public source completion instead of treating a whole shell batch's exit code as every subcommand's outcome; preserve earlier failed attempts.
+- Calibrate the current C06 oracle against the ancestor-conflict contract: preserve original completed capture, block successor completion, and accept legitimate completion with renewed receipts instead of requiring every historical receipt. Historical 5.0 results retain their original evidence limits.
+- Block source progress through any unresolved ancestor conflict, including same-revision content conflicts; choosing a fork cannot bypass a conflicting ancestor. Completion retries accept the same valid receipts in another order while preserving saved history and rejecting stale or changed evidence.
+- Check both development and general templates in both languages: ordered managed-block markers, all four lifecycle routes inside the block, and matching entry format/language. Whole-bundle negative probes expose the previous general-template coverage gap. See the [evolution review and evidence](docs/evolution-review-2026-11-11.md).
+- Reconcile both READMEs with the existing general-space permission to retain authorized experiences and exact words without requiring future decision value. That earlier documentation repair did not change consumer formats or default agent instructions.
 
 ## [5.0] - 2026-11-10
 

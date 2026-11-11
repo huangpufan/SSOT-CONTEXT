@@ -5,7 +5,7 @@ description: Capture durable user decisions immediately, including discussion-on
 
 # SSOT Closeout
 
-Inspect the explicit entry or default `SSOT/README.md`: 5 uses [general context spaces](../ssot-preflight/references/context-spaces.md), especially Closeout/lifecycle; 4 uses the gates below; known v2/v3 stays read-only pending agreed migration. Unknown/future formats stay read-only without downgrade. Independently authorized owner workflows retain their own rules. Ordinary undeclared non-repository chat/research/creation skips this skill unless a record is explicitly requested.
+Inspect the explicit entry or default `SSOT/README.md`. For format 5, follow [general context spaces](../ssot-preflight/references/context-spaces.md#use-and-maintain-a-space), especially Closeout/lifecycle and its linked shared references, then return from this skill. The development gates and batch recipe below are a separate route for format 4 and legacy repositories. Known v2/v3 stays read-only pending agreed migration. Unknown/future formats stay read-only without downgrade. Independently authorized owner workflows retain their own rules. Ordinary undeclared non-repository chat/research/creation skips this skill unless a record is explicitly requested.
 
 Reconcile durable changes in their single owner. Read only needed [model](../ssot-preflight/references/memory-model.md) sections; reuse current context.
 

@@ -2,7 +2,7 @@
 name: ssot-preflight
 description: Read relevant maintained context before substantive repository work or work in a declared context space. Find protected rules, owners and blocking questions for code, configuration, documentation, review, debugging or planning. Use for an explicit request to maintain non-repository context; ordinary chat, research answers or creative writing without a declared space do not trigger setup. Skip pure commands and meaning-preserving typo or formatting edits.
 metadata:
-  protocol_version: "5.0"
+  protocol_version: "5.1"
   bundle: "SSOT-CONTEXT"
 ---
 

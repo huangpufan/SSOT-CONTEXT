@@ -1156,6 +1156,32 @@ class CheckerTest(unittest.TestCase):
         code, out = self.run_checker(self.ssot, "--since", "nosuchref")
         self.assertEqual(code, 3, out)
 
+    def test_since_requires_available_committed_git_history(self):
+        self.valid()
+        self.write("README.md", README.replace("ssot_format: 4", "ssot_format: 5"))
+        for label, env in (("no repository", None),
+                           ("git unavailable", dict(os.environ, PATH=""))):
+            with self.subTest(label=label):
+                code, out = self.run_checker(self.ssot, "--since", "HEAD", env=env)
+                self.assertEqual(code, 3, out)
+                self.assertIn("UNCHECKED", out)
+        self.git("init", "-q")
+        code, out = self.run_checker(self.ssot, "--since", "HEAD")
+        self.assertEqual(code, 3, out)
+        self.assertIn("UNCHECKED", out)
+        self.write("README.md", README.replace("ssot_format: 4", "ssot_format: 5") + "\n[Broken](missing.md)\n")
+        code, out = self.run_checker(self.ssot, "--since", "HEAD")
+        self.assertEqual(code, 3, out)
+        self.assertIn("broken link: missing.md", out)
+
+    def test_since_accepts_commit_before_entry_exists(self):
+        self.git("init", "-q")
+        self.write("seed.txt", "seed\n")
+        base = self.commit("before SSOT entry")
+        self.valid()
+        code, out = self.run_checker(self.ssot, "--since", base)
+        self.assertEqual(code, 0, out)
+
     def test_file_names_that_look_like_headers(self):
         self.repo_with("\x01a", "\x01b", "src/old.py")
         for name in ("\x01a", "\x01b", "src/old.py"):

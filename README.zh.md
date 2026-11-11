@@ -95,7 +95,7 @@ curl -fsSL https://raw.githubusercontent.com/huangpufan/SSOT-CONTEXT/main/instal
 
 ## 限度
 
-Skill 只在 Agent 加载它们时生效。它们不会在后台采集材料，也删不掉触及不到的副本，例如备份或服务商日志。现有证据来自小型合成试验，不证明普遍可靠；[5.0 报告](./tests/context/trials-5.0.md)中，开发热任务的 token 用量增加约 5–13%。
+Skill 只在 Agent 加载它们时生效。它们不会在后台采集材料，也删不掉触及不到的副本，例如备份或服务商日志。[5.1 试验](./tests/context/trials-5.1.md)覆盖冷会话接续、来源准入和大型保护规则表。这些小型合成证据不证明普遍可靠；[5.0 报告](./tests/context/trials-5.0.md)中，开发热任务的 token 用量增加约 5–13%。
 
 ## 支持的 Agent
 
@@ -118,7 +118,7 @@ curl -fsSL https://raw.githubusercontent.com/huangpufan/SSOT-CONTEXT/main/instal
 
 - [安装指南](./INSTALL.md)：安装、接线、升级、卸载和恢复。
 - [设计说明](./DESIGN.md)：Skill 包为什么是现在这个形态。
-- [演进审视](./docs/evolution-review-2026-11-11.md)：当前优先级、来源恢复修复和尚待补齐的证据。
+- [演进审视](./docs/evolution-review-2026-11-12.md)：本轮改进、真实接续试验与证据边界。
 - [更新日志](./CHANGELOG.md)：每个版本改了什么。
 - [贡献指南](./CONTRIBUTING.md)和 [AGENTS.md](./AGENTS.md)：怎样修改本 Skill 包仓库。
 - [安全政策](./SECURITY.md)：怎样报告安全漏洞。

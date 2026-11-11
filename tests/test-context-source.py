@@ -182,6 +182,51 @@ class SourceContract(unittest.TestCase):
         self.assertEqual(self.status()["outcome"], "no-update")
         self.assertFalse(self.one.exists())
 
+    def test_completed_no_update_retry_preserves_the_original_outcome(self):
+        path = self.export("original.json", [self.item()]);self.acquire(path, f"one={self.one}")
+        item = self.inspect()
+        original = self.action("no-update", "a", "1", "--reason", "No durable finding in this version")
+        before = self.state.read_bytes()
+        replay = self.action("no-update", "a", "1", "--reason", "Retry from a fresh session")
+        self.assertEqual(replay, original)
+        self.assertEqual(self.state.read_bytes(), before)
+        # A late capture is a real effect, not permission to return an old no-update.
+        self.one.write_text("# Late capture\n" + item["marker"])
+        self.action("no-update", "a", "1", "--reason", "Retry after an owner changed", code=2)
+        self.assertEqual(self.status()["reason"], original["reason"])
+        self.assertEqual(self.status()["outcome"], "no-update")
+
+    def test_new_authorized_task_reconciles_same_identity_without_erasing_prior_state(self):
+        for prior_state in ("withdrawn", "byte-conflict"):
+            with self.subTest(prior_state=prior_state):
+                self.setUp()
+                original, item, _ = self.seed_capture(("one", "two"))
+                if prior_state == "withdrawn":
+                    self.call("withdraw-source", "--reason", "prior task permission withdrawn")
+                    self.acquire(original, code=2)
+                    selected = original
+                else:
+                    selected = self.export("settled.json", [self.item(content="Source authority supplied corrected bytes")])
+                    self.acquire(selected, code=1)
+                    self.action("no-update", "a", "1", "--reason", "cannot dismiss identity conflict", code=2)
+                old_state, old_bytes = self.state, self.state.read_bytes()
+                self.state = self.root / "new-authorized-task.json"
+                # Renewed permission / source adjudication is supplied by the caller,
+                # not established by making an empty state file.
+                self.acquire(selected, f"one={self.one}", f"two={self.two}")
+                inspected = self.inspect()
+                self.assertEqual(inspected["marker"], item["marker"])
+                self.assertEqual({c["owner"] for c in inspected["existing_captures"]}, {"one", "two"})
+                self.action("no-update", "a", "1", "--reason", "new state cannot hide old captures", code=2)
+                self.inspect(retry=True);self.targets(["one", "two"])
+                if prior_state == "byte-conflict":
+                    for owner in (self.one, self.two):
+                        owner.write_text("# Account\nUnrelated accepted terms remain.\nSource-authorized replacement.\n" + item["marker"])
+                self.complete([self.readback(alias) for alias in ("one", "two")])
+                self.assertEqual(old_state.read_bytes(), old_bytes)
+                for owner in (self.one, self.two):
+                    self.assertEqual(owner.read_text().count(item["marker"]), 1)
+
     def test_state_lock_excludes_concurrent_operation_without_losing_progress(self):
         path = self.export("original.json", [self.item()]);self.acquire(path)
         before = self.state.read_bytes()

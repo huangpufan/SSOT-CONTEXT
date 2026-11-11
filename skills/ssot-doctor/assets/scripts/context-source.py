@@ -368,11 +368,12 @@ def process(args, state):
     if record["status"] in {"failed", "needs-decision"}:
         raise ValueError("resolve the blocker, then inspect --retry before continuing")
     if args.command == "no-update":
-        old = earlier(state, record)
         effects = [effect for r in [record, *history(state, record)] for effect in impacts(state, r)
                    if any(e != "declared-target" for e in effect["evidence"])]
         if effects:
             raise ValueError("existing derived references require reconciliation and saved-owner readback")
+        if record["status"] == "completed":
+            return item_view(state, record)  # A retry retains the original decision and reason.
         record["status"], record["outcome"], record["reason"] = "completed", "no-update", args.reason
         return item_view(state, record)
     if args.command == "targets":
@@ -419,7 +420,6 @@ def process(args, state):
         if digest(data) != receipt["file_digest"] or data.count(marker(record).encode()) != 1:
             raise ValueError("owner changed after readback; read back again")
         references.append(receipt)
-    old = earlier(state, record)
     affected = set(record["targets"]) | {impact["owner"] for old in [record, *history(state, record)]
         for impact in impacts(state, old) if any(e != "declared-target" for e in impact["evidence"])}
     if not affected.issubset({r["owner"] for r in references}):

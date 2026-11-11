@@ -14,6 +14,8 @@ import run
 import source_cases
 import source_oracle
 import hybrid_case
+import continuation_case
+import register_case
 
 FIRST = "请把 sources/initial.json 里的这次访谈导出接续整理到这个上下文空间既有的研究和创作笔记，保留各自原意及适用范围，并维护必要的简短入口。我同意在这个空间保存记忆；可信来源、范围及已授权owner见connector-setup.txt。以后还会追加导出，请保存各项完成和未完成进度，使换会话后能接续且不重复处理。原始导出保持原样，已经接受的方法继续有效，请报告实际范围和剩余事项。"
 SECOND = "访谈来源新增 sources/followup.json，请按原授权把有限更正反映到相关既有笔记中，保留其他已接受约定、原始来源和历史。完成后说明当前保存和接入进度，不将计划描述为已经实现。"
@@ -50,13 +52,22 @@ def freeze(args):
     for name in ("run-performance-trials.py", "continuity_cases.py"):
         shutil.copy2(Path(__file__).resolve().parent.parent / name, harness / name)
     fixture = root / "fixture"
-    if args.hybrid:
+    if args.large_register:
+        register_case.build(fixture)
+        kind, prompts = "large-register " + args.large_register, [register_case.TYPO_TASK if args.large_register == "typo" else register_case.CONFLICT_TASK]
+    elif args.continuation:
+        continuation_case.build(fixture, cases.scenarios.write)
+        kind, prompts = "synthetic four-session continuation", continuation_case.PROMPTS
+    elif args.hybrid:
         hybrid_case.build(fixture)
+        kind, prompts = "hybrid format5 parent and format4 child", [hybrid_case.TASK]
     elif args.ordinary_negative:
         fixture.mkdir()
+        kind, prompts = "ordinary undeclared creative task", [ORDINARY]
     else:
         source_cases.build(fixture, cases.scenarios.write, native_entry=True)
         cases.scenarios.write(fixture, "SSOT/README.md", "---\nssot_format: 5\nlanguage: en\n---\n# Interview research and creative space\n\n[Research](../research/findings.md), [Creative material](../creation/notes.md), and [Authorized experiences](../memory/experiences.md) keep their own meaning and authority. Trusted source scope is in [Connector setup](../connector-setup.txt). Maintained by compatible SSOT-CONTEXT 5.0+ writers; older writers upgrade rather than downgrade.\n")
+        kind, prompts = "natural source workflow", [FIRST, SECOND]
     command = ["bash", str(source / "install.sh"), "--quickstart", "--agent", "codex", "--scope", "project", "--lang", "zh"]
     installed = subprocess.run(command, cwd=fixture, env={**os.environ, "SOURCE_DIR": str(source)}, capture_output=True, text=True)
     run.save(root / "installation.json", {"command": command, "returncode": installed.returncode, "stdout": installed.stdout, "stderr": installed.stderr,
@@ -64,15 +75,15 @@ def freeze(args):
         "mode_changes": modes, "source_content_hashes_identical": content_preserved})
     if installed.returncode:
         raise ValueError("Official local installer failed; retain evidence")
-    adapter = (fixture / ".agents/skills/ssot-bootstrap/assets/templates/context-adapter.md").read_text()
+    template = "adapter-thin.md" if args.large_register else "context-adapter.md"
+    adapter = (fixture / ".agents/skills/ssot-bootstrap/assets/templates" / template).read_text()
     start, end = "<!-- SSOT-CONTEXT:BEGIN -->", "<!-- SSOT-CONTEXT:END -->"
     adapter = adapter[adapter.index(start):adapter.index(end) + len(end)].replace("ENTRY", "SSOT/README.md")
     if not args.ordinary_negative:
-        (fixture / "AGENTS.md").write_text("# Workspace rules\n\nWork only in this isolated space. Do not commit, push, install dependencies, access other projects, invoke other models or use helpers.\n\n" + adapter + "\n")
+        (fixture / "AGENTS.md").write_text("# Workspace rules\n\nWork only in this isolated space. Do not commit, push, install dependencies, access other projects, invoke other models or delegate to other agents.\n\n" + adapter + "\n")
     plan = {"schema": 1, "comparison_kind": "candidate actual installed discovery, no performance comparison", "model": args.model,
             "cap": args.cap, "reasoning": "medium", "concurrency": 1,
-            "kind": "hybrid format5 parent and format4 child" if args.hybrid else "ordinary undeclared creative task" if args.ordinary_negative else "natural source workflow",
-            "prompts": [hybrid_case.TASK] if args.hybrid else [ORDINARY] if args.ordinary_negative else [FIRST, SECOND],
+            "kind": kind, "prompts": prompts,
             "source_manifest": run.manifest(source), "fixture_manifest": run.manifest(fixture), "harness_manifest": run.manifest(harness)}
     run.save(root / "plan.json", plan)
     print(f"Installed candidate and froze trial: {root}; no model calls")
@@ -112,12 +123,22 @@ def execute(args):
         print("Actual installed skill catalog and AGENTS observed; no model calls")
         return
     summaries = []
+    continuation = plan.get("kind") == "synthetic four-session continuation"
     original_files = oracle.snapshot(repo)
     for turn, prompt in enumerate(plan["prompts"], 1):
-        if turn == 2:
-            cases.scenarios.write(repo, "sources/followup.json", source_cases.export([source_cases.CORRECTION]))
-        summary = run.bench.transport.execute_turn(root, directory, repo, prompt, turn, plan["cap"],
-            sandbox_command=sandbox, codex_home=home, capture_checkpoints=True, model=plan["model"], allow_no_git=True, installed_mode=True)
+        if continuation:
+            continuation_case.before_turn(repo, turn, cases.scenarios.write)
+            phase = directory / f"phase-{turn}"
+            phase.mkdir()
+            phase_home = phase / "codex-home"
+            phase_sandbox = run.bench.isolated_command(repo, root / "install-source", phase_home)
+            summary = run.bench.transport.execute_turn(root, phase, repo, prompt, 1, plan["cap"],
+                sandbox_command=phase_sandbox, codex_home=phase_home, capture_checkpoints=True, model=plan["model"], allow_no_git=True, installed_mode=True)
+        else:
+            if turn == 2:
+                cases.scenarios.write(repo, "sources/followup.json", source_cases.export([source_cases.CORRECTION]))
+            summary = run.bench.transport.execute_turn(root, directory, repo, prompt, turn, plan["cap"],
+                sandbox_command=sandbox, codex_home=home, capture_checkpoints=True, model=plan["model"], allow_no_git=True, installed_mode=True)
         summaries.append(summary)
         if not summary["completed"] or summary["returncode"]:
             break
@@ -133,7 +154,14 @@ def execute(args):
                     target = target if target.is_absolute() else repo / target
                     if target.resolve().is_relative_to(repo.resolve()) and target.is_file():
                         state_path = target
-    if hybrid:
+    if plan["kind"].startswith("large-register "):
+        verdict = register_case.grade(repo, original_files, plan["kind"].split()[1])
+    elif continuation:
+        verdict = continuation_case.grade(repo, directory)
+        threads = [s.get("thread_id") for s in summaries]
+        verdict["checks"]["fresh_native_sessions"] = len(threads) == 4 and all(threads) and len(set(threads)) == 4
+        verdict["mechanical_passed"] = all(verdict["checks"].values())
+    elif hybrid:
         verdict = hybrid_case.grade(repo, directory, original_files)
     elif ordinary:
         commands = [json.loads(line).get("item", {}).get("command", "") for line in (directory / "1.jsonl").read_text().splitlines()]
@@ -168,9 +196,11 @@ def main():
     parser.add_argument("--probe-only", action="store_true", help="With run mode, stop after actual zero-model discovery probe")
     parser.add_argument("--ordinary-negative", action="store_true", help="Prepare installed skills without any declared space or AGENTS wiring")
     parser.add_argument("--hybrid", action="store_true", help="Prepare an installed mixed-format parent/child mono task")
+    parser.add_argument("--continuation", action="store_true", help="Prepare synthetic four-session continuation")
+    parser.add_argument("--large-register", choices=("conflict", "typo"), help="Prepare an 80-rule development register task")
     args = parser.parse_args()
     if args.prepare:
-        if args.hybrid and args.ordinary_negative:
+        if sum((args.hybrid, args.ordinary_negative, args.continuation, bool(args.large_register))) > 1:
             parser.error("Choose one installed fixture mode")
         if not args.candidate or not args.model:
             parser.error("--candidate and explicit --model required")

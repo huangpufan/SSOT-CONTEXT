@@ -95,7 +95,7 @@ Existing maintained documents can stay the owners and are linked from the entry.
 
 ## Limits
 
-The skills act only when the agent loads them. They do not collect material in the background, and they cannot delete copies they cannot reach, such as backups or provider logs. The evidence is small synthetic trials, not proof of universal reliability; in the [5.0 report](./tests/context/trials-5.0.md), token use on warm development tasks rose about 5–13%.
+The skills act only when the agent loads them. They do not collect material in the background, and they cannot delete copies they cannot reach, such as backups or provider logs. The [5.1 trials](./tests/context/trials-5.1.md) cover cold-session continuation, source admission and a large protection register. This is small synthetic evidence, not proof of universal reliability; in the [5.0 report](./tests/context/trials-5.0.md), token use on warm development tasks rose about 5–13%.
 
 ## Supported agents
 
@@ -118,7 +118,7 @@ Updating never rewrites your context documents. Existing repositories stay on fo
 
 - [Install guide](./INSTALL.md): setup, wiring, upgrade, removal and recovery.
 - [Design](./DESIGN.md): why the bundle is shaped this way.
-- [Evolution review](./docs/evolution-review-2026-11-11.md): current priorities, source recovery repairs and remaining evidence gaps.
+- [Evolution review](./docs/evolution-review-2026-11-12.md): current improvements, real continuation trials and evidence limits.
 - [Changelog](./CHANGELOG.md): what changed in each version.
 - [Contributing](./CONTRIBUTING.md) and [AGENTS.md](./AGENTS.md): how to change this bundle repository.
 - [Security policy](./SECURITY.md): how to report a vulnerability.
