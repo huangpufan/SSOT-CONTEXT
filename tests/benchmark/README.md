@@ -1,4 +1,6 @@
-# Reading benchmark
+# SSOT evaluation and reading benchmark
+
+Use the [evaluation method](METHOD.md) to choose evidence for a protocol decision. The suite combines the reading lane below with [cold handoff and plain-docs controls](HANDOFF.md) and the existing capture, protection, source, continuation, installation and migration trials. It has no combined score: correct action, useful handoff, preservation and honest evidence come before conditional cost comparisons.
 
 This opt-in benchmark asks a native agent to finish a small executable task whose accepted behavior lives in repository Markdown. It measures whole-task cost and independently checks the resulting code. A shorter or faster run that loses a rule is a quality failure, not an optimization.
 
@@ -29,7 +31,7 @@ baseline_dir=$(mktemp -d)
 git archive BASELINE_REF | tar -x -C "$baseline_dir"
 python3 tests/benchmark/run.py --prepare \
   --baseline "$baseline_dir" --candidate . \
-  --output /tmp/ssot-reading-protocol --repeats 3
+  --output /tmp/ssot-reading-protocol --model gpt-6.1-terra --repeats 3
 python3 /tmp/ssot-reading-protocol/harness/benchmark/run.py \
   --output /tmp/ssot-reading-protocol --run-models
 python3 /tmp/ssot-reading-protocol/harness/benchmark/run.py \
@@ -42,7 +44,7 @@ To measure only the index, use the same candidate bundle in both arms. The coars
 
 ```bash
 python3 tests/benchmark/run.py --prepare --comparison index --candidate . \
-  --cases routed warm --repeats 3 --output /tmp/ssot-reading-index
+  --cases routed warm --model gpt-6.1-terra --repeats 3 --output /tmp/ssot-reading-index
 python3 /tmp/ssot-reading-index/harness/benchmark/run.py \
   --output /tmp/ssot-reading-index --run-models
 ```
@@ -57,7 +59,7 @@ Each attempt gets an isolated writable repository and Codex home, a read-only sk
 
 `plan.json` records hashes, inputs and order; `environment.json` records CLI/Python versions. Every turn retains its prompt, command/event stream, stderr, native session receipt, final answer, before/after files, summary and separate oracle verdict. The benchmark disables the historical recorder's per-event repository snapshots so observer work does not grow with every tool event. The separate [historical recorder](../run-performance-trials.py) still supports decision-order investigations that need those snapshots.
 
-`report.md`, `report.json` and `report.csv` can be regenerated offline. They show all attempts, including quality failures, timeouts, infrastructure failures and unrun entries. Costs from failed turns remain in the data. Only pairs that both pass and have valid native per-turn usage enter the descriptive cost comparison; every excluded pair remains visible. This conditional comparison can still be biased when quality differs, so inspect quality counts first. Fewer than three usable pairs are pipeline observations only. Medians, ranges and paired changes do not establish significance or a general percentage gain.
+`report.md`, `report.json` and `report.csv` can be regenerated offline. They show all attempts, including quality failures, timeouts, observer failures, wrong-model execution, infrastructure failures and unrun entries. Costs from failed turns remain in the data. Only pairs that both pass and have valid native per-turn usage enter the descriptive cost comparison; every excluded pair remains visible. This conditional comparison can still be biased when quality differs, so inspect quality counts first. Fewer than three usable pairs are pipeline observations only. Medians, ranges and paired changes do not establish significance or a general percentage gain.
 
 | Metric | Meaning |
 | --- | --- |
@@ -75,7 +77,7 @@ The fixture is deliberately small and synthetic, with one code domain and an ada
 ## Check the benchmark itself
 
 ```bash
-python3 tests/benchmark/test_benchmark.py
+python3 -m unittest discover -s tests/benchmark -p 'test_*.py'
 ```
 
 CI checks deterministic fixture parity, mechanical documentation validity (except the deliberate broken route), positive and negative oracle cases, warm-state freshness, per-turn usage attribution and reports that retain failures. It never runs billable models. Preserve original evidence if the oracle is wrong; a changed oracle or harness is a new version, not permission to replace old results silently.

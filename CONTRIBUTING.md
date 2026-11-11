@@ -75,7 +75,7 @@ This check is complete when both READMEs describe the verified current behavior,
 ```bash
 bash tests/test-bundle-shape.sh        # shape, links, budgets
 python3 tests/test-ssot-check.py       # checker regression tests
-python3 tests/benchmark/test_benchmark.py # benchmark oracle and accounting; no model calls
+python3 -m unittest discover -s tests/benchmark -p 'test_*.py' # outcome, observer and handoff calibration; no model calls
 python3 tests/test-migration-trials.py # migration fixtures, oracle and CI billing guard; no model calls
 python3 tests/test-context-source.py  # POSIX source/owner/readback contract; no model calls
 python3 tests/context/test_context.py # general-context fixtures/oracles; no model calls
@@ -90,7 +90,7 @@ shellcheck -S warning -e SC2034 install.sh tests/*.sh
 
 The recovery tests invoke Bash 4+ from `PATH`; on macOS, set `SSOT_TEST_BASH="$(brew --prefix)/bin/bash"` when the default `bash` is older.
 
-For opt-in native performance comparisons, use [the reading benchmark](./tests/benchmark/README.md). It runs billable models only when explicitly invoked; CI compiles it without running trials.
+For opt-in native evaluation and feedback cycles, use [the benchmark guide](./tests/benchmark/README.md), including its outcome coverage map, reading comparisons and cold handoff with plain-docs controls. It runs billable models only when explicitly invoked; CI compiles it without running trials.
 
 For old-format migration and read-only behavior, [the 4.5 trial guide](./tests/trials-4.5.md) documents the separate opt-in native scenarios. [Continuity trials](./tests/trials-continuity.md) add v2 extraction, incompatible-writer refusal, partial decision correction and an observed process interruption. They check transitions, not performance.
 

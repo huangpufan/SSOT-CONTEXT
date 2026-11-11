@@ -117,7 +117,9 @@ def execute(args):
     run.save(directory / "discovery-probe.json", {"command": debug_command, "returncode": debug.returncode, "stdout": debug.stdout, "stderr": debug.stderr})
     ordinary = plan.get("kind") == "ordinary undeclared creative task"
     hybrid = plan.get("kind") == "hybrid format5 parent and format4 child"
-    if debug.returncode or "ssot-preflight" not in debug.stdout or (not ordinary and "SSOT-CONTEXT:BEGIN" not in debug.stdout):
+    discovery = run.bench.transport.discovery_observation(debug.stdout) if not debug.returncode else {}
+    wired = any(block["ssot_wired"] for block in discovery.get("instruction_blocks", []))
+    if debug.returncode or "ssot-preflight" not in discovery.get("skills", []) or (not ordinary and not wired):
         raise ValueError("Installed skill catalog/actual AGENTS not observed in zero-model prompt probe")
     if args.probe_only:
         print("Actual installed skill catalog and AGENTS observed; no model calls")
@@ -175,7 +177,7 @@ def execute(args):
         verdict = source_oracle.grade(repo, "E2E-source", directory, oracle.snapshot, state_path=state_path)
     verdict["actual_catalog_observed"] = True
     verdict["agents_wiring_expected"] = not ordinary
-    verdict["agents_wiring_marker_observed"] = "SSOT-CONTEXT:BEGIN" in debug.stdout
+    verdict["agents_wiring_marker_observed"] = wired
     verdict["all_actual_models_match"] = all(summary.get("native_models") == [plan["model"]] for summary in summaries)
     verdict["native_expected_turns_completed"] = len(summaries) == len(plan["prompts"]) and all(summary["completed"] and not summary["returncode"] for summary in summaries)
     verdict["costs"] = [oracle.native_costs(summary, plan["model"]) for summary in summaries]

@@ -121,6 +121,7 @@ curl -fsSL https://raw.githubusercontent.com/huangpufan/SSOT-CONTEXT/main/instal
 - [安装指南](./INSTALL.md)：安装、接线、升级、卸载和恢复。
 - [设计说明](./DESIGN.md)：Skill 包为什么是现在这个形态。
 - [演进审视](./docs/evolution-review-2026-11-12.md)：本轮改进、真实接续试验与证据边界。
+- [评测指南](./tests/benchmark/README.md)：任务结果、冷接续、普通文档对照和证据边界。
 - [更新日志](./CHANGELOG.md)：每个版本改了什么。
 - [贡献指南](./CONTRIBUTING.md)和 [AGENTS.md](./AGENTS.md)：怎样修改本 Skill 包仓库。
 - [安全政策](./SECURITY.md)：怎样报告安全漏洞。

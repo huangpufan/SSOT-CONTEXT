@@ -46,7 +46,7 @@ jobs:
       - name: Run checker tests
         run: python3 tests/test-ssot-check.py
       - name: Run benchmark self-tests (no model calls)
-        run: python3 tests/benchmark/test_benchmark.py
+        run: python3 -m unittest discover -s tests/benchmark -p 'test_*.py'
       - name: Run migration fixture and oracle tests (no model calls)
         run: python3 tests/test-migration-trials.py
       - name: Run source integration contracts (no model calls)

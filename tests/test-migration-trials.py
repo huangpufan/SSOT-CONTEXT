@@ -246,8 +246,8 @@ class ContinuityTrialsTest(unittest.TestCase):
         class NativeProcess:
             def __init__(process, *args, **kwargs):
                 commands.append(args[0])
-                process.stdin = io.StringIO()
-                process.stdout = io.StringIO('{"type":"item.completed","item":{}}\n')
+                process.stdin = io.BytesIO()
+                process.stdout = io.BytesIO(b'{"type":"item.completed","item":{}}\n')
                 (self.repo / "SSOT/BOOTSTRAP.md").write_text("started")
                 (self.repo / "SSOT/README.md").write_text("changed")
 

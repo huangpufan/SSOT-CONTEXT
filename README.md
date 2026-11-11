@@ -121,6 +121,7 @@ Updating never rewrites your context documents. Existing repositories stay on fo
 - [Install guide](./INSTALL.md): setup, wiring, upgrade, removal and recovery.
 - [Design](./DESIGN.md): why the bundle is shaped this way.
 - [Evolution review](./docs/evolution-review-2026-11-12.md): current improvements, real continuation trials and evidence limits.
+- [Evaluation](./tests/benchmark/README.md): task outcomes, cold handoff, plain-docs controls and evidence limits.
 - [Changelog](./CHANGELOG.md): what changed in each version.
 - [Contributing](./CONTRIBUTING.md) and [AGENTS.md](./AGENTS.md): how to change this bundle repository.
 - [Security policy](./SECURITY.md): how to report a vulnerability.

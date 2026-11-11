@@ -14,6 +14,7 @@ import source_oracle
 def snapshot(repo):
     return {str(p.relative_to(repo)): p.read_text(errors="replace")
             for p in sorted(repo.rglob("*")) if p.is_file()
+            and p.resolve().is_relative_to(repo.resolve())
             and not {".git", "__pycache__", ".agents"}.intersection(p.relative_to(repo).parts)}
 
 

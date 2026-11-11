@@ -228,6 +228,7 @@ def run_models(args):
             # This also probes the actual CLI and mount layout before a billable call.
             subprocess.run(sandbox + [shutil.which("codex"), "--version"], check=True, capture_output=True, timeout=20)
             turns = 2 if pair["case"] == "warm" else 1
+            summaries = []
             for turn in range(1, turns + 1):
                 if turn == 2:
                     old_head = subprocess.check_output(["git", "rev-parse", "HEAD"], cwd=repo)
@@ -238,20 +239,25 @@ def run_models(args):
                 summary = transport.execute_turn(root, run_dir, repo, text, turn, plan["cap"],
                                                  sandbox_command=sandbox, codex_home=home,
                                                  capture_checkpoints=False, model=plan["model"])
+                summaries.append(summary)
                 before = json.loads((run_dir / f"{turn}.before.json").read_text())
                 after = json.loads((run_dir / f"{turn}.after.json").read_text())
                 verdict = cases.grade(repo, pair["case"], p, before, after)
+                allowed = "note.txt" if pair["case"] == "typo" else "shipping.py"
+                verdict["checks"]["byte_type_and_mode_scope"] = summary["tree_changed_paths"] == [allowed]
                 verdict["checks"]["head_unchanged"] = subprocess.check_output(["git", "rev-parse", "HEAD"], cwd=repo) == head
                 verdict["passed"] = all(verdict["checks"].values())
                 save(run_dir / f"{turn}.verdict.json", verdict)
                 result["turns"].append({"turn": turn, "completed": summary["completed"] and summary["returncode"] == 0,
+                                        "observation_complete": summary["observation_complete"],
+                                        "model_matches": summary.get("native_models") == [plan["model"]],
                                         "quality_passed": verdict["passed"], "costs": costs(summary, plan["model"]),
                                         "usage_source": "native" if costs(summary, plan["model"]) else "missing_or_wrong_model",
                                         "reading": reading_observations(run_dir, turn)})
                 if not result["turns"][-1]["completed"]:
                     break
-            complete = len(result["turns"]) == turns and all(t["completed"] for t in result["turns"])
-            result["state"] = ("passed" if all(t["quality_passed"] for t in result["turns"]) else "failed_quality") if complete else "incomplete"
+            failure = transport.completion_state(summaries, turns, plan["model"])
+            result["state"] = failure or ("passed" if all(t["quality_passed"] for t in result["turns"]) else "failed_quality")
         except Exception:
             result["error"] = traceback.format_exc()
             if result["turns"] or (run_dir / "1.jsonl").exists():
@@ -290,11 +296,11 @@ def report(root):
         writer.writeheader(); writer.writerows(rows)
     lines = [f"# Reading benchmark: {plan['comparison']}", "", "Descriptive observations, not statistical or billing claims. Costs cover whole tasks; warm includes both turns.",
              "Failed, incomplete, infra and unrun attempts remain visible. Only paired passes with native usage enter cost comparisons.", "",
-             "| Case | Arm | Pass | Quality fail | Incomplete | Infra | Unrun |", "| --- | --- | ---: | ---: | ---: | ---: | ---: |"]
+             "| Case | Arm | Pass | Quality fail | Incomplete | Observer failure | Model mismatch | Infra | Unrun |", "| --- | --- | ---: | ---: | ---: | ---: | ---: | ---: | ---: |"]
     for case in plan["cases"]:
         for arm in ("baseline", "candidate"):
             states = {r["pair"]: r["state"] for r in rows if r["case"] == case and r["arm"] == arm}
-            counts = [list(states.values()).count(s) for s in ("passed", "failed_quality", "incomplete", "infra", "unrun")]
+            counts = [list(states.values()).count(s) for s in ("passed", "failed_quality", "incomplete", "observer_failure", "model_mismatch", "infra", "unrun")]
             lines.append(f"| {case} | {arm} | " + " | ".join(map(str, counts)) + " |")
     for case in plan["cases"]:
         selected = [p for p in comparisons if p["case"] == case and p["eligible"]]
