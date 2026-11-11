@@ -45,7 +45,7 @@ Open the repository, or the folder of the space you want to maintain, in your ag
 Read https://raw.githubusercontent.com/huangpufan/SSOT-CONTEXT/main/INSTALL.md and follow it.
 ```
 
-The agent follows the [install guide](./INSTALL.md) to identify its installation target, install and verify all six skills, and, for a repository, merge lifecycle instructions into its `AGENTS.md`, `CLAUDE.md`, or equivalent file. A general space is wired later, in step 3, once you have declared it. The default is **the current project only**, preserving an existing template language or choosing `en` / `zh` from your conversation. You can specify a different language or explicitly request a global installation in the same message.
+The agent follows the [install guide](./INSTALL.md) to identify its installation target, install and verify all six skills, and merge lifecycle instructions into its `AGENTS.md`, `CLAUDE.md`, or equivalent file. A software repository, or a folder that already has an entry, is wired without questions. When the folder looks like a non-code space (a registry, notes, research, creative work) or the signals conflict, the agent asks you once which mode to use, recommending one and listing the files it would change; choosing a general space there counts as declaring it (step 3). The default is **the current project only**, preserving an existing template language or choosing `en` / `zh` from your conversation. You can specify a different language or explicitly request a global installation in the same message.
 
 <details> <summary>Prefer to install from a terminal?</summary>
 
@@ -60,7 +60,7 @@ curl -fsSL https://raw.githubusercontent.com/huangpufan/SSOT-CONTEXT/main/instal
 
 Use `--lang zh` for Chinese templates. `--quickstart` detects the agent and skips interactive prompts. If detection is ambiguous or you want to choose explicitly, append `--agent codex`, `--agent claude-code`, or another [supported key](#supported-agents).
 
-The script installs the skills and prints a suggested instruction block. **It does not edit your agent-instructions file or create any context documents.** That block is for development repositories: merge it using [install guide step 4](./INSTALL.md#4-wire-the-skills-into-the-repos-agent-instructions-file), updating any existing SSOT block instead of duplicating it. For a general space, skip it and continue with step 3.
+The script installs the skills and prints a suggested instruction block. **It does not edit your agent-instructions file or create any context documents.** That block is for development repositories: merge it using [install guide step 4](./INSTALL.md#4-wire-the-skills-into-the-repos-agent-instructions-file), updating any existing SSOT block instead of duplicating it. For a non-code space, skip it; step 4 of the guide says how to choose and wire the general block, and step 3 below explains declaring a space.
 
 </details>
 

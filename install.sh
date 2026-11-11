@@ -172,6 +172,7 @@ t() {
       ALSO_GLOBAL_HINT) echo "如需同时全局安装，重新跑命令并追加 --scope global。" ;;
       WIRE_HEADER) echo "下一步：让 Agent 将这段触发指令合并到本仓库的指令文件" ;;
       WIRE_TARGET_HINT) echo "目标文件：CLAUDE.md / AGENTS.md / .cursorrules / GEMINI.md / 等（按你用的 Agent 选）" ;;
+      WIRE_GENERAL_HINT) echo "这段只适用于开发仓库。登记处、笔记、研究、创作等非代码空间改用已安装的 context-adapter.md；不确定时由 Agent 按安装指南第 4 步判断，必要时问你。" ;;
       WIRE_SEE_README) echo "由 Agent 合并指令并验证安装：https://github.com/huangpufan/SSOT-CONTEXT/blob/main/INSTALL.md#4-wire-the-skills-into-the-repos-agent-instructions-file" ;;
       NO_AGENT_DETECTED) echo "未检测到已安装的 Agent" ;;
       SHOWING_ALL) echo "显示所有支持的目标" ;;
@@ -211,6 +212,7 @@ t() {
       ALSO_GLOBAL_HINT) echo "To also install globally, re-run with --scope global appended." ;;
       WIRE_HEADER) echo "Next: ask your Agent to merge this trigger block into this repo's instructions" ;;
       WIRE_TARGET_HINT) echo "Target file: CLAUDE.md / AGENTS.md / .cursorrules / GEMINI.md / etc. (whichever your agent uses)" ;;
+      WIRE_GENERAL_HINT) echo "This block is for development repositories. Registries, notes, research, creative work and other non-code spaces use the installed context-adapter.md instead; when unsure, the agent decides under install guide step 4 and asks you if needed." ;;
       WIRE_SEE_README) echo "Ask your agent to merge the instructions and verify setup: https://github.com/huangpufan/SSOT-CONTEXT/blob/main/INSTALL.md#4-wire-the-skills-into-the-repos-agent-instructions-file" ;;
       NO_AGENT_DETECTED) echo "No installed Agent detected" ;;
       SHOWING_ALL) echo "Showing all supported targets" ;;
@@ -271,6 +273,7 @@ print_wire_block() {
   echo ""
   echo -e "  ${BOLD}${YELLOW}━━━ $(t WIRE_HEADER) ━━━${NC}"
   echo -e "  ${DIM}$(t WIRE_TARGET_HINT)${NC}"
+  echo -e "  ${DIM}$(t WIRE_GENERAL_HINT)${NC}"
   echo ""
   printf '%s\n' "$block"
   echo ""

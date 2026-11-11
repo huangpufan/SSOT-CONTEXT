@@ -8,6 +8,9 @@ Entries up to 2.86 were derived from the v2 protocol-upgrade ledger, which is pr
 
 ## [Unreleased]
 
+### Changed
+- [Install step 4](INSTALL.md#4-wire-the-skills-into-the-repos-agent-instructions-file) now chooses the instruction block before editing: an existing format 4/5 entry or a clearly software repository is wired without a question; a target that looks like a non-code space, or has conflicting signals, gets one question with a recommended mode, the chosen entry and the files to change. Agreeing to a general space also covers the minimal entry front matter, writer sentence and invariants section. The installer adds one line saying its printed block is for development repositories. Previously a registry-like folder received the development block and later sessions would offer a parallel `SSOT/`. Isolated `gpt-6.1-terra` installs from a frozen local source: a registry fixture asked and changed no instruction file (baseline wired the development block), then after the answer added only the general block and minimal entry edits with a clean check; a software fixture and an existing format-4 fixture were wired without questions. One run each; no reliability claim.
+
 ## [5.0] - 2026-11-10
 
 ### Added

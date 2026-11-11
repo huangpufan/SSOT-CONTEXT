@@ -45,7 +45,7 @@
 请阅读 https://raw.githubusercontent.com/huangpufan/SSOT-CONTEXT/main/INSTALL.md 并按照指南安装。
 ```
 
-Agent 会按[安装指南](./INSTALL.md)识别安装位置，安装并验证全部六个 Skill，如果是仓库，再把日常触发指令合并到它的 `AGENTS.md`、`CLAUDE.md` 等文件中。通用空间在第 3 步声明之后再接线。默认**只安装到当前项目**，沿用已有模板语言；首次安装时根据对话语言选择 `en` 或 `zh`。你也可以在同一句话里指定其他语言，或明确要求全局安装。
+Agent 会按[安装指南](./INSTALL.md)识别安装位置，安装并验证全部六个 Skill，再把日常触发指令合并到它的 `AGENTS.md`、`CLAUDE.md` 等文件中。软件仓库，或已经有入口的文件夹，直接接线，不提问。文件夹看起来像非代码空间（登记处、笔记、研究、创作），或者两类迹象互相矛盾时，Agent 会问你一次用哪种模式，给出推荐并列出会改动的文件；你在这里选择通用空间，就等于完成了第 3 步的声明。默认**只安装到当前项目**，沿用已有模板语言；首次安装时根据对话语言选择 `en` 或 `zh`。你也可以在同一句话里指定其他语言，或明确要求全局安装。
 
 <details> <summary>希望在终端里手动安装？</summary>
 
@@ -60,7 +60,7 @@ curl -fsSL https://raw.githubusercontent.com/huangpufan/SSOT-CONTEXT/main/instal
 
 需要英文模板时改用 `--lang en`。`--quickstart` 会识别 Agent 并跳过交互选择。如果识别结果不唯一，或你希望明确指定安装对象，可以追加 `--agent codex`、`--agent claude-code` 或其他[支持的标识](#支持的-agent)。
 
-脚本会安装 Skill 并输出建议的指令块，**不会修改项目的 Agent 指令文件，也不会创建任何 context 文档**。这个指令块用于开发仓库：请按[安装指南第 4 步](./INSTALL.md#4-wire-the-skills-into-the-repos-agent-instructions-file)合并，已有 SSOT 指令时原地更新，避免重复。通用空间跳过这一步，直接看第 3 步。
+脚本会安装 Skill 并输出建议的指令块，**不会修改项目的 Agent 指令文件，也不会创建任何 context 文档**。这个指令块用于开发仓库：请按[安装指南第 4 步](./INSTALL.md#4-wire-the-skills-into-the-repos-agent-instructions-file)合并，已有 SSOT 指令时原地更新，避免重复。非代码空间不要合并它；指南第 4 步说明怎样选择并接入通用指令块，下面第 3 步说明怎样声明空间。
 
 </details>
 
