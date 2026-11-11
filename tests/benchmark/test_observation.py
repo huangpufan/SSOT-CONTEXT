@@ -75,7 +75,9 @@ class ObservationTest(unittest.TestCase):
                 patch.object(run.transport.subprocess, "Popen", side_effect=self.fake_process):
             summary = run.transport.execute_turn(self.root, evidence, workspace, "edit owner", 1, 10,
                 sandbox_command=["env"], codex_home=self.root / "empty-home", launch_dir=launch)
-        self.assertTrue(summary["completed"])
+        self.assertTrue(summary["native_completed"])
+        self.assertFalse(summary["completed"])  # Fake transport has no native model receipt.
+        self.assertFalse(summary["model_identity_verified"])
         self.assertTrue(summary["observation_complete"])
         self.assertEqual(summary["changed_paths"], ["owner.md"])
         self.assertEqual(summary["tree_changed_paths"], ["owner.md"])

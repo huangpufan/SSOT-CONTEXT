@@ -87,6 +87,7 @@ class HandoffTest(unittest.TestCase):
         self.assertEqual(h.turn_state([{**good, 'native_models': []}], 1, 'gpt-6.1-terra'), 'observer_failure')
         self.assertEqual(h.turn_state([{**good, 'returncode': 124, 'observation_complete': False}], 1, 'gpt-6.1-terra'), 'incomplete')
         self.assertEqual(h.turn_state([{**good, 'discovery_mismatch': True}], 1, 'gpt-6.1-terra'), 'delivery_failure')
+        self.assertEqual(h.turn_state([{**good, 'observation_complete': False}], 2, 'gpt-6.1-terra'), 'observer_failure')
 
     def test_review_requires_actual_artifact_identity_and_all_obligations(self):
         d = self.root / 'runs/reporting/baseline'
@@ -142,7 +143,7 @@ class HandoffTest(unittest.TestCase):
         spec = c.contract('editorial', 44)
         plan = {'model': 'gpt-6.1-terra', 'cap': 10, 'cases': {'editorial': {
             'contract': spec, 'prompts': c.prompts(spec), 'consumer': c.consumer_prompt(spec)}}}
-        for label, bad_owner in (('valid', False), ('invalid-owner', True)):
+        for label, bad_owner in (('valid', False), ('invalid-owner', True), ('private-leak', 'private')):
             root = self.root / label
             c.build(root / 'fixtures/editorial/initial', spec)
             calls = []
@@ -150,7 +151,9 @@ class HandoffTest(unittest.TestCase):
                 calls.append(where.name)
                 if where.name == 'writer':
                     target = repo / spec['owner']
-                    if bad_owner:
+                    if bad_owner == 'private':
+                        target.write_text(spec['private'])
+                    elif bad_owner:
                         target.unlink()
                         target.symlink_to('/outside/owner.md')
                     else:
@@ -173,7 +176,7 @@ class HandoffTest(unittest.TestCase):
                 h.execute(args, root, plan)
             result = h.load(root / 'runs/editorial/plain/result.json')
             self.assertEqual(result['state'], 'failed_quality' if bad_owner else 'semantic_pending')
-            self.assertEqual(calls, ['writer', 'writer'] if bad_owner else ['writer', 'writer', 'consumer'])
+            self.assertEqual(calls, ['writer'] if bad_owner else ['writer', 'writer', 'consumer'])
             self.assertTrue(result['evidence'])
             self.assertEqual(len(result['turns']), len(calls))
 

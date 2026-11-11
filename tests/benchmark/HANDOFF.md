@@ -27,7 +27,7 @@ python3 /tmp/ssot-handoff/harness/benchmark/handoff.py --output /tmp/ssot-handof
 # Then run plain and baseline to inspect the development task.
 ```
 
-The harness freezes both domains before calls and records the actual CLI environment. Installation/discovery is checked before model work and against each billed native session receipt: protocol arms must expose the real catalog and wiring; plain arms and all consumers must expose neither. Writer turns share a session; consumer credentials are mounted into a separate empty session home. Host projects, sibling attempts and oracle/fixture source trees are hidden. This is contamination control, not a sandbox for malicious subject code.
+The harness freezes both domains before calls and records the actual CLI environment. Installation/discovery is checked before model work and against each billed native session receipt: protocol arms must expose the real catalog and wiring; plain arms and all consumers must expose neither. Writer turns share a session; each completed turn must preserve scope, privacy, owner identity and HEAD before the next prompt, so a later repair cannot hide an earlier violation. Delivery, model or observation failure stops dependent turns. consumer credentials are mounted into a separate empty session home. Host projects, sibling attempts and oracle/fixture source trees are hidden. This is contamination control, not a sandbox for malicious subject code.
 
 After development evidence supports a candidate, freeze it before any editorial confirmation attempt:
 
@@ -39,7 +39,7 @@ python3 /tmp/ssot-handoff/harness/benchmark/handoff.py --output /tmp/ssot-handof
 python3 /tmp/ssot-handoff/harness/benchmark/handoff.py --output /tmp/ssot-handoff --report
 ```
 
-Use a new output directory after changing the harness or fixture. An existing attempt blocks execution, even when it failed partway. No automatic reruns or best-of selection occur. The confirmation restriction is enforced within this experiment; prior exposure elsewhere remains a reporting responsibility.
+Use a new output directory after changing the harness or fixture. An existing attempt blocks execution, even when it failed partway. No automatic reruns or best-of selection occur. When reusing both domains for development after inspecting them, prepare with `--confirmation none` and declare a separate confirmation in the maintainer report. This prevents a reused case from silently retaining its confirmation label. The confirmation restriction is enforced within this experiment; prior exposure elsewhere remains a reporting responsibility.
 
 ## Adjudication and evidence
 

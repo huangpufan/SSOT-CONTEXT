@@ -46,7 +46,7 @@ def prepare(args):
     plan = {'schema': 1, 'model': T.requested_model(args.model), 'reasoning': 'medium', 'cap': args.cap,
             'seed': args.seed, 'concurrency': 1, 'cases': {}, 'harness': T.tree_snapshot(root / 'harness'),
             'baseline': freeze_bundle(args.baseline.resolve(), root / 'bundles/baseline'),
-            'semantics': list(SEMANTIC), 'confirmation': 'editorial',
+            'semantics': list(SEMANTIC), 'confirmation': None if args.confirmation == 'none' else args.confirmation,
             'limits': 'Public synthetic contracts; no population estimate. Main author also reviews semantics.'}
     for case in cases.CASES:
         c = cases.contract(case, args.seed)
@@ -75,7 +75,7 @@ def validate(root, plan):
 
 def attach(root, plan, source):
     validate(root, plan)
-    if (root / 'candidate.json').exists() or (root / 'runs' / plan['confirmation']).exists():
+    if (root / 'candidate.json').exists() or (plan.get('confirmation') and (root / 'runs' / plan['confirmation']).exists()):
         raise ValueError('Freeze candidate once, before any confirmation attempt; examined cases are development evidence')
     save(root / 'candidate.json', {'source': str(source.resolve()),
          'manifest': freeze_bundle(source.resolve(), root / 'bundles/candidate')})
@@ -163,6 +163,7 @@ def execute(args, root, plan):
         if any(initial.get(p) != value for p, value in fixture_tree.items()):
             raise ValueError('Installation/setup changed shared fixture facts')
         summaries = []
+        result['writer_turn_checks'] = []
         if args.arm in ('plain', 'baseline', 'candidate'):
             prompts = plan['cases'][args.case]['prompts']
             home = writer / 'codex-home'
@@ -180,8 +181,15 @@ def execute(args, root, plan):
                     save(writer / f'{number}.summary.json', s)
                 summaries.append(s)
                 result['turns'].append({'phase': result['phase'], 'costs': run.costs(s, plan['model'])})
-                if s['returncode'] or not s['completed']:
+                if turn_state([s], 1, plan['model']):
                     break
+                turn_checks, unauthorized = cases.writer_checks(repo, c, initial, T.tree_snapshot(repo))
+                turn_checks['head_preserved'] = writer_head is None or subprocess.check_output(['git', 'rev-parse', 'HEAD'], cwd=repo) == writer_head
+                result['writer_turn_checks'].append({'turn': number, 'checks': turn_checks, 'unauthorized_changes': unauthorized})
+                if not all(turn_checks.values()):
+                    result['checks'] = turn_checks
+                    result['state'] = 'failed_quality'
+                    return
             failure = turn_state(summaries, 2, plan['model'])
             if failure:
                 result['state'] = failure
@@ -251,7 +259,7 @@ def execute(args, root, plan):
             result['state'] = 'observer_failure'
             result['frozen_artifact_error'] = str(exc)
         save(directory / 'mechanical.json', {k: result[k] for k in ('state', 'phase', 'checks', 'turns')} |
-             {k: result[k] for k in ('output', 'calibration_expected_outcome') if k in result})
+             {k: result[k] for k in ('output', 'calibration_expected_outcome', 'writer_turn_checks') if k in result})
         result['evidence'] = evidence_identity(directory)
         save(directory / 'result.json', result)
         print(json.dumps({k: result[k] for k in ('case', 'arm', 'state', 'phase', 'checks')}), flush=True)
@@ -372,6 +380,8 @@ def main():
     p.add_argument('--model')
     p.add_argument('--cap', type=int, default=300)
     p.add_argument('--seed', type=int, default=20261112)
+    p.add_argument('--confirmation', choices=(*cases.CASES, 'none'), default='editorial',
+                   help='Untouched confirmation in this experiment; use none for previously exposed development cases and declare separate confirmation in the maintainer report')
     p.add_argument('--case', choices=cases.CASES, default='reporting')
     p.add_argument('--arm', choices=ARMS, default='baseline')
     args = p.parse_args()

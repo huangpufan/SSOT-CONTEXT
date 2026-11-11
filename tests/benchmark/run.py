@@ -254,7 +254,7 @@ def run_models(args):
                                         "quality_passed": verdict["passed"], "costs": costs(summary, plan["model"]),
                                         "usage_source": "native" if costs(summary, plan["model"]) else "missing_or_wrong_model",
                                         "reading": reading_observations(run_dir, turn)})
-                if not result["turns"][-1]["completed"]:
+                if transport.completion_state([summary], 1, plan["model"]):
                     break
             failure = transport.completion_state(summaries, turns, plan["model"])
             result["state"] = failure or ("passed" if all(t["quality_passed"] for t in result["turns"]) else "failed_quality")

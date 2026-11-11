@@ -156,12 +156,14 @@ def discovery_observation(stdout):
 def completion_state(summaries, expected, model):
     if any(s.get("native_models") and s["native_models"] != [model] for s in summaries):
         return "model_mismatch"
-    if len(summaries) != expected or any(s["returncode"] or not s.get("native_completed", s["completed"]) for s in summaries):
+    if any(s["returncode"] or not s.get("native_completed", s["completed"]) for s in summaries):
         return "incomplete"
     if any(s.get("discovery_mismatch") for s in summaries):
         return "delivery_failure"
     if any(not s.get("observation_complete") or s.get("native_models") != [model] for s in summaries):
         return "observer_failure"
+    if len(summaries) != expected:
+        return "incomplete"
     return None
 
 
@@ -403,6 +405,9 @@ def execute_turn(root, run_dir, repo, prompt, turn, cap, sandbox_command=None,
     if summary.get("native_receipt_errors"):
         summary["observation_complete"] = False
         summary["completed"] = False
+    summary["model_identity_verified"] = summary.get("native_models") == [model]
+    if not summary["model_identity_verified"]:
+        summary["completed"] = False  # All callers stop before another billable dependent turn.
     save(run_dir / f"{turn}.summary.json", summary)
     return summary
 
