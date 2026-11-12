@@ -220,7 +220,9 @@ class ContextOrchestrationTest(unittest.TestCase):
             owner = repo / c['owners']['primary']
             owner.write_text(owner.read_text() + '\nAuthorized document content update.\n')
             subprocess.run(['git', 'add', '--', c['owners']['primary']], cwd=repo, check=True, capture_output=True)
-            subprocess.run(['git', 'commit', '--quiet', '-m', 'unauthorized model-side commit'], cwd=repo, check=True, capture_output=True)
+            subprocess.run(['git', '-c', 'user.name=Benchmark', '-c', 'user.email=benchmark@example.invalid',
+                            'commit', '--quiet', '-m', 'unauthorized model-side commit'],
+                           cwd=repo, check=True, capture_output=True)
             observed['head_after'] = subprocess.check_output(['git', 'rev-parse', 'HEAD'], cwd=repo, text=True).strip()
             observed['old_tree_guard'] = installed.workspace_checks(before, run.bench.transport.tree_snapshot(repo), c)['authorized_workspace_tree_changes']
             run.save(evidence / '1.checkpoints.json', [{'event': 1, 'files': run.bench.transport.snapshot(repo)}])
