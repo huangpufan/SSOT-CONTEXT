@@ -1,0 +1,2426 @@
+{
+  "schema": 1,
+  "task_state": "archive_accepted_publication_routed_external",
+  "updated_at_utc": "2026-11-12T14:10:39.410311+00:00",
+  "baseline_commit": "7d5b030",
+  "protocol": "5.3",
+  "scope": "Continue original benchmark-to-SSOT objective with connected maintenance and independent different-task-shape confirmation. Phase completion does not finish the whole objective.",
+  "independent_confirmation": {
+    "specification_sha256": "d474377762a4989182084042a4ff246556c3092eef19665b4a945466ce6a5485",
+    "native_observed": true,
+    "shape": "format4 Python queue: identity/dependencies/stable priority/capacity/paused/limited external-use withdrawal"
+  },
+  "initial_freeze": {
+    "root": "/tmp/ssot-continuity-native-20261112",
+    "master_sha256": "1821bc216a8c35869d34f6a0cf6c55eb7673cb5519e1d463e851255aef781486",
+    "immutable": true,
+    "attempts": [
+      {
+        "id": "development-ceiling",
+        "output": "/tmp/ssot-continuity-native-20261112/development-ceiling",
+        "kind": "development",
+        "control": "ceiling",
+        "native_phases": 1,
+        "plan_sha256": "f9bd2e1de8ebedecd5dd7f9202b32d87d9e9d12ba345df98e0395a4c443f66d7",
+        "phase_ids": [
+          "ceiling"
+        ],
+        "observed_state": "semantic_pending",
+        "qualification": "fixture_route_invalidated",
+        "native_phases_observed": 1,
+        "frozen_preparation_state": "frozen-unrun"
+      },
+      {
+        "id": "development-floor",
+        "output": "/tmp/ssot-continuity-native-20261112/development-floor",
+        "kind": "development",
+        "control": "floor",
+        "native_phases": 1,
+        "plan_sha256": "47dd152c7042284ad2c58a24e0e3dc7d59b318d163507872166dd2f4ec13f9a7",
+        "phase_ids": [
+          "floor"
+        ],
+        "observed_state": "unrun",
+        "qualification": "prepared_only_invalidated_freeze",
+        "native_phases_observed": 0,
+        "frozen_preparation_state": "frozen-unrun"
+      },
+      {
+        "id": "development-stale",
+        "output": "/tmp/ssot-continuity-native-20261112/development-stale",
+        "kind": "development",
+        "control": "stale",
+        "native_phases": 1,
+        "plan_sha256": "d39f56fe25b1644d1a74d0bf26282996ccd448bbb772f1b500e7e3c2463775a1",
+        "phase_ids": [
+          "stale"
+        ],
+        "observed_state": "unrun",
+        "qualification": "prepared_only_invalidated_freeze",
+        "native_phases_observed": 0,
+        "frozen_preparation_state": "frozen-unrun"
+      },
+      {
+        "id": "development-chain",
+        "output": "/tmp/ssot-continuity-native-20261112/development-chain",
+        "kind": "development",
+        "control": null,
+        "native_phases": 6,
+        "plan_sha256": "29e6eae2136ee3aa5c706c241b9a360b545828716084c282b60b8277d7a3aa7e",
+        "phase_ids": [
+          "capture",
+          "partial-correction",
+          "cold-recovery",
+          "duplicate-conflict-and-progress",
+          "limited-withdrawal",
+          "fresh-consumer"
+        ],
+        "observed_state": "unrun",
+        "qualification": "prepared_only_invalidated_freeze",
+        "native_phases_observed": 0,
+        "frozen_preparation_state": "frozen-unrun"
+      },
+      {
+        "id": "confirmation-ceiling",
+        "output": "/tmp/ssot-continuity-native-20261112/confirmation-ceiling",
+        "kind": "confirmation",
+        "control": "ceiling",
+        "native_phases": 1,
+        "plan_sha256": "5c9bbd5da1862d9e69bd5eab43b58b9d07b8a96ab615087eb52b14944fe7ca32",
+        "phase_ids": [
+          "ceiling"
+        ],
+        "observed_state": "unrun",
+        "qualification": "prepared_only_invalidated_freeze",
+        "native_phases_observed": 0,
+        "frozen_preparation_state": "frozen-unrun"
+      },
+      {
+        "id": "confirmation-floor",
+        "output": "/tmp/ssot-continuity-native-20261112/confirmation-floor",
+        "kind": "confirmation",
+        "control": "floor",
+        "native_phases": 1,
+        "plan_sha256": "6ad4a843583774c777f8c04959392c33e3d3e0f737a82f10c1386e59186a78ee",
+        "phase_ids": [
+          "floor"
+        ],
+        "observed_state": "unrun",
+        "qualification": "prepared_only_invalidated_freeze",
+        "native_phases_observed": 0,
+        "frozen_preparation_state": "frozen-unrun"
+      },
+      {
+        "id": "confirmation-stale",
+        "output": "/tmp/ssot-continuity-native-20261112/confirmation-stale",
+        "kind": "confirmation",
+        "control": "stale",
+        "native_phases": 1,
+        "plan_sha256": "6dc2b75abd15e9df8c394b92f15664333bf6c5f31d4ce792e246d2042a19defe",
+        "phase_ids": [
+          "stale"
+        ],
+        "observed_state": "unrun",
+        "qualification": "prepared_only_invalidated_freeze",
+        "native_phases_observed": 0,
+        "frozen_preparation_state": "frozen-unrun"
+      },
+      {
+        "id": "confirmation-chain",
+        "output": "/tmp/ssot-continuity-native-20261112/confirmation-chain",
+        "kind": "confirmation",
+        "control": null,
+        "native_phases": 5,
+        "plan_sha256": "c2dc46f2fb51cc7a0338053e269e8347d6f4b6324fee1a5057e57cd40efe9ede",
+        "phase_ids": [
+          "accepted-policy",
+          "limited-capacity-correction",
+          "duplicate-conflict-and-paused",
+          "limited-source-withdrawal",
+          "fresh-python-consumer"
+        ],
+        "observed_state": "unrun",
+        "qualification": "prepared_only_invalidated_freeze",
+        "native_phases_observed": 0,
+        "frozen_preparation_state": "frozen-unrun"
+      }
+    ],
+    "invalidation": "Portable entry linked writer-only connector-setup.txt excluded by the declared cold transfer. Current task output is correct; this is a fixture generator defect, not Sol quality failure. All original sealed artifacts stay pending/unrun and are not retrospectively promoted."
+  },
+  "observed_native_attempts": [
+    {
+      "attempt": "development-ceiling",
+      "state": "semantic_pending",
+      "qualified_for_calibration": false,
+      "actual_models": [
+        "gpt-6.1-sol"
+      ],
+      "actual_reasoning": [
+        "medium"
+      ],
+      "native_thread_id": "01a1cfc8-94d8-7d43-961c-2ae1a1ed1042",
+      "native_raw_sha256": "b349eda97a446d190b8c5e709de72af5507160cdd85022f5909e651eab503d6e",
+      "native_costs": {
+        "seconds": 32.144,
+        "input_tokens": 94298,
+        "cached_input_tokens": 86144,
+        "cache_write_input_tokens": 0,
+        "output_tokens": 696,
+        "reasoning_output_tokens": 28,
+        "total_tokens": 94994
+      },
+      "current_policy_correct": true,
+      "handoff_preserved": true,
+      "consumer_claim": "Explicitly reports missing connector-setup.txt and says accepted choices were present.",
+      "failure_owner": "benchmark fixture generator/portable-entry closure",
+      "not_a_protocol_failure": true
+    }
+  ],
+  "calibration_and_review_findings": [
+    {
+      "issue": "C06 rejects lawful status-only stopping without r2 inspect and misreads same-event receipt order",
+      "owner": "source_oracle/source_execution",
+      "evidence": "/var/tmp/ssot-continuity-calibration-20261112/comparison-final.json",
+      "scope": "Actual public CLI artifacts and retained stream mutations; mechanical acceptance is not semantic approval of unmarked owner changes."
+    },
+    {
+      "issue": "Extra bound owner with no file write escaped phase quality gate",
+      "owner": "longchain_case public owner admission",
+      "evidence": "/var/tmp/ssot-astra-owner-binding-calibration-20261112.json",
+      "repair": "Check trusted alias/resolved authorized path, not only changed files."
+    },
+    {
+      "issue": "All historical marker counts were unnecessarily locked",
+      "owner": "longchain_case recovery gate",
+      "repair": "Current-revision exact-one linkage remains required by public readback; legal old-marker consolidation with necessary words and completed references preserved is calibrated."
+    },
+    {
+      "issue": "Missing/corrupt snapshots or public status are not product quality failures",
+      "owner": "case and orchestration evidence classification",
+      "repair": "Explicit observer failure with raw receipts retained."
+    },
+    {
+      "issue": "Queue writer inherited unauthorized run metadata allowance",
+      "owner": "installed workspace/checkpoint guards",
+      "evidence": "/var/tmp/ssot-astra-final-counterexamples-20261112.json",
+      "repair_status": "fixed_and_independently_calibrated_before_continuity_B2_freeze",
+      "contract": "Development explicitly permits run; queue has no metadata authorization."
+    },
+    {
+      "issue": "Probe OSError and exited setup timeout were incorrectly classified",
+      "owner": "queue probe and installed runner",
+      "evidence": "/var/tmp/ssot-astra-final-setup-timeout-20261112.json",
+      "repair_status": "fixed_and_independently_calibrated_before_continuity_B2_freeze"
+    },
+    {
+      "issue": "Portable entry linked nontransferred writer configuration",
+      "owner": "longchain build generator",
+      "repair": "Entry links only declared transferable owners; initial/ceiling closure and missing-link mutation calibrated. Writer config remains untransferred."
+    },
+    {
+      "issue": "Intermediate unauthorized writes reverted before phase end escaped final-only scope judgment",
+      "owner": "installed workspace/checkpoint guards",
+      "repair": "Retain every observed text-checkpoint violation; end snapshots additionally compare bytes/type/mode/link. HEAD/refs protected; index remains diagnostic so authorized git add is legal.",
+      "evidence": "/var/tmp/ssot-context-orchestration-a2-20261112.txt",
+      "limit": "Not within-tool full event auditing or every intermediate binary/mode/Git change."
+    },
+    {
+      "issue": "Bad non-JSON queue return crashed probe serialization and looked like broken observation",
+      "owner": "queue executable probe return contract",
+      "repair": "Record explicit unserializable-return contract failure as bad task output; preserve OSError/controlled timeout as infra and corrupt observation as observer_failure.",
+      "evidence": "/var/tmp/ssot-queue-probe-classification-20261112/comparison-fixed.json",
+      "alternatives": "Correct and legitimate alternate algorithms remain passed; real NameError remains quality failure."
+    },
+    {
+      "issue": "Interrupted native usage precedes later model output but legacy report marked full costs comparable",
+      "owner": "context cost accounting/report production",
+      "evidence": "/var/tmp/ssot-astra-final-interrupted-cost-gap-20261112.json",
+      "repair": "Require same-turn closing usage after final model output; preserve observed lower bound and elapsed, set full tokens unknown. Reanalyze raw evidence externally without modifying frozen harness or quality.",
+      "independent_readback": "/var/tmp/ssot-astra-final-cost-reanalysis-readback-20261112.json"
+    },
+    {
+      "issue": "Historical execute command did not retain complete setup/probe/grading wall interval",
+      "owner": "installed execute timing",
+      "repair_status": "Fixed future execute measurement in distinct publication reporter; actual zero-model smoke and 18 orchestration checks. Historical attempts stay unknown."
+    }
+  ],
+  "new_candidate": {
+    "name": "continuity-B2",
+    "state": "all_native_completed_and_artifact_bound_reviews_accepted",
+    "root": "/tmp/ssot-continuity-native-b2-20261112",
+    "master_plan_sha256": "762293710db1c09951efcc498ee806a79350ee7781f7625d0b41db3d0c53241c",
+    "frozen_at_utc": "2026-11-12T12:56:08.011549+00:00",
+    "preparation_seconds": 3.017,
+    "kind": "benchmark harness/fixture/oracle; SSOT protocol unchanged",
+    "planned_new_native_phases": 17,
+    "total_planned_including_retained_invalid_ceiling": 18,
+    "cap_seconds": 300,
+    "actual_model_admission": "Each native receipt, not requested settings.",
+    "attempts": [
+      {
+        "id": "development-ceiling",
+        "output": "/tmp/ssot-continuity-native-b2-20261112/development-ceiling",
+        "plan_sha256": "531167e718cec34dc310b913ae6015d0373734ac2e931720ed920c807528c8af",
+        "expected_phases": 1,
+        "state": "passed",
+        "phase": "ceiling",
+        "native_phases": [
+          {
+            "phase": "phase-1",
+            "native_thread_id": "01a1cfd4-a38a-7563-830b-6484b55457cb",
+            "actual_models": [
+              "gpt-6.1-sol"
+            ],
+            "actual_reasoning": [
+              "medium"
+            ],
+            "native_completed": true,
+            "observation_complete": true,
+            "intentional_interruption": null,
+            "token_usage_completeness": "complete_native_turn",
+            "native_raw_sha256": "701435839faea7bc5aed35e6c43af7c40db423b0bbafe60ee2a1f89265719ed5",
+            "native_costs": {
+              "seconds": 35.535,
+              "input_tokens": 78494,
+              "cached_input_tokens": 70272,
+              "output_tokens": 712
+            },
+            "token_cost_comparable": true,
+            "returncode": 0
+          }
+        ],
+        "semantic_review_present": true,
+        "review_sha256": "ab5f816c3fdbf097a916d8334ab014de786eca617ef92e12887891a8f7c130df",
+        "sealed_result_sha256": "093d4a58e42dd60030b719823362455305751eb3c414ea3dd710f0c491f803e8",
+        "executor_review_source": "/tmp/ssot-continuity-native-b2-20261112/development-ceiling/run/review.json"
+      },
+      {
+        "id": "development-floor",
+        "output": "/tmp/ssot-continuity-native-b2-20261112/development-floor",
+        "plan_sha256": "d924ba499d12cd9dfae82d40d9f598816583d462f91b215fa0f9ec3ddc8d001d",
+        "expected_phases": 1,
+        "state": "calibration_passed",
+        "phase": "floor",
+        "native_phases": [
+          {
+            "phase": "phase-1",
+            "native_thread_id": "01a1cfd6-b850-7a40-86f8-9d8115261ca4",
+            "actual_models": [
+              "gpt-6.1-sol"
+            ],
+            "actual_reasoning": [
+              "medium"
+            ],
+            "native_completed": true,
+            "observation_complete": true,
+            "intentional_interruption": null,
+            "token_usage_completeness": "complete_native_turn",
+            "native_raw_sha256": "eac46c80bac2f5180fd9e0bac0e8393562d3b34dcc1f6cf05d42cc1fe281a4d2",
+            "native_costs": {
+              "seconds": 22.715,
+              "input_tokens": 60434,
+              "cached_input_tokens": 54400,
+              "output_tokens": 274
+            },
+            "token_cost_comparable": true,
+            "returncode": 0
+          }
+        ],
+        "semantic_review_present": true,
+        "review_sha256": "8bc0ce6836cd911008158502778c68aad318c09997137370d90dfc1c14706ed1",
+        "sealed_result_sha256": "5fc72be0b2836f8eeb2937996237092b4dc335bf2c4607201f59d983e534eea1",
+        "executor_review_source": "/tmp/ssot-continuity-native-b2-20261112/development-floor/run/review.json"
+      },
+      {
+        "id": "development-stale",
+        "output": "/tmp/ssot-continuity-native-b2-20261112/development-stale",
+        "plan_sha256": "2a569886520fbbce8bee388c68be150e0c7aab2cb9a1de18d3ac80580d34cf45",
+        "expected_phases": 1,
+        "state": "calibration_passed",
+        "phase": "stale",
+        "native_phases": [
+          {
+            "phase": "phase-1",
+            "native_thread_id": "01a1cfd8-29de-7460-8a13-876bf67552a5",
+            "actual_models": [
+              "gpt-6.1-sol"
+            ],
+            "actual_reasoning": [
+              "medium"
+            ],
+            "native_completed": true,
+            "observation_complete": true,
+            "intentional_interruption": null,
+            "token_usage_completeness": "complete_native_turn",
+            "native_raw_sha256": "484265c875a2dda9f98e0057e8bf3fee988b1c3050be8549c11a59da0bd4d12b",
+            "native_costs": {
+              "seconds": 38.389,
+              "input_tokens": 78305,
+              "cached_input_tokens": 70144,
+              "output_tokens": 770
+            },
+            "token_cost_comparable": true,
+            "returncode": 0
+          }
+        ],
+        "semantic_review_present": true,
+        "review_sha256": "5670cef8165b22ec1052c90257fb5771dc541024f874cb745b77a0fc847012b9",
+        "sealed_result_sha256": "233e3aa176a5f8beaf2e98ed13bbf6717ef2bd97a6ec4ee3ffa331a881b59b6e",
+        "executor_review_source": "/tmp/ssot-continuity-native-b2-20261112/development-stale/run/review.json"
+      },
+      {
+        "id": "development-chain",
+        "output": "/tmp/ssot-continuity-native-b2-20261112/development-chain",
+        "plan_sha256": "3867b88d0386588a8bb1df5a86ac861f5e7e50b78d3265caa3f2231b06066454",
+        "expected_phases": 6,
+        "state": "passed",
+        "phase": "fresh-consumer",
+        "native_phases": [
+          {
+            "phase": "phase-1",
+            "native_thread_id": "01a1cfd9-adb8-77a1-8f5b-fa26c41cb1bd",
+            "actual_models": [
+              "gpt-6.1-sol"
+            ],
+            "actual_reasoning": [
+              "medium"
+            ],
+            "native_completed": true,
+            "observation_complete": true,
+            "intentional_interruption": null,
+            "token_usage_completeness": "complete_native_turn",
+            "native_raw_sha256": "4107f672917a67c7e2f907554e1dd9e3fdfc2145cb24161ee1062e07670ddf5d",
+            "native_costs": {
+              "seconds": 107.346,
+              "input_tokens": 368578,
+              "cached_input_tokens": 341760,
+              "output_tokens": 3970
+            },
+            "token_cost_comparable": true,
+            "returncode": 0
+          },
+          {
+            "phase": "phase-2",
+            "native_thread_id": "01a1cfdb-74e2-7971-97f0-4e7862130a8f",
+            "actual_models": [
+              "gpt-6.1-sol"
+            ],
+            "actual_reasoning": [
+              "medium"
+            ],
+            "native_completed": false,
+            "observation_complete": true,
+            "intentional_interruption": {
+              "event": 26,
+              "signal": "SIGTERM"
+            },
+            "token_usage_completeness": "observed_lower_bound_only_full_usage_unknown",
+            "native_raw_sha256": "89b14f54dfc899ae1f6265c9d289db726aa1c5124eae2e326972d64aa28e2127",
+            "native_costs": {
+              "seconds": 38.94,
+              "input_tokens": 117321,
+              "cached_input_tokens": 89344,
+              "output_tokens": 705
+            },
+            "token_cost_comparable": false,
+            "returncode": -15
+          },
+          {
+            "phase": "phase-3",
+            "native_thread_id": "01a1cfdc-1a16-72a1-be03-2bbcff079cbf",
+            "actual_models": [
+              "gpt-6.1-sol"
+            ],
+            "actual_reasoning": [
+              "medium"
+            ],
+            "native_completed": true,
+            "observation_complete": true,
+            "intentional_interruption": null,
+            "token_usage_completeness": "complete_native_turn",
+            "native_raw_sha256": "d9b37314d65021ede4fb005dd38be499fca355b149b9344d50984b49345b3d71",
+            "native_costs": {
+              "seconds": 67.165,
+              "input_tokens": 281959,
+              "cached_input_tokens": 235904,
+              "output_tokens": 2025
+            },
+            "token_cost_comparable": true,
+            "returncode": 0
+          },
+          {
+            "phase": "phase-4",
+            "native_thread_id": "01a1cfdd-3573-7df0-9fa7-c6a9312de94b",
+            "actual_models": [
+              "gpt-6.1-sol"
+            ],
+            "actual_reasoning": [
+              "medium"
+            ],
+            "native_completed": true,
+            "observation_complete": true,
+            "intentional_interruption": null,
+            "token_usage_completeness": "complete_native_turn",
+            "native_raw_sha256": "2c0d5bd3c18c56af1431abe44853fc9ba5cdea503158ffc212a9bcff5ca0afd2",
+            "native_costs": {
+              "seconds": 90.036,
+              "input_tokens": 404958,
+              "cached_input_tokens": 370816,
+              "output_tokens": 2947
+            },
+            "token_cost_comparable": true,
+            "returncode": 0
+          },
+          {
+            "phase": "phase-5",
+            "native_thread_id": "01a1cfde-b3dd-7540-b8a0-4996fbda2d0d",
+            "actual_models": [
+              "gpt-6.1-sol"
+            ],
+            "actual_reasoning": [
+              "medium"
+            ],
+            "native_completed": true,
+            "observation_complete": true,
+            "intentional_interruption": null,
+            "token_usage_completeness": "complete_native_turn",
+            "native_raw_sha256": "e0668af375e28745d2c7973e7be8696036f3e1e1d5df6ea572b9555c0aa0dec4",
+            "native_costs": {
+              "seconds": 82.973,
+              "input_tokens": 379694,
+              "cached_input_tokens": 339072,
+              "output_tokens": 2807
+            },
+            "token_cost_comparable": true,
+            "returncode": 0
+          },
+          {
+            "phase": "phase-6",
+            "native_thread_id": "01a1cfe0-1d72-7e71-a644-8f7fa8860b1b",
+            "actual_models": [
+              "gpt-6.1-sol"
+            ],
+            "actual_reasoning": [
+              "medium"
+            ],
+            "native_completed": true,
+            "observation_complete": true,
+            "intentional_interruption": null,
+            "token_usage_completeness": "complete_native_turn",
+            "native_raw_sha256": "fe16e73452886e49aae797ebeca1753ee5ca9e0d0f569231a906adcb897a50b9",
+            "native_costs": {
+              "seconds": 30.434,
+              "input_tokens": 83602,
+              "cached_input_tokens": 76416,
+              "output_tokens": 552
+            },
+            "token_cost_comparable": true,
+            "returncode": 0
+          }
+        ],
+        "semantic_review_present": true,
+        "review_sha256": "1d891bf70cd38868bdbb9e29da6cb4dfdbc2d532de225c843e06be497cb8b704",
+        "sealed_result_sha256": "ba3e8ccff38b50467ea6ce1aa4a64bb657e40f0b73bd1dd0b00bc4011a3c4b40",
+        "executor_review_source": "/tmp/ssot-continuity-native-b2-20261112/development-chain/run/review.json"
+      },
+      {
+        "id": "confirmation-ceiling",
+        "output": "/tmp/ssot-continuity-native-b2-20261112/confirmation-ceiling",
+        "plan_sha256": "800276f9b18580611dd8d9aaae3502f30559a2e1503d4698f5db5793d671e023",
+        "expected_phases": 1,
+        "state": "passed",
+        "phase": "ceiling",
+        "native_phases": [
+          {
+            "phase": "phase-1",
+            "native_thread_id": "01a1cfe2-71da-7501-8919-0e3516633151",
+            "actual_models": [
+              "gpt-6.1-sol"
+            ],
+            "actual_reasoning": [
+              "medium"
+            ],
+            "native_completed": true,
+            "observation_complete": true,
+            "intentional_interruption": null,
+            "token_usage_completeness": "complete_native_turn",
+            "native_raw_sha256": "b82163b2a542b3653180703acba5180097bd6abe976c2222eb052a0e55190ccb",
+            "native_costs": {
+              "seconds": 63.452,
+              "input_tokens": 97479,
+              "cached_input_tokens": 87424,
+              "output_tokens": 2014
+            },
+            "token_cost_comparable": true,
+            "returncode": 0
+          }
+        ],
+        "semantic_review_present": true,
+        "review_sha256": "0920bff5fa8d81608d0fc7bd5ec13c64293a575cb06bd2fba356b4761a4c1d15",
+        "sealed_result_sha256": "d36f59884c09a6173d9729c0b1ab69ca745d446f24ec1cb4c5f2c56e0a32bb0e",
+        "executor_review_source": "/tmp/ssot-continuity-native-b2-20261112/confirmation-ceiling/run/review.json"
+      },
+      {
+        "id": "confirmation-floor",
+        "output": "/tmp/ssot-continuity-native-b2-20261112/confirmation-floor",
+        "plan_sha256": "70a7f99eda1af4af362dc1febf4a1c20d73832ccb145a0b9e891b74a60000d5d",
+        "expected_phases": 1,
+        "state": "calibration_passed",
+        "phase": "floor",
+        "native_phases": [
+          {
+            "phase": "phase-1",
+            "native_thread_id": "01a1cfe9-5295-7d62-9b6c-4f593d947b98",
+            "actual_models": [
+              "gpt-6.1-sol"
+            ],
+            "actual_reasoning": [
+              "medium"
+            ],
+            "native_completed": true,
+            "observation_complete": true,
+            "intentional_interruption": null,
+            "token_usage_completeness": "complete_native_turn",
+            "native_raw_sha256": "c012aa34defe1fb3f7e53143b38697250ff476079d83ed55d3b3bb7b886cba10",
+            "native_costs": {
+              "seconds": 23.981,
+              "input_tokens": 61073,
+              "cached_input_tokens": 54400,
+              "output_tokens": 337
+            },
+            "token_cost_comparable": true,
+            "returncode": 0
+          }
+        ],
+        "semantic_review_present": true,
+        "review_sha256": "91858b724797832d18f55636091466b08eb47a2030667679b87c59da29b2b90e",
+        "sealed_result_sha256": "058330b289d6d78c9a124eca7ade15e95b4951ba81904f5c7b4b23a8704f8894",
+        "executor_review_source": "/tmp/ssot-continuity-native-b2-20261112/confirmation-floor/run/review.json"
+      },
+      {
+        "id": "confirmation-stale",
+        "output": "/tmp/ssot-continuity-native-b2-20261112/confirmation-stale",
+        "plan_sha256": "c7504a6f4c3306e055e18457957791b1b295eb67f6f1907889cc68bf602f1569",
+        "expected_phases": 1,
+        "state": "calibration_passed",
+        "phase": "stale",
+        "native_phases": [
+          {
+            "phase": "phase-1",
+            "native_thread_id": "01a1cfea-851e-7303-93ce-9d45aa8661c0",
+            "actual_models": [
+              "gpt-6.1-sol"
+            ],
+            "actual_reasoning": [
+              "medium"
+            ],
+            "native_completed": true,
+            "observation_complete": true,
+            "intentional_interruption": null,
+            "token_usage_completeness": "complete_native_turn",
+            "native_raw_sha256": "516e22ec5f2811b9f9003d1e7cd11711e421cfe61eba89a3be9746c2697ce8fb",
+            "native_costs": {
+              "seconds": 53.725,
+              "input_tokens": 111004,
+              "cached_input_tokens": 101504,
+              "output_tokens": 1623
+            },
+            "token_cost_comparable": true,
+            "returncode": 0
+          }
+        ],
+        "semantic_review_present": true,
+        "review_sha256": "ed1a23ff8e57dbf73783b5f470ac5dd487d05f2bd1b985200617f2309d871b27",
+        "sealed_result_sha256": "72a099ce12373aa73227fe5d8f86bfbc779b2912f982e64706c2a9a2d475b033",
+        "executor_review_source": "/tmp/ssot-continuity-native-b2-20261112/confirmation-stale/run/review.json"
+      },
+      {
+        "id": "confirmation-chain",
+        "output": "/tmp/ssot-continuity-native-b2-20261112/confirmation-chain",
+        "plan_sha256": "37c74d64966fbe1724f5f96b412cfae2535b117903d1975a7e9b7a7a317be3c1",
+        "expected_phases": 5,
+        "state": "passed",
+        "phase": "fresh-python-consumer",
+        "native_phases": [
+          {
+            "phase": "phase-1",
+            "native_thread_id": "01a1cfed-9934-7f30-8c65-23e765e9191e",
+            "actual_models": [
+              "gpt-6.1-sol"
+            ],
+            "actual_reasoning": [
+              "medium"
+            ],
+            "native_completed": true,
+            "observation_complete": true,
+            "intentional_interruption": null,
+            "token_usage_completeness": "complete_native_turn",
+            "native_raw_sha256": "66fa94b0cc6a416b86f9351f955e0eafa26fa66294bd90d6bfa7bab1de514697",
+            "native_costs": {
+              "seconds": 67.213,
+              "input_tokens": 144791,
+              "cached_input_tokens": 127616,
+              "output_tokens": 2424
+            },
+            "token_cost_comparable": true,
+            "returncode": 0
+          },
+          {
+            "phase": "phase-2",
+            "native_thread_id": "01a1cfee-b55d-7522-a645-cedacfbd2186",
+            "actual_models": [
+              "gpt-6.1-sol"
+            ],
+            "actual_reasoning": [
+              "medium"
+            ],
+            "native_completed": true,
+            "observation_complete": true,
+            "intentional_interruption": null,
+            "token_usage_completeness": "complete_native_turn",
+            "native_raw_sha256": "5de25369d64fd5f05d753fac43fd1d4dfa651ee4a117c23087097686aaf32993",
+            "native_costs": {
+              "seconds": 58.457,
+              "input_tokens": 189966,
+              "cached_input_tokens": 168448,
+              "output_tokens": 1851
+            },
+            "token_cost_comparable": true,
+            "returncode": 0
+          },
+          {
+            "phase": "phase-3",
+            "native_thread_id": "01a1cfef-ae70-7880-b095-7ec35b1893d2",
+            "actual_models": [
+              "gpt-6.1-sol"
+            ],
+            "actual_reasoning": [
+              "medium"
+            ],
+            "native_completed": true,
+            "observation_complete": true,
+            "intentional_interruption": null,
+            "token_usage_completeness": "complete_native_turn",
+            "native_raw_sha256": "1d9f7bcfaf3c295517a7cd98cb695bb1fbb6811a8e80a8867675eb416b79e572",
+            "native_costs": {
+              "seconds": 65.929,
+              "input_tokens": 154789,
+              "cached_input_tokens": 133760,
+              "output_tokens": 2631
+            },
+            "token_cost_comparable": true,
+            "returncode": 0
+          },
+          {
+            "phase": "phase-4",
+            "native_thread_id": "01a1cff0-c573-7600-a650-d1f4e0eb3588",
+            "actual_models": [
+              "gpt-6.1-sol"
+            ],
+            "actual_reasoning": [
+              "medium"
+            ],
+            "native_completed": true,
+            "observation_complete": true,
+            "intentional_interruption": null,
+            "token_usage_completeness": "complete_native_turn",
+            "native_raw_sha256": "460741c1458fdbe4206496535bcf2bff3a8130a3d878baf602d5a2194a35db2c",
+            "native_costs": {
+              "seconds": 72.244,
+              "input_tokens": 198199,
+              "cached_input_tokens": 169472,
+              "output_tokens": 2752
+            },
+            "token_cost_comparable": true,
+            "returncode": 0
+          },
+          {
+            "phase": "phase-5",
+            "native_thread_id": "01a1cff1-ff0d-7c23-bdbb-ad030785638f",
+            "actual_models": [
+              "gpt-6.1-sol"
+            ],
+            "actual_reasoning": [
+              "medium"
+            ],
+            "native_completed": true,
+            "observation_complete": true,
+            "intentional_interruption": null,
+            "token_usage_completeness": "complete_native_turn",
+            "native_raw_sha256": "f506490f6186c486eac2388fe524fe5964db2c7c5dd9c61115626ee46e519719",
+            "native_costs": {
+              "seconds": 67.476,
+              "input_tokens": 124529,
+              "cached_input_tokens": 114560,
+              "output_tokens": 2012
+            },
+            "token_cost_comparable": true,
+            "returncode": 0
+          }
+        ],
+        "semantic_review_present": true,
+        "review_sha256": "5abf5abeea5c8524136de34174fec613b3a48391abd7eec939678bb8fddc7bf8",
+        "sealed_result_sha256": "a5b80296c97311e22616fb683251c8f06486a2b772f331b523d49fc9f9ed8a4c",
+        "executor_review_source": "/tmp/ssot-continuity-native-b2-20261112/confirmation-chain/run/review.json"
+      }
+    ]
+  },
+  "cost_scope": {
+    "all_known_native_spend_so_far": {
+      "seconds": {
+        "known_sum_lower_bound": 1018.154,
+        "complete_for_observed_phases": true,
+        "total_if_complete": 1018.154
+      },
+      "input_tokens": {
+        "known_sum_lower_bound": 3029473,
+        "complete_for_observed_phases": false,
+        "total_if_complete": null
+      },
+      "cached_input_tokens": {
+        "known_sum_lower_bound": 2691456,
+        "complete_for_observed_phases": false,
+        "total_if_complete": null
+      },
+      "output_tokens": {
+        "known_sum_lower_bound": 31102,
+        "complete_for_observed_phases": false,
+        "total_if_complete": null
+      }
+    },
+    "preparation_review_human_and_development_costs": "separate; human minutes and complete development/review cost unknown",
+    "old_27_phase_slice": "Historical archived evidence, not repeated or counted in this native batch.",
+    "all_observed_native_phase_count": 18,
+    "interrupted_usage_limit": "Phase2 retained native usage precedes later reasoning/tool events; counts are observed lower bounds, full task token totals unknown, no complete-cost comparison. Raw frozen receipts remain untouched.",
+    "per_phase_token_cost_comparable_definition": "Accounting completeness/observed native identity only; it is not a causal or current-policy quality comparison gate. Final read-only reporter provenance supersedes historical completeness claims."
+  },
+  "limits": [
+    "No within-tool write/delete visibility, arbitrary concurrency or unknown external side-effect outcomes.",
+    "Development controlled partial-write recovery is distinct from C07 two-owner-readback/stale-receipt recovery.",
+    "Queue confirmation does not independently prove interruption recovery.",
+    "A legitimate floor needs actual artifact-bound semantic gap/nonimplementation review; mechanical gap_candidate is insufficient.",
+    "No causal S0/S1 or skill-versus-plain writer comparison; no statistical reliability/performance claim.",
+    "Portable consumer proves implementation from maintained Markdown, not connector maintenance without writer-only configuration/state.",
+    "Complete task token totals unknown; historical interrupted C07 quality remains separate from unexamined cost completeness.",
+    "Full user-task and historical execute wall times unknown; calendar freeze/native interval and native phase sums have different boundaries.",
+    "Durable archive is a retained local copy, not an off-machine backup. Unsupported bwrap platforms may skip the corresponding integration probes."
+  ],
+  "archive": {
+    "archive": "/home/hpf/.local/state/ssot-context/evidence/benchmark-continuity-20261112/accepted/evidence.tar.gz",
+    "sha256": "c5d53cc221652d74b28177a64a9f82076d167f4531e15ae3988bbb361b0c7f4c",
+    "bytes": 19152217,
+    "manifest_sha256": "8df62dafa5336893be8ea20283316ab7991567e64a0514b76814bf72d439fd17",
+    "entries_verified": 7452,
+    "readback_rebuild_returncode": 0,
+    "readback_log": "/home/hpf/.local/state/ssot-context/evidence/benchmark-continuity-20261112/accepted/readback.log",
+    "synthetic_git_audits": [
+      {
+        "input": "initial-cohort",
+        "repository": "confirmation-ceiling/fixture",
+        "head": "7d7c3223b1fc41eab65c80d47a636e1814cbded2",
+        "refs": [
+          "refs/heads/master 7d7c3223b1fc41eab65c80d47a636e1814cbded2"
+        ],
+        "index_entries": [
+          "100644 c38b3233fcf9056e29acce334c69e0a70209e5c8 0\tPROJECT.md",
+          "100644 9c0a4f3a9ce7b180661ce2b373f9313b76a64542 0\tSSOT/README.md",
+          "100644 30d0e9f8cbaa8d698a3c95cf4511b2f4e3ad4f36 0\tsources/accepted.txt",
+          "100644 bde9c8eedf186ca4ebd7ce4cd9cec9e97c25cace 0\tspec/queue-policy.md",
+          "100644 85d01527b500e1479befc4e50ee2de48934eb0b1 0\tspec/source-use.md",
+          "100644 7abad2ceefc7d7c9a0d08725f337a08d9352d2b4 0\tsrc/queue_plan.py"
+        ],
+        "remote_names": [],
+        "active_hooks": [],
+        "dropped_generated_hook_samples": [
+          "applypatch-msg.sample",
+          "commit-msg.sample",
+          "fsmonitor-watchman.sample",
+          "post-update.sample",
+          "pre-applypatch.sample",
+          "pre-commit.sample",
+          "pre-merge-commit.sample",
+          "pre-push.sample",
+          "pre-rebase.sample",
+          "pre-receive.sample",
+          "prepare-commit-msg.sample",
+          "push-to-checkout.sample",
+          "sendemail-validate.sample",
+          "update.sample"
+        ],
+        "limits": "Only explicitly allowlisted, trial-generated synthetic repositories; not host or real business Git."
+      },
+      {
+        "input": "initial-cohort",
+        "repository": "confirmation-chain/fixture",
+        "head": "cc19683884b353645cd3460816008f849113f2d8",
+        "refs": [
+          "refs/heads/master cc19683884b353645cd3460816008f849113f2d8"
+        ],
+        "index_entries": [
+          "100644 c38b3233fcf9056e29acce334c69e0a70209e5c8 0\tPROJECT.md",
+          "100644 9c0a4f3a9ce7b180661ce2b373f9313b76a64542 0\tSSOT/README.md",
+          "100644 30d0e9f8cbaa8d698a3c95cf4511b2f4e3ad4f36 0\tsources/accepted.txt",
+          "100644 aa55e175854dc40d2c4f1dd1bc0ec828fb95465d 0\tspec/queue-policy.md",
+          "100644 966ee8b0c4e9e755dc7119f345e277f238a4e275 0\tspec/source-use.md",
+          "100644 7abad2ceefc7d7c9a0d08725f337a08d9352d2b4 0\tsrc/queue_plan.py"
+        ],
+        "remote_names": [],
+        "active_hooks": [],
+        "dropped_generated_hook_samples": [
+          "applypatch-msg.sample",
+          "commit-msg.sample",
+          "fsmonitor-watchman.sample",
+          "post-update.sample",
+          "pre-applypatch.sample",
+          "pre-commit.sample",
+          "pre-merge-commit.sample",
+          "pre-push.sample",
+          "pre-rebase.sample",
+          "pre-receive.sample",
+          "prepare-commit-msg.sample",
+          "push-to-checkout.sample",
+          "sendemail-validate.sample",
+          "update.sample"
+        ],
+        "limits": "Only explicitly allowlisted, trial-generated synthetic repositories; not host or real business Git."
+      },
+      {
+        "input": "initial-cohort",
+        "repository": "confirmation-floor/fixture",
+        "head": "d26be6d2c0a1ca16f1114d2fb69921cebb4ce4fd",
+        "refs": [
+          "refs/heads/master d26be6d2c0a1ca16f1114d2fb69921cebb4ce4fd"
+        ],
+        "index_entries": [
+          "100644 c38b3233fcf9056e29acce334c69e0a70209e5c8 0\tPROJECT.md",
+          "100644 9c0a4f3a9ce7b180661ce2b373f9313b76a64542 0\tSSOT/README.md",
+          "100644 30d0e9f8cbaa8d698a3c95cf4511b2f4e3ad4f36 0\tsources/accepted.txt",
+          "100644 66ef7aec1cbad32f57db6425105fd8e46a89c145 0\tspec/queue-policy.md",
+          "100644 937376de92527403e90d9d6226d614cfb0ff46f9 0\tspec/source-use.md",
+          "100644 7abad2ceefc7d7c9a0d08725f337a08d9352d2b4 0\tsrc/queue_plan.py"
+        ],
+        "remote_names": [],
+        "active_hooks": [],
+        "dropped_generated_hook_samples": [
+          "applypatch-msg.sample",
+          "commit-msg.sample",
+          "fsmonitor-watchman.sample",
+          "post-update.sample",
+          "pre-applypatch.sample",
+          "pre-commit.sample",
+          "pre-merge-commit.sample",
+          "pre-push.sample",
+          "pre-rebase.sample",
+          "pre-receive.sample",
+          "prepare-commit-msg.sample",
+          "push-to-checkout.sample",
+          "sendemail-validate.sample",
+          "update.sample"
+        ],
+        "limits": "Only explicitly allowlisted, trial-generated synthetic repositories; not host or real business Git."
+      },
+      {
+        "input": "initial-cohort",
+        "repository": "confirmation-stale/fixture",
+        "head": "993f1c6888d0022b652faed52f94e3e85c5a8ad6",
+        "refs": [
+          "refs/heads/master 993f1c6888d0022b652faed52f94e3e85c5a8ad6"
+        ],
+        "index_entries": [
+          "100644 c38b3233fcf9056e29acce334c69e0a70209e5c8 0\tPROJECT.md",
+          "100644 9c0a4f3a9ce7b180661ce2b373f9313b76a64542 0\tSSOT/README.md",
+          "100644 30d0e9f8cbaa8d698a3c95cf4511b2f4e3ad4f36 0\tsources/accepted.txt",
+          "100644 4ea7b7f4482a18d76e37c8d326af9de76462d243 0\tspec/queue-policy.md",
+          "100644 dd92bc628dc7fdbe4c2f6595dfd669f90d7bee86 0\tspec/source-use.md",
+          "100644 7abad2ceefc7d7c9a0d08725f337a08d9352d2b4 0\tsrc/queue_plan.py"
+        ],
+        "remote_names": [],
+        "active_hooks": [],
+        "dropped_generated_hook_samples": [
+          "applypatch-msg.sample",
+          "commit-msg.sample",
+          "fsmonitor-watchman.sample",
+          "post-update.sample",
+          "pre-applypatch.sample",
+          "pre-commit.sample",
+          "pre-merge-commit.sample",
+          "pre-push.sample",
+          "pre-rebase.sample",
+          "pre-receive.sample",
+          "prepare-commit-msg.sample",
+          "push-to-checkout.sample",
+          "sendemail-validate.sample",
+          "update.sample"
+        ],
+        "limits": "Only explicitly allowlisted, trial-generated synthetic repositories; not host or real business Git."
+      },
+      {
+        "input": "repaired-cohort",
+        "repository": "confirmation-ceiling/fixture",
+        "head": "7d7c3223b1fc41eab65c80d47a636e1814cbded2",
+        "refs": [
+          "refs/heads/master 7d7c3223b1fc41eab65c80d47a636e1814cbded2"
+        ],
+        "index_entries": [
+          "100644 c38b3233fcf9056e29acce334c69e0a70209e5c8 0\tPROJECT.md",
+          "100644 9c0a4f3a9ce7b180661ce2b373f9313b76a64542 0\tSSOT/README.md",
+          "100644 30d0e9f8cbaa8d698a3c95cf4511b2f4e3ad4f36 0\tsources/accepted.txt",
+          "100644 bde9c8eedf186ca4ebd7ce4cd9cec9e97c25cace 0\tspec/queue-policy.md",
+          "100644 85d01527b500e1479befc4e50ee2de48934eb0b1 0\tspec/source-use.md",
+          "100644 7abad2ceefc7d7c9a0d08725f337a08d9352d2b4 0\tsrc/queue_plan.py"
+        ],
+        "remote_names": [],
+        "active_hooks": [],
+        "dropped_generated_hook_samples": [
+          "applypatch-msg.sample",
+          "commit-msg.sample",
+          "fsmonitor-watchman.sample",
+          "post-update.sample",
+          "pre-applypatch.sample",
+          "pre-commit.sample",
+          "pre-merge-commit.sample",
+          "pre-push.sample",
+          "pre-rebase.sample",
+          "pre-receive.sample",
+          "prepare-commit-msg.sample",
+          "push-to-checkout.sample",
+          "sendemail-validate.sample",
+          "update.sample"
+        ],
+        "limits": "Only explicitly allowlisted, trial-generated synthetic repositories; not host or real business Git."
+      },
+      {
+        "input": "repaired-cohort",
+        "repository": "confirmation-ceiling/run/workspace",
+        "head": "7d7c3223b1fc41eab65c80d47a636e1814cbded2",
+        "refs": [
+          "refs/heads/master 7d7c3223b1fc41eab65c80d47a636e1814cbded2"
+        ],
+        "index_entries": [
+          "100644 c38b3233fcf9056e29acce334c69e0a70209e5c8 0\tPROJECT.md",
+          "100644 9c0a4f3a9ce7b180661ce2b373f9313b76a64542 0\tSSOT/README.md",
+          "100644 30d0e9f8cbaa8d698a3c95cf4511b2f4e3ad4f36 0\tsources/accepted.txt",
+          "100644 bde9c8eedf186ca4ebd7ce4cd9cec9e97c25cace 0\tspec/queue-policy.md",
+          "100644 85d01527b500e1479befc4e50ee2de48934eb0b1 0\tspec/source-use.md",
+          "100644 7abad2ceefc7d7c9a0d08725f337a08d9352d2b4 0\tsrc/queue_plan.py"
+        ],
+        "remote_names": [],
+        "active_hooks": [],
+        "dropped_generated_hook_samples": [
+          "applypatch-msg.sample",
+          "commit-msg.sample",
+          "fsmonitor-watchman.sample",
+          "post-update.sample",
+          "pre-applypatch.sample",
+          "pre-commit.sample",
+          "pre-merge-commit.sample",
+          "pre-push.sample",
+          "pre-rebase.sample",
+          "pre-receive.sample",
+          "prepare-commit-msg.sample",
+          "push-to-checkout.sample",
+          "sendemail-validate.sample",
+          "update.sample"
+        ],
+        "limits": "Only explicitly allowlisted, trial-generated synthetic repositories; not host or real business Git."
+      },
+      {
+        "input": "repaired-cohort",
+        "repository": "confirmation-chain/fixture",
+        "head": "cc19683884b353645cd3460816008f849113f2d8",
+        "refs": [
+          "refs/heads/master cc19683884b353645cd3460816008f849113f2d8"
+        ],
+        "index_entries": [
+          "100644 c38b3233fcf9056e29acce334c69e0a70209e5c8 0\tPROJECT.md",
+          "100644 9c0a4f3a9ce7b180661ce2b373f9313b76a64542 0\tSSOT/README.md",
+          "100644 30d0e9f8cbaa8d698a3c95cf4511b2f4e3ad4f36 0\tsources/accepted.txt",
+          "100644 aa55e175854dc40d2c4f1dd1bc0ec828fb95465d 0\tspec/queue-policy.md",
+          "100644 966ee8b0c4e9e755dc7119f345e277f238a4e275 0\tspec/source-use.md",
+          "100644 7abad2ceefc7d7c9a0d08725f337a08d9352d2b4 0\tsrc/queue_plan.py"
+        ],
+        "remote_names": [],
+        "active_hooks": [],
+        "dropped_generated_hook_samples": [
+          "applypatch-msg.sample",
+          "commit-msg.sample",
+          "fsmonitor-watchman.sample",
+          "post-update.sample",
+          "pre-applypatch.sample",
+          "pre-commit.sample",
+          "pre-merge-commit.sample",
+          "pre-push.sample",
+          "pre-rebase.sample",
+          "pre-receive.sample",
+          "prepare-commit-msg.sample",
+          "push-to-checkout.sample",
+          "sendemail-validate.sample",
+          "update.sample"
+        ],
+        "limits": "Only explicitly allowlisted, trial-generated synthetic repositories; not host or real business Git."
+      },
+      {
+        "input": "repaired-cohort",
+        "repository": "confirmation-chain/run/workspace",
+        "head": "cc19683884b353645cd3460816008f849113f2d8",
+        "refs": [
+          "refs/heads/master cc19683884b353645cd3460816008f849113f2d8"
+        ],
+        "index_entries": [
+          "100644 c38b3233fcf9056e29acce334c69e0a70209e5c8 0\tPROJECT.md",
+          "100644 9c0a4f3a9ce7b180661ce2b373f9313b76a64542 0\tSSOT/README.md",
+          "100644 30d0e9f8cbaa8d698a3c95cf4511b2f4e3ad4f36 0\tsources/accepted.txt",
+          "100644 aa55e175854dc40d2c4f1dd1bc0ec828fb95465d 0\tspec/queue-policy.md",
+          "100644 966ee8b0c4e9e755dc7119f345e277f238a4e275 0\tspec/source-use.md",
+          "100644 7abad2ceefc7d7c9a0d08725f337a08d9352d2b4 0\tsrc/queue_plan.py"
+        ],
+        "remote_names": [],
+        "active_hooks": [],
+        "dropped_generated_hook_samples": [
+          "applypatch-msg.sample",
+          "commit-msg.sample",
+          "fsmonitor-watchman.sample",
+          "post-update.sample",
+          "pre-applypatch.sample",
+          "pre-commit.sample",
+          "pre-merge-commit.sample",
+          "pre-push.sample",
+          "pre-rebase.sample",
+          "pre-receive.sample",
+          "prepare-commit-msg.sample",
+          "push-to-checkout.sample",
+          "sendemail-validate.sample",
+          "update.sample"
+        ],
+        "limits": "Only explicitly allowlisted, trial-generated synthetic repositories; not host or real business Git."
+      },
+      {
+        "input": "repaired-cohort",
+        "repository": "confirmation-floor/fixture",
+        "head": "d26be6d2c0a1ca16f1114d2fb69921cebb4ce4fd",
+        "refs": [
+          "refs/heads/master d26be6d2c0a1ca16f1114d2fb69921cebb4ce4fd"
+        ],
+        "index_entries": [
+          "100644 c38b3233fcf9056e29acce334c69e0a70209e5c8 0\tPROJECT.md",
+          "100644 9c0a4f3a9ce7b180661ce2b373f9313b76a64542 0\tSSOT/README.md",
+          "100644 30d0e9f8cbaa8d698a3c95cf4511b2f4e3ad4f36 0\tsources/accepted.txt",
+          "100644 66ef7aec1cbad32f57db6425105fd8e46a89c145 0\tspec/queue-policy.md",
+          "100644 937376de92527403e90d9d6226d614cfb0ff46f9 0\tspec/source-use.md",
+          "100644 7abad2ceefc7d7c9a0d08725f337a08d9352d2b4 0\tsrc/queue_plan.py"
+        ],
+        "remote_names": [],
+        "active_hooks": [],
+        "dropped_generated_hook_samples": [
+          "applypatch-msg.sample",
+          "commit-msg.sample",
+          "fsmonitor-watchman.sample",
+          "post-update.sample",
+          "pre-applypatch.sample",
+          "pre-commit.sample",
+          "pre-merge-commit.sample",
+          "pre-push.sample",
+          "pre-rebase.sample",
+          "pre-receive.sample",
+          "prepare-commit-msg.sample",
+          "push-to-checkout.sample",
+          "sendemail-validate.sample",
+          "update.sample"
+        ],
+        "limits": "Only explicitly allowlisted, trial-generated synthetic repositories; not host or real business Git."
+      },
+      {
+        "input": "repaired-cohort",
+        "repository": "confirmation-floor/run/workspace",
+        "head": "d26be6d2c0a1ca16f1114d2fb69921cebb4ce4fd",
+        "refs": [
+          "refs/heads/master d26be6d2c0a1ca16f1114d2fb69921cebb4ce4fd"
+        ],
+        "index_entries": [
+          "100644 c38b3233fcf9056e29acce334c69e0a70209e5c8 0\tPROJECT.md",
+          "100644 9c0a4f3a9ce7b180661ce2b373f9313b76a64542 0\tSSOT/README.md",
+          "100644 30d0e9f8cbaa8d698a3c95cf4511b2f4e3ad4f36 0\tsources/accepted.txt",
+          "100644 66ef7aec1cbad32f57db6425105fd8e46a89c145 0\tspec/queue-policy.md",
+          "100644 937376de92527403e90d9d6226d614cfb0ff46f9 0\tspec/source-use.md",
+          "100644 7abad2ceefc7d7c9a0d08725f337a08d9352d2b4 0\tsrc/queue_plan.py"
+        ],
+        "remote_names": [],
+        "active_hooks": [],
+        "dropped_generated_hook_samples": [
+          "applypatch-msg.sample",
+          "commit-msg.sample",
+          "fsmonitor-watchman.sample",
+          "post-update.sample",
+          "pre-applypatch.sample",
+          "pre-commit.sample",
+          "pre-merge-commit.sample",
+          "pre-push.sample",
+          "pre-rebase.sample",
+          "pre-receive.sample",
+          "prepare-commit-msg.sample",
+          "push-to-checkout.sample",
+          "sendemail-validate.sample",
+          "update.sample"
+        ],
+        "limits": "Only explicitly allowlisted, trial-generated synthetic repositories; not host or real business Git."
+      },
+      {
+        "input": "repaired-cohort",
+        "repository": "confirmation-stale/fixture",
+        "head": "993f1c6888d0022b652faed52f94e3e85c5a8ad6",
+        "refs": [
+          "refs/heads/master 993f1c6888d0022b652faed52f94e3e85c5a8ad6"
+        ],
+        "index_entries": [
+          "100644 c38b3233fcf9056e29acce334c69e0a70209e5c8 0\tPROJECT.md",
+          "100644 9c0a4f3a9ce7b180661ce2b373f9313b76a64542 0\tSSOT/README.md",
+          "100644 30d0e9f8cbaa8d698a3c95cf4511b2f4e3ad4f36 0\tsources/accepted.txt",
+          "100644 4ea7b7f4482a18d76e37c8d326af9de76462d243 0\tspec/queue-policy.md",
+          "100644 dd92bc628dc7fdbe4c2f6595dfd669f90d7bee86 0\tspec/source-use.md",
+          "100644 7abad2ceefc7d7c9a0d08725f337a08d9352d2b4 0\tsrc/queue_plan.py"
+        ],
+        "remote_names": [],
+        "active_hooks": [],
+        "dropped_generated_hook_samples": [
+          "applypatch-msg.sample",
+          "commit-msg.sample",
+          "fsmonitor-watchman.sample",
+          "post-update.sample",
+          "pre-applypatch.sample",
+          "pre-commit.sample",
+          "pre-merge-commit.sample",
+          "pre-push.sample",
+          "pre-rebase.sample",
+          "pre-receive.sample",
+          "prepare-commit-msg.sample",
+          "push-to-checkout.sample",
+          "sendemail-validate.sample",
+          "update.sample"
+        ],
+        "limits": "Only explicitly allowlisted, trial-generated synthetic repositories; not host or real business Git."
+      },
+      {
+        "input": "repaired-cohort",
+        "repository": "confirmation-stale/run/workspace",
+        "head": "993f1c6888d0022b652faed52f94e3e85c5a8ad6",
+        "refs": [
+          "refs/heads/master 993f1c6888d0022b652faed52f94e3e85c5a8ad6"
+        ],
+        "index_entries": [
+          "100644 c38b3233fcf9056e29acce334c69e0a70209e5c8 0\tPROJECT.md",
+          "100644 9c0a4f3a9ce7b180661ce2b373f9313b76a64542 0\tSSOT/README.md",
+          "100644 30d0e9f8cbaa8d698a3c95cf4511b2f4e3ad4f36 0\tsources/accepted.txt",
+          "100644 4ea7b7f4482a18d76e37c8d326af9de76462d243 0\tspec/queue-policy.md",
+          "100644 dd92bc628dc7fdbe4c2f6595dfd669f90d7bee86 0\tspec/source-use.md",
+          "100644 7abad2ceefc7d7c9a0d08725f337a08d9352d2b4 0\tsrc/queue_plan.py"
+        ],
+        "remote_names": [],
+        "active_hooks": [],
+        "dropped_generated_hook_samples": [
+          "applypatch-msg.sample",
+          "commit-msg.sample",
+          "fsmonitor-watchman.sample",
+          "post-update.sample",
+          "pre-applypatch.sample",
+          "pre-commit.sample",
+          "pre-merge-commit.sample",
+          "pre-push.sample",
+          "pre-rebase.sample",
+          "pre-receive.sample",
+          "prepare-commit-msg.sample",
+          "push-to-checkout.sample",
+          "sendemail-validate.sample",
+          "update.sample"
+        ],
+        "limits": "Only explicitly allowlisted, trial-generated synthetic repositories; not host or real business Git."
+      },
+      {
+        "input": "format4-freeze-smoke",
+        "repository": "fixture",
+        "head": "7d7c3223b1fc41eab65c80d47a636e1814cbded2",
+        "refs": [
+          "refs/heads/master 7d7c3223b1fc41eab65c80d47a636e1814cbded2"
+        ],
+        "index_entries": [
+          "100644 c38b3233fcf9056e29acce334c69e0a70209e5c8 0\tPROJECT.md",
+          "100644 9c0a4f3a9ce7b180661ce2b373f9313b76a64542 0\tSSOT/README.md",
+          "100644 30d0e9f8cbaa8d698a3c95cf4511b2f4e3ad4f36 0\tsources/accepted.txt",
+          "100644 bde9c8eedf186ca4ebd7ce4cd9cec9e97c25cace 0\tspec/queue-policy.md",
+          "100644 85d01527b500e1479befc4e50ee2de48934eb0b1 0\tspec/source-use.md",
+          "100644 7abad2ceefc7d7c9a0d08725f337a08d9352d2b4 0\tsrc/queue_plan.py"
+        ],
+        "remote_names": [],
+        "active_hooks": [],
+        "dropped_generated_hook_samples": [
+          "applypatch-msg.sample",
+          "commit-msg.sample",
+          "fsmonitor-watchman.sample",
+          "post-update.sample",
+          "pre-applypatch.sample",
+          "pre-commit.sample",
+          "pre-merge-commit.sample",
+          "pre-push.sample",
+          "pre-rebase.sample",
+          "pre-receive.sample",
+          "prepare-commit-msg.sample",
+          "push-to-checkout.sample",
+          "sendemail-validate.sample",
+          "update.sample"
+        ],
+        "limits": "Only explicitly allowlisted, trial-generated synthetic repositories; not host or real business Git."
+      }
+    ],
+    "reports_derived_from_copied_evidence": [
+      "initial-cohort/development-ceiling",
+      "initial-cohort/development-floor",
+      "initial-cohort/development-stale",
+      "initial-cohort/development-chain",
+      "initial-cohort/confirmation-ceiling",
+      "initial-cohort/confirmation-floor",
+      "initial-cohort/confirmation-stale",
+      "initial-cohort/confirmation-chain",
+      "repaired-cohort/development-floor",
+      "repaired-cohort/development-stale",
+      "repaired-cohort/development-chain",
+      "repaired-cohort/confirmation-ceiling",
+      "repaired-cohort/confirmation-floor",
+      "repaired-cohort/confirmation-stale",
+      "repaired-cohort/confirmation-chain"
+    ],
+    "status": "verified_local_and_independent_readback_accepted",
+    "account": "/home/hpf/.local/state/ssot-context/evidence/benchmark-continuity-20261112/accepted/archive-account.json",
+    "account_sha256": "e8db30fc8143d4e40847e7cc36e23cc97e2b81e004cd5fd79f2f133faa030829",
+    "readback_log_sha256": "498d68082c457dbc72e1d424d24b495f75f50b6808072e5e94ed4ef36f6fc572",
+    "source_snapshot": "Source-final contains the frozen publication code/docs, distinct from immutable B2 native harnesses. This machine account and publication receipt are external authorities excluded from tar to avoid circular identities.",
+    "git_boundary": "Only audited synthetic fixture/workspace Git identity metadata retained for frozen format4 validation; no remote/active hooks; external repository Git, session homes/auth and cache payload excluded.",
+    "local_readback_scope": {
+      "frozen_report_pairs_byte_identical": 18,
+      "separate_cost_reanalysis_report_pairs_byte_identical": 50,
+      "offline_test_groups": {
+        "context": 11,
+        "source_contract": 17,
+        "continuation": 1,
+        "register": 3,
+        "source_oracle": 2,
+        "orchestration": 18,
+        "longchain": 10,
+        "queue_confirmation": 13
+      },
+      "evidence_level": "Extracted retained evidence and current publication source, no model calls or native replay; exact hash/type/mode/link manifest checked. Native behavior and archive reconstruction remain distinct evidence."
+    },
+    "tooling": {
+      "archive_relative_verifier": "evidence/verify-and-rebuild.py",
+      "archive_relative_specification": "evidence/archive-input-spec.json",
+      "command_from_extraction_parent": [
+        "python3",
+        "-B",
+        "evidence/verify-and-rebuild.py",
+        "--verify-root",
+        "evidence",
+        "--rebuild"
+      ],
+      "durable_tooling": "/home/hpf/.local/state/ssot-context/evidence/benchmark-continuity-20261112/tools",
+      "tool_sha256": "89f1ffb86fef0bc8037df21eae54f00032b6bbcfb3a76e5d79e58e6f6bd7e14a",
+      "specification_sha256": "66ad639cd36d04f19050e9ff2500cc17de272c4f48d855c2b4c47baaf793d890",
+      "matches_tar_payload": true,
+      "entrypoints_receipt": "/home/hpf/.local/state/ssot-context/evidence/benchmark-continuity-20261112/tooling-entrypoints.json",
+      "entrypoints_sha256": "91b5ee4ce33dc755cc12a6afa3e7845237d6f10142e21953c52c35e1b71a5112",
+      "readme": "/home/hpf/.local/state/ssot-context/evidence/benchmark-continuity-20261112/tools/README.md",
+      "requirements": "Python3/Git/Bash; full local integration checks need supported bwrap, unsupported probes may skip. Original historical source paths are not required for extracted verification.",
+      "commands_are": "Offline manifest/report reconstruction and separate tests only; no native replay or model call."
+    },
+    "independent_readback": {
+      "documents": {
+        "readback-review.md": {
+          "path": "/home/hpf/.local/state/ssot-context/evidence/benchmark-continuity-20261112/readback-review.md",
+          "sha256": "49a96786a66e8ef3f847fb24b82e5ebf8dac89e08558cff158d4908424d6b7d7"
+        },
+        "readback-review.json": {
+          "path": "/home/hpf/.local/state/ssot-context/evidence/benchmark-continuity-20261112/readback-review.json",
+          "sha256": "b12f265d95c9b0ceaf9e8964da6ffca1151c99979868be5b6d6b2e5ee81ca9a0"
+        },
+        "readback-reviewer-receipt.json": {
+          "path": "/home/hpf/.local/state/ssot-context/evidence/benchmark-continuity-20261112/readback-reviewer-receipt.json",
+          "sha256": "92d8650a8a510a16f8312d878ca9618219d0cb6f3e1bf69c46958f9a9ac66c23"
+        }
+      },
+      "result": {
+        "review_state": "accepted_archive_readback_no_remaining_archive_blocker",
+        "archive": "accepted/evidence.tar.gz",
+        "sha256": "c5d53cc221652d74b28177a64a9f82076d167f4531e15ae3988bbb361b0c7f4c",
+        "bytes": 19152217,
+        "manifest_sha256": "8df62dafa5336893be8ea20283316ab7991567e64a0514b76814bf72d439fd17",
+        "manifest_entries": 7452,
+        "tar_members": 7454,
+        "independent_frozen_report_pairs_exact": 18,
+        "independent_versioned_cost_report_pairs_exact": 50,
+        "offline_test_scripts_passed": 8,
+        "offline_test_count": 75,
+        "offline_test_skips": 0,
+        "original_dependency_hashes_exact": 1529,
+        "original_native_phases": 18,
+        "controlled_synthetic_git_repositories": 13,
+        "model_replays": 0,
+        "archive_modified": false,
+        "source_final_matches_prearchive_review": true,
+        "external_account_excluded": true,
+        "durable_tooling_matches_packaged": true,
+        "producer_sha256": "89f1ffb86fef0bc8037df21eae54f00032b6bbcfb3a76e5d79e58e6f6bd7e14a",
+        "evidence": {
+          "independent-tar-manifest-check.json": "9bc8dd8fc68075a14872c6147338c9ad7f51c4666f064f92e84dfc72f2a3d5cc",
+          "independent-dependency-privacy-check.json": "ee32528a9c0cc690dd513f0db424710a089b90f5959174de24ff062e80579c12",
+          "independent-producer-calibration.json": "33bf3a335e90f371cb862f6794983eacb0ec08560d61467c70f0145535d2c99e",
+          "independent-rebuild.log": "25282cb56da7f6dc1c38a609f11137197c991c185e2a60e2de315509965e5fcd",
+          "readback-reviewer-receipt.json": "92d8650a8a510a16f8312d878ca9618219d0cb6f3e1bf69c46958f9a9ac66c23"
+        },
+        "limits": [
+          "Publication/remote not judged here",
+          "Local durable archive is not off-machine backup",
+          "Pattern/path scan is not universal semantic privacy proof",
+          "Archive reproducibility is not new native behavior or reliability evidence"
+        ]
+      }
+    }
+  },
+  "decision": {
+    "adopt": "benchmark fixture/observer/oracle/report repairs and connected-path coverage",
+    "protocol": "S0 5.3 unchanged; no S1 implemented or tested",
+    "causal_limit": "No same-task writer-without-skills control, statistical repetition or S0/S1 comparison; no product-benefit/performance claim.",
+    "publication_authority": "/home/hpf/.local/state/ssot-context/evidence/benchmark-continuity-20261112/publication.json",
+    "known_benchmark_repair_status": "Implemented and calibrated repairs accepted; raw native quality, final cost interpretation and durable independent readback complete. Publication status belongs to external receipt."
+  },
+  "cost_reanalysis": {
+    "report": "/var/tmp/ssot-continuity-cost-reanalysis-20261112/development-chain/report.json",
+    "sha256": "1a74650dd188b8111a3eef5568f691811d10fb406c2588ba5ad581f7fbc5ddec",
+    "comparison": "/var/tmp/ssot-continuity-cost-reanalysis-20261112/comparison.json",
+    "comparison_sha256": "b9d7d43bb283f820a6fa5778ac8aebfd2b072fd1a5dbcea168db69df0be0f9ba",
+    "state": "passed",
+    "observed_totals": {
+      "seconds": 416.894,
+      "input_tokens": 1636112,
+      "cached_input_tokens": 1453312,
+      "output_tokens": 13006,
+      "total_input_output_tokens": 1649118
+    },
+    "observed_totals_scope": "Sum of observed samples only; token amounts are lower bounds when any phase is not complete. Missing usage is never an observed zero.",
+    "complete_totals": {
+      "seconds": 416.894,
+      "input_tokens": null,
+      "cached_input_tokens": null,
+      "output_tokens": null,
+      "total_input_output_tokens": null
+    },
+    "cost_comparable": false,
+    "invalidated_legacy_cost_fields": [
+      {
+        "summary": "phase-2/1.summary.json",
+        "legacy_costs": {
+          "input_tokens": 117321,
+          "cached_input_tokens": 89344,
+          "output_tokens": 705,
+          "total_input_output_tokens": 118026,
+          "seconds": 38.94
+        },
+        "legacy_cost_comparable": true,
+        "reason": "No closing usage covering all model output"
+      }
+    ],
+    "provenance": {
+      "mode": "read-only cost reanalysis",
+      "source_plan_sha256": "3867b88d0386588a8bb1df5a86ac861f5e7e50b78d3265caa3f2231b06066454",
+      "source_harness_manifest_sha256": "b833975cb762963a35895774449415555fac55b5bd3aff4a122570467c65eff9",
+      "source_sealed_record_sha256": {
+        "result.json": "ba3e8ccff38b50467ea6ce1aa4a64bb657e40f0b73bd1dd0b00bc4011a3c4b40",
+        "mechanical.json": "a8cac72ab56688a8d1eb58156c2acd6d70a0e67dcc73de290ee6af6e38b0fd12",
+        "review.json": "1d891bf70cd38868bdbb9e29da6cb4dfdbc2d532de225c843e06be497cb8b704"
+      },
+      "reporter_sha256": {
+        "context/installed_run.py": "03cf203e90e6ffd9a070f301c8698fbacf41fd304a2203c8c779445d4804f2a8",
+        "context/oracle.py": "32b1c66d20c9d7b3a0f41fff220abe2b3f69e9f5283cc71320a19067e7389abb",
+        "context/run.py": "047082adf54dd8a92ca4919cac9ae3eaa8a62acc598913cc9ee1a6688ae9f585",
+        "benchmark/run.py": "2648db9374b8619f2cc300096119949d9e848de740cf24fdfea754795a2efe30",
+        "benchmark/handoff.py": "a1b4a3f0d650a2fa97b9f98f0643792fa8229a1d864d647c3c0825a3cab11db1",
+        "run-performance-trials.py": "cdbbbda7788f9f9c754c263a3fdda2b7fec39bd623c4d54a41bf997800dc8c3c"
+      },
+      "source_native_sha256": {
+        "phase-1/1.native.jsonl": "4107f672917a67c7e2f907554e1dd9e3fdfc2145cb24161ee1062e07670ddf5d",
+        "phase-2/1.native.jsonl": "89b14f54dfc899ae1f6265c9d289db726aa1c5124eae2e326972d64aa28e2127",
+        "phase-3/1.native.jsonl": "d9b37314d65021ede4fb005dd38be499fca355b149b9344d50984b49345b3d71",
+        "phase-4/1.native.jsonl": "2c0d5bd3c18c56af1431abe44853fc9ba5cdea503158ffc212a9bcff5ca0afd2",
+        "phase-5/1.native.jsonl": "e0668af375e28745d2c7973e7be8696036f3e1e1d5df6ea572b9555c0aa0dec4",
+        "phase-6/1.native.jsonl": "fe16e73452886e49aae797ebeca1753ee5ca9e0d0f569231a906adcb897a50b9"
+      },
+      "behavior_adjudication": "Original sealed artifacts and artifact-bound reviews are read unchanged; only cost completeness is reassessed."
+    },
+    "native_replayed": false,
+    "source_data_changed": false,
+    "status": "retained_intermediate_development_interpretation_not_latest_reporter",
+    "current_authoritative_collection": "/var/tmp/ssot-continuity-cost-reanalysis-final-v2-20261112/account.json"
+  },
+  "timing": {
+    "full_user_task_wall_seconds": null,
+    "historical_execute_wall_seconds": null,
+    "reason": "No full execute wrapper or complete user-task start/end receipt; no mtime inference or model replay.",
+    "native_phase_seconds": {
+      "development_chain": 416.894,
+      "confirmation_chain": 331.319,
+      "all_18_including_invalid_ceiling": 1018.154
+    },
+    "freeze_to_last_native_interval": {
+      "start_utc": "2026-11-12T12:56:08.011549+00:00",
+      "start_source": "continuity-B2/master-plan.json:frozen_at_utc",
+      "end_utc": "2026-11-12T13:29:27.765Z",
+      "end_source": "/tmp/ssot-continuity-native-b2-20261112/confirmation-chain/run/phase-5/1.native.jsonl",
+      "end_event": "event_msg.task_complete",
+      "native_sha256": "f506490f6186c486eac2388fe524fe5964db2c7c5dd9c61115626ee46e519719",
+      "seconds": 1999.753451,
+      "scope": "Calendar freeze-to-last-native-event interval, includes intervening preparation/checks/executor work/waits; excludes earlier design/calibration/invalid initial call and later final review/archive/publication. Not complete user-task or execute wall time."
+    },
+    "human_minutes": null,
+    "future_executor_measurement": {
+      "source_sha256": "0b575e6a8a61a28a77b666c68d28c22906f09e6ae560dc4d0af9de70077634fd",
+      "receipt": "execution-timing.json",
+      "scope": "execute entry through executor return/exception after terminal sealing; includes setup/zero-model probes/native/host transitions/mechanical; excludes prepare/external semantic review/receipt persistence. Not complete user-task wall.",
+      "historical_B2_execute_times": "All null; no replays or timestamp inference.",
+      "calibration": "/var/tmp/ssot-continuity-execution-timing-smoke-20261112.json",
+      "calibration_scope": "Actual official install and zero-model probe-only execution; 2.902452s, not native model or whole user task time."
+    }
+  },
+  "interventions": {
+    "accepted_B2_policy_content_rescue": 0,
+    "automatic_phase_retries": 0,
+    "invalid_initial_ceiling_replacement": 1,
+    "replacement_reason": "Portable fixture route generator repaired and independently calibrated before unified new freeze; both attempts preserved.",
+    "planned_fixture_actions": [
+      "phase2 read-only owner bind",
+      "owned native process SIGTERM on observed partial capture",
+      "external note retained for cold phase"
+    ],
+    "human_preparation_review_minutes": null
+  },
+  "reviews": {
+    "executor": "All eight B2 run/review.json sealed records; artifact-bound, not independent.",
+    "independent_design": "/var/tmp/ssot-continuity-astra-design-20261112.md",
+    "independent_final": "/var/tmp/ssot-continuity-astra-final-20261112.md",
+    "quality_status": "Two bounded chains, six controls, final measurement interpretation and source/documentary evidence accepted by independent Astra review; independent archive readback accepted. Commit/push/remote/CI status is routed to external publication authority."
+  },
+  "readme_reconciliation": {
+    "README.md": "Existing evaluation link/capabilities remain accurate; no user-facing bundle change.",
+    "README.zh.md": "Meaning matches English evaluation entry; unchanged for benchmark-only change.",
+    "detailed_commands_owner": "tests/context/README.md"
+  },
+  "roles": {
+    "authorization": "User Sol implementation/execution and Astra review exception persists for this task; standing repository policy not edited.",
+    "minimal_native_receipts": "/var/tmp/ssot-continuity-identity-receipts-20261112",
+    "actual_developers": "Three Sol/high agents; master coordinator actual Astra/xhigh; independent design/final review Astra/high.",
+    "subjects": "All eighteen actual gpt-6.1-sol/medium, each native receipt recorded; development/review usage is separate and not included in subject costs."
+  },
+  "source_version_boundary": "The continuity-B2 frozen harness remains immutable. Later context-only cost reporting/timing fixes are a distinct publication source; current reporter provenance identifies its actual bytes. Do not claim final source byte-identical to frozen B2 or that newer source was natively replayed.",
+  "next_experiment_recommendation": {
+    "status": "unexecuted_future_recommendation_not_current_unresolved_repair",
+    "question": "How much extra quality or burden does SSOT contribute to explicit-goal long maintenance?",
+    "prerequisite": "Calibrate protocol-neutral partial-maintenance observation and semantic scoring, with valid/bad/legitimate alternative artifacts for both writers.",
+    "comparison": "Matched plain-docs versus SSOT writer chains, same explicit goal, initial facts, permissions and model. Do not require plain to use source CLI markers or protocol layout.",
+    "current_control_limit": "Ceiling/floor/stale establish consumer knowledge sufficiency; they are not a writer-without-protocol control.",
+    "decision": "Equal quality with lower burden could support simplification; a quality difference should first locate the responsible knowledge/authority owner."
+  },
+  "final_cost_reanalysis": {
+    "account": "/var/tmp/ssot-continuity-cost-reanalysis-final-v2-20261112/account.json",
+    "sha256": "74fdefa00a27eaafc4c5f06fde7de6687d4d93081328a7488b14402400cf735f",
+    "source_unchanged": true,
+    "model_calls": 0,
+    "native_phase_count": 18,
+    "records": [
+      {
+        "cohort": "initial-cohort",
+        "attempt": "development-ceiling",
+        "state": "semantic_pending",
+        "phase_count": 1,
+        "phase_usage_statuses": {
+          "phase-1/1.summary.json": "complete"
+        },
+        "observed_totals": {
+          "seconds": 32.144,
+          "input_tokens": 94298,
+          "cached_input_tokens": 86144,
+          "output_tokens": 696,
+          "total_input_output_tokens": 94994
+        },
+        "observed_totals_scope": "Sum of observed samples only; token amounts are lower bounds when any phase is not complete. Missing usage is never an observed zero.",
+        "complete_totals": {
+          "seconds": 32.144,
+          "input_tokens": 94298,
+          "cached_input_tokens": 86144,
+          "output_tokens": 696,
+          "total_input_output_tokens": 94994
+        },
+        "execution_timing": null,
+        "cost_comparable": false,
+        "invalidated_legacy_cost_fields": [],
+        "report_sha256": "52f5dbf8654738213365a54d306a44695713237c1a0215b527a7bef9e6bf2dd7",
+        "markdown_sha256": "7a4cffe7bc1e4ca4dc5f5fbd09ff0d7591bce2eb393f01264841cfe6f3da7bb9",
+        "provenance": {
+          "mode": "read-only cost reanalysis",
+          "source_plan_sha256": "f9bd2e1de8ebedecd5dd7f9202b32d87d9e9d12ba345df98e0395a4c443f66d7",
+          "source_harness_manifest_sha256": "e03b1c45c795a3c5d1dc5fa1fdb6a6a332c1a65bb3322f6c2994599c1e3b8a3f",
+          "source_execution_timing_sha256": null,
+          "source_sealed_record_sha256": {
+            "result.json": "4c134fd3608f4bd756ab8d408af4e3b2e5d4afd6bf0f342996b6fa5e44177b7f",
+            "mechanical.json": "d299d2d00b4f6c7bce6f6b59b70d4cb2241fa48b09bf87bb3346920af74d63c7"
+          },
+          "reporter_sha256": {
+            "context/installed_run.py": "0b575e6a8a61a28a77b666c68d28c22906f09e6ae560dc4d0af9de70077634fd",
+            "context/oracle.py": "32b1c66d20c9d7b3a0f41fff220abe2b3f69e9f5283cc71320a19067e7389abb",
+            "context/run.py": "047082adf54dd8a92ca4919cac9ae3eaa8a62acc598913cc9ee1a6688ae9f585",
+            "benchmark/run.py": "2648db9374b8619f2cc300096119949d9e848de740cf24fdfea754795a2efe30",
+            "benchmark/handoff.py": "a1b4a3f0d650a2fa97b9f98f0643792fa8229a1d864d647c3c0825a3cab11db1",
+            "run-performance-trials.py": "cdbbbda7788f9f9c754c263a3fdda2b7fec39bd623c4d54a41bf997800dc8c3c"
+          },
+          "source_native_sha256": {
+            "phase-1/1.native.jsonl": "b349eda97a446d190b8c5e709de72af5507160cdd85022f5909e651eab503d6e"
+          },
+          "behavior_adjudication": "Original sealed artifacts and artifact-bound reviews are read unchanged; only cost completeness is reassessed."
+        },
+        "report": "/var/tmp/ssot-continuity-cost-reanalysis-final-v2-20261112/initial-cohort/development-ceiling/report.json"
+      },
+      {
+        "cohort": "initial-cohort",
+        "attempt": "development-floor",
+        "state": "unrun",
+        "phase_count": 0,
+        "phase_usage_statuses": {},
+        "observed_totals": {
+          "seconds": null,
+          "input_tokens": null,
+          "cached_input_tokens": null,
+          "output_tokens": null,
+          "total_input_output_tokens": null
+        },
+        "observed_totals_scope": "Sum of observed samples only; token amounts are lower bounds when any phase is not complete. Missing usage is never an observed zero.",
+        "complete_totals": {
+          "seconds": null,
+          "input_tokens": null,
+          "cached_input_tokens": null,
+          "output_tokens": null,
+          "total_input_output_tokens": null
+        },
+        "execution_timing": null,
+        "cost_comparable": false,
+        "invalidated_legacy_cost_fields": [],
+        "report_sha256": "c106bfaeb6a7f1a9384bd41067b89134bea512d93dcb9096c1f4962cbc9afdaf",
+        "markdown_sha256": "375162daa3e9c999612e16098c27ff3c9d808daffe173a8646681e42ce6e913a",
+        "provenance": {
+          "mode": "read-only cost reanalysis",
+          "source_plan_sha256": "47dd152c7042284ad2c58a24e0e3dc7d59b318d163507872166dd2f4ec13f9a7",
+          "source_harness_manifest_sha256": "e03b1c45c795a3c5d1dc5fa1fdb6a6a332c1a65bb3322f6c2994599c1e3b8a3f",
+          "source_execution_timing_sha256": null,
+          "source_sealed_record_sha256": {},
+          "reporter_sha256": {
+            "context/installed_run.py": "0b575e6a8a61a28a77b666c68d28c22906f09e6ae560dc4d0af9de70077634fd",
+            "context/oracle.py": "32b1c66d20c9d7b3a0f41fff220abe2b3f69e9f5283cc71320a19067e7389abb",
+            "context/run.py": "047082adf54dd8a92ca4919cac9ae3eaa8a62acc598913cc9ee1a6688ae9f585",
+            "benchmark/run.py": "2648db9374b8619f2cc300096119949d9e848de740cf24fdfea754795a2efe30",
+            "benchmark/handoff.py": "a1b4a3f0d650a2fa97b9f98f0643792fa8229a1d864d647c3c0825a3cab11db1",
+            "run-performance-trials.py": "cdbbbda7788f9f9c754c263a3fdda2b7fec39bd623c4d54a41bf997800dc8c3c"
+          },
+          "source_native_sha256": {},
+          "behavior_adjudication": "Original sealed artifacts and artifact-bound reviews are read unchanged; only cost completeness is reassessed."
+        },
+        "report": "/var/tmp/ssot-continuity-cost-reanalysis-final-v2-20261112/initial-cohort/development-floor/report.json"
+      },
+      {
+        "cohort": "initial-cohort",
+        "attempt": "development-stale",
+        "state": "unrun",
+        "phase_count": 0,
+        "phase_usage_statuses": {},
+        "observed_totals": {
+          "seconds": null,
+          "input_tokens": null,
+          "cached_input_tokens": null,
+          "output_tokens": null,
+          "total_input_output_tokens": null
+        },
+        "observed_totals_scope": "Sum of observed samples only; token amounts are lower bounds when any phase is not complete. Missing usage is never an observed zero.",
+        "complete_totals": {
+          "seconds": null,
+          "input_tokens": null,
+          "cached_input_tokens": null,
+          "output_tokens": null,
+          "total_input_output_tokens": null
+        },
+        "execution_timing": null,
+        "cost_comparable": false,
+        "invalidated_legacy_cost_fields": [],
+        "report_sha256": "4c0cf091ad6efe1eddf224e7a8136521566ab73b770e5815bef459cbff0b3c8c",
+        "markdown_sha256": "375162daa3e9c999612e16098c27ff3c9d808daffe173a8646681e42ce6e913a",
+        "provenance": {
+          "mode": "read-only cost reanalysis",
+          "source_plan_sha256": "d39f56fe25b1644d1a74d0bf26282996ccd448bbb772f1b500e7e3c2463775a1",
+          "source_harness_manifest_sha256": "e03b1c45c795a3c5d1dc5fa1fdb6a6a332c1a65bb3322f6c2994599c1e3b8a3f",
+          "source_execution_timing_sha256": null,
+          "source_sealed_record_sha256": {},
+          "reporter_sha256": {
+            "context/installed_run.py": "0b575e6a8a61a28a77b666c68d28c22906f09e6ae560dc4d0af9de70077634fd",
+            "context/oracle.py": "32b1c66d20c9d7b3a0f41fff220abe2b3f69e9f5283cc71320a19067e7389abb",
+            "context/run.py": "047082adf54dd8a92ca4919cac9ae3eaa8a62acc598913cc9ee1a6688ae9f585",
+            "benchmark/run.py": "2648db9374b8619f2cc300096119949d9e848de740cf24fdfea754795a2efe30",
+            "benchmark/handoff.py": "a1b4a3f0d650a2fa97b9f98f0643792fa8229a1d864d647c3c0825a3cab11db1",
+            "run-performance-trials.py": "cdbbbda7788f9f9c754c263a3fdda2b7fec39bd623c4d54a41bf997800dc8c3c"
+          },
+          "source_native_sha256": {},
+          "behavior_adjudication": "Original sealed artifacts and artifact-bound reviews are read unchanged; only cost completeness is reassessed."
+        },
+        "report": "/var/tmp/ssot-continuity-cost-reanalysis-final-v2-20261112/initial-cohort/development-stale/report.json"
+      },
+      {
+        "cohort": "initial-cohort",
+        "attempt": "development-chain",
+        "state": "unrun",
+        "phase_count": 0,
+        "phase_usage_statuses": {},
+        "observed_totals": {
+          "seconds": null,
+          "input_tokens": null,
+          "cached_input_tokens": null,
+          "output_tokens": null,
+          "total_input_output_tokens": null
+        },
+        "observed_totals_scope": "Sum of observed samples only; token amounts are lower bounds when any phase is not complete. Missing usage is never an observed zero.",
+        "complete_totals": {
+          "seconds": null,
+          "input_tokens": null,
+          "cached_input_tokens": null,
+          "output_tokens": null,
+          "total_input_output_tokens": null
+        },
+        "execution_timing": null,
+        "cost_comparable": false,
+        "invalidated_legacy_cost_fields": [],
+        "report_sha256": "db8b57068012da365d7e452e8f8742a25a8fb655a6e0edf56a4a6597a4530ccf",
+        "markdown_sha256": "375162daa3e9c999612e16098c27ff3c9d808daffe173a8646681e42ce6e913a",
+        "provenance": {
+          "mode": "read-only cost reanalysis",
+          "source_plan_sha256": "29e6eae2136ee3aa5c706c241b9a360b545828716084c282b60b8277d7a3aa7e",
+          "source_harness_manifest_sha256": "e03b1c45c795a3c5d1dc5fa1fdb6a6a332c1a65bb3322f6c2994599c1e3b8a3f",
+          "source_execution_timing_sha256": null,
+          "source_sealed_record_sha256": {},
+          "reporter_sha256": {
+            "context/installed_run.py": "0b575e6a8a61a28a77b666c68d28c22906f09e6ae560dc4d0af9de70077634fd",
+            "context/oracle.py": "32b1c66d20c9d7b3a0f41fff220abe2b3f69e9f5283cc71320a19067e7389abb",
+            "context/run.py": "047082adf54dd8a92ca4919cac9ae3eaa8a62acc598913cc9ee1a6688ae9f585",
+            "benchmark/run.py": "2648db9374b8619f2cc300096119949d9e848de740cf24fdfea754795a2efe30",
+            "benchmark/handoff.py": "a1b4a3f0d650a2fa97b9f98f0643792fa8229a1d864d647c3c0825a3cab11db1",
+            "run-performance-trials.py": "cdbbbda7788f9f9c754c263a3fdda2b7fec39bd623c4d54a41bf997800dc8c3c"
+          },
+          "source_native_sha256": {},
+          "behavior_adjudication": "Original sealed artifacts and artifact-bound reviews are read unchanged; only cost completeness is reassessed."
+        },
+        "report": "/var/tmp/ssot-continuity-cost-reanalysis-final-v2-20261112/initial-cohort/development-chain/report.json"
+      },
+      {
+        "cohort": "initial-cohort",
+        "attempt": "confirmation-ceiling",
+        "state": "unrun",
+        "phase_count": 0,
+        "phase_usage_statuses": {},
+        "observed_totals": {
+          "seconds": null,
+          "input_tokens": null,
+          "cached_input_tokens": null,
+          "output_tokens": null,
+          "total_input_output_tokens": null
+        },
+        "observed_totals_scope": "Sum of observed samples only; token amounts are lower bounds when any phase is not complete. Missing usage is never an observed zero.",
+        "complete_totals": {
+          "seconds": null,
+          "input_tokens": null,
+          "cached_input_tokens": null,
+          "output_tokens": null,
+          "total_input_output_tokens": null
+        },
+        "execution_timing": null,
+        "cost_comparable": false,
+        "invalidated_legacy_cost_fields": [],
+        "report_sha256": "ed161ddcad4795982f1e147f9fbbd635ddf208cf61e3fd1864330f2c8411248a",
+        "markdown_sha256": "375162daa3e9c999612e16098c27ff3c9d808daffe173a8646681e42ce6e913a",
+        "provenance": {
+          "mode": "read-only cost reanalysis",
+          "source_plan_sha256": "5c9bbd5da1862d9e69bd5eab43b58b9d07b8a96ab615087eb52b14944fe7ca32",
+          "source_harness_manifest_sha256": "e03b1c45c795a3c5d1dc5fa1fdb6a6a332c1a65bb3322f6c2994599c1e3b8a3f",
+          "source_execution_timing_sha256": null,
+          "source_sealed_record_sha256": {},
+          "reporter_sha256": {
+            "context/installed_run.py": "0b575e6a8a61a28a77b666c68d28c22906f09e6ae560dc4d0af9de70077634fd",
+            "context/oracle.py": "32b1c66d20c9d7b3a0f41fff220abe2b3f69e9f5283cc71320a19067e7389abb",
+            "context/run.py": "047082adf54dd8a92ca4919cac9ae3eaa8a62acc598913cc9ee1a6688ae9f585",
+            "benchmark/run.py": "2648db9374b8619f2cc300096119949d9e848de740cf24fdfea754795a2efe30",
+            "benchmark/handoff.py": "a1b4a3f0d650a2fa97b9f98f0643792fa8229a1d864d647c3c0825a3cab11db1",
+            "run-performance-trials.py": "cdbbbda7788f9f9c754c263a3fdda2b7fec39bd623c4d54a41bf997800dc8c3c"
+          },
+          "source_native_sha256": {},
+          "behavior_adjudication": "Original sealed artifacts and artifact-bound reviews are read unchanged; only cost completeness is reassessed."
+        },
+        "report": "/var/tmp/ssot-continuity-cost-reanalysis-final-v2-20261112/initial-cohort/confirmation-ceiling/report.json"
+      },
+      {
+        "cohort": "initial-cohort",
+        "attempt": "confirmation-floor",
+        "state": "unrun",
+        "phase_count": 0,
+        "phase_usage_statuses": {},
+        "observed_totals": {
+          "seconds": null,
+          "input_tokens": null,
+          "cached_input_tokens": null,
+          "output_tokens": null,
+          "total_input_output_tokens": null
+        },
+        "observed_totals_scope": "Sum of observed samples only; token amounts are lower bounds when any phase is not complete. Missing usage is never an observed zero.",
+        "complete_totals": {
+          "seconds": null,
+          "input_tokens": null,
+          "cached_input_tokens": null,
+          "output_tokens": null,
+          "total_input_output_tokens": null
+        },
+        "execution_timing": null,
+        "cost_comparable": false,
+        "invalidated_legacy_cost_fields": [],
+        "report_sha256": "f6dff23bb43650308aa43a4902bcc285ee501b4edfec46021973d5472881cd5b",
+        "markdown_sha256": "375162daa3e9c999612e16098c27ff3c9d808daffe173a8646681e42ce6e913a",
+        "provenance": {
+          "mode": "read-only cost reanalysis",
+          "source_plan_sha256": "6ad4a843583774c777f8c04959392c33e3d3e0f737a82f10c1386e59186a78ee",
+          "source_harness_manifest_sha256": "e03b1c45c795a3c5d1dc5fa1fdb6a6a332c1a65bb3322f6c2994599c1e3b8a3f",
+          "source_execution_timing_sha256": null,
+          "source_sealed_record_sha256": {},
+          "reporter_sha256": {
+            "context/installed_run.py": "0b575e6a8a61a28a77b666c68d28c22906f09e6ae560dc4d0af9de70077634fd",
+            "context/oracle.py": "32b1c66d20c9d7b3a0f41fff220abe2b3f69e9f5283cc71320a19067e7389abb",
+            "context/run.py": "047082adf54dd8a92ca4919cac9ae3eaa8a62acc598913cc9ee1a6688ae9f585",
+            "benchmark/run.py": "2648db9374b8619f2cc300096119949d9e848de740cf24fdfea754795a2efe30",
+            "benchmark/handoff.py": "a1b4a3f0d650a2fa97b9f98f0643792fa8229a1d864d647c3c0825a3cab11db1",
+            "run-performance-trials.py": "cdbbbda7788f9f9c754c263a3fdda2b7fec39bd623c4d54a41bf997800dc8c3c"
+          },
+          "source_native_sha256": {},
+          "behavior_adjudication": "Original sealed artifacts and artifact-bound reviews are read unchanged; only cost completeness is reassessed."
+        },
+        "report": "/var/tmp/ssot-continuity-cost-reanalysis-final-v2-20261112/initial-cohort/confirmation-floor/report.json"
+      },
+      {
+        "cohort": "initial-cohort",
+        "attempt": "confirmation-stale",
+        "state": "unrun",
+        "phase_count": 0,
+        "phase_usage_statuses": {},
+        "observed_totals": {
+          "seconds": null,
+          "input_tokens": null,
+          "cached_input_tokens": null,
+          "output_tokens": null,
+          "total_input_output_tokens": null
+        },
+        "observed_totals_scope": "Sum of observed samples only; token amounts are lower bounds when any phase is not complete. Missing usage is never an observed zero.",
+        "complete_totals": {
+          "seconds": null,
+          "input_tokens": null,
+          "cached_input_tokens": null,
+          "output_tokens": null,
+          "total_input_output_tokens": null
+        },
+        "execution_timing": null,
+        "cost_comparable": false,
+        "invalidated_legacy_cost_fields": [],
+        "report_sha256": "acd1422a11b804257c4b9d3ccc7afd53dcfded92734b9b954b226dfee92847e1",
+        "markdown_sha256": "375162daa3e9c999612e16098c27ff3c9d808daffe173a8646681e42ce6e913a",
+        "provenance": {
+          "mode": "read-only cost reanalysis",
+          "source_plan_sha256": "6dc2b75abd15e9df8c394b92f15664333bf6c5f31d4ce792e246d2042a19defe",
+          "source_harness_manifest_sha256": "e03b1c45c795a3c5d1dc5fa1fdb6a6a332c1a65bb3322f6c2994599c1e3b8a3f",
+          "source_execution_timing_sha256": null,
+          "source_sealed_record_sha256": {},
+          "reporter_sha256": {
+            "context/installed_run.py": "0b575e6a8a61a28a77b666c68d28c22906f09e6ae560dc4d0af9de70077634fd",
+            "context/oracle.py": "32b1c66d20c9d7b3a0f41fff220abe2b3f69e9f5283cc71320a19067e7389abb",
+            "context/run.py": "047082adf54dd8a92ca4919cac9ae3eaa8a62acc598913cc9ee1a6688ae9f585",
+            "benchmark/run.py": "2648db9374b8619f2cc300096119949d9e848de740cf24fdfea754795a2efe30",
+            "benchmark/handoff.py": "a1b4a3f0d650a2fa97b9f98f0643792fa8229a1d864d647c3c0825a3cab11db1",
+            "run-performance-trials.py": "cdbbbda7788f9f9c754c263a3fdda2b7fec39bd623c4d54a41bf997800dc8c3c"
+          },
+          "source_native_sha256": {},
+          "behavior_adjudication": "Original sealed artifacts and artifact-bound reviews are read unchanged; only cost completeness is reassessed."
+        },
+        "report": "/var/tmp/ssot-continuity-cost-reanalysis-final-v2-20261112/initial-cohort/confirmation-stale/report.json"
+      },
+      {
+        "cohort": "initial-cohort",
+        "attempt": "confirmation-chain",
+        "state": "unrun",
+        "phase_count": 0,
+        "phase_usage_statuses": {},
+        "observed_totals": {
+          "seconds": null,
+          "input_tokens": null,
+          "cached_input_tokens": null,
+          "output_tokens": null,
+          "total_input_output_tokens": null
+        },
+        "observed_totals_scope": "Sum of observed samples only; token amounts are lower bounds when any phase is not complete. Missing usage is never an observed zero.",
+        "complete_totals": {
+          "seconds": null,
+          "input_tokens": null,
+          "cached_input_tokens": null,
+          "output_tokens": null,
+          "total_input_output_tokens": null
+        },
+        "execution_timing": null,
+        "cost_comparable": false,
+        "invalidated_legacy_cost_fields": [],
+        "report_sha256": "331acf5042d915073bb1858a8ab231e327c35fd9c9d002d9a983797d1a27c491",
+        "markdown_sha256": "375162daa3e9c999612e16098c27ff3c9d808daffe173a8646681e42ce6e913a",
+        "provenance": {
+          "mode": "read-only cost reanalysis",
+          "source_plan_sha256": "c2dc46f2fb51cc7a0338053e269e8347d6f4b6324fee1a5057e57cd40efe9ede",
+          "source_harness_manifest_sha256": "e03b1c45c795a3c5d1dc5fa1fdb6a6a332c1a65bb3322f6c2994599c1e3b8a3f",
+          "source_execution_timing_sha256": null,
+          "source_sealed_record_sha256": {},
+          "reporter_sha256": {
+            "context/installed_run.py": "0b575e6a8a61a28a77b666c68d28c22906f09e6ae560dc4d0af9de70077634fd",
+            "context/oracle.py": "32b1c66d20c9d7b3a0f41fff220abe2b3f69e9f5283cc71320a19067e7389abb",
+            "context/run.py": "047082adf54dd8a92ca4919cac9ae3eaa8a62acc598913cc9ee1a6688ae9f585",
+            "benchmark/run.py": "2648db9374b8619f2cc300096119949d9e848de740cf24fdfea754795a2efe30",
+            "benchmark/handoff.py": "a1b4a3f0d650a2fa97b9f98f0643792fa8229a1d864d647c3c0825a3cab11db1",
+            "run-performance-trials.py": "cdbbbda7788f9f9c754c263a3fdda2b7fec39bd623c4d54a41bf997800dc8c3c"
+          },
+          "source_native_sha256": {},
+          "behavior_adjudication": "Original sealed artifacts and artifact-bound reviews are read unchanged; only cost completeness is reassessed."
+        },
+        "report": "/var/tmp/ssot-continuity-cost-reanalysis-final-v2-20261112/initial-cohort/confirmation-chain/report.json"
+      },
+      {
+        "cohort": "repaired-cohort",
+        "attempt": "development-ceiling",
+        "state": "passed",
+        "phase_count": 1,
+        "phase_usage_statuses": {
+          "phase-1/1.summary.json": "complete"
+        },
+        "observed_totals": {
+          "seconds": 35.535,
+          "input_tokens": 78494,
+          "cached_input_tokens": 70272,
+          "output_tokens": 712,
+          "total_input_output_tokens": 79206
+        },
+        "observed_totals_scope": "Sum of observed samples only; token amounts are lower bounds when any phase is not complete. Missing usage is never an observed zero.",
+        "complete_totals": {
+          "seconds": 35.535,
+          "input_tokens": 78494,
+          "cached_input_tokens": 70272,
+          "output_tokens": 712,
+          "total_input_output_tokens": 79206
+        },
+        "execution_timing": null,
+        "cost_comparable": true,
+        "invalidated_legacy_cost_fields": [],
+        "report_sha256": "0fc43d0680b10d250e6aec29d1a46c078013e856f50b57f0472e0877874bac5a",
+        "markdown_sha256": "30e5f01513f407dae09d5fae9813895bcbca9dd1696d4790490b11b18c712b6f",
+        "provenance": {
+          "mode": "read-only cost reanalysis",
+          "source_plan_sha256": "531167e718cec34dc310b913ae6015d0373734ac2e931720ed920c807528c8af",
+          "source_harness_manifest_sha256": "b833975cb762963a35895774449415555fac55b5bd3aff4a122570467c65eff9",
+          "source_execution_timing_sha256": null,
+          "source_sealed_record_sha256": {
+            "result.json": "093d4a58e42dd60030b719823362455305751eb3c414ea3dd710f0c491f803e8",
+            "mechanical.json": "829075922649b1b216380b1aba1030f565b362226e8789a8088ccd1372bc642f",
+            "review.json": "ab5f816c3fdbf097a916d8334ab014de786eca617ef92e12887891a8f7c130df"
+          },
+          "reporter_sha256": {
+            "context/installed_run.py": "0b575e6a8a61a28a77b666c68d28c22906f09e6ae560dc4d0af9de70077634fd",
+            "context/oracle.py": "32b1c66d20c9d7b3a0f41fff220abe2b3f69e9f5283cc71320a19067e7389abb",
+            "context/run.py": "047082adf54dd8a92ca4919cac9ae3eaa8a62acc598913cc9ee1a6688ae9f585",
+            "benchmark/run.py": "2648db9374b8619f2cc300096119949d9e848de740cf24fdfea754795a2efe30",
+            "benchmark/handoff.py": "a1b4a3f0d650a2fa97b9f98f0643792fa8229a1d864d647c3c0825a3cab11db1",
+            "run-performance-trials.py": "cdbbbda7788f9f9c754c263a3fdda2b7fec39bd623c4d54a41bf997800dc8c3c"
+          },
+          "source_native_sha256": {
+            "phase-1/1.native.jsonl": "701435839faea7bc5aed35e6c43af7c40db423b0bbafe60ee2a1f89265719ed5"
+          },
+          "behavior_adjudication": "Original sealed artifacts and artifact-bound reviews are read unchanged; only cost completeness is reassessed."
+        },
+        "report": "/var/tmp/ssot-continuity-cost-reanalysis-final-v2-20261112/repaired-cohort/development-ceiling/report.json"
+      },
+      {
+        "cohort": "repaired-cohort",
+        "attempt": "development-floor",
+        "state": "calibration_passed",
+        "phase_count": 1,
+        "phase_usage_statuses": {
+          "phase-1/1.summary.json": "complete"
+        },
+        "observed_totals": {
+          "seconds": 22.715,
+          "input_tokens": 60434,
+          "cached_input_tokens": 54400,
+          "output_tokens": 274,
+          "total_input_output_tokens": 60708
+        },
+        "observed_totals_scope": "Sum of observed samples only; token amounts are lower bounds when any phase is not complete. Missing usage is never an observed zero.",
+        "complete_totals": {
+          "seconds": 22.715,
+          "input_tokens": 60434,
+          "cached_input_tokens": 54400,
+          "output_tokens": 274,
+          "total_input_output_tokens": 60708
+        },
+        "execution_timing": null,
+        "cost_comparable": false,
+        "invalidated_legacy_cost_fields": [],
+        "report_sha256": "2f7ebadbd17849541bf4d621a1a50f945c88e809aa7e72108d15cabfde61e704",
+        "markdown_sha256": "027bef2cb2e2b72e4ccd4341f936da715c8985703c928acab84f3093cb5e8f03",
+        "provenance": {
+          "mode": "read-only cost reanalysis",
+          "source_plan_sha256": "d924ba499d12cd9dfae82d40d9f598816583d462f91b215fa0f9ec3ddc8d001d",
+          "source_harness_manifest_sha256": "b833975cb762963a35895774449415555fac55b5bd3aff4a122570467c65eff9",
+          "source_execution_timing_sha256": null,
+          "source_sealed_record_sha256": {
+            "result.json": "5fc72be0b2836f8eeb2937996237092b4dc335bf2c4607201f59d983e534eea1",
+            "mechanical.json": "5253753e9e405ae219078d559309421669fa1ef6a4bd1e52c81af394396acf43",
+            "review.json": "8bc0ce6836cd911008158502778c68aad318c09997137370d90dfc1c14706ed1"
+          },
+          "reporter_sha256": {
+            "context/installed_run.py": "0b575e6a8a61a28a77b666c68d28c22906f09e6ae560dc4d0af9de70077634fd",
+            "context/oracle.py": "32b1c66d20c9d7b3a0f41fff220abe2b3f69e9f5283cc71320a19067e7389abb",
+            "context/run.py": "047082adf54dd8a92ca4919cac9ae3eaa8a62acc598913cc9ee1a6688ae9f585",
+            "benchmark/run.py": "2648db9374b8619f2cc300096119949d9e848de740cf24fdfea754795a2efe30",
+            "benchmark/handoff.py": "a1b4a3f0d650a2fa97b9f98f0643792fa8229a1d864d647c3c0825a3cab11db1",
+            "run-performance-trials.py": "cdbbbda7788f9f9c754c263a3fdda2b7fec39bd623c4d54a41bf997800dc8c3c"
+          },
+          "source_native_sha256": {
+            "phase-1/1.native.jsonl": "eac46c80bac2f5180fd9e0bac0e8393562d3b34dcc1f6cf05d42cc1fe281a4d2"
+          },
+          "behavior_adjudication": "Original sealed artifacts and artifact-bound reviews are read unchanged; only cost completeness is reassessed."
+        },
+        "report": "/var/tmp/ssot-continuity-cost-reanalysis-final-v2-20261112/repaired-cohort/development-floor/report.json"
+      },
+      {
+        "cohort": "repaired-cohort",
+        "attempt": "development-stale",
+        "state": "calibration_passed",
+        "phase_count": 1,
+        "phase_usage_statuses": {
+          "phase-1/1.summary.json": "complete"
+        },
+        "observed_totals": {
+          "seconds": 38.389,
+          "input_tokens": 78305,
+          "cached_input_tokens": 70144,
+          "output_tokens": 770,
+          "total_input_output_tokens": 79075
+        },
+        "observed_totals_scope": "Sum of observed samples only; token amounts are lower bounds when any phase is not complete. Missing usage is never an observed zero.",
+        "complete_totals": {
+          "seconds": 38.389,
+          "input_tokens": 78305,
+          "cached_input_tokens": 70144,
+          "output_tokens": 770,
+          "total_input_output_tokens": 79075
+        },
+        "execution_timing": null,
+        "cost_comparable": false,
+        "invalidated_legacy_cost_fields": [],
+        "report_sha256": "4374299cf31482af44c964c848f9fe0d929f75bc2eed8c2665c434e1f9c6b899",
+        "markdown_sha256": "6139315f83d565b75e890a11866f169e9d7d105e09ba365350830352521b6a8c",
+        "provenance": {
+          "mode": "read-only cost reanalysis",
+          "source_plan_sha256": "2a569886520fbbce8bee388c68be150e0c7aab2cb9a1de18d3ac80580d34cf45",
+          "source_harness_manifest_sha256": "b833975cb762963a35895774449415555fac55b5bd3aff4a122570467c65eff9",
+          "source_execution_timing_sha256": null,
+          "source_sealed_record_sha256": {
+            "result.json": "233e3aa176a5f8beaf2e98ed13bbf6717ef2bd97a6ec4ee3ffa331a881b59b6e",
+            "mechanical.json": "1e592d90a1eb8b96c5ad1fc803c9234ea9b1ad706bc31ad751bbb93e70906d4f",
+            "review.json": "5670cef8165b22ec1052c90257fb5771dc541024f874cb745b77a0fc847012b9"
+          },
+          "reporter_sha256": {
+            "context/installed_run.py": "0b575e6a8a61a28a77b666c68d28c22906f09e6ae560dc4d0af9de70077634fd",
+            "context/oracle.py": "32b1c66d20c9d7b3a0f41fff220abe2b3f69e9f5283cc71320a19067e7389abb",
+            "context/run.py": "047082adf54dd8a92ca4919cac9ae3eaa8a62acc598913cc9ee1a6688ae9f585",
+            "benchmark/run.py": "2648db9374b8619f2cc300096119949d9e848de740cf24fdfea754795a2efe30",
+            "benchmark/handoff.py": "a1b4a3f0d650a2fa97b9f98f0643792fa8229a1d864d647c3c0825a3cab11db1",
+            "run-performance-trials.py": "cdbbbda7788f9f9c754c263a3fdda2b7fec39bd623c4d54a41bf997800dc8c3c"
+          },
+          "source_native_sha256": {
+            "phase-1/1.native.jsonl": "484265c875a2dda9f98e0057e8bf3fee988b1c3050be8549c11a59da0bd4d12b"
+          },
+          "behavior_adjudication": "Original sealed artifacts and artifact-bound reviews are read unchanged; only cost completeness is reassessed."
+        },
+        "report": "/var/tmp/ssot-continuity-cost-reanalysis-final-v2-20261112/repaired-cohort/development-stale/report.json"
+      },
+      {
+        "cohort": "repaired-cohort",
+        "attempt": "development-chain",
+        "state": "passed",
+        "phase_count": 6,
+        "phase_usage_statuses": {
+          "phase-1/1.summary.json": "complete",
+          "phase-2/1.summary.json": "lower_bound",
+          "phase-3/1.summary.json": "complete",
+          "phase-4/1.summary.json": "complete",
+          "phase-5/1.summary.json": "complete",
+          "phase-6/1.summary.json": "complete"
+        },
+        "observed_totals": {
+          "seconds": 416.894,
+          "input_tokens": 1636112,
+          "cached_input_tokens": 1453312,
+          "output_tokens": 13006,
+          "total_input_output_tokens": 1649118
+        },
+        "observed_totals_scope": "Sum of observed samples only; token amounts are lower bounds when any phase is not complete. Missing usage is never an observed zero.",
+        "complete_totals": {
+          "seconds": 416.894,
+          "input_tokens": null,
+          "cached_input_tokens": null,
+          "output_tokens": null,
+          "total_input_output_tokens": null
+        },
+        "execution_timing": null,
+        "cost_comparable": false,
+        "invalidated_legacy_cost_fields": [
+          {
+            "summary": "phase-2/1.summary.json",
+            "legacy_costs": {
+              "input_tokens": 117321,
+              "cached_input_tokens": 89344,
+              "output_tokens": 705,
+              "total_input_output_tokens": 118026,
+              "seconds": 38.94
+            },
+            "legacy_cost_comparable": true,
+            "reason": "No closing usage covering all model output"
+          }
+        ],
+        "report_sha256": "637d4557107a4deaa99d390b8a71283b93f8a7dfd1b906c388f2e8c4aa71ff0d",
+        "markdown_sha256": "91bf0138ae4359a200d19ee0359b25911afa1d1382b292e0e5301572e4e055aa",
+        "provenance": {
+          "mode": "read-only cost reanalysis",
+          "source_plan_sha256": "3867b88d0386588a8bb1df5a86ac861f5e7e50b78d3265caa3f2231b06066454",
+          "source_harness_manifest_sha256": "b833975cb762963a35895774449415555fac55b5bd3aff4a122570467c65eff9",
+          "source_execution_timing_sha256": null,
+          "source_sealed_record_sha256": {
+            "result.json": "ba3e8ccff38b50467ea6ce1aa4a64bb657e40f0b73bd1dd0b00bc4011a3c4b40",
+            "mechanical.json": "a8cac72ab56688a8d1eb58156c2acd6d70a0e67dcc73de290ee6af6e38b0fd12",
+            "review.json": "1d891bf70cd38868bdbb9e29da6cb4dfdbc2d532de225c843e06be497cb8b704"
+          },
+          "reporter_sha256": {
+            "context/installed_run.py": "0b575e6a8a61a28a77b666c68d28c22906f09e6ae560dc4d0af9de70077634fd",
+            "context/oracle.py": "32b1c66d20c9d7b3a0f41fff220abe2b3f69e9f5283cc71320a19067e7389abb",
+            "context/run.py": "047082adf54dd8a92ca4919cac9ae3eaa8a62acc598913cc9ee1a6688ae9f585",
+            "benchmark/run.py": "2648db9374b8619f2cc300096119949d9e848de740cf24fdfea754795a2efe30",
+            "benchmark/handoff.py": "a1b4a3f0d650a2fa97b9f98f0643792fa8229a1d864d647c3c0825a3cab11db1",
+            "run-performance-trials.py": "cdbbbda7788f9f9c754c263a3fdda2b7fec39bd623c4d54a41bf997800dc8c3c"
+          },
+          "source_native_sha256": {
+            "phase-1/1.native.jsonl": "4107f672917a67c7e2f907554e1dd9e3fdfc2145cb24161ee1062e07670ddf5d",
+            "phase-2/1.native.jsonl": "89b14f54dfc899ae1f6265c9d289db726aa1c5124eae2e326972d64aa28e2127",
+            "phase-3/1.native.jsonl": "d9b37314d65021ede4fb005dd38be499fca355b149b9344d50984b49345b3d71",
+            "phase-4/1.native.jsonl": "2c0d5bd3c18c56af1431abe44853fc9ba5cdea503158ffc212a9bcff5ca0afd2",
+            "phase-5/1.native.jsonl": "e0668af375e28745d2c7973e7be8696036f3e1e1d5df6ea572b9555c0aa0dec4",
+            "phase-6/1.native.jsonl": "fe16e73452886e49aae797ebeca1753ee5ca9e0d0f569231a906adcb897a50b9"
+          },
+          "behavior_adjudication": "Original sealed artifacts and artifact-bound reviews are read unchanged; only cost completeness is reassessed."
+        },
+        "report": "/var/tmp/ssot-continuity-cost-reanalysis-final-v2-20261112/repaired-cohort/development-chain/report.json"
+      },
+      {
+        "cohort": "repaired-cohort",
+        "attempt": "confirmation-ceiling",
+        "state": "passed",
+        "phase_count": 1,
+        "phase_usage_statuses": {
+          "phase-1/1.summary.json": "complete"
+        },
+        "observed_totals": {
+          "seconds": 63.452,
+          "input_tokens": 97479,
+          "cached_input_tokens": 87424,
+          "output_tokens": 2014,
+          "total_input_output_tokens": 99493
+        },
+        "observed_totals_scope": "Sum of observed samples only; token amounts are lower bounds when any phase is not complete. Missing usage is never an observed zero.",
+        "complete_totals": {
+          "seconds": 63.452,
+          "input_tokens": 97479,
+          "cached_input_tokens": 87424,
+          "output_tokens": 2014,
+          "total_input_output_tokens": 99493
+        },
+        "execution_timing": null,
+        "cost_comparable": true,
+        "invalidated_legacy_cost_fields": [],
+        "report_sha256": "156ed5051deabd58edfcf72de1f851a6395655effb46c7b8a29e6c3c23292b8b",
+        "markdown_sha256": "dbc11cff8cabc049d8140b004004c4e642ca9943f8ce92034420449f312ab022",
+        "provenance": {
+          "mode": "read-only cost reanalysis",
+          "source_plan_sha256": "800276f9b18580611dd8d9aaae3502f30559a2e1503d4698f5db5793d671e023",
+          "source_harness_manifest_sha256": "b833975cb762963a35895774449415555fac55b5bd3aff4a122570467c65eff9",
+          "source_execution_timing_sha256": null,
+          "source_sealed_record_sha256": {
+            "result.json": "d36f59884c09a6173d9729c0b1ab69ca745d446f24ec1cb4c5f2c56e0a32bb0e",
+            "mechanical.json": "4e0e4f02567eb404ec364f32d693ce06deb7f22540b72a37726aafd43df2e59b",
+            "review.json": "0920bff5fa8d81608d0fc7bd5ec13c64293a575cb06bd2fba356b4761a4c1d15"
+          },
+          "reporter_sha256": {
+            "context/installed_run.py": "0b575e6a8a61a28a77b666c68d28c22906f09e6ae560dc4d0af9de70077634fd",
+            "context/oracle.py": "32b1c66d20c9d7b3a0f41fff220abe2b3f69e9f5283cc71320a19067e7389abb",
+            "context/run.py": "047082adf54dd8a92ca4919cac9ae3eaa8a62acc598913cc9ee1a6688ae9f585",
+            "benchmark/run.py": "2648db9374b8619f2cc300096119949d9e848de740cf24fdfea754795a2efe30",
+            "benchmark/handoff.py": "a1b4a3f0d650a2fa97b9f98f0643792fa8229a1d864d647c3c0825a3cab11db1",
+            "run-performance-trials.py": "cdbbbda7788f9f9c754c263a3fdda2b7fec39bd623c4d54a41bf997800dc8c3c"
+          },
+          "source_native_sha256": {
+            "phase-1/1.native.jsonl": "b82163b2a542b3653180703acba5180097bd6abe976c2222eb052a0e55190ccb"
+          },
+          "behavior_adjudication": "Original sealed artifacts and artifact-bound reviews are read unchanged; only cost completeness is reassessed."
+        },
+        "report": "/var/tmp/ssot-continuity-cost-reanalysis-final-v2-20261112/repaired-cohort/confirmation-ceiling/report.json"
+      },
+      {
+        "cohort": "repaired-cohort",
+        "attempt": "confirmation-floor",
+        "state": "calibration_passed",
+        "phase_count": 1,
+        "phase_usage_statuses": {
+          "phase-1/1.summary.json": "complete"
+        },
+        "observed_totals": {
+          "seconds": 23.981,
+          "input_tokens": 61073,
+          "cached_input_tokens": 54400,
+          "output_tokens": 337,
+          "total_input_output_tokens": 61410
+        },
+        "observed_totals_scope": "Sum of observed samples only; token amounts are lower bounds when any phase is not complete. Missing usage is never an observed zero.",
+        "complete_totals": {
+          "seconds": 23.981,
+          "input_tokens": 61073,
+          "cached_input_tokens": 54400,
+          "output_tokens": 337,
+          "total_input_output_tokens": 61410
+        },
+        "execution_timing": null,
+        "cost_comparable": false,
+        "invalidated_legacy_cost_fields": [],
+        "report_sha256": "bfc250a7dea073097274edf6dca5c28f0c5c609b89e0c029ac8725b562a8b53f",
+        "markdown_sha256": "10d4249c645038e466b6871e6299e3782f25b79e8a2bcf595b5e6581edff52d4",
+        "provenance": {
+          "mode": "read-only cost reanalysis",
+          "source_plan_sha256": "70a7f99eda1af4af362dc1febf4a1c20d73832ccb145a0b9e891b74a60000d5d",
+          "source_harness_manifest_sha256": "b833975cb762963a35895774449415555fac55b5bd3aff4a122570467c65eff9",
+          "source_execution_timing_sha256": null,
+          "source_sealed_record_sha256": {
+            "result.json": "058330b289d6d78c9a124eca7ade15e95b4951ba81904f5c7b4b23a8704f8894",
+            "mechanical.json": "0a76ca52a30b3040fa0e8442b979efadda15f85d1353dded5a4cc7801d5d3903",
+            "review.json": "91858b724797832d18f55636091466b08eb47a2030667679b87c59da29b2b90e"
+          },
+          "reporter_sha256": {
+            "context/installed_run.py": "0b575e6a8a61a28a77b666c68d28c22906f09e6ae560dc4d0af9de70077634fd",
+            "context/oracle.py": "32b1c66d20c9d7b3a0f41fff220abe2b3f69e9f5283cc71320a19067e7389abb",
+            "context/run.py": "047082adf54dd8a92ca4919cac9ae3eaa8a62acc598913cc9ee1a6688ae9f585",
+            "benchmark/run.py": "2648db9374b8619f2cc300096119949d9e848de740cf24fdfea754795a2efe30",
+            "benchmark/handoff.py": "a1b4a3f0d650a2fa97b9f98f0643792fa8229a1d864d647c3c0825a3cab11db1",
+            "run-performance-trials.py": "cdbbbda7788f9f9c754c263a3fdda2b7fec39bd623c4d54a41bf997800dc8c3c"
+          },
+          "source_native_sha256": {
+            "phase-1/1.native.jsonl": "c012aa34defe1fb3f7e53143b38697250ff476079d83ed55d3b3bb7b886cba10"
+          },
+          "behavior_adjudication": "Original sealed artifacts and artifact-bound reviews are read unchanged; only cost completeness is reassessed."
+        },
+        "report": "/var/tmp/ssot-continuity-cost-reanalysis-final-v2-20261112/repaired-cohort/confirmation-floor/report.json"
+      },
+      {
+        "cohort": "repaired-cohort",
+        "attempt": "confirmation-stale",
+        "state": "calibration_passed",
+        "phase_count": 1,
+        "phase_usage_statuses": {
+          "phase-1/1.summary.json": "complete"
+        },
+        "observed_totals": {
+          "seconds": 53.725,
+          "input_tokens": 111004,
+          "cached_input_tokens": 101504,
+          "output_tokens": 1623,
+          "total_input_output_tokens": 112627
+        },
+        "observed_totals_scope": "Sum of observed samples only; token amounts are lower bounds when any phase is not complete. Missing usage is never an observed zero.",
+        "complete_totals": {
+          "seconds": 53.725,
+          "input_tokens": 111004,
+          "cached_input_tokens": 101504,
+          "output_tokens": 1623,
+          "total_input_output_tokens": 112627
+        },
+        "execution_timing": null,
+        "cost_comparable": false,
+        "invalidated_legacy_cost_fields": [],
+        "report_sha256": "29ea98136a2555cf5b52657ae9428dbdfa630d4aec0b06fcf4b4212c499e812c",
+        "markdown_sha256": "2bfc50bf16d08f999d23acac53d9857dec50845ab2abf3de59263df466588ab2",
+        "provenance": {
+          "mode": "read-only cost reanalysis",
+          "source_plan_sha256": "c7504a6f4c3306e055e18457957791b1b295eb67f6f1907889cc68bf602f1569",
+          "source_harness_manifest_sha256": "b833975cb762963a35895774449415555fac55b5bd3aff4a122570467c65eff9",
+          "source_execution_timing_sha256": null,
+          "source_sealed_record_sha256": {
+            "result.json": "72a099ce12373aa73227fe5d8f86bfbc779b2912f982e64706c2a9a2d475b033",
+            "mechanical.json": "5cddaff35c2f800a341c928e72490e98cbe8c099ce997ed5e168a19a4199f255",
+            "review.json": "ed1a23ff8e57dbf73783b5f470ac5dd487d05f2bd1b985200617f2309d871b27"
+          },
+          "reporter_sha256": {
+            "context/installed_run.py": "0b575e6a8a61a28a77b666c68d28c22906f09e6ae560dc4d0af9de70077634fd",
+            "context/oracle.py": "32b1c66d20c9d7b3a0f41fff220abe2b3f69e9f5283cc71320a19067e7389abb",
+            "context/run.py": "047082adf54dd8a92ca4919cac9ae3eaa8a62acc598913cc9ee1a6688ae9f585",
+            "benchmark/run.py": "2648db9374b8619f2cc300096119949d9e848de740cf24fdfea754795a2efe30",
+            "benchmark/handoff.py": "a1b4a3f0d650a2fa97b9f98f0643792fa8229a1d864d647c3c0825a3cab11db1",
+            "run-performance-trials.py": "cdbbbda7788f9f9c754c263a3fdda2b7fec39bd623c4d54a41bf997800dc8c3c"
+          },
+          "source_native_sha256": {
+            "phase-1/1.native.jsonl": "516e22ec5f2811b9f9003d1e7cd11711e421cfe61eba89a3be9746c2697ce8fb"
+          },
+          "behavior_adjudication": "Original sealed artifacts and artifact-bound reviews are read unchanged; only cost completeness is reassessed."
+        },
+        "report": "/var/tmp/ssot-continuity-cost-reanalysis-final-v2-20261112/repaired-cohort/confirmation-stale/report.json"
+      },
+      {
+        "cohort": "repaired-cohort",
+        "attempt": "confirmation-chain",
+        "state": "passed",
+        "phase_count": 5,
+        "phase_usage_statuses": {
+          "phase-1/1.summary.json": "complete",
+          "phase-2/1.summary.json": "complete",
+          "phase-3/1.summary.json": "complete",
+          "phase-4/1.summary.json": "complete",
+          "phase-5/1.summary.json": "complete"
+        },
+        "observed_totals": {
+          "seconds": 331.319,
+          "input_tokens": 812274,
+          "cached_input_tokens": 713856,
+          "output_tokens": 11670,
+          "total_input_output_tokens": 823944
+        },
+        "observed_totals_scope": "Sum of observed samples only; token amounts are lower bounds when any phase is not complete. Missing usage is never an observed zero.",
+        "complete_totals": {
+          "seconds": 331.319,
+          "input_tokens": 812274,
+          "cached_input_tokens": 713856,
+          "output_tokens": 11670,
+          "total_input_output_tokens": 823944
+        },
+        "execution_timing": null,
+        "cost_comparable": true,
+        "invalidated_legacy_cost_fields": [],
+        "report_sha256": "6c99233e7a5e8602b170126feecf021199f729d47ce5ab6e32dfdb381a6257df",
+        "markdown_sha256": "ce033fd7f7413f1a5874553886a8c9fef3e99f5aea75c79c7101404e906db508",
+        "provenance": {
+          "mode": "read-only cost reanalysis",
+          "source_plan_sha256": "37c74d64966fbe1724f5f96b412cfae2535b117903d1975a7e9b7a7a317be3c1",
+          "source_harness_manifest_sha256": "b833975cb762963a35895774449415555fac55b5bd3aff4a122570467c65eff9",
+          "source_execution_timing_sha256": null,
+          "source_sealed_record_sha256": {
+            "result.json": "a5b80296c97311e22616fb683251c8f06486a2b772f331b523d49fc9f9ed8a4c",
+            "mechanical.json": "b137429daa26c232b2494912333d62ebdfc1dafd01d7665b6316c5c81b957ce9",
+            "review.json": "5abf5abeea5c8524136de34174fec613b3a48391abd7eec939678bb8fddc7bf8"
+          },
+          "reporter_sha256": {
+            "context/installed_run.py": "0b575e6a8a61a28a77b666c68d28c22906f09e6ae560dc4d0af9de70077634fd",
+            "context/oracle.py": "32b1c66d20c9d7b3a0f41fff220abe2b3f69e9f5283cc71320a19067e7389abb",
+            "context/run.py": "047082adf54dd8a92ca4919cac9ae3eaa8a62acc598913cc9ee1a6688ae9f585",
+            "benchmark/run.py": "2648db9374b8619f2cc300096119949d9e848de740cf24fdfea754795a2efe30",
+            "benchmark/handoff.py": "a1b4a3f0d650a2fa97b9f98f0643792fa8229a1d864d647c3c0825a3cab11db1",
+            "run-performance-trials.py": "cdbbbda7788f9f9c754c263a3fdda2b7fec39bd623c4d54a41bf997800dc8c3c"
+          },
+          "source_native_sha256": {
+            "phase-1/1.native.jsonl": "66fa94b0cc6a416b86f9351f955e0eafa26fa66294bd90d6bfa7bab1de514697",
+            "phase-2/1.native.jsonl": "5de25369d64fd5f05d753fac43fd1d4dfa651ee4a117c23087097686aaf32993",
+            "phase-3/1.native.jsonl": "1d9f7bcfaf3c295517a7cd98cb695bb1fbb6811a8e80a8867675eb416b79e572",
+            "phase-4/1.native.jsonl": "460741c1458fdbe4206496535bcf2bff3a8130a3d878baf602d5a2194a35db2c",
+            "phase-5/1.native.jsonl": "f506490f6186c486eac2388fe524fe5964db2c7c5dd9c61115626ee46e519719"
+          },
+          "behavior_adjudication": "Original sealed artifacts and artifact-bound reviews are read unchanged; only cost completeness is reassessed."
+        },
+        "report": "/var/tmp/ssot-continuity-cost-reanalysis-final-v2-20261112/repaired-cohort/confirmation-chain/report.json"
+      }
+    ],
+    "scope": "Observed token samples from incomplete native turns are lower bounds; full tokens remain unknown. Complete elapsed time does not imply complete token accounting. Raw artifacts/old costs are retained; no native behavior or review is replayed."
+  },
+  "publication": {
+    "authority": "/home/hpf/.local/state/ssot-context/evidence/benchmark-continuity-20261112/publication.json",
+    "scope": "Actual commit, ordinary push, remote readback and CI identity/status are owned by this external receipt, written after publication. This tracked account does not embed its own commit SHA or cache publication status."
+  },
+  "archive_attempts": {
+    "status": "accepted_final_verified_superseded_candidates_retained",
+    "first_candidate": {
+      "archive": "/home/hpf/.local/state/ssot-context/evidence/benchmark-continuity-20261112/evidence.tar.gz",
+      "sha256": "931a9089bcd885bdfcaa6f7defd4516f0475d2c8f6962e820ad65411c14b93e3",
+      "readback_returncode": 1,
+      "failure": "format4-freeze-smoke frozen report did not reconstruct byte-identically",
+      "cause": "Frozen schema2 tree binds a cache directory identity; packaging removed the directory together with excluded payload.",
+      "not_a_native_quality_failure": true
+    },
+    "producer_repair": "Derive required excluded-cache directory placeholders from hash-bound schema2 plans, retaining only empty directory type/mode while continuing to exclude cache payload. Alternate location/mode0750 calibrated.",
+    "retention": "All four candidate paths/hashes and readback results are in producer calibration; only accepted is authoritative. Superseded archives retained externally, not recursively packed.",
+    "producer_calibration": {
+      "receipt": "/home/hpf/.local/state/ssot-context/evidence/benchmark-continuity-20261112/archive-producer-calibration.json",
+      "sha256": "3b1d9d73dc9e778e5cbc72b6a9a921d02f2d179cd4363224a0cd1375a8f940c4",
+      "details": {
+        "producer_sha256": "89f1ffb86fef0bc8037df21eae54f00032b6bbcfb3a76e5d79e58e6f6bd7e14a",
+        "packaged_producer_sha256": "89f1ffb86fef0bc8037df21eae54f00032b6bbcfb3a76e5d79e58e6f6bd7e14a",
+        "command": [
+          "python3",
+          "-B",
+          "/var/tmp/ssot-continuity-build-archive-20261112.py",
+          "--self-test"
+        ],
+        "exit_code": 0,
+        "persistent_distinct_location": "/home/hpf/.local/state/ssot-context/evidence/benchmark-continuity-20261112/pack-calibration",
+        "plan_bound_inferred_directory_paths": [
+          "different-depth/frozen-project/tools/__pycache__"
+        ],
+        "observed_mode": "0o750",
+        "cache_payload_entries": 0,
+        "codex_home_excluded": true,
+        "first_failure": "Frozen install-source directory identity missing after cache-directory pruning; repaired generically using hash-bound schema2 plan.tree_manifests; excluded contents stay excluded.",
+        "candidates": [
+          {
+            "candidate": "/home/hpf/.local/state/ssot-context/evidence/benchmark-continuity-20261112",
+            "sha256": "931a9089bcd885bdfcaa6f7defd4516f0475d2c8f6962e820ad65411c14b93e3",
+            "readback_rc": 1,
+            "authority": "retained superseded candidate"
+          },
+          {
+            "candidate": "/home/hpf/.local/state/ssot-context/evidence/benchmark-continuity-20261112/seal-v2",
+            "sha256": "a15f0b051ce76b9d251fc7c4b209b9bdcfa8d58205e471eb98e609af32bca838",
+            "readback_rc": 0,
+            "authority": "retained superseded candidate"
+          },
+          {
+            "candidate": "/home/hpf/.local/state/ssot-context/evidence/benchmark-continuity-20261112/final-seal",
+            "sha256": "3be22fc301df7f005287c2303b8742c87d12c56300e70ba2cf7ca8efcfa0a4bf",
+            "readback_rc": 0,
+            "authority": "retained superseded candidate"
+          },
+          {
+            "candidate": "/home/hpf/.local/state/ssot-context/evidence/benchmark-continuity-20261112/accepted",
+            "sha256": "c5d53cc221652d74b28177a64a9f82076d167f4531e15ae3988bbb361b0c7f4c",
+            "readback_rc": 0,
+            "authority": "accepted final"
+          }
+        ],
+        "source_or_native_changes": false
+      }
+    }
+  }
+}

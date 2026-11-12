@@ -5,28 +5,43 @@ import subprocess
 import sys
 
 
-def objects(text):
+def object_entries(text):
     decoder, offset = json.JSONDecoder(), 0
     while offset < len(text):
         starts = [position for position in (text.find("{", offset), text.find("[", offset)) if position >= 0]
         if not starts:
             return
         offset = min(starts)
+        start = offset
         try:
             value, offset = decoder.raw_decode(text, offset)
         except ValueError:
             offset += 1
             continue
+        yield start, value
+
+
+def objects(text):
+    for _, value in object_entries(text):
         yield value
 
 
-def receipt_results(event):
+def receipt_entries(event):
+    """Returned candidates, not proof of invocation or successful persistence.
+
+    A wrapper need not name readback, and a later failed shell command must not
+    erase an earlier returned receipt. Consumers verify public progress/digests.
+    """
     item = event.get("item", {})
-    if (event.get("type") != "item.completed" or item.get("type") != "command_execution"
-            or item.get("exit_code") != 0 or "readback" not in item.get("command", "")):
+    if event.get("type") != "item.completed" or item.get("type") != "command_execution":
         return []
-    return [value for value in objects(item.get("aggregated_output", ""))
-            if isinstance(value, dict) and "receipt_id" in value and "saved_owner_text" in value]
+    return [(offset, value) for offset, value in object_entries(item.get("aggregated_output", ""))
+            if isinstance(value, dict) and isinstance(value.get("receipt_id"), str)
+            and isinstance(value.get("saved_owner_text"), str)]
+
+
+def receipt_results(event):
+    return [value for _, value in receipt_entries(event)]
 
 
 def cold_chain(root, directory, repo, bundle, plan, tasks, transport, sandbox_for, prompt_for, save):
@@ -48,6 +63,12 @@ def cold_chain(root, directory, repo, bundle, plan, tasks, transport, sandbox_fo
     summary["evidence_directory"] = "phase-1"
     save(directory / "interruption-receipts.json", list(receipts.values()))
     summaries = [summary]
+    identity = transport.native_identity_state(summary, plan["model"])
+    if not summary.get("observation_complete") or identity:
+        save(directory / "interruption-invalid.json", {
+            "reason": "Observation or native identity is unverified; dependent recovery stopped",
+            "observation_complete": summary.get("observation_complete"), "native_identity_state": identity})
+        return summaries
     if not summary.get("intentional_interruption") or len(receipts) < 2:
         save(directory / "interruption-invalid.json", {"reason": "No observed two-owner readback interruption before completion"})
         return summaries

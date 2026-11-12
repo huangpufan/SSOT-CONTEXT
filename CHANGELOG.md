@@ -8,7 +8,14 @@ Entries up to 2.86 were derived from the v2 protocol-upgrade ledger, which is pr
 
 ## [Unreleased]
 
+### Added
+- Installed continuity trials now connect multi-owner capture, a real partial-owner process interruption, cold recovery, duplicate/conflict handling with genuinely new independent progress, limited-use withdrawal and a fresh executable handoff. An independently authored format-4 Python queue task confirms a different maintenance shape; ceiling, floor and stale consumers calibrate both. See the [context trial guide](tests/context/README.md) and [continuity account](tests/context/results/continuity-deepening-2026-11-12.json) for observed paths and limits.
+
 ### Fixed
+- Source-task adjudication accepts lawful conflict handling without a redundant inspect, checks actual same-event readback/completion order, and retains identity/observation gates after deliberate interruption. Workspace checks preserve observed intermediate violations and use each task’s actual metadata authorization; source-owner binding is checked independently of file edits.
+- Installed trial setup timeouts and unavailable/corrupt execution probes have explicit infrastructure/observation outcomes. Portable fixture entries route only to transferred owners; failed and prepared-only freezes remain evidence rather than being overwritten.
+- Context cost reports require closing native usage after the final model output before treating tokens as complete. Interrupted snapshots remain observed lower bounds; separate read-only reanalysis records reporter/plan/native identities without changing historical artifacts or quality evidence. The SSOT protocol remains 5.3; these are benchmark repairs, not a demonstrated product-performance improvement.
+
 - Benchmark reports preserve running attempts and known phase spend when final evidence is missing or corrupt, isolate damaged records, and require native model plus reasoning identity for comparable costs. Handoff privacy checks cover hidden project files and expose unreadable scope; reading reports preserve failed/mismatched spend and include reasoning failures. Offline calibration includes meaningful mutations, alternate valid artifacts and real completed native evidence.
 
 ### Changed

@@ -28,6 +28,25 @@ SPEC.loader.exec_module(bench)
 sys.modules["cases"] = saved_cases
 
 
+def handoff_tools():
+    """Reuse sealed-review primitives with their benchmark module dependency."""
+    name = "context_handoff_tools"
+    if name not in sys.modules:
+        spec = importlib.util.spec_from_file_location(name, HERE.parent / "benchmark/handoff.py")
+        module = importlib.util.module_from_spec(spec)
+        previous = sys.modules.get("run")
+        try:
+            sys.modules["run"] = bench
+            spec.loader.exec_module(module)
+        finally:
+            if previous is None:
+                sys.modules.pop("run", None)
+            else:
+                sys.modules["run"] = previous
+        sys.modules[name] = module
+    return sys.modules[name]
+
+
 def save(path, value):
     path.write_text(json.dumps(value, ensure_ascii=False, indent=2) + "\n")
 
@@ -53,7 +72,7 @@ def prepare(args):
     harness = root / "harness"
     shutil.copytree(HERE, harness / "context", ignore=shutil.ignore_patterns("__pycache__"))
     (harness / "benchmark").mkdir()
-    for name in ("run.py", "cases.py"):
+    for name in ("run.py", "cases.py", "handoff.py", "handoff_cases.py"):
         shutil.copy2(HERE.parent / "benchmark" / name, harness / "benchmark" / name)
     for name in ("run-performance-trials.py", "continuity_cases.py"):
         shutil.copy2(HERE.parent / name, harness / name)
@@ -173,12 +192,27 @@ def run_arm(args, root, plan):
                     break
             verdict = oracle.grade(repo, case, data["before"], data["watermark"], directory, len(summaries))
             verdict["native_model_matches"] = all(s.get("native_models") == [model] for s in summaries)
+            verdict["native_identity_states"] = [bench.transport.native_identity_state(s, model) for s in summaries]
+            verdict["native_identities_verified"] = bool(summaries) and not any(verdict["native_identity_states"])
             verdict["native_completed"] = len(summaries) == len(data["tasks"]) and all(s["completed"] and not s["returncode"] for s in summaries)
             if case == "C07":
                 verdict["native_completed"] = (len(summaries) == 2 and bool(summaries[0].get("intentional_interruption"))
                                                 and summaries[1]["completed"] and summaries[1]["returncode"] == 0)
-            verdict["costs"] = [oracle.native_costs(s, model) for s in summaries]
-            verdict["state"] = "awaiting_semantic_review" if verdict["mechanical_passed"] and verdict["native_completed"] and verdict["native_model_matches"] else "failed_or_incomplete"
+            verdict["native_observations"] = [oracle.native_observation(s, model,
+                directory / s.get('evidence_directory', '') / ('1.native.jsonl' if s.get('evidence_directory') else f'{number}.native.jsonl'))
+                for number, s in enumerate(summaries, 1)]
+            verdict["costs"] = [value["costs"] for value in verdict["native_observations"]]
+            observed_turns = summaries
+            if case == "C07" and len(summaries) == 2 and summaries[0].get("intentional_interruption"):
+                first = summaries[0]
+                initial_failure = bench.transport.native_identity_state(first, model)
+                if not first.get("observation_complete"):
+                    initial_failure = initial_failure or "observer_failure"
+                observed_turns = summaries[1:]
+            else:
+                initial_failure = None
+            failure = initial_failure or bench.transport.completion_state(observed_turns, 1 if case == "C07" else len(data["tasks"]), model)
+            verdict["state"] = failure or ("awaiting_semantic_review" if verdict["mechanical_passed"] and verdict["native_completed"] else "failed_quality")
             save(directory / "verdict.json", verdict)
             print(json.dumps({"case": case, "arm": args.arm, **verdict}, ensure_ascii=False), flush=True)
         except Exception as exc:

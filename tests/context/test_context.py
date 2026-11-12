@@ -59,13 +59,19 @@ class ContextChecks(unittest.TestCase):
         self.assertEqual(len(cases.tasks("D03")), 2)
 
     def test_native_usage_requires_actual_expected_model_and_per_turn_record(self):
-        summary = {"seconds": 2, "native_models": ["gpt-6.1-sol"],
+        summary = {"seconds": 2, "requested_model": "gpt-6.1-sol", "native_models": ["gpt-6.1-sol"],
+                   "requested_reasoning": "medium", "native_reasoning": ["medium"],
                    "usage": {"input_tokens": 999999}}
         self.assertIsNone(oracle.native_costs(summary, "gpt-6.1-sol"))
         summary["native_turn_usage"] = {"input_tokens": 100, "cached_input_tokens": 40, "output_tokens": 8}
-        self.assertEqual(oracle.native_costs(summary, "gpt-6.1-sol")["total_input_output_tokens"], 108)
+        native = self.root / 'native.jsonl'
+        native.write_text('\n'.join(json.dumps(row) for row in [
+            {'type': 'turn_context', 'payload': {'root_turn_id': 'actual-turn'}},
+            {'type': 'token_usage_record', 'payload': {'root_turn_id': 'actual-turn', 'turn_token_usage': summary['native_turn_usage']}},
+            {'type': 'event_msg', 'payload': {'type': 'task_complete', 'root_turn_id': 'actual-turn'}}]) + '\n')
+        self.assertEqual(oracle.native_costs(summary, "gpt-6.1-sol", native)["total_input_output_tokens"], 108)
         summary["native_models"] = ["gpt-6.1-terra"]
-        self.assertIsNone(oracle.native_costs(summary, "gpt-6.1-sol"))
+        self.assertIsNone(oracle.native_costs(summary, "gpt-6.1-sol", native))
 
     def test_manifest_detects_fixture_and_oracle_changes(self):
         folder = self.root / "frozen"

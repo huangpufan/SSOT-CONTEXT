@@ -39,3 +39,45 @@ C06 now requires the original method's successful two-owner completion to remain
 The [5.1 continuation and source handoff report](trials-5.1.md) retains failed and prepared-only attempts, calibrated oracle changes and installed development controls. Its [inventory](results/context-evolution-5.1-2026-11-12.json) records actual Terra versions, frozen identities and costs.
 
 The [5.2 discovery report](trials-5.2.md) retains child-start and named-entry observations, including two rejected path-resolution clauses and a zero-model discovery failure. Its whole-workspace snapshots expose a launch-directory limitation in the inherited recorder; do not interpret that recorder's empty `changed_paths` as no edits outside the launch subdirectory.
+
+## Connected maintenance and an executable cold handoff
+
+Use the installed long-chain mode when the decision concerns connected maintenance rather than isolated capture. The development case keeps one source task across accepted multi-owner capture, a limited correction interrupted after one owner write, cold completion, duplicate input plus a genuinely new independent item alongside conflict, limited use withdrawal and a fresh executable-data consumer. The confirmation case is a format-4 queue implementation with capacity, identity, dependencies, an independent paused rule and external-use withdrawal; it changes task shape and does not claim to reproduce the interruption. The [current work record](../../docs/benchmark-deepening-2026-11-12.md) distinguishes proposed, calibrated and actually observed paths.
+
+Prepare a new root for every attempt, with an explicitly authorized model. Preparation uses the official local-source installation and freezes the fixture, contract, private public-CLI calibration, harness and bundle before any model call:
+
+```bash
+python3 tests/context/installed_run.py --prepare --candidate /path/to/frozen-S0 \
+  --model gpt-6.1-terra --longchain --longchain-kind development --cap 300 \
+  --output /tmp/NEW-CONTINUITY
+python3 /tmp/NEW-CONTINUITY/harness/context/installed_run.py \
+  --output /tmp/NEW-CONTINUITY --run-models
+```
+
+`--longchain-kind confirmation` selects the independently authored queue shape. `--longchain-control ceiling`, `floor` or `stale` prepares only that shape's fresh consumer and requires a separate new root. Use the same consumer prompt and empty skill/state/source-export view as the real handoff. Ceiling must implement the current accepted policy; stale must actually implement the initial accepted policy, not fail from an unrelated bug. Floor may explicitly report missing choices and leave a stub or refuse to implement; a mechanical gap candidate is not a passed control. Its artifact-bound semantic review must name the missing accepted choices, verify explicit nonimplementation and rule out accidental syntax/name errors or a false completion claim.
+
+The development partial-write fault temporarily read-only binds the existing second owner, and the observer terminates only its owned child after an actual first-owner capture with the other owner unchanged. Recovery uses a new session/home without that fault, preserves the existing operation identity and external note, finishes all owner writes, then reads back and completes. This is a declared experiment window, not a new product ordering requirement. A missed window or broken observation is retained as invalid; no automatic retry occurs. The separate C07 path continues to test the later two-owner-readback/stale-receipt boundary.
+
+Each phase has actual prompts, native identity/discovery/usage, byte/type/mode/link evidence and public connector observations where applicable. Reports preserve known failed/interrupted spend; missing usage stays unknown. Original source records, prior sessions, connector state, writer final answers and skills do not transfer to the consumer. The queue consumer receives only maintained documents and its frozen initial code stub. Executable output does not establish that earlier owner standing or source/use history was correct; inspect the phase artifacts before submitting the standard three-obligation evidence-bound review:
+
+```bash
+python3 /tmp/NEW-CONTINUITY/harness/context/installed_run.py \
+  --output /tmp/NEW-CONTINUITY --review /path/to/artifact-review.json
+python3 /tmp/NEW-CONTINUITY/harness/context/installed_run.py \
+  --output /tmp/NEW-CONTINUITY --report
+```
+
+Native phase time excludes preparation, adjudication and human work. Intentional interruption may leave token cost unknown; counts of completed sessions cannot replace the capture/recovery/authority path denominator. Event-boundary snapshots do not observe arbitrary write-and-delete sequences within one tool call, arbitrary concurrency or unknown external side-effect outcomes. Keep those limits separate from the specific observed controlled failure and recovery.
+
+A native usage snapshot is not automatically the complete cost of an interrupted turn. Complete tokens require the same turn's closing usage to cover its final model output; a snapshot followed by more reasoning or tool calls is only an observed lower bound. Keep elapsed time and known tokens, leave complete token totals unknown and exclude complete-cost comparisons. This dependency also applies when reusing historical interruption evidence: saved-state/quality observations can remain useful while old cost completeness is unverified. Do not silently rewrite historical reports or assume their costs have been rejudged.
+
+For a new read-only cost interpretation of an existing frozen attempt, use the current reporter with a new external output directory:
+
+```bash
+python3 tests/context/installed_run.py --report --output /tmp/FROZEN-ATTEMPT \
+  --report-output /var/tmp/NEW-COST-ANALYSIS
+```
+
+The separate report identifies its reporter, frozen plan and native/sealed evidence hashes, retains observed lower bounds, and lists invalidated historical complete-cost fields. It does not rerun models, change the original frozen harness or alter a quality verdict. Preserve the original versioned report alongside this new interpretation; exact offline reconstruction and whether its old cost claim remains valid are different questions.
+
+Future installed executions also save `execution-timing.json`: execute entry through executor return or exception after terminal sealing, including setup, zero-model discovery probes, native phases, host transitions and mechanical checks. It excludes preparation, external semantic review and persistence of the timing receipt itself. The receipt binds the frozen plan and final mechanical record. Historical attempts without it retain unknown executor wall time; reanalysis cannot reconstruct that duration from file timestamps or native-only time. This executor interval still does not measure the complete user task.

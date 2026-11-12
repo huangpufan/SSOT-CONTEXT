@@ -1,5 +1,6 @@
 """Host-side outcome checks, separate from trial subject instructions."""
 import json
+import hashlib
 from pathlib import Path
 import re
 import subprocess
@@ -248,15 +249,80 @@ def grade_scenario(repo, case, before, after, run_dir, turns):
     return {"checks": checks, "mechanical_passed": all(checks.values()), "semantic_review": review}
 
 
-def native_costs(summary, model):
-    usage = summary.get("native_turn_usage")
-    if summary.get("native_models") != [model] or not usage:
-        return None
-    fields = ("input_tokens", "cached_input_tokens", "output_tokens")
-    if not all(isinstance(usage.get(k), int) and usage[k] >= 0 for k in fields):
-        return None
-    if usage["cached_input_tokens"] > usage["input_tokens"]:
-        return None
-    return {**{k: usage[k] for k in fields},
-            "total_input_output_tokens": usage["input_tokens"] + usage["output_tokens"],
-            "seconds": summary["seconds"]}
+def native_costs(summary, model, native_path=None):
+    return native_observation(summary, model, native_path)["costs"]
+
+
+def observed_native_costs(summary):
+    """Actual spend remains observed even when execution cannot be compared."""
+    from run import bench
+    observed = bench.observed_reading_costs(summary)
+    incoming, outgoing = observed["input_tokens"], observed["output_tokens"]
+    observed["total_input_output_tokens"] = incoming + outgoing if incoming is not None and outgoing is not None else None
+    return observed
+
+
+def native_usage_boundary(summary, native_path=None):
+    """A cumulative sample is complete only when the same raw turn closes after it."""
+    usage = summary.get('native_turn_usage')
+    boundary = {'status': 'lower_bound' if isinstance(usage, dict) and usage else 'unknown',
+                'reason': 'No verifiable native closing usage boundary', 'native_sha256': None}
+    if native_path is None:
+        return boundary, usage
+    try:
+        raw = Path(native_path).read_bytes()
+        boundary['native_sha256'] = hashlib.sha256(raw).hexdigest()
+        records = [json.loads(line) for line in raw.splitlines()]
+        if any(not isinstance(record, dict) or not isinstance(record.get('payload', {}), dict) for record in records):
+            raise ValueError('Malformed native record')
+        contexts = [(index, record['payload'].get('root_turn_id', record['payload'].get('turn_id')))
+                    for index, record in enumerate(records) if record.get('type') == 'turn_context']
+        turn = summary.get('native_turn_id')
+        if turn is None and len(set(value for _, value in contexts)) == 1:
+            turn = contexts[0][1]
+        starts = [index for index, value in contexts if value == turn and turn is not None]
+        if not starts:
+            raise ValueError('Native turn identity unavailable')
+        start = starts[0]
+        end = next((index for index, value in contexts if index > start and value != turn), len(records))
+        samples, closes, generated = [], [], []
+        for index in range(start, end):
+            record, payload = records[index], records[index].get('payload', {})
+            identity = payload.get('root_turn_id') or payload.get('turn_id')
+            if record.get('type') == 'token_usage_record' and identity == turn:
+                samples.append(index)
+            if record.get('type') == 'event_msg' and payload.get('type') == 'task_complete' and identity == turn:
+                closes.append(index)
+            if record.get('type') == 'response_item' and (payload.get('type') in ('reasoning', 'function_call', 'custom_tool_call')
+                    or payload.get('type') == 'message' and payload.get('role') == 'assistant'):
+                generated.append(index)
+        if not samples:
+            raise ValueError('No native per-turn usage sample')
+        latest = samples[-1]
+        usage = records[latest]['payload'].get('turn_token_usage')
+        boundary.update(native_turn_id=turn, last_usage_line=latest + 1,
+                        last_usage_timestamp=records[latest].get('timestamp'),
+                        last_model_output_line=generated[-1] + 1 if generated else None,
+                        closing_line=closes[-1] + 1 if closes else None)
+        fields = ('input_tokens', 'cached_input_tokens', 'output_tokens')
+        valid = isinstance(usage, dict) and all(type(usage.get(key)) is int and usage[key] >= 0 for key in fields)
+        valid = valid and usage['cached_input_tokens'] <= usage['input_tokens']
+        complete = valid and bool(closes) and closes[-1] > latest and (not generated or latest >= generated[-1])
+        boundary.update(status='complete' if complete else 'lower_bound' if isinstance(usage, dict) and usage else 'unknown',
+                        reason='Native turn closed after its final model-output usage sample' if complete else 'No closing usage covering all model output')
+    except (OSError, ValueError, KeyError, TypeError) as exc:
+        boundary['reason'] = f'{type(exc).__name__}: {exc}'
+    return boundary, usage
+
+
+def native_observation(summary, model, native_path=None):
+    from run import bench
+    boundary, usage = native_usage_boundary(summary, native_path)
+    observed = observed_native_costs({**summary, 'native_turn_usage': usage})
+    identity = bench.transport.native_identity_state(summary, model)
+    fields = ('input_tokens', 'cached_input_tokens', 'output_tokens', 'total_input_output_tokens', 'seconds')
+    comparable = {key: observed[key] for key in fields} if not identity and boundary['status'] == 'complete' and all(observed.get(key) is not None for key in fields) else None
+    complete = {key: observed[key] if key == 'seconds' or boundary['status'] == 'complete' else None for key in fields}
+    return {'costs': comparable, 'observed_costs': observed, 'complete_costs': complete,
+            'usage_status': boundary['status'], 'usage_boundary': boundary,
+            'identity_state': identity, 'cost_comparable': comparable is not None}
