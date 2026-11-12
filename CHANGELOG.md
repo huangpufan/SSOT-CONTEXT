@@ -8,6 +8,12 @@ Entries up to 2.86 were derived from the v2 protocol-upgrade ledger, which is pr
 
 ## [Unreleased]
 
+## [5.3] - 2026-11-12
+
+### Changed
+- Correction readback now compares necessary source excerpts with the pre-edit owner as well as the new exchange, preserving original wording within current retention authority and marking superseded scope. This extends the existing capture check without adding a transcript, archive, layout or write permission. The [source-preservation trials](tests/context/trials-5.3.md) retain the rejected first candidate, actual fresh-consumer outcomes and the limits of the revised candidate's evidence; no statistical reliability or efficiency gain is claimed.
+- The benchmark method now covers bytecode-free ad hoc calibration and durable evidence archives, following a frozen-manifest failure and recovery of a conversation whose temporary trial files were lost.
+
 ## [5.2] - 2026-11-12
 
 ### Fixed

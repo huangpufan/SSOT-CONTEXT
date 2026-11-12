@@ -1,0 +1,3358 @@
+{
+  "schema": 1,
+  "baseline_commit": "5a2b8bb",
+  "version": "5.3",
+  "model": "gpt-6.1-terra",
+  "reasoning": "medium",
+  "evidence_root": "/var/tmp/ssot-source-resume-20261112",
+  "limits": [
+    "Public synthetic fixtures; coordinator selects tasks and reviews semantics.",
+    "Single samples do not establish statistical improvement or cost savings.",
+    "Earlier pre-resumption temporary evidence is missing; recovered narrative is not acceptance evidence.",
+    "Regression lanes overlapped; latency is not a controlled speed comparison."
+  ],
+  "native_turn_count": 47,
+  "native_turns": [
+    {
+      "path": "confirmation/runs/C02/baseline/1.summary.json",
+      "sha256": "5c132a92f54e797c3bb780a34df4aa3b3b04c4f6d5bb1b5ca34b6326b8c7d03b",
+      "completed": true,
+      "returncode": 0,
+      "observation_complete": true,
+      "models": [
+        "gpt-6.1-terra"
+      ],
+      "costs": {
+        "seconds": 63.192,
+        "tool_items": 7,
+        "tool_output_bytes": 38903,
+        "input_tokens": 210387,
+        "cached_input_tokens": 175232,
+        "output_tokens": 1621,
+        "uncached_input_tokens": 35155
+      }
+    },
+    {
+      "path": "confirmation/runs/C02/baseline/2.summary.json",
+      "sha256": "166653f69f1da9a6dcfce5d01f3261041462935fc8d5ce86e129e165a3a39773",
+      "completed": true,
+      "returncode": 0,
+      "observation_complete": true,
+      "models": [
+        "gpt-6.1-terra"
+      ],
+      "costs": {
+        "seconds": 34.702,
+        "tool_items": 2,
+        "tool_output_bytes": 24767,
+        "input_tokens": 101245,
+        "cached_input_tokens": 94976,
+        "output_tokens": 467,
+        "uncached_input_tokens": 6269
+      }
+    },
+    {
+      "path": "confirmation/runs/C02/candidate/1.summary.json",
+      "sha256": "61886d1e4e2ed72d471cf1639fde9a1c9786dcbe76bb22d590b6be6f2bcec0ee",
+      "completed": true,
+      "returncode": 0,
+      "observation_complete": true,
+      "models": [
+        "gpt-6.1-terra"
+      ],
+      "costs": {
+        "seconds": 61.213,
+        "tool_items": 11,
+        "tool_output_bytes": 51510,
+        "input_tokens": 218380,
+        "cached_input_tokens": 197888,
+        "output_tokens": 1612,
+        "uncached_input_tokens": 20492
+      }
+    },
+    {
+      "path": "confirmation/runs/C02/candidate/2.summary.json",
+      "sha256": "9e1f015f0cd4303f0232ddd90ce871e8c1b72660fc5290d97164507dff60c954",
+      "completed": true,
+      "returncode": 0,
+      "observation_complete": true,
+      "models": [
+        "gpt-6.1-terra"
+      ],
+      "costs": {
+        "seconds": 24.212,
+        "tool_items": 3,
+        "tool_output_bytes": 2347,
+        "input_tokens": 115732,
+        "cached_input_tokens": 109568,
+        "output_tokens": 363,
+        "uncached_input_tokens": 6164
+      }
+    },
+    {
+      "path": "confirmation-v2/runs/C02/candidate/1.summary.json",
+      "sha256": "c1f1c16dac12dcb62f49e17e59a6c20cb0396b742c220ac7d8cbb7433b6a6351",
+      "completed": true,
+      "returncode": 0,
+      "observation_complete": true,
+      "models": [
+        "gpt-6.1-terra"
+      ],
+      "costs": {
+        "seconds": 53.189,
+        "tool_items": 5,
+        "tool_output_bytes": 36859,
+        "input_tokens": 151736,
+        "cached_input_tokens": 134912,
+        "output_tokens": 1366,
+        "uncached_input_tokens": 16824
+      }
+    },
+    {
+      "path": "confirmation-v2/runs/C02/candidate/2.summary.json",
+      "sha256": "9ac02e740ea5a708d0b6b67c9d3be08545d95875973cebbd4bcb3bacdabf6580",
+      "completed": true,
+      "returncode": 0,
+      "observation_complete": true,
+      "models": [
+        "gpt-6.1-terra"
+      ],
+      "costs": {
+        "seconds": 20.27,
+        "tool_items": 2,
+        "tool_output_bytes": 24273,
+        "input_tokens": 104256,
+        "cached_input_tokens": 96768,
+        "output_tokens": 468,
+        "uncached_input_tokens": 7488
+      }
+    },
+    {
+      "path": "handoff/runs/editorial/baseline/consumer/1.summary.json",
+      "sha256": "9467c2ebd129420fe3f852e3da310743e4d8f8f8b5b1fe9a3707b27cf20116ac",
+      "completed": true,
+      "returncode": 0,
+      "observation_complete": true,
+      "models": [
+        "gpt-6.1-terra"
+      ],
+      "costs": {
+        "seconds": 19.284,
+        "tool_items": 3,
+        "tool_output_bytes": 1967,
+        "input_tokens": 60981,
+        "cached_input_tokens": 57344,
+        "output_tokens": 478,
+        "uncached_input_tokens": 3637
+      }
+    },
+    {
+      "path": "handoff/runs/editorial/baseline/writer/1.summary.json",
+      "sha256": "602c1a6e20c769cc10dd2e70001c9516ec24131f84872905b2dea440bcf81a98",
+      "completed": true,
+      "returncode": 0,
+      "observation_complete": true,
+      "models": [
+        "gpt-6.1-terra"
+      ],
+      "costs": {
+        "seconds": 40.477,
+        "tool_items": 8,
+        "tool_output_bytes": 37747,
+        "input_tokens": 149653,
+        "cached_input_tokens": 125312,
+        "output_tokens": 1325,
+        "uncached_input_tokens": 24341
+      }
+    },
+    {
+      "path": "handoff/runs/editorial/baseline/writer/2.summary.json",
+      "sha256": "e65124c54ce30439b77b544631bad9174f0cf821fe5f843867085c3161b3a367",
+      "completed": true,
+      "returncode": 0,
+      "observation_complete": true,
+      "models": [
+        "gpt-6.1-terra"
+      ],
+      "costs": {
+        "seconds": 20.735,
+        "tool_items": 3,
+        "tool_output_bytes": 2564,
+        "input_tokens": 75831,
+        "cached_input_tokens": 74624,
+        "output_tokens": 663,
+        "uncached_input_tokens": 1207
+      }
+    },
+    {
+      "path": "handoff/runs/editorial/candidate/consumer/1.summary.json",
+      "sha256": "0e2327e34752260e128417990257fd0fb22e334910274abe4dd7de5c3be14f58",
+      "completed": true,
+      "returncode": 0,
+      "observation_complete": true,
+      "models": [
+        "gpt-6.1-terra"
+      ],
+      "costs": {
+        "seconds": 27.553,
+        "tool_items": 5,
+        "tool_output_bytes": 1525,
+        "input_tokens": 92172,
+        "cached_input_tokens": 81664,
+        "output_tokens": 656,
+        "uncached_input_tokens": 10508
+      }
+    },
+    {
+      "path": "handoff/runs/editorial/candidate/writer/1.summary.json",
+      "sha256": "508b08df93bffbb4b8fa6e2986a937f16a60e73aad3aa77fdf44451a0732a0bf",
+      "completed": true,
+      "returncode": 0,
+      "observation_complete": true,
+      "models": [
+        "gpt-6.1-terra"
+      ],
+      "costs": {
+        "seconds": 38.28,
+        "tool_items": 12,
+        "tool_output_bytes": 46023,
+        "input_tokens": 130868,
+        "cached_input_tokens": 113792,
+        "output_tokens": 1160,
+        "uncached_input_tokens": 17076
+      }
+    },
+    {
+      "path": "handoff/runs/editorial/candidate/writer/2.summary.json",
+      "sha256": "3505b65cb1d74398f068a3396343eb9a46b97311e1b55d11406f2ac98cce0d4c",
+      "completed": true,
+      "returncode": 0,
+      "observation_complete": true,
+      "models": [
+        "gpt-6.1-terra"
+      ],
+      "costs": {
+        "seconds": 28.69,
+        "tool_items": 5,
+        "tool_output_bytes": 5536,
+        "input_tokens": 109167,
+        "cached_input_tokens": 91776,
+        "output_tokens": 786,
+        "uncached_input_tokens": 17391
+      }
+    },
+    {
+      "path": "handoff/runs/editorial/ceiling/consumer/1.summary.json",
+      "sha256": "c0fa7418281aa168f2cdba46cb34b1c9eedf21702d5072325ef067bf4ff1988b",
+      "completed": true,
+      "returncode": 0,
+      "observation_complete": true,
+      "models": [
+        "gpt-6.1-terra"
+      ],
+      "costs": {
+        "seconds": 25.551,
+        "tool_items": 4,
+        "tool_output_bytes": 1008,
+        "input_tokens": 75892,
+        "cached_input_tokens": 69120,
+        "output_tokens": 561,
+        "uncached_input_tokens": 6772
+      }
+    },
+    {
+      "path": "handoff/runs/editorial/floor/consumer/1.summary.json",
+      "sha256": "56090a83687329218d92598af186efcbcf87430022bb34d07a5f1724de7e76b7",
+      "completed": true,
+      "returncode": 0,
+      "observation_complete": true,
+      "models": [
+        "gpt-6.1-terra"
+      ],
+      "costs": {
+        "seconds": 20.349,
+        "tool_items": 2,
+        "tool_output_bytes": 322,
+        "input_tokens": 44828,
+        "cached_input_tokens": 39040,
+        "output_tokens": 339,
+        "uncached_input_tokens": 5788
+      }
+    },
+    {
+      "path": "handoff/runs/editorial/stale/consumer/1.summary.json",
+      "sha256": "ce15534bf55822baa687099b31b9cd4c9f497b0f7b84939b2d0add106d633b8f",
+      "completed": true,
+      "returncode": 0,
+      "observation_complete": true,
+      "models": [
+        "gpt-6.1-terra"
+      ],
+      "costs": {
+        "seconds": 50.732,
+        "tool_items": 5,
+        "tool_output_bytes": 620,
+        "input_tokens": 91661,
+        "cached_input_tokens": 84992,
+        "output_tokens": 656,
+        "uncached_input_tokens": 6669
+      }
+    },
+    {
+      "path": "handoff/runs/reporting/baseline/consumer/1.summary.json",
+      "sha256": "612f68a5dc59038ee899ae50d8ae16588bcd2977a9cc1d32da420a7a98f5d3d9",
+      "completed": true,
+      "returncode": 0,
+      "observation_complete": true,
+      "models": [
+        "gpt-6.1-terra"
+      ],
+      "costs": {
+        "seconds": 25.175,
+        "tool_items": 3,
+        "tool_output_bytes": 1539,
+        "input_tokens": 61559,
+        "cached_input_tokens": 55424,
+        "output_tokens": 766,
+        "uncached_input_tokens": 6135
+      }
+    },
+    {
+      "path": "handoff/runs/reporting/baseline/writer/1.summary.json",
+      "sha256": "09e7b6af7c76c1fc36eb98114e1fd1747c450d68f75d87f3871c90189294b498",
+      "completed": true,
+      "returncode": 0,
+      "observation_complete": true,
+      "models": [
+        "gpt-6.1-terra"
+      ],
+      "costs": {
+        "seconds": 37.803,
+        "tool_items": 13,
+        "tool_output_bytes": 38378,
+        "input_tokens": 129092,
+        "cached_input_tokens": 112256,
+        "output_tokens": 947,
+        "uncached_input_tokens": 16836
+      }
+    },
+    {
+      "path": "handoff/runs/reporting/baseline/writer/2.summary.json",
+      "sha256": "011f23fb62c28be860194c43b3757854c407cc30cc405ba950ef41596d645c79",
+      "completed": true,
+      "returncode": 0,
+      "observation_complete": true,
+      "models": [
+        "gpt-6.1-terra"
+      ],
+      "costs": {
+        "seconds": 29.857,
+        "tool_items": 7,
+        "tool_output_bytes": 17447,
+        "input_tokens": 114138,
+        "cached_input_tokens": 92160,
+        "output_tokens": 815,
+        "uncached_input_tokens": 21978
+      }
+    },
+    {
+      "path": "handoff/runs/reporting/candidate/consumer/1.summary.json",
+      "sha256": "d7e8887c3e80728a785efc1d94e525c32d775b40406ba2918a3592d37558436f",
+      "completed": true,
+      "returncode": 0,
+      "observation_complete": true,
+      "models": [
+        "gpt-6.1-terra"
+      ],
+      "costs": {
+        "seconds": 31.562,
+        "tool_items": 5,
+        "tool_output_bytes": 1784,
+        "input_tokens": 92591,
+        "cached_input_tokens": 85504,
+        "output_tokens": 892,
+        "uncached_input_tokens": 7087
+      }
+    },
+    {
+      "path": "handoff/runs/reporting/candidate/writer/1.summary.json",
+      "sha256": "d8a4c339660a19a0782a1b5c4a3d3a3c638afa8a8543c509359e5ab48c9f74a7",
+      "completed": true,
+      "returncode": 0,
+      "observation_complete": true,
+      "models": [
+        "gpt-6.1-terra"
+      ],
+      "costs": {
+        "seconds": 35.346,
+        "tool_items": 6,
+        "tool_output_bytes": 37931,
+        "input_tokens": 147491,
+        "cached_input_tokens": 134784,
+        "output_tokens": 1102,
+        "uncached_input_tokens": 12707
+      }
+    },
+    {
+      "path": "handoff/runs/reporting/candidate/writer/2.summary.json",
+      "sha256": "b88c7dae0da960059ffe525e6669faeb7ae9929ce9e0b41ecde7392e5e28ca56",
+      "completed": true,
+      "returncode": 0,
+      "observation_complete": true,
+      "models": [
+        "gpt-6.1-terra"
+      ],
+      "costs": {
+        "seconds": 24.026,
+        "tool_items": 3,
+        "tool_output_bytes": 6382,
+        "input_tokens": 104002,
+        "cached_input_tokens": 101888,
+        "output_tokens": 760,
+        "uncached_input_tokens": 2114
+      }
+    },
+    {
+      "path": "handoff/runs/reporting/ceiling/consumer/1.summary.json",
+      "sha256": "bea57d75848adb08c04260af7d0fdf5d303307c6cfad456bc75841063f46fb1b",
+      "completed": true,
+      "returncode": 0,
+      "observation_complete": true,
+      "models": [
+        "gpt-6.1-terra"
+      ],
+      "costs": {
+        "seconds": 30.541,
+        "tool_items": 4,
+        "tool_output_bytes": 1345,
+        "input_tokens": 76635,
+        "cached_input_tokens": 69376,
+        "output_tokens": 806,
+        "uncached_input_tokens": 7259
+      }
+    },
+    {
+      "path": "handoff/runs/reporting/floor/consumer/1.summary.json",
+      "sha256": "f8676f51f0a9a38fce9ebe51e2e44f30485384865d322762158bf1cac5de1273",
+      "completed": true,
+      "returncode": 0,
+      "observation_complete": true,
+      "models": [
+        "gpt-6.1-terra"
+      ],
+      "costs": {
+        "seconds": 28.294,
+        "tool_items": 4,
+        "tool_output_bytes": 514,
+        "input_tokens": 60160,
+        "cached_input_tokens": 53888,
+        "output_tokens": 488,
+        "uncached_input_tokens": 6272
+      }
+    },
+    {
+      "path": "handoff/runs/reporting/stale/consumer/1.summary.json",
+      "sha256": "c4276ebd466b2e87a50a0cd3a61a26470500bcb3ec4f283ed337499db40f8d84",
+      "completed": true,
+      "returncode": 0,
+      "observation_complete": true,
+      "models": [
+        "gpt-6.1-terra"
+      ],
+      "costs": {
+        "seconds": 42.335,
+        "tool_items": 4,
+        "tool_output_bytes": 840,
+        "input_tokens": 76242,
+        "cached_input_tokens": 69248,
+        "output_tokens": 739,
+        "uncached_input_tokens": 6994
+      }
+    },
+    {
+      "path": "handoff-v2/runs/editorial/candidate/consumer/1.summary.json",
+      "sha256": "d5c13c6d3d4128f3be820cfee4ebe39098039e4f0ab9adab93b51914fd9337b3",
+      "completed": true,
+      "returncode": 0,
+      "observation_complete": true,
+      "models": [
+        "gpt-6.1-terra"
+      ],
+      "costs": {
+        "seconds": 28.381,
+        "tool_items": 4,
+        "tool_output_bytes": 1387,
+        "input_tokens": 76439,
+        "cached_input_tokens": 72576,
+        "output_tokens": 613,
+        "uncached_input_tokens": 3863
+      }
+    },
+    {
+      "path": "handoff-v2/runs/editorial/candidate/writer/1.summary.json",
+      "sha256": "22784c99acc82843c1a2c0ad8466ba89c0bcce599ded119e906ea8abd4313011",
+      "completed": true,
+      "returncode": 0,
+      "observation_complete": true,
+      "models": [
+        "gpt-6.1-terra"
+      ],
+      "costs": {
+        "seconds": 40.16,
+        "tool_items": 10,
+        "tool_output_bytes": 39109,
+        "input_tokens": 195894,
+        "cached_input_tokens": 177280,
+        "output_tokens": 1160,
+        "uncached_input_tokens": 18614
+      }
+    },
+    {
+      "path": "handoff-v2/runs/editorial/candidate/writer/2.summary.json",
+      "sha256": "85c74c862cdd88921be4af8ca899abfd52b1fd3d0a86b63b92ee2867c4adb0a3",
+      "completed": true,
+      "returncode": 0,
+      "observation_complete": true,
+      "models": [
+        "gpt-6.1-terra"
+      ],
+      "costs": {
+        "seconds": 20.982,
+        "tool_items": 3,
+        "tool_output_bytes": 5165,
+        "input_tokens": 83160,
+        "cached_input_tokens": 79488,
+        "output_tokens": 539,
+        "uncached_input_tokens": 3672
+      }
+    },
+    {
+      "path": "handoff-v2/runs/reporting/candidate/consumer/1.summary.json",
+      "sha256": "8695c9290acc36b842d713f58ccd666776c116f4d3adf1ae2ee0c16938d2793d",
+      "completed": true,
+      "returncode": 0,
+      "observation_complete": true,
+      "models": [
+        "gpt-6.1-terra"
+      ],
+      "costs": {
+        "seconds": 26.05,
+        "tool_items": 4,
+        "tool_output_bytes": 1823,
+        "input_tokens": 77456,
+        "cached_input_tokens": 73600,
+        "output_tokens": 892,
+        "uncached_input_tokens": 3856
+      }
+    },
+    {
+      "path": "handoff-v2/runs/reporting/candidate/writer/1.summary.json",
+      "sha256": "21b6ee33e3c958aa6e5f49c03ea637e921b5110de8c24bf2dcd94253634a89e8",
+      "completed": true,
+      "returncode": 0,
+      "observation_complete": true,
+      "models": [
+        "gpt-6.1-terra"
+      ],
+      "costs": {
+        "seconds": 34.308,
+        "tool_items": 5,
+        "tool_output_bytes": 33577,
+        "input_tokens": 123963,
+        "cached_input_tokens": 112384,
+        "output_tokens": 869,
+        "uncached_input_tokens": 11579
+      }
+    },
+    {
+      "path": "handoff-v2/runs/reporting/candidate/writer/2.summary.json",
+      "sha256": "66ada198468f04d8790f48460baa98940d237383e8f5e553ca78eec4e75cb688",
+      "completed": true,
+      "returncode": 0,
+      "observation_complete": true,
+      "models": [
+        "gpt-6.1-terra"
+      ],
+      "costs": {
+        "seconds": 30.771,
+        "tool_items": 3,
+        "tool_output_bytes": 6363,
+        "input_tokens": 107147,
+        "cached_input_tokens": 88192,
+        "output_tokens": 775,
+        "uncached_input_tokens": 18955
+      }
+    },
+    {
+      "path": "inline/runs/editorial/candidate/consumer/1.summary.json",
+      "sha256": "572677fe3bdcf44c93988040e703e3ecff4b0e5e275fa3e6efd265ae56d9f91f",
+      "completed": true,
+      "returncode": 0,
+      "observation_complete": true,
+      "models": [
+        "gpt-6.1-terra"
+      ],
+      "costs": {
+        "seconds": 13.689,
+        "tool_items": 2,
+        "tool_output_bytes": 1676,
+        "input_tokens": 45389,
+        "cached_input_tokens": 39552,
+        "output_tokens": 437,
+        "uncached_input_tokens": 5837
+      }
+    },
+    {
+      "path": "inline/runs/editorial/candidate/writer/1.summary.json",
+      "sha256": "d03c1b09a5f087a118e368f8a1e1ba4b6573780dd3b648e3214b43abcb0d0839",
+      "completed": true,
+      "returncode": 0,
+      "observation_complete": true,
+      "models": [
+        "gpt-6.1-terra"
+      ],
+      "costs": {
+        "seconds": 29.078,
+        "tool_items": 6,
+        "tool_output_bytes": 44072,
+        "input_tokens": 152088,
+        "cached_input_tokens": 130304,
+        "output_tokens": 991,
+        "uncached_input_tokens": 21784
+      }
+    },
+    {
+      "path": "inline/runs/editorial/candidate/writer/2.summary.json",
+      "sha256": "704b06a246d2fd59b39ce8c3c3d913f15534e7a3e352d468ab7c5edbf2a176e3",
+      "completed": true,
+      "returncode": 0,
+      "observation_complete": true,
+      "models": [
+        "gpt-6.1-terra"
+      ],
+      "costs": {
+        "seconds": 18.849,
+        "tool_items": 3,
+        "tool_output_bytes": 14437,
+        "input_tokens": 117902,
+        "cached_input_tokens": 112384,
+        "output_tokens": 529,
+        "uncached_input_tokens": 5518
+      }
+    },
+    {
+      "path": "partial-v2/run/1.summary.json",
+      "sha256": "20671791ff123abac04778fd7c98e9d4af7f195f0790787adfecb063bf4968e0",
+      "completed": true,
+      "returncode": 0,
+      "observation_complete": true,
+      "models": [
+        "gpt-6.1-terra"
+      ],
+      "costs": {
+        "seconds": 57.629,
+        "tool_items": 16,
+        "tool_output_bytes": 38684,
+        "input_tokens": 202802,
+        "cached_input_tokens": 168832,
+        "output_tokens": 2018,
+        "uncached_input_tokens": 33970
+      }
+    },
+    {
+      "path": "partial-v2/run/2.summary.json",
+      "sha256": "2f677f56de620f9fa8e8b9617c854c0d8a00b55fe9db3a985b2e5aee3dbc4117",
+      "completed": true,
+      "returncode": 0,
+      "observation_complete": true,
+      "models": [
+        "gpt-6.1-terra"
+      ],
+      "costs": {
+        "seconds": 53.218,
+        "tool_items": 9,
+        "tool_output_bytes": 16232,
+        "input_tokens": 198030,
+        "cached_input_tokens": 193280,
+        "output_tokens": 1681,
+        "uncached_input_tokens": 4750
+      }
+    },
+    {
+      "path": "readonly-baseline/run/1.summary.json",
+      "sha256": "791f5740c6346a8c48c671259a57523d37faa1c6b10b2012f0b07abea72723b4",
+      "completed": true,
+      "returncode": 0,
+      "observation_complete": true,
+      "models": [
+        "gpt-6.1-terra"
+      ],
+      "costs": {
+        "seconds": 37.689,
+        "tool_items": 5,
+        "tool_output_bytes": 17228,
+        "input_tokens": 64850,
+        "cached_input_tokens": 47872,
+        "output_tokens": 500,
+        "uncached_input_tokens": 16978
+      }
+    },
+    {
+      "path": "readonly-candidate/run/1.summary.json",
+      "sha256": "270556f3085d61478e648a7ac19817bb705b6472f5d65a7e614a44ce9b58b723",
+      "completed": true,
+      "returncode": 0,
+      "observation_complete": true,
+      "models": [
+        "gpt-6.1-terra"
+      ],
+      "costs": {
+        "seconds": 32.717,
+        "tool_items": 4,
+        "tool_output_bytes": 17393,
+        "input_tokens": 64811,
+        "cached_input_tokens": 52992,
+        "output_tokens": 435,
+        "uncached_input_tokens": 11819
+      }
+    },
+    {
+      "path": "readonly-v2/run/1.summary.json",
+      "sha256": "6f6af4357baa9e5dd2bc11ff7492b1f5638b9c959c745912968dbe0f2fc931f0",
+      "completed": true,
+      "returncode": 0,
+      "observation_complete": true,
+      "models": [
+        "gpt-6.1-terra"
+      ],
+      "costs": {
+        "seconds": 32.636,
+        "tool_items": 6,
+        "tool_output_bytes": 17409,
+        "input_tokens": 65431,
+        "cached_input_tokens": 53504,
+        "output_tokens": 605,
+        "uncached_input_tokens": 11927
+      }
+    },
+    {
+      "path": "transfer/runs/editorial/baseline/consumer/1.summary.json",
+      "sha256": "149629446de412bcc9452abbad8683b890c009005a8eeb292314ede8f09232f8",
+      "completed": true,
+      "returncode": 0,
+      "observation_complete": true,
+      "models": [
+        "gpt-6.1-terra"
+      ],
+      "costs": {
+        "seconds": 17.032,
+        "tool_items": 2,
+        "tool_output_bytes": 1695,
+        "input_tokens": 45410,
+        "cached_input_tokens": 42112,
+        "output_tokens": 424,
+        "uncached_input_tokens": 3298
+      }
+    },
+    {
+      "path": "transfer/runs/editorial/baseline/writer/1.summary.json",
+      "sha256": "9c138eba3f9208c1e1defe06ebdbf197d8b91a580f0ea309b400fb2daf242d64",
+      "completed": true,
+      "returncode": 0,
+      "observation_complete": true,
+      "models": [
+        "gpt-6.1-terra"
+      ],
+      "costs": {
+        "seconds": 32.282,
+        "tool_items": 9,
+        "tool_output_bytes": 27605,
+        "input_tokens": 117211,
+        "cached_input_tokens": 107520,
+        "output_tokens": 1093,
+        "uncached_input_tokens": 9691
+      }
+    },
+    {
+      "path": "transfer/runs/editorial/baseline/writer/2.summary.json",
+      "sha256": "3d170575b55b146cf6c09d9d2509fecf42947938615d0ff741c2d7cd576eea23",
+      "completed": true,
+      "returncode": 0,
+      "observation_complete": true,
+      "models": [
+        "gpt-6.1-terra"
+      ],
+      "costs": {
+        "seconds": 20.241,
+        "tool_items": 6,
+        "tool_output_bytes": 5840,
+        "input_tokens": 100083,
+        "cached_input_tokens": 96128,
+        "output_tokens": 587,
+        "uncached_input_tokens": 3955
+      }
+    },
+    {
+      "path": "transfer-v2/runs/editorial/baseline/consumer/1.summary.json",
+      "sha256": "1451a09bb42ea34e4c49dc7076736378ff07156cfbbe8b5b0c3e845eeed32557",
+      "completed": true,
+      "returncode": 0,
+      "observation_complete": true,
+      "models": [
+        "gpt-6.1-terra"
+      ],
+      "costs": {
+        "seconds": 29.373,
+        "tool_items": 4,
+        "tool_output_bytes": 1395,
+        "input_tokens": 76159,
+        "cached_input_tokens": 72576,
+        "output_tokens": 601,
+        "uncached_input_tokens": 3583
+      }
+    },
+    {
+      "path": "transfer-v2/runs/editorial/baseline/writer/1.summary.json",
+      "sha256": "b87f39ce97f62861ea16a99aa1ab8667040361bb6b6ce0f1efbda5f0d0516baf",
+      "completed": true,
+      "returncode": 0,
+      "observation_complete": true,
+      "models": [
+        "gpt-6.1-terra"
+      ],
+      "costs": {
+        "seconds": 22.675,
+        "tool_items": 4,
+        "tool_output_bytes": 27362,
+        "input_tokens": 95930,
+        "cached_input_tokens": 86528,
+        "output_tokens": 646,
+        "uncached_input_tokens": 9402
+      }
+    },
+    {
+      "path": "transfer-v2/runs/editorial/baseline/writer/2.summary.json",
+      "sha256": "3c3e405c104f1244470de4dec309a9c6bfe2bea62f5eac1ff04c71a4daf478fe",
+      "completed": true,
+      "returncode": 0,
+      "observation_complete": true,
+      "models": [
+        "gpt-6.1-terra"
+      ],
+      "costs": {
+        "seconds": 14.475,
+        "tool_items": 2,
+        "tool_output_bytes": 2629,
+        "input_tokens": 65963,
+        "cached_input_tokens": 64768,
+        "output_tokens": 379,
+        "uncached_input_tokens": 1195
+      }
+    },
+    {
+      "path": "transfer-v2/runs/editorial/candidate/consumer/1.summary.json",
+      "sha256": "c8b139603ab9880ae3140925b5a9cda3e84f30bf7936dd154da70889bdb47fab",
+      "completed": true,
+      "returncode": 0,
+      "observation_complete": true,
+      "models": [
+        "gpt-6.1-terra"
+      ],
+      "costs": {
+        "seconds": 16.06,
+        "tool_items": 3,
+        "tool_output_bytes": 1495,
+        "input_tokens": 60699,
+        "cached_input_tokens": 51200,
+        "output_tokens": 484,
+        "uncached_input_tokens": 9499
+      }
+    },
+    {
+      "path": "transfer-v2/runs/editorial/candidate/writer/1.summary.json",
+      "sha256": "be4c6849bbbc98d90a407bfba8d95fd51bfd4d024c0daea601301d9bb0089d68",
+      "completed": true,
+      "returncode": 0,
+      "observation_complete": true,
+      "models": [
+        "gpt-6.1-terra"
+      ],
+      "costs": {
+        "seconds": 31.734,
+        "tool_items": 5,
+        "tool_output_bytes": 40626,
+        "input_tokens": 123520,
+        "cached_input_tokens": 111104,
+        "output_tokens": 1092,
+        "uncached_input_tokens": 12416
+      }
+    },
+    {
+      "path": "transfer-v2/runs/editorial/candidate/writer/2.summary.json",
+      "sha256": "017fbe6336993a6697d5b9b35a04412313170af6dedaf3eeb4e2f806d12039f8",
+      "completed": true,
+      "returncode": 0,
+      "observation_complete": true,
+      "models": [
+        "gpt-6.1-terra"
+      ],
+      "costs": {
+        "seconds": 16.246,
+        "tool_items": 2,
+        "tool_output_bytes": 1049,
+        "input_tokens": 75526,
+        "cached_input_tokens": 74624,
+        "output_tokens": 386,
+        "uncached_input_tokens": 902
+      }
+    }
+  ],
+  "total_observed_costs": {
+    "seconds": 1469.643,
+    "input_tokens": 4930562,
+    "output_tokens": 37572,
+    "cached_input_tokens": 4430336,
+    "uncached_input_tokens": 500226,
+    "tool_items": 243,
+    "tool_output_bytes": 746382
+  },
+  "handoff_experiments": {
+    "handoff": {
+      "candidate_capture_sha256": "9740b89b93617b810093d8534cc246b658c707c3af2bbe69d5a61bbadd4ce719",
+      "plan_sha256": "60e14ea3fab7158ff328deafdb63ceb0a3894269703b724adbb2d7e59518e555",
+      "candidate_sha256": "1ccdb4dee8a509b696e43be7320f56f5236d03b5c07ac54caf3878d90bd87479",
+      "report": {
+        "limits": "Public synthetic contracts; no population estimate. Main author also reviews semantics.",
+        "confirmation": null,
+        "calibration_valid": {
+          "reporting": true,
+          "editorial": true
+        },
+        "comparisons": [
+          {
+            "case": "reporting",
+            "pair": [
+              "plain",
+              "baseline"
+            ],
+            "eligible": false
+          },
+          {
+            "case": "reporting",
+            "pair": [
+              "baseline",
+              "candidate"
+            ],
+            "eligible": true
+          },
+          {
+            "case": "editorial",
+            "pair": [
+              "plain",
+              "baseline"
+            ],
+            "eligible": false
+          },
+          {
+            "case": "editorial",
+            "pair": [
+              "baseline",
+              "candidate"
+            ],
+            "eligible": false
+          }
+        ],
+        "attempts": [
+          {
+            "case": "reporting",
+            "arm": "plain",
+            "state": "unrun",
+            "phase": null,
+            "turns": [],
+            "costs": null,
+            "report_error": null
+          },
+          {
+            "case": "reporting",
+            "arm": "baseline",
+            "state": "passed",
+            "phase": "adjudication",
+            "turns": [
+              {
+                "phase": "writer-1",
+                "costs": {
+                  "seconds": 37.803,
+                  "tool_items": 13,
+                  "tool_output_bytes": 38378,
+                  "input_tokens": 129092,
+                  "cached_input_tokens": 112256,
+                  "output_tokens": 947,
+                  "uncached_input_tokens": 16836
+                }
+              },
+              {
+                "phase": "writer-2",
+                "costs": {
+                  "seconds": 29.857,
+                  "tool_items": 7,
+                  "tool_output_bytes": 17447,
+                  "input_tokens": 114138,
+                  "cached_input_tokens": 92160,
+                  "output_tokens": 815,
+                  "uncached_input_tokens": 21978
+                }
+              },
+              {
+                "phase": "consumer",
+                "costs": {
+                  "seconds": 25.175,
+                  "tool_items": 3,
+                  "tool_output_bytes": 1539,
+                  "input_tokens": 61559,
+                  "cached_input_tokens": 55424,
+                  "output_tokens": 766,
+                  "uncached_input_tokens": 6135
+                }
+              }
+            ],
+            "costs": {
+              "seconds": 92.835,
+              "input_tokens": 304789,
+              "output_tokens": 2528,
+              "cached_input_tokens": 259840,
+              "uncached_input_tokens": 44949,
+              "tool_items": 23,
+              "tool_output_bytes": 57364
+            },
+            "report_error": null
+          },
+          {
+            "case": "reporting",
+            "arm": "candidate",
+            "state": "passed",
+            "phase": "adjudication",
+            "turns": [
+              {
+                "phase": "writer-1",
+                "costs": {
+                  "seconds": 35.346,
+                  "tool_items": 6,
+                  "tool_output_bytes": 37931,
+                  "input_tokens": 147491,
+                  "cached_input_tokens": 134784,
+                  "output_tokens": 1102,
+                  "uncached_input_tokens": 12707
+                }
+              },
+              {
+                "phase": "writer-2",
+                "costs": {
+                  "seconds": 24.026,
+                  "tool_items": 3,
+                  "tool_output_bytes": 6382,
+                  "input_tokens": 104002,
+                  "cached_input_tokens": 101888,
+                  "output_tokens": 760,
+                  "uncached_input_tokens": 2114
+                }
+              },
+              {
+                "phase": "consumer",
+                "costs": {
+                  "seconds": 31.562,
+                  "tool_items": 5,
+                  "tool_output_bytes": 1784,
+                  "input_tokens": 92591,
+                  "cached_input_tokens": 85504,
+                  "output_tokens": 892,
+                  "uncached_input_tokens": 7087
+                }
+              }
+            ],
+            "costs": {
+              "seconds": 90.934,
+              "input_tokens": 344084,
+              "output_tokens": 2754,
+              "cached_input_tokens": 322176,
+              "uncached_input_tokens": 21908,
+              "tool_items": 14,
+              "tool_output_bytes": 46097
+            },
+            "report_error": null
+          },
+          {
+            "case": "reporting",
+            "arm": "ceiling",
+            "state": "passed",
+            "phase": "adjudication",
+            "turns": [
+              {
+                "phase": "consumer",
+                "costs": {
+                  "seconds": 30.541,
+                  "tool_items": 4,
+                  "tool_output_bytes": 1345,
+                  "input_tokens": 76635,
+                  "cached_input_tokens": 69376,
+                  "output_tokens": 806,
+                  "uncached_input_tokens": 7259
+                }
+              }
+            ],
+            "costs": {
+              "seconds": 30.541,
+              "input_tokens": 76635,
+              "output_tokens": 806,
+              "cached_input_tokens": 69376,
+              "uncached_input_tokens": 7259,
+              "tool_items": 4,
+              "tool_output_bytes": 1345
+            },
+            "report_error": null
+          },
+          {
+            "case": "reporting",
+            "arm": "floor",
+            "state": "calibration_passed",
+            "phase": "adjudication",
+            "turns": [
+              {
+                "phase": "consumer",
+                "costs": {
+                  "seconds": 28.294,
+                  "tool_items": 4,
+                  "tool_output_bytes": 514,
+                  "input_tokens": 60160,
+                  "cached_input_tokens": 53888,
+                  "output_tokens": 488,
+                  "uncached_input_tokens": 6272
+                }
+              }
+            ],
+            "costs": {
+              "seconds": 28.294,
+              "input_tokens": 60160,
+              "output_tokens": 488,
+              "cached_input_tokens": 53888,
+              "uncached_input_tokens": 6272,
+              "tool_items": 4,
+              "tool_output_bytes": 514
+            },
+            "report_error": null
+          },
+          {
+            "case": "reporting",
+            "arm": "stale",
+            "state": "calibration_passed",
+            "phase": "adjudication",
+            "turns": [
+              {
+                "phase": "consumer",
+                "costs": {
+                  "seconds": 42.335,
+                  "tool_items": 4,
+                  "tool_output_bytes": 840,
+                  "input_tokens": 76242,
+                  "cached_input_tokens": 69248,
+                  "output_tokens": 739,
+                  "uncached_input_tokens": 6994
+                }
+              }
+            ],
+            "costs": {
+              "seconds": 42.335,
+              "input_tokens": 76242,
+              "output_tokens": 739,
+              "cached_input_tokens": 69248,
+              "uncached_input_tokens": 6994,
+              "tool_items": 4,
+              "tool_output_bytes": 840
+            },
+            "report_error": null
+          },
+          {
+            "case": "editorial",
+            "arm": "plain",
+            "state": "unrun",
+            "phase": null,
+            "turns": [],
+            "costs": null,
+            "report_error": null
+          },
+          {
+            "case": "editorial",
+            "arm": "baseline",
+            "state": "passed",
+            "phase": "adjudication",
+            "turns": [
+              {
+                "phase": "writer-1",
+                "costs": {
+                  "seconds": 40.477,
+                  "tool_items": 8,
+                  "tool_output_bytes": 37747,
+                  "input_tokens": 149653,
+                  "cached_input_tokens": 125312,
+                  "output_tokens": 1325,
+                  "uncached_input_tokens": 24341
+                }
+              },
+              {
+                "phase": "writer-2",
+                "costs": {
+                  "seconds": 20.735,
+                  "tool_items": 3,
+                  "tool_output_bytes": 2564,
+                  "input_tokens": 75831,
+                  "cached_input_tokens": 74624,
+                  "output_tokens": 663,
+                  "uncached_input_tokens": 1207
+                }
+              },
+              {
+                "phase": "consumer",
+                "costs": {
+                  "seconds": 19.284,
+                  "tool_items": 3,
+                  "tool_output_bytes": 1967,
+                  "input_tokens": 60981,
+                  "cached_input_tokens": 57344,
+                  "output_tokens": 478,
+                  "uncached_input_tokens": 3637
+                }
+              }
+            ],
+            "costs": {
+              "seconds": 80.496,
+              "input_tokens": 286465,
+              "output_tokens": 2466,
+              "cached_input_tokens": 257280,
+              "uncached_input_tokens": 29185,
+              "tool_items": 14,
+              "tool_output_bytes": 42278
+            },
+            "report_error": null
+          },
+          {
+            "case": "editorial",
+            "arm": "candidate",
+            "state": "failed_quality",
+            "phase": "adjudication",
+            "turns": [
+              {
+                "phase": "writer-1",
+                "costs": {
+                  "seconds": 38.28,
+                  "tool_items": 12,
+                  "tool_output_bytes": 46023,
+                  "input_tokens": 130868,
+                  "cached_input_tokens": 113792,
+                  "output_tokens": 1160,
+                  "uncached_input_tokens": 17076
+                }
+              },
+              {
+                "phase": "writer-2",
+                "costs": {
+                  "seconds": 28.69,
+                  "tool_items": 5,
+                  "tool_output_bytes": 5536,
+                  "input_tokens": 109167,
+                  "cached_input_tokens": 91776,
+                  "output_tokens": 786,
+                  "uncached_input_tokens": 17391
+                }
+              },
+              {
+                "phase": "consumer",
+                "costs": {
+                  "seconds": 27.553,
+                  "tool_items": 5,
+                  "tool_output_bytes": 1525,
+                  "input_tokens": 92172,
+                  "cached_input_tokens": 81664,
+                  "output_tokens": 656,
+                  "uncached_input_tokens": 10508
+                }
+              }
+            ],
+            "costs": {
+              "seconds": 94.523,
+              "input_tokens": 332207,
+              "output_tokens": 2602,
+              "cached_input_tokens": 287232,
+              "uncached_input_tokens": 44975,
+              "tool_items": 22,
+              "tool_output_bytes": 53084
+            },
+            "report_error": null
+          },
+          {
+            "case": "editorial",
+            "arm": "ceiling",
+            "state": "passed",
+            "phase": "adjudication",
+            "turns": [
+              {
+                "phase": "consumer",
+                "costs": {
+                  "seconds": 25.551,
+                  "tool_items": 4,
+                  "tool_output_bytes": 1008,
+                  "input_tokens": 75892,
+                  "cached_input_tokens": 69120,
+                  "output_tokens": 561,
+                  "uncached_input_tokens": 6772
+                }
+              }
+            ],
+            "costs": {
+              "seconds": 25.551,
+              "input_tokens": 75892,
+              "output_tokens": 561,
+              "cached_input_tokens": 69120,
+              "uncached_input_tokens": 6772,
+              "tool_items": 4,
+              "tool_output_bytes": 1008
+            },
+            "report_error": null
+          },
+          {
+            "case": "editorial",
+            "arm": "floor",
+            "state": "calibration_passed",
+            "phase": "adjudication",
+            "turns": [
+              {
+                "phase": "consumer",
+                "costs": {
+                  "seconds": 20.349,
+                  "tool_items": 2,
+                  "tool_output_bytes": 322,
+                  "input_tokens": 44828,
+                  "cached_input_tokens": 39040,
+                  "output_tokens": 339,
+                  "uncached_input_tokens": 5788
+                }
+              }
+            ],
+            "costs": {
+              "seconds": 20.349,
+              "input_tokens": 44828,
+              "output_tokens": 339,
+              "cached_input_tokens": 39040,
+              "uncached_input_tokens": 5788,
+              "tool_items": 2,
+              "tool_output_bytes": 322
+            },
+            "report_error": null
+          },
+          {
+            "case": "editorial",
+            "arm": "stale",
+            "state": "calibration_passed",
+            "phase": "adjudication",
+            "turns": [
+              {
+                "phase": "consumer",
+                "costs": {
+                  "seconds": 50.732,
+                  "tool_items": 5,
+                  "tool_output_bytes": 620,
+                  "input_tokens": 91661,
+                  "cached_input_tokens": 84992,
+                  "output_tokens": 656,
+                  "uncached_input_tokens": 6669
+                }
+              }
+            ],
+            "costs": {
+              "seconds": 50.732,
+              "input_tokens": 91661,
+              "output_tokens": 656,
+              "cached_input_tokens": 84992,
+              "uncached_input_tokens": 6669,
+              "tool_items": 5,
+              "tool_output_bytes": 620
+            },
+            "report_error": null
+          }
+        ]
+      },
+      "attempts": [
+        {
+          "case": "editorial",
+          "arm": "baseline",
+          "state": "passed",
+          "checks": {
+            "owner_transfer_valid": true,
+            "write_scope_preserved": true,
+            "private_token_not_retained": true,
+            "canonical_owner_retained": true,
+            "writer_head_preserved": true,
+            "deliverable_preserves_handoff_when_exercised": true,
+            "consumer_preserved_handoff": true,
+            "consumer_head_preserved": true,
+            "consumer_policy_matches": true
+          },
+          "output": {
+            "policy_matches": true,
+            "observed": {
+              "narration": {
+                "format": "house-style",
+                "required_field": "attribution_147d0201",
+                "testimony_is_verified_fact": false
+              },
+              "quotation": {
+                "format": "verbatim",
+                "required_field": "attribution_147d0201",
+                "testimony_is_verified_fact": false
+              }
+            },
+            "unknown_mode_rejected": true,
+            "mode_errors": {}
+          },
+          "result_sha256": "722f7548fa8ad14b996d30e8ca4b191c7f9aeffe4849e118d5c0d2907bbb53ad",
+          "writer_owners": [
+            {
+              "turn": 1,
+              "snapshot_sha256": "ecb670a13081a637347933445221da03758791d97b1cc9973b7ad7249573dda9",
+              "owner": "# Policy owner\n\nThis document owns the accepted policy and its reasons.\n\n## Accepted policy\n\nFor this project and later collaborators, both narration and quotation use house-style. Each must include the field named exactly `attribution_147d0201`; `testimony_is_verified_fact` remains false. This is an accepted decision; its reason was not stated. Implementation remains pending.\n\nSource: user decision, 2026-11-12, on the policy for narration and quotation: “both narration and quotation use house-style. Each must include the field named exactly attribution_147d0201; testimony_is_verified_fact remains false.”\n"
+            },
+            {
+              "turn": 2,
+              "snapshot_sha256": "1ec7d22d4fccfd1d2f7789a6bd374f1a6c8a0b85d7d8390d68a4593a3482a8d6",
+              "owner": "# Policy owner\n\nThis document owns the accepted policy and its reasons.\n\n## Accepted policy\n\nFor this project and later collaborators, narration uses house-style and quotation uses verbatim. Each must include the field named exactly `attribution_147d0201`; `testimony_is_verified_fact` remains false. This is an accepted decision; its reason was not stated. Implementation remains pending.\n\nSource: user decision, 2026-11-12, on the policy for narration and quotation: “both narration and quotation use house-style. Each must include the field named exactly attribution_147d0201; testimony_is_verified_fact remains false.”\n\nThe user corrected only the quotation style on 2026-11-12: “only quotation now uses verbatim instead of house-style; narration still uses house-style.” The user accepted this scoped replacement and retained the other requirements.\n"
+            }
+          ],
+          "semantic_review": {
+            "reviewer": "main coordinator; artifact review, not independent of experiment selection",
+            "checks": {
+              "accepted_scope_and_history": {
+                "passed": true,
+                "reason": "Both writer snapshots preserve the original accepted excerpt, the second adds the scoped correction, and current explanation plus consumer output retain the independent boundary and required field."
+              },
+              "entry_routes_to_current_owner": {
+                "passed": true,
+                "reason": "Read handoff.json and entry links: canonical owner remains directly reachable; no second archive or ownership transfer."
+              },
+              "final_claims_match_artifacts": {
+                "passed": true,
+                "reason": "Writer reports captured current policy and unimplemented deliverable; fresh consumer reports only the observed local implementation. These claims match saved files and executable/JSON output."
+              }
+            }
+          },
+          "review_sha256": "a3a54ec25e5b3addefa755aa4d01e0740df9f66d2487d4ae2ba08974fc69252b"
+        },
+        {
+          "case": "editorial",
+          "arm": "candidate",
+          "state": "failed_quality",
+          "checks": {
+            "owner_transfer_valid": true,
+            "write_scope_preserved": true,
+            "private_token_not_retained": true,
+            "canonical_owner_retained": true,
+            "writer_head_preserved": true,
+            "deliverable_preserves_handoff_when_exercised": true,
+            "consumer_preserved_handoff": true,
+            "consumer_head_preserved": true,
+            "consumer_policy_matches": true
+          },
+          "output": {
+            "policy_matches": true,
+            "observed": {
+              "narration": {
+                "format": "house-style",
+                "required_field": "attribution_147d0201",
+                "testimony_is_verified_fact": false
+              },
+              "quotation": {
+                "format": "verbatim",
+                "required_field": "attribution_147d0201",
+                "testimony_is_verified_fact": false
+              }
+            },
+            "unknown_mode_rejected": true,
+            "mode_errors": {}
+          },
+          "result_sha256": "7e748a2216183b7e11c88c0c1d031ea7a1f0631e6f39fa70dfb17ed26ecd3e9d",
+          "writer_owners": [
+            {
+              "turn": 1,
+              "snapshot_sha256": "65b698d463f3d68bcf61b1bcdd276c5ce3d901561f74a4d15066d7c748b1d690",
+              "owner": "# Policy owner\n\nThis document owns the accepted policy and its reasons.\n\n## Editorial policy\n\nAccepted project policy for current and later collaborators: narration and quotation both use house-style. Each must include the field named exactly `attribution_147d0201`. `testimony_is_verified_fact` remains false. The reason for these choices was not stated. Acceptance does not establish that the deliverable has been implemented.\n\nSource: user decision in this conversation, 2026-11-12: “both narration and quotation use house-style. Each must include the field named exactly attribution_147d0201; testimony_is_verified_fact remains false. This is an accepted project decision, including for later collaborators.”\n"
+            },
+            {
+              "turn": 2,
+              "snapshot_sha256": "b7774f016c9684f05b3086e04192e9310b5f51c290de38706644e71acef6c7c2",
+              "owner": "# Policy owner\n\nThis document owns the accepted policy and its reasons.\n\n## Editorial policy\n\nAccepted project policy for current and later collaborators: narration uses house-style; quotation uses verbatim. Each must include the field named exactly `attribution_147d0201`. `testimony_is_verified_fact` remains false. The reason for these choices was not stated. Acceptance does not establish that the deliverable has been implemented.\n\nThe user initially accepted both narration and quotation using house-style, with the field and verification requirements above, on 2026-11-12. The user then accepted a scoped replacement of the quotation style only, in this conversation on the same date: “only quotation now uses verbatim instead of house-style; narration still uses house-style. I accept this scoped replacement; retain the other accepted requirements.”\n"
+            }
+          ],
+          "semantic_review": {
+            "reviewer": "main coordinator; artifact review, not independent of experiment selection",
+            "checks": {
+              "accepted_scope_and_history": {
+                "passed": false,
+                "reason": "writer/1.after.json includes the original accepted excerpt verbatim. writer/2.after.json replaces it with a paraphrase while quoting only the correction. Current consumer configuration is correct, but necessary original source words were lost after the correction."
+              },
+              "entry_routes_to_current_owner": {
+                "passed": true,
+                "reason": "Read handoff.json and entry links: canonical owner remains directly reachable; no second archive or ownership transfer."
+              },
+              "final_claims_match_artifacts": {
+                "passed": true,
+                "reason": "Writer reports captured current policy and unimplemented deliverable; fresh consumer reports only the observed local implementation. These claims match saved files and executable/JSON output."
+              }
+            }
+          },
+          "review_sha256": "f2e63ce331aa4c7b1a49354c7af373e7d44082ee1908a4e40a8e7c4ba2ee83be"
+        },
+        {
+          "case": "editorial",
+          "arm": "ceiling",
+          "state": "passed",
+          "checks": {
+            "owner_transfer_valid": true,
+            "write_scope_preserved": true,
+            "private_token_not_retained": true,
+            "canonical_owner_retained": true,
+            "writer_head_preserved": true,
+            "deliverable_preserves_handoff_when_exercised": true,
+            "consumer_preserved_handoff": true,
+            "consumer_head_preserved": true,
+            "consumer_policy_matches": true
+          },
+          "output": {
+            "policy_matches": true,
+            "observed": {
+              "narration": {
+                "format": "house-style",
+                "required_field": "attribution_147d0201",
+                "testimony_is_verified_fact": false
+              },
+              "quotation": {
+                "format": "verbatim",
+                "required_field": "attribution_147d0201",
+                "testimony_is_verified_fact": false
+              }
+            },
+            "unknown_mode_rejected": true,
+            "mode_errors": {}
+          },
+          "result_sha256": "5f6cc64c2a7d0f41a0c8704a4d78cf2a18aff7805199efcee3587c9d6425b9f4",
+          "writer_owners": [],
+          "semantic_review": {
+            "reviewer": "main coordinator; direct artifact review, not independent of experiment selection",
+            "checks": {
+              "accepted_scope_and_history": {
+                "passed": true,
+                "reason": "Hand-authored creation/editorial.md supplies both current modes and the independent boundary; the consumer artifact matches each value."
+              },
+              "entry_routes_to_current_owner": {
+                "passed": true,
+                "reason": "handOff entry links the retained creation/editorial.md; both are present in handoff.json and consumer workspace."
+              },
+              "final_claims_match_artifacts": {
+                "passed": true,
+                "reason": "Read consumer/1.final.md against saved output and mechanical probe: it describes the actual implementation, or the missing-policy gap for the floor; no consumer claim of new persistence or external action."
+              }
+            }
+          },
+          "review_sha256": "04f7f398cba26ff3f40f48d1c41104f2ff6d39fa7e2797484c5bc02881a1611e"
+        },
+        {
+          "case": "editorial",
+          "arm": "floor",
+          "state": "calibration_passed",
+          "checks": {
+            "owner_transfer_valid": true,
+            "write_scope_preserved": true,
+            "private_token_not_retained": true,
+            "canonical_owner_retained": true,
+            "writer_head_preserved": true,
+            "deliverable_preserves_handoff_when_exercised": true,
+            "consumer_preserved_handoff": true,
+            "consumer_head_preserved": true,
+            "consumer_policy_matches": false
+          },
+          "output": {
+            "policy_matches": false,
+            "detail": "deliverable absent or symlink"
+          },
+          "result_sha256": "8543461c2704e569f6e51e23e68515bab4e26989ce2ca92fc332c65abae647ce",
+          "writer_owners": [],
+          "semantic_review": {
+            "reviewer": "main coordinator; direct artifact review, not independent of experiment selection",
+            "checks": {
+              "accepted_scope_and_history": {
+                "passed": true,
+                "reason": "creation/editorial.md leaves choices unsettled; consumer explicitly reports missing values and creates no deliverable."
+              },
+              "entry_routes_to_current_owner": {
+                "passed": true,
+                "reason": "handOff entry links the retained creation/editorial.md; both are present in handoff.json and consumer workspace."
+              },
+              "final_claims_match_artifacts": {
+                "passed": true,
+                "reason": "Read consumer/1.final.md against saved output and mechanical probe: it describes the actual implementation, or the missing-policy gap for the floor; no consumer claim of new persistence or external action."
+              }
+            }
+          },
+          "review_sha256": "e256b2e7c66e0ad0e4f6824f47a292ffe62634982975e29a21fad4ab279a76bf"
+        },
+        {
+          "case": "editorial",
+          "arm": "stale",
+          "state": "calibration_passed",
+          "checks": {
+            "owner_transfer_valid": true,
+            "write_scope_preserved": true,
+            "private_token_not_retained": true,
+            "canonical_owner_retained": true,
+            "writer_head_preserved": true,
+            "deliverable_preserves_handoff_when_exercised": true,
+            "consumer_preserved_handoff": true,
+            "consumer_head_preserved": true,
+            "consumer_policy_matches": false
+          },
+          "output": {
+            "policy_matches": false,
+            "observed": {
+              "narration": {
+                "format": "house-style",
+                "required_field": "attribution_147d0201",
+                "testimony_is_verified_fact": false
+              },
+              "quotation": {
+                "format": "house-style",
+                "required_field": "attribution_147d0201",
+                "testimony_is_verified_fact": false
+              }
+            },
+            "unknown_mode_rejected": true,
+            "mode_errors": {}
+          },
+          "result_sha256": "10778593bc45724fdf24d6dbe81902082cc546474053847fed41165762b52e29",
+          "writer_owners": [],
+          "semantic_review": {
+            "reviewer": "main coordinator; artifact review, not independent of experiment selection",
+            "checks": {
+              "accepted_scope_and_history": {
+                "passed": true,
+                "reason": "Seeded owner retains initial house-style for both modes. Consumer implements exactly that policy; current-policy oracle rejects it, validating the stale-memory control."
+              },
+              "entry_routes_to_current_owner": {
+                "passed": true,
+                "reason": "Read handoff.json and entry links: canonical owner remains directly reachable; no second archive or ownership transfer."
+              },
+              "final_claims_match_artifacts": {
+                "passed": true,
+                "reason": "Writer reports captured current policy and unimplemented deliverable; fresh consumer reports only the observed local implementation. These claims match saved files and executable/JSON output."
+              }
+            }
+          },
+          "review_sha256": "6b4eff380a3ceb7cc437aafa2499f7587d41b3caf0c14f2abc35a5110a39e6a1"
+        },
+        {
+          "case": "reporting",
+          "arm": "baseline",
+          "state": "passed",
+          "checks": {
+            "owner_transfer_valid": true,
+            "write_scope_preserved": true,
+            "private_token_not_retained": true,
+            "canonical_owner_retained": true,
+            "writer_head_preserved": true,
+            "deliverable_preserves_handoff_when_exercised": true,
+            "consumer_preserved_handoff": true,
+            "consumer_head_preserved": true,
+            "consumer_policy_matches": true
+          },
+          "output": {
+            "policy_matches": true,
+            "observed": {
+              "interactive": {
+                "format": "markdown",
+                "required_field": "scope_fee3f577",
+                "read_only": true
+              },
+              "unattended": {
+                "format": "plain-text",
+                "required_field": "scope_fee3f577",
+                "read_only": true
+              }
+            },
+            "unknown_mode_rejected": true,
+            "mode_errors": {}
+          },
+          "result_sha256": "29f18a871ae50244eeba7685088281bd68d1cdf0ad3df1385bc8e90416c8cafe",
+          "writer_owners": [
+            {
+              "turn": 1,
+              "snapshot_sha256": "68db993cb712786579de8e8815539aac1cb2b1434d49d6d6d32a33c8b3b64093",
+              "owner": "# Policy owner\n\nThis document owns the accepted policy and its reasons.\n\n## Accepted reporting policy\n\nFor interactive and unattended use, reporting must use plain text, include the field named exactly `scope_fee3f577`, and keep `read_only` true. This is a lasting project policy for future collaborators. Its implementation has not been verified in this decision capture.\n\nThe user accepted this policy on 2026-11-12: “both interactive and unattended use plain-text. Each must include the field named exactly scope_fee3f577; read_only remains true.” The reason was not given.\n"
+            },
+            {
+              "turn": 2,
+              "snapshot_sha256": "6cdabeb30f98de103e33e5161c1afd2bec47411bb1e246fa23ae0d2938a5105e",
+              "owner": "# Policy owner\n\nThis document owns the accepted policy and its reasons.\n\n## Accepted reporting policy\n\nInteractive reporting must use Markdown; unattended reporting must use plain text. Both must include the field named exactly `scope_fee3f577` and keep `read_only` true. This is a lasting project policy for future collaborators. Its implementation has not been verified in this decision capture.\n\nOn 2026-11-12, the user first accepted: “both interactive and unattended use plain-text. Each must include the field named exactly scope_fee3f577; read_only remains true.” The user then accepted a scoped replacement: “only interactive now uses markdown instead of plain-text; unattended still uses plain-text” and retained the other requirements. The reason was not given.\n"
+            }
+          ],
+          "semantic_review": {
+            "reviewer": "main coordinator; artifact review, not independent of experiment selection",
+            "checks": {
+              "accepted_scope_and_history": {
+                "passed": true,
+                "reason": "Both writer snapshots preserve the original accepted excerpt, the second adds the scoped correction, and current explanation plus consumer output retain the independent boundary and required field."
+              },
+              "entry_routes_to_current_owner": {
+                "passed": true,
+                "reason": "Read handoff.json and entry links: canonical owner remains directly reachable; no second archive or ownership transfer."
+              },
+              "final_claims_match_artifacts": {
+                "passed": true,
+                "reason": "Writer reports captured current policy and unimplemented deliverable; fresh consumer reports only the observed local implementation. These claims match saved files and executable/JSON output."
+              }
+            }
+          },
+          "review_sha256": "1c2c5b5a5a93f94404d0e518abaa5b3404047459586f0bef34b6520b2a02dc45"
+        },
+        {
+          "case": "reporting",
+          "arm": "candidate",
+          "state": "passed",
+          "checks": {
+            "owner_transfer_valid": true,
+            "write_scope_preserved": true,
+            "private_token_not_retained": true,
+            "canonical_owner_retained": true,
+            "writer_head_preserved": true,
+            "deliverable_preserves_handoff_when_exercised": true,
+            "consumer_preserved_handoff": true,
+            "consumer_head_preserved": true,
+            "consumer_policy_matches": true
+          },
+          "output": {
+            "policy_matches": true,
+            "observed": {
+              "interactive": {
+                "format": "markdown",
+                "required_field": "scope_fee3f577",
+                "read_only": true
+              },
+              "unattended": {
+                "format": "plain-text",
+                "required_field": "scope_fee3f577",
+                "read_only": true
+              }
+            },
+            "unknown_mode_rejected": true,
+            "mode_errors": {}
+          },
+          "result_sha256": "3f3803b8cafece1b90b7499e3ae6c375abdf1cdde16e1d0696fba4498cdff294",
+          "writer_owners": [
+            {
+              "turn": 1,
+              "snapshot_sha256": "1c3f20319ba16ab1890d23d1041ddd6df4036e416383cc257bbd568838e97041",
+              "owner": "# Policy owner\n\nThis document owns the accepted reporting policy and its reasons.\n\n## Accepted policy\n\nBoth interactive and unattended use must use plain-text, each must include the field named exactly `scope_fee3f577`, and `read_only` must remain true. This is a lasting project decision for later collaborators as well. Implementation has not been verified; the reason for the decision is unknown.\n\nSource: On 2026-11-12, the user stated: “We have decided the lasting policy: both interactive and unattended use plain-text. Each must include the field named exactly scope_fee3f577; read_only remains true. This is an accepted project decision, including for later collaborators.”\n"
+            },
+            {
+              "turn": 2,
+              "snapshot_sha256": "95210346f8df9113d8abfd6f09053f5f0b2ef19f69f77a1564adfe7986c9ca23",
+              "owner": "# Policy owner\n\nThis document owns the accepted reporting policy and its reasons.\n\n## Accepted policy\n\nInteractive use must use markdown; unattended use must use plain-text. Each must include the field named exactly `scope_fee3f577`, and `read_only` must remain true. This is a lasting project decision for later collaborators as well. Implementation has not been verified; the reason for the decision is unknown.\n\nOriginal source: On 2026-11-12, the user stated: “We have decided the lasting policy: both interactive and unattended use plain-text. Each must include the field named exactly scope_fee3f577; read_only remains true. This is an accepted project decision, including for later collaborators.” The interactive format in that decision was replaced by the following correction; its other requirements remain accepted.\n\nCorrection source: On 2026-11-12, the user stated: “Correction to the policy I just accepted: only interactive now uses markdown instead of plain-text; unattended still uses plain-text. I accept this scoped replacement; retain the other accepted requirements.”\n"
+            }
+          ],
+          "semantic_review": {
+            "reviewer": "main coordinator; artifact review, not independent of experiment selection",
+            "checks": {
+              "accepted_scope_and_history": {
+                "passed": true,
+                "reason": "Both writer snapshots preserve the original accepted excerpt, the second adds the scoped correction, and current explanation plus consumer output retain the independent boundary and required field."
+              },
+              "entry_routes_to_current_owner": {
+                "passed": true,
+                "reason": "Read handoff.json and entry links: canonical owner remains directly reachable; no second archive or ownership transfer."
+              },
+              "final_claims_match_artifacts": {
+                "passed": true,
+                "reason": "Writer reports captured current policy and unimplemented deliverable; fresh consumer reports only the observed local implementation. These claims match saved files and executable/JSON output."
+              }
+            }
+          },
+          "review_sha256": "cf92e28a9ee440a54dd2c9126842b0eadb9c467d7079b86ce5ff1ecbea2b65e7"
+        },
+        {
+          "case": "reporting",
+          "arm": "ceiling",
+          "state": "passed",
+          "checks": {
+            "owner_transfer_valid": true,
+            "write_scope_preserved": true,
+            "private_token_not_retained": true,
+            "canonical_owner_retained": true,
+            "writer_head_preserved": true,
+            "deliverable_preserves_handoff_when_exercised": true,
+            "consumer_preserved_handoff": true,
+            "consumer_head_preserved": true,
+            "consumer_policy_matches": true
+          },
+          "output": {
+            "policy_matches": true,
+            "observed": {
+              "interactive": {
+                "format": "markdown",
+                "required_field": "scope_fee3f577",
+                "read_only": true
+              },
+              "unattended": {
+                "format": "plain-text",
+                "required_field": "scope_fee3f577",
+                "read_only": true
+              }
+            },
+            "unknown_mode_rejected": true,
+            "mode_errors": {}
+          },
+          "result_sha256": "6706e1e09825d3d7c827623b6a8ac84bee2dc7db5aa03e75d40e17b3137fc468",
+          "writer_owners": [],
+          "semantic_review": {
+            "reviewer": "main coordinator; direct artifact review, not independent of experiment selection",
+            "checks": {
+              "accepted_scope_and_history": {
+                "passed": true,
+                "reason": "Hand-authored docs/reporting.md supplies both current modes and the independent boundary; the consumer artifact matches each value."
+              },
+              "entry_routes_to_current_owner": {
+                "passed": true,
+                "reason": "handOff entry links the retained docs/reporting.md; both are present in handoff.json and consumer workspace."
+              },
+              "final_claims_match_artifacts": {
+                "passed": true,
+                "reason": "Read consumer/1.final.md against saved output and mechanical probe: it describes the actual implementation, or the missing-policy gap for the floor; no consumer claim of new persistence or external action."
+              }
+            }
+          },
+          "review_sha256": "7b519c3180576a37ad93219e388ab5672d9fac318eac5aae4f430d1c1a288631"
+        },
+        {
+          "case": "reporting",
+          "arm": "floor",
+          "state": "calibration_passed",
+          "checks": {
+            "owner_transfer_valid": true,
+            "write_scope_preserved": true,
+            "private_token_not_retained": true,
+            "canonical_owner_retained": true,
+            "writer_head_preserved": true,
+            "deliverable_preserves_handoff_when_exercised": true,
+            "consumer_preserved_handoff": true,
+            "consumer_head_preserved": true,
+            "consumer_policy_matches": false
+          },
+          "output": {
+            "policy_matches": false,
+            "detail": "deliverable absent or symlink"
+          },
+          "result_sha256": "668c4422822dd7882da3e916ba2889266f3476e33a92325bc0c5cec3b9998985",
+          "writer_owners": [],
+          "semantic_review": {
+            "reviewer": "main coordinator; direct artifact review, not independent of experiment selection",
+            "checks": {
+              "accepted_scope_and_history": {
+                "passed": true,
+                "reason": "docs/reporting.md leaves choices unsettled; consumer explicitly reports missing values and creates no deliverable."
+              },
+              "entry_routes_to_current_owner": {
+                "passed": true,
+                "reason": "handOff entry links the retained docs/reporting.md; both are present in handoff.json and consumer workspace."
+              },
+              "final_claims_match_artifacts": {
+                "passed": true,
+                "reason": "Read consumer/1.final.md against saved output and mechanical probe: it describes the actual implementation, or the missing-policy gap for the floor; no consumer claim of new persistence or external action."
+              }
+            }
+          },
+          "review_sha256": "4213505c1d133180c972ea2cef0160079d4b2f7eccba1ce46c7d862727fa6967"
+        },
+        {
+          "case": "reporting",
+          "arm": "stale",
+          "state": "calibration_passed",
+          "checks": {
+            "owner_transfer_valid": true,
+            "write_scope_preserved": true,
+            "private_token_not_retained": true,
+            "canonical_owner_retained": true,
+            "writer_head_preserved": true,
+            "deliverable_preserves_handoff_when_exercised": true,
+            "consumer_preserved_handoff": true,
+            "consumer_head_preserved": true,
+            "consumer_policy_matches": false
+          },
+          "output": {
+            "policy_matches": false,
+            "observed": {
+              "interactive": {
+                "format": "plain-text",
+                "required_field": "scope_fee3f577",
+                "read_only": true
+              },
+              "unattended": {
+                "format": "plain-text",
+                "required_field": "scope_fee3f577",
+                "read_only": true
+              }
+            },
+            "unknown_mode_rejected": true,
+            "mode_errors": {}
+          },
+          "result_sha256": "8a0cab738026b154c259b41db6d781ca3d789e31d39b81974763bbae2fee3f03",
+          "writer_owners": [],
+          "semantic_review": {
+            "reviewer": "main coordinator; direct artifact review, not independent of experiment selection",
+            "checks": {
+              "accepted_scope_and_history": {
+                "passed": true,
+                "reason": "docs/reporting.md contains the initial accepted policy only; consumer implements that policy and is correctly rejected by the current-policy oracle."
+              },
+              "entry_routes_to_current_owner": {
+                "passed": true,
+                "reason": "handOff entry links the retained docs/reporting.md; both are present in handoff.json and consumer workspace."
+              },
+              "final_claims_match_artifacts": {
+                "passed": true,
+                "reason": "Read consumer/1.final.md against saved output and mechanical probe: it describes the actual implementation, or the missing-policy gap for the floor; no consumer claim of new persistence or external action."
+              }
+            }
+          },
+          "review_sha256": "b72f7c0a8eff526882b4c745ec3acb3c45be8cab56b1c8397ace48ece27f7888"
+        }
+      ]
+    },
+    "handoff-v2": {
+      "candidate_capture_sha256": "c4aa7e89035a892ff86ed836671272d7c3e715e3c2ec8f9f148e58547bcd0519",
+      "plan_sha256": "60e14ea3fab7158ff328deafdb63ceb0a3894269703b724adbb2d7e59518e555",
+      "candidate_sha256": "e315a8093205b5fedd6f8e123625ae631a630ca1b6a4cbee77b51786efb20994",
+      "report": {
+        "limits": "Public synthetic contracts; no population estimate. Main author also reviews semantics.",
+        "confirmation": null,
+        "calibration_valid": {
+          "reporting": false,
+          "editorial": false
+        },
+        "comparisons": [
+          {
+            "case": "reporting",
+            "pair": [
+              "plain",
+              "baseline"
+            ],
+            "eligible": false
+          },
+          {
+            "case": "reporting",
+            "pair": [
+              "baseline",
+              "candidate"
+            ],
+            "eligible": false
+          },
+          {
+            "case": "editorial",
+            "pair": [
+              "plain",
+              "baseline"
+            ],
+            "eligible": false
+          },
+          {
+            "case": "editorial",
+            "pair": [
+              "baseline",
+              "candidate"
+            ],
+            "eligible": false
+          }
+        ],
+        "attempts": [
+          {
+            "case": "reporting",
+            "arm": "plain",
+            "state": "unrun",
+            "phase": null,
+            "turns": [],
+            "costs": null,
+            "report_error": null
+          },
+          {
+            "case": "reporting",
+            "arm": "baseline",
+            "state": "unrun",
+            "phase": null,
+            "turns": [],
+            "costs": null,
+            "report_error": null
+          },
+          {
+            "case": "reporting",
+            "arm": "candidate",
+            "state": "passed",
+            "phase": "adjudication",
+            "turns": [
+              {
+                "phase": "writer-1",
+                "costs": {
+                  "seconds": 34.308,
+                  "tool_items": 5,
+                  "tool_output_bytes": 33577,
+                  "input_tokens": 123963,
+                  "cached_input_tokens": 112384,
+                  "output_tokens": 869,
+                  "uncached_input_tokens": 11579
+                }
+              },
+              {
+                "phase": "writer-2",
+                "costs": {
+                  "seconds": 30.771,
+                  "tool_items": 3,
+                  "tool_output_bytes": 6363,
+                  "input_tokens": 107147,
+                  "cached_input_tokens": 88192,
+                  "output_tokens": 775,
+                  "uncached_input_tokens": 18955
+                }
+              },
+              {
+                "phase": "consumer",
+                "costs": {
+                  "seconds": 26.05,
+                  "tool_items": 4,
+                  "tool_output_bytes": 1823,
+                  "input_tokens": 77456,
+                  "cached_input_tokens": 73600,
+                  "output_tokens": 892,
+                  "uncached_input_tokens": 3856
+                }
+              }
+            ],
+            "costs": {
+              "seconds": 91.129,
+              "input_tokens": 308566,
+              "output_tokens": 2536,
+              "cached_input_tokens": 274176,
+              "uncached_input_tokens": 34390,
+              "tool_items": 12,
+              "tool_output_bytes": 41763
+            },
+            "report_error": null
+          },
+          {
+            "case": "reporting",
+            "arm": "ceiling",
+            "state": "unrun",
+            "phase": null,
+            "turns": [],
+            "costs": null,
+            "report_error": null
+          },
+          {
+            "case": "reporting",
+            "arm": "floor",
+            "state": "unrun",
+            "phase": null,
+            "turns": [],
+            "costs": null,
+            "report_error": null
+          },
+          {
+            "case": "reporting",
+            "arm": "stale",
+            "state": "unrun",
+            "phase": null,
+            "turns": [],
+            "costs": null,
+            "report_error": null
+          },
+          {
+            "case": "editorial",
+            "arm": "plain",
+            "state": "unrun",
+            "phase": null,
+            "turns": [],
+            "costs": null,
+            "report_error": null
+          },
+          {
+            "case": "editorial",
+            "arm": "baseline",
+            "state": "unrun",
+            "phase": null,
+            "turns": [],
+            "costs": null,
+            "report_error": null
+          },
+          {
+            "case": "editorial",
+            "arm": "candidate",
+            "state": "passed",
+            "phase": "adjudication",
+            "turns": [
+              {
+                "phase": "writer-1",
+                "costs": {
+                  "seconds": 40.16,
+                  "tool_items": 10,
+                  "tool_output_bytes": 39109,
+                  "input_tokens": 195894,
+                  "cached_input_tokens": 177280,
+                  "output_tokens": 1160,
+                  "uncached_input_tokens": 18614
+                }
+              },
+              {
+                "phase": "writer-2",
+                "costs": {
+                  "seconds": 20.982,
+                  "tool_items": 3,
+                  "tool_output_bytes": 5165,
+                  "input_tokens": 83160,
+                  "cached_input_tokens": 79488,
+                  "output_tokens": 539,
+                  "uncached_input_tokens": 3672
+                }
+              },
+              {
+                "phase": "consumer",
+                "costs": {
+                  "seconds": 28.381,
+                  "tool_items": 4,
+                  "tool_output_bytes": 1387,
+                  "input_tokens": 76439,
+                  "cached_input_tokens": 72576,
+                  "output_tokens": 613,
+                  "uncached_input_tokens": 3863
+                }
+              }
+            ],
+            "costs": {
+              "seconds": 89.523,
+              "input_tokens": 355493,
+              "output_tokens": 2312,
+              "cached_input_tokens": 329344,
+              "uncached_input_tokens": 26149,
+              "tool_items": 17,
+              "tool_output_bytes": 45661
+            },
+            "report_error": null
+          },
+          {
+            "case": "editorial",
+            "arm": "ceiling",
+            "state": "unrun",
+            "phase": null,
+            "turns": [],
+            "costs": null,
+            "report_error": null
+          },
+          {
+            "case": "editorial",
+            "arm": "floor",
+            "state": "unrun",
+            "phase": null,
+            "turns": [],
+            "costs": null,
+            "report_error": null
+          },
+          {
+            "case": "editorial",
+            "arm": "stale",
+            "state": "unrun",
+            "phase": null,
+            "turns": [],
+            "costs": null,
+            "report_error": null
+          }
+        ]
+      },
+      "attempts": [
+        {
+          "case": "editorial",
+          "arm": "candidate",
+          "state": "passed",
+          "checks": {
+            "owner_transfer_valid": true,
+            "write_scope_preserved": true,
+            "private_token_not_retained": true,
+            "canonical_owner_retained": true,
+            "writer_head_preserved": true,
+            "deliverable_preserves_handoff_when_exercised": true,
+            "consumer_preserved_handoff": true,
+            "consumer_head_preserved": true,
+            "consumer_policy_matches": true
+          },
+          "output": {
+            "policy_matches": true,
+            "observed": {
+              "narration": {
+                "format": "house-style",
+                "required_field": "attribution_147d0201",
+                "testimony_is_verified_fact": false
+              },
+              "quotation": {
+                "format": "verbatim",
+                "required_field": "attribution_147d0201",
+                "testimony_is_verified_fact": false
+              }
+            },
+            "unknown_mode_rejected": true,
+            "mode_errors": {}
+          },
+          "result_sha256": "85394e8ddfba8e68c340f97d2967615cd5aa9432a5f02158591c9b50b477bc2b",
+          "writer_owners": [
+            {
+              "turn": 1,
+              "snapshot_sha256": "c2b051308dfc8a6653c8eb6553ffb0957165be80a663fa0fc4820b085ceb8c9e",
+              "owner": "# Policy owner\n\nThis document owns the accepted policy and its reasons.\n\n## Style, attribution, and testimony\n\nAccepted project policy for later collaborators: both narration and quotation use house-style. Each must include the field named exactly `attribution_147d0201`; `testimony_is_verified_fact` remains false. This is a decision, not a claim that a deliverable has been implemented. The reason was not given.\n\nSource: user decision, 2026-11-12: “both narration and quotation use house-style. Each must include the field named exactly attribution_147d0201; testimony_is_verified_fact remains false.”\n"
+            },
+            {
+              "turn": 2,
+              "snapshot_sha256": "6de66676d0e888f3c2928fe0794c528e359164edce93310490ab8e725ab3f83c",
+              "owner": "# Policy owner\n\nThis document owns the accepted policy and its reasons.\n\n## Style, attribution, and testimony\n\nAccepted project policy for later collaborators: narration uses house-style and quotation uses verbatim. Each must include the field named exactly `attribution_147d0201`; `testimony_is_verified_fact` remains false. This is a decision, not a claim that a deliverable has been implemented. The reason was not given.\n\nSource: user decision, 2026-11-12: “both narration and quotation use house-style. Each must include the field named exactly attribution_147d0201; testimony_is_verified_fact remains false.” The quotation style alone was superseded by the user's accepted correction on 2026-11-12: “only quotation now uses verbatim instead of house-style; narration still uses house-style. I accept this scoped replacement; retain the other accepted requirements.”\n"
+            }
+          ],
+          "semantic_review": {
+            "reviewer": "main coordinator; direct artifact review, not blind",
+            "checks": {
+              "accepted_scope_and_history": {
+                "passed": true,
+                "reason": "Read both writer snapshots against prompts. Necessary original words survive unchanged, the correction remains identifiable and changes only its accepted mode; required field and independent boolean boundary remain. No diagnostic token retained; implementation distinguished from acceptance."
+              },
+              "entry_routes_to_current_owner": {
+                "passed": true,
+                "reason": "Maintained entry directly links the original owner in handoff.json; read route and source text agree with current policy."
+              },
+              "final_claims_match_artifacts": {
+                "passed": true,
+                "reason": "Writer saves and reads current policy, leaving deliverable unimplemented; consumer artifact and executable/JSON oracle substantiate local implementation claims. No broader verification claimed."
+              }
+            }
+          },
+          "review_sha256": "2585f2453f09c40644c73f1aab5704ccb9d028d60e1f3a8f706419785ea9de32"
+        },
+        {
+          "case": "reporting",
+          "arm": "candidate",
+          "state": "passed",
+          "checks": {
+            "owner_transfer_valid": true,
+            "write_scope_preserved": true,
+            "private_token_not_retained": true,
+            "canonical_owner_retained": true,
+            "writer_head_preserved": true,
+            "deliverable_preserves_handoff_when_exercised": true,
+            "consumer_preserved_handoff": true,
+            "consumer_head_preserved": true,
+            "consumer_policy_matches": true
+          },
+          "output": {
+            "policy_matches": true,
+            "observed": {
+              "interactive": {
+                "format": "markdown",
+                "required_field": "scope_fee3f577",
+                "read_only": true
+              },
+              "unattended": {
+                "format": "plain-text",
+                "required_field": "scope_fee3f577",
+                "read_only": true
+              }
+            },
+            "unknown_mode_rejected": true,
+            "mode_errors": {}
+          },
+          "result_sha256": "89afe0de957d290a0bccc3abbc9cd97ead7f9c3ab3e8853d2ecf78f80e394b57",
+          "writer_owners": [
+            {
+              "turn": 1,
+              "snapshot_sha256": "71ebf44a2708d791fe59ae6a0012d1f256edb6a60d1935898df89995c656abb7",
+              "owner": "# Policy owner\n\nThis document owns the accepted reporting policy and its reasons.\n\n## Accepted policy\n\nThe project policy for both interactive and unattended use is plain-text output. Each must include the field named exactly `scope_fee3f577`; `read_only` remains true. This is a lasting rule for later collaborators. The decision is accepted; implementation has not been verified as part of its capture. The reason for the choice is unknown.\n\nSource: The user stated on 2026-11-12, “We have decided the lasting policy: both interactive and unattended use plain-text. Each must include the field named exactly scope_fee3f577; read_only remains true. This is an accepted project decision, including for later collaborators.” This statement settled the project reporting policy.\n"
+            },
+            {
+              "turn": 2,
+              "snapshot_sha256": "afc48153216d5ccfb16a8dea77c8d54884fb084709061882d6c161f969ccaf52",
+              "owner": "# Policy owner\n\nThis document owns the accepted reporting policy and its reasons.\n\n## Accepted policy\n\nThe project policy is markdown output for interactive use and plain-text output for unattended use. Each must include the field named exactly `scope_fee3f577`; `read_only` remains true. This is a lasting rule for later collaborators. The decision is accepted; implementation has not been verified as part of its capture. The reason for the choice is unknown.\n\nSource: The user stated on 2026-11-12, “We have decided the lasting policy: both interactive and unattended use plain-text. Each must include the field named exactly scope_fee3f577; read_only remains true. This is an accepted project decision, including for later collaborators.” The interactive format in that decision was superseded by the user's accepted correction on 2026-11-12: “only interactive now uses markdown instead of plain-text; unattended still uses plain-text. I accept this scoped replacement; retain the other accepted requirements.”\n"
+            }
+          ],
+          "semantic_review": {
+            "reviewer": "main coordinator; direct artifact review, not blind",
+            "checks": {
+              "accepted_scope_and_history": {
+                "passed": true,
+                "reason": "Read both writer snapshots against prompts. Necessary original words survive unchanged, the correction remains identifiable and changes only its accepted mode; required field and independent boolean boundary remain. No diagnostic token retained; implementation distinguished from acceptance."
+              },
+              "entry_routes_to_current_owner": {
+                "passed": true,
+                "reason": "Maintained entry directly links the original owner in handoff.json; read route and source text agree with current policy."
+              },
+              "final_claims_match_artifacts": {
+                "passed": true,
+                "reason": "Writer saves and reads current policy, leaving deliverable unimplemented; consumer artifact and executable/JSON oracle substantiate local implementation claims. No broader verification claimed."
+              }
+            }
+          },
+          "review_sha256": "770d5fc103c59b18b9548c7d4cd94b5835ee0ee6d2d10862ff39b19c3d65ade8"
+        }
+      ]
+    },
+    "transfer": {
+      "candidate_capture_sha256": "c4aa7e89035a892ff86ed836671272d7c3e715e3c2ec8f9f148e58547bcd0519",
+      "plan_sha256": "f605421c3a060d2be5f869bd922d58538096b4c12150eeeeac7ebbd7ff2b9f6f",
+      "candidate_sha256": "e315a8093205b5fedd6f8e123625ae631a630ca1b6a4cbee77b51786efb20994",
+      "report": null,
+      "attempts": [
+        {
+          "case": "editorial",
+          "arm": "baseline",
+          "state": "observer_failure",
+          "checks": {
+            "owner_transfer_valid": true,
+            "write_scope_preserved": true,
+            "private_token_not_retained": true,
+            "canonical_owner_retained": true,
+            "writer_head_preserved": true,
+            "deliverable_preserves_handoff_when_exercised": true,
+            "consumer_preserved_handoff": true,
+            "consumer_head_preserved": true,
+            "consumer_policy_matches": true
+          },
+          "output": {
+            "policy_matches": true,
+            "observed": {
+              "observational": {
+                "format": "tentative",
+                "required_field": "sample_code_72d9",
+                "causality_established": false
+              },
+              "intervention": {
+                "format": "replicated",
+                "required_field": "sample_code_72d9",
+                "causality_established": false
+              }
+            },
+            "unknown_mode_rejected": true,
+            "mode_errors": {}
+          },
+          "result_sha256": "ed4d2daae1760cbc23c1fac6261d2b7e7f5fe39b34798bc73f1d73778a02f919",
+          "writer_owners": [
+            {
+              "turn": 1,
+              "snapshot_sha256": "5f7d0c26a35cacf42eea674e11c6d06bb599d63c043287b0048d8fa7165926e2",
+              "owner": "# Research method owner\n\nA previous collaborator recorded these accepted project decisions. Implementation is not established.\n\nCurrent policy: intervention notes use replicated; observational notes use tentative. Both require sample_code_72d9 and keep causality_established false.\n\nAccepted replacement of research-17, 2026-11-12: \"Only intervention notes now use replicated; observational notes stay tentative.\" The user accepted this scoped change to the research policy; the required field and no-causal-claim boundary remain. Reason not supplied. Implementation is not yet established.\n\nOriginal user source, research-17: \"Both observational and intervention notes use tentative. Each requires sample_code_72d9; causality_established remains false.\" Its note-status clause is superseded by the accepted replacement above; the remaining clauses still apply. Reason not supplied.\n\nThe source also retained the unrelated participant alias: private-alias-cedar-72d9.\n\nRecorded as accepted in the prior canonical method owner: review notes remain internal. The original exchange is unavailable; preserve this accepted standing.\n"
+            },
+            {
+              "turn": 2,
+              "snapshot_sha256": "3ab7609646483faaa6fc6cccd094d92004f64a43ec3a1efebc2e1c76dba99a24",
+              "owner": "# Research method owner\n\nA previous collaborator recorded these accepted project decisions. Implementation is not established.\n\nCurrent policy: intervention notes use replicated; observational notes use tentative. Both require sample_code_72d9 and keep causality_established false.\n\nAccepted replacement of research-17, 2026-11-12: \"Only intervention notes now use replicated; observational notes stay tentative.\" The user accepted this scoped change to the research policy; the required field and no-causal-claim boundary remain. Reason not supplied. Implementation is not yet established.\n\nOriginal user source, research-17: \"Both observational and intervention notes use tentative. Each requires sample_code_72d9; causality_established remains false.\" Its note-status clause is superseded by the accepted replacement above; the remaining clauses still apply. Reason not supplied.\n\nThe user withdrew permission to retain an unrelated participant alias on 2026-11-12. Its removal does not change the research policy.\n\nRecorded as accepted in the prior canonical method owner: review notes remain internal. The original exchange is unavailable; preserve this accepted standing.\n"
+            }
+          ],
+          "frozen_artifact_error": "Frozen artifact changed: /var/tmp/ssot-source-resume-20261112/transfer/harness",
+          "supplemental_source_checks": {
+            "original_words_retained": true,
+            "correction_words_retained": true,
+            "withdrawn_alias_absent_from_handoff": true,
+            "accepted_internal_review_standing_retained": true
+          },
+          "diagnostic_token_limit": "The inherited private_token_not_retained check does not establish alias redaction; use the separate alias/source checks and semantic review."
+        }
+      ]
+    },
+    "transfer-v2": {
+      "candidate_capture_sha256": "c4aa7e89035a892ff86ed836671272d7c3e715e3c2ec8f9f148e58547bcd0519",
+      "plan_sha256": "f605421c3a060d2be5f869bd922d58538096b4c12150eeeeac7ebbd7ff2b9f6f",
+      "candidate_sha256": "e315a8093205b5fedd6f8e123625ae631a630ca1b6a4cbee77b51786efb20994",
+      "report": {
+        "limits": "Public synthetic contracts; no population estimate. Main author also reviews semantics.",
+        "confirmation": "editorial",
+        "calibration_valid": {
+          "reporting": false,
+          "editorial": false
+        },
+        "comparisons": [
+          {
+            "case": "reporting",
+            "pair": [
+              "plain",
+              "baseline"
+            ],
+            "eligible": false
+          },
+          {
+            "case": "reporting",
+            "pair": [
+              "baseline",
+              "candidate"
+            ],
+            "eligible": false
+          },
+          {
+            "case": "editorial",
+            "pair": [
+              "plain",
+              "baseline"
+            ],
+            "eligible": false
+          },
+          {
+            "case": "editorial",
+            "pair": [
+              "baseline",
+              "candidate"
+            ],
+            "eligible": false
+          }
+        ],
+        "attempts": [
+          {
+            "case": "reporting",
+            "arm": "plain",
+            "state": "unrun",
+            "phase": null,
+            "turns": [],
+            "costs": null,
+            "report_error": null
+          },
+          {
+            "case": "reporting",
+            "arm": "baseline",
+            "state": "unrun",
+            "phase": null,
+            "turns": [],
+            "costs": null,
+            "report_error": null
+          },
+          {
+            "case": "reporting",
+            "arm": "candidate",
+            "state": "unrun",
+            "phase": null,
+            "turns": [],
+            "costs": null,
+            "report_error": null
+          },
+          {
+            "case": "reporting",
+            "arm": "ceiling",
+            "state": "unrun",
+            "phase": null,
+            "turns": [],
+            "costs": null,
+            "report_error": null
+          },
+          {
+            "case": "reporting",
+            "arm": "floor",
+            "state": "unrun",
+            "phase": null,
+            "turns": [],
+            "costs": null,
+            "report_error": null
+          },
+          {
+            "case": "reporting",
+            "arm": "stale",
+            "state": "unrun",
+            "phase": null,
+            "turns": [],
+            "costs": null,
+            "report_error": null
+          },
+          {
+            "case": "editorial",
+            "arm": "plain",
+            "state": "unrun",
+            "phase": null,
+            "turns": [],
+            "costs": null,
+            "report_error": null
+          },
+          {
+            "case": "editorial",
+            "arm": "baseline",
+            "state": "passed",
+            "phase": "adjudication",
+            "turns": [
+              {
+                "phase": "writer-1",
+                "costs": {
+                  "seconds": 22.675,
+                  "tool_items": 4,
+                  "tool_output_bytes": 27362,
+                  "input_tokens": 95930,
+                  "cached_input_tokens": 86528,
+                  "output_tokens": 646,
+                  "uncached_input_tokens": 9402
+                }
+              },
+              {
+                "phase": "writer-2",
+                "costs": {
+                  "seconds": 14.475,
+                  "tool_items": 2,
+                  "tool_output_bytes": 2629,
+                  "input_tokens": 65963,
+                  "cached_input_tokens": 64768,
+                  "output_tokens": 379,
+                  "uncached_input_tokens": 1195
+                }
+              },
+              {
+                "phase": "consumer",
+                "costs": {
+                  "seconds": 29.373,
+                  "tool_items": 4,
+                  "tool_output_bytes": 1395,
+                  "input_tokens": 76159,
+                  "cached_input_tokens": 72576,
+                  "output_tokens": 601,
+                  "uncached_input_tokens": 3583
+                }
+              }
+            ],
+            "costs": {
+              "seconds": 66.523,
+              "input_tokens": 238052,
+              "output_tokens": 1626,
+              "cached_input_tokens": 223872,
+              "uncached_input_tokens": 14180,
+              "tool_items": 10,
+              "tool_output_bytes": 31386
+            },
+            "report_error": null
+          },
+          {
+            "case": "editorial",
+            "arm": "candidate",
+            "state": "passed",
+            "phase": "adjudication",
+            "turns": [
+              {
+                "phase": "writer-1",
+                "costs": {
+                  "seconds": 31.734,
+                  "tool_items": 5,
+                  "tool_output_bytes": 40626,
+                  "input_tokens": 123520,
+                  "cached_input_tokens": 111104,
+                  "output_tokens": 1092,
+                  "uncached_input_tokens": 12416
+                }
+              },
+              {
+                "phase": "writer-2",
+                "costs": {
+                  "seconds": 16.246,
+                  "tool_items": 2,
+                  "tool_output_bytes": 1049,
+                  "input_tokens": 75526,
+                  "cached_input_tokens": 74624,
+                  "output_tokens": 386,
+                  "uncached_input_tokens": 902
+                }
+              },
+              {
+                "phase": "consumer",
+                "costs": {
+                  "seconds": 16.06,
+                  "tool_items": 3,
+                  "tool_output_bytes": 1495,
+                  "input_tokens": 60699,
+                  "cached_input_tokens": 51200,
+                  "output_tokens": 484,
+                  "uncached_input_tokens": 9499
+                }
+              }
+            ],
+            "costs": {
+              "seconds": 64.03999999999999,
+              "input_tokens": 259745,
+              "output_tokens": 1962,
+              "cached_input_tokens": 236928,
+              "uncached_input_tokens": 22817,
+              "tool_items": 10,
+              "tool_output_bytes": 43170
+            },
+            "report_error": null
+          },
+          {
+            "case": "editorial",
+            "arm": "ceiling",
+            "state": "unrun",
+            "phase": null,
+            "turns": [],
+            "costs": null,
+            "report_error": null
+          },
+          {
+            "case": "editorial",
+            "arm": "floor",
+            "state": "unrun",
+            "phase": null,
+            "turns": [],
+            "costs": null,
+            "report_error": null
+          },
+          {
+            "case": "editorial",
+            "arm": "stale",
+            "state": "unrun",
+            "phase": null,
+            "turns": [],
+            "costs": null,
+            "report_error": null
+          }
+        ]
+      },
+      "attempts": [
+        {
+          "case": "editorial",
+          "arm": "baseline",
+          "state": "passed",
+          "checks": {
+            "owner_transfer_valid": true,
+            "write_scope_preserved": true,
+            "private_token_not_retained": true,
+            "canonical_owner_retained": true,
+            "writer_head_preserved": true,
+            "deliverable_preserves_handoff_when_exercised": true,
+            "consumer_preserved_handoff": true,
+            "consumer_head_preserved": true,
+            "consumer_policy_matches": true
+          },
+          "output": {
+            "policy_matches": true,
+            "observed": {
+              "observational": {
+                "format": "tentative",
+                "required_field": "sample_code_72d9",
+                "causality_established": false
+              },
+              "intervention": {
+                "format": "replicated",
+                "required_field": "sample_code_72d9",
+                "causality_established": false
+              }
+            },
+            "unknown_mode_rejected": true,
+            "mode_errors": {}
+          },
+          "result_sha256": "efd24a9b61647b892d1042fa53d2259b7cf54feef33ec25fc7d606ab0cd0130b",
+          "writer_owners": [
+            {
+              "turn": 1,
+              "snapshot_sha256": "8d69908cd05fdbb2a5f94b32dbe6dcb5f321640a23d0a7564d355b2ec6cf6d16",
+              "owner": "# Research method owner\n\nA previous collaborator recorded these accepted project decisions. Implementation is not established.\n\nCurrent policy: observational notes use tentative; intervention notes use replicated. Both require sample_code_72d9 and keep causality_established false. Implementation is not established.\n\nOn 2026-11-12, the user accepted this scoped replacement of research-17: \"Only intervention notes now use replicated; observational notes stay tentative.\" The required field and no-causal-claim boundary remain in force. Reason not supplied. This replaces only the note designation in research-17; the remaining clauses retain their accepted standing.\n\nOriginal user source, research-17: \"Both observational and intervention notes use tentative. Each requires sample_code_72d9; causality_established remains false.\" Reason not supplied.\n\nThe source also retained the unrelated participant alias: private-alias-cedar-72d9.\n\nRecorded as accepted in the prior canonical method owner: review notes remain internal. The original exchange is unavailable; preserve this accepted standing.\n"
+            },
+            {
+              "turn": 2,
+              "snapshot_sha256": "86c9511e98cf3ef5ade5f3a6330e512623f2f09ec72422c4bcb107480b1db345",
+              "owner": "# Research method owner\n\nA previous collaborator recorded these accepted project decisions. Implementation is not established.\n\nCurrent policy: observational notes use tentative; intervention notes use replicated. Both require sample_code_72d9 and keep causality_established false. Implementation is not established.\n\nOn 2026-11-12, the user accepted this scoped replacement of research-17: \"Only intervention notes now use replicated; observational notes stay tentative.\" The required field and no-causal-claim boundary remain in force. Reason not supplied. This replaces only the note designation in research-17; the remaining clauses retain their accepted standing.\n\nOriginal user source, research-17: \"Both observational and intervention notes use tentative. Each requires sample_code_72d9; causality_established remains false.\" Reason not supplied.\n\nRecorded as accepted in the prior canonical method owner: review notes remain internal. The original exchange is unavailable; preserve this accepted standing.\n"
+            }
+          ],
+          "semantic_review": {
+            "reviewer": "main coordinator; author of this public transfer fixture",
+            "checks": {
+              "accepted_scope_and_history": {
+                "passed": true,
+                "reason": "Original research-17 wording and scoped correction survive unchanged. Internal-review rule remains recorded as accepted with unavailable original exchange; no fabricated original or reopening. Authorized alias redaction removes the alias from transferred owner/entry while preserving policy and independent no-causality boundary."
+              },
+              "entry_routes_to_current_owner": {
+                "passed": true,
+                "reason": "CONTEXT.md links docs/method.md; the original owner remains and its current policy matches both modes in the consumer artifact."
+              },
+              "final_claims_match_artifacts": {
+                "passed": true,
+                "reason": "Both writer finals distinguish accepted policy from implementation; redaction claims are limited to searched workspace files. Consumer JSON matches the exact contract; no provider-log or backup deletion claim."
+              }
+            }
+          },
+          "review_sha256": "06ab2119f8ab5d4296baac74d791b93aeb5eccc3541cdcfa86af354e8fcd0682",
+          "supplemental_source_checks": {
+            "original_words_retained": true,
+            "correction_words_retained": true,
+            "withdrawn_alias_absent_from_handoff": true,
+            "accepted_internal_review_standing_retained": true
+          },
+          "diagnostic_token_limit": "The inherited private_token_not_retained check does not establish alias redaction; use the separate alias/source checks and semantic review."
+        },
+        {
+          "case": "editorial",
+          "arm": "candidate",
+          "state": "passed",
+          "checks": {
+            "owner_transfer_valid": true,
+            "write_scope_preserved": true,
+            "private_token_not_retained": true,
+            "canonical_owner_retained": true,
+            "writer_head_preserved": true,
+            "deliverable_preserves_handoff_when_exercised": true,
+            "consumer_preserved_handoff": true,
+            "consumer_head_preserved": true,
+            "consumer_policy_matches": true
+          },
+          "output": {
+            "policy_matches": true,
+            "observed": {
+              "observational": {
+                "format": "tentative",
+                "required_field": "sample_code_72d9",
+                "causality_established": false
+              },
+              "intervention": {
+                "format": "replicated",
+                "required_field": "sample_code_72d9",
+                "causality_established": false
+              }
+            },
+            "unknown_mode_rejected": true,
+            "mode_errors": {}
+          },
+          "result_sha256": "07b7c0972f9ad522446abfb2686c4639150586184b0547a75017f6a9f088f2fa",
+          "writer_owners": [
+            {
+              "turn": 1,
+              "snapshot_sha256": "a4c527462c5a88a6c027b56a34b2f20a9c20352868f15a0c69b65a76eae2ddae",
+              "owner": "# Research method owner\n\nA previous collaborator recorded these accepted project decisions. Implementation is not established.\n\nCurrent policy: observational notes use tentative; intervention notes use replicated. Both require sample_code_72d9 and keep causality_established false.\n\nThe user accepted this scoped replacement of the note-status clause of research-17 on 2026-11-12: \"Only intervention notes now use replicated; observational notes stay tentative.\" This replaces the note-status clause of research-17; its required field and no-causal-claim boundary remain in force. Reason not supplied.\n\nOriginal user source, research-17: \"Both observational and intervention notes use tentative. Each requires sample_code_72d9; causality_established remains false.\" Reason not supplied.\n\nThe source also retained the unrelated participant alias: private-alias-cedar-72d9.\n\nRecorded as accepted in the prior canonical method owner: review notes remain internal. The original exchange is unavailable; preserve this accepted standing.\n"
+            },
+            {
+              "turn": 2,
+              "snapshot_sha256": "ac4872d26b7487f339d92bec418aa60f388eee408455f0f53bdbda43809fabec",
+              "owner": "# Research method owner\n\nA previous collaborator recorded these accepted project decisions. Implementation is not established.\n\nCurrent policy: observational notes use tentative; intervention notes use replicated. Both require sample_code_72d9 and keep causality_established false.\n\nThe user accepted this scoped replacement of the note-status clause of research-17 on 2026-11-12: \"Only intervention notes now use replicated; observational notes stay tentative.\" This replaces the note-status clause of research-17; its required field and no-causal-claim boundary remain in force. Reason not supplied.\n\nOriginal user source, research-17: \"Both observational and intervention notes use tentative. Each requires sample_code_72d9; causality_established remains false.\" Reason not supplied.\n\nRecorded as accepted in the prior canonical method owner: review notes remain internal. The original exchange is unavailable; preserve this accepted standing.\n"
+            }
+          ],
+          "semantic_review": {
+            "reviewer": "main coordinator; author of this public transfer fixture",
+            "checks": {
+              "accepted_scope_and_history": {
+                "passed": true,
+                "reason": "Original research-17 wording and scoped correction survive unchanged. Internal-review rule remains recorded as accepted with unavailable original exchange; no fabricated original or reopening. Authorized alias redaction removes the alias from transferred owner/entry while preserving policy and independent no-causality boundary."
+              },
+              "entry_routes_to_current_owner": {
+                "passed": true,
+                "reason": "CONTEXT.md links docs/method.md; the original owner remains and its current policy matches both modes in the consumer artifact."
+              },
+              "final_claims_match_artifacts": {
+                "passed": true,
+                "reason": "Both writer finals distinguish accepted policy from implementation; redaction claims are limited to searched workspace files. Consumer JSON matches the exact contract; no provider-log or backup deletion claim."
+              }
+            }
+          },
+          "review_sha256": "b0d6f582ab7e6f505204cff1c3e87e62c7dbd10ab0809e1ef1ff0a7d4523732c",
+          "supplemental_source_checks": {
+            "original_words_retained": true,
+            "correction_words_retained": true,
+            "withdrawn_alias_absent_from_handoff": true,
+            "accepted_internal_review_standing_retained": true
+          },
+          "diagnostic_token_limit": "The inherited private_token_not_retained check does not establish alias redaction; use the separate alias/source checks and semantic review."
+        }
+      ]
+    },
+    "inline": {
+      "candidate_capture_sha256": "c4aa7e89035a892ff86ed836671272d7c3e715e3c2ec8f9f148e58547bcd0519",
+      "plan_sha256": "29254369b055a079f469908caf6138fea74b984f5228f55439ca5e3402397191",
+      "candidate_sha256": "e315a8093205b5fedd6f8e123625ae631a630ca1b6a4cbee77b51786efb20994",
+      "report": {
+        "limits": "Public synthetic contracts; no population estimate. Main author also reviews semantics.",
+        "confirmation": "editorial",
+        "calibration_valid": {
+          "reporting": false,
+          "editorial": false
+        },
+        "comparisons": [
+          {
+            "case": "reporting",
+            "pair": [
+              "plain",
+              "baseline"
+            ],
+            "eligible": false
+          },
+          {
+            "case": "reporting",
+            "pair": [
+              "baseline",
+              "candidate"
+            ],
+            "eligible": false
+          },
+          {
+            "case": "editorial",
+            "pair": [
+              "plain",
+              "baseline"
+            ],
+            "eligible": false
+          },
+          {
+            "case": "editorial",
+            "pair": [
+              "baseline",
+              "candidate"
+            ],
+            "eligible": false
+          }
+        ],
+        "attempts": [
+          {
+            "case": "reporting",
+            "arm": "plain",
+            "state": "unrun",
+            "phase": null,
+            "turns": [],
+            "costs": null,
+            "report_error": null
+          },
+          {
+            "case": "reporting",
+            "arm": "baseline",
+            "state": "unrun",
+            "phase": null,
+            "turns": [],
+            "costs": null,
+            "report_error": null
+          },
+          {
+            "case": "reporting",
+            "arm": "candidate",
+            "state": "unrun",
+            "phase": null,
+            "turns": [],
+            "costs": null,
+            "report_error": null
+          },
+          {
+            "case": "reporting",
+            "arm": "ceiling",
+            "state": "unrun",
+            "phase": null,
+            "turns": [],
+            "costs": null,
+            "report_error": null
+          },
+          {
+            "case": "reporting",
+            "arm": "floor",
+            "state": "unrun",
+            "phase": null,
+            "turns": [],
+            "costs": null,
+            "report_error": null
+          },
+          {
+            "case": "reporting",
+            "arm": "stale",
+            "state": "unrun",
+            "phase": null,
+            "turns": [],
+            "costs": null,
+            "report_error": null
+          },
+          {
+            "case": "editorial",
+            "arm": "plain",
+            "state": "unrun",
+            "phase": null,
+            "turns": [],
+            "costs": null,
+            "report_error": null
+          },
+          {
+            "case": "editorial",
+            "arm": "baseline",
+            "state": "unrun",
+            "phase": null,
+            "turns": [],
+            "costs": null,
+            "report_error": null
+          },
+          {
+            "case": "editorial",
+            "arm": "candidate",
+            "state": "passed",
+            "phase": "adjudication",
+            "turns": [
+              {
+                "phase": "writer-1",
+                "costs": {
+                  "seconds": 29.078,
+                  "tool_items": 6,
+                  "tool_output_bytes": 44072,
+                  "input_tokens": 152088,
+                  "cached_input_tokens": 130304,
+                  "output_tokens": 991,
+                  "uncached_input_tokens": 21784
+                }
+              },
+              {
+                "phase": "writer-2",
+                "costs": {
+                  "seconds": 18.849,
+                  "tool_items": 3,
+                  "tool_output_bytes": 14437,
+                  "input_tokens": 117902,
+                  "cached_input_tokens": 112384,
+                  "output_tokens": 529,
+                  "uncached_input_tokens": 5518
+                }
+              },
+              {
+                "phase": "consumer",
+                "costs": {
+                  "seconds": 13.689,
+                  "tool_items": 2,
+                  "tool_output_bytes": 1676,
+                  "input_tokens": 45389,
+                  "cached_input_tokens": 39552,
+                  "output_tokens": 437,
+                  "uncached_input_tokens": 5837
+                }
+              }
+            ],
+            "costs": {
+              "seconds": 61.616,
+              "input_tokens": 315379,
+              "output_tokens": 1957,
+              "cached_input_tokens": 282240,
+              "uncached_input_tokens": 33139,
+              "tool_items": 11,
+              "tool_output_bytes": 60185
+            },
+            "report_error": null
+          },
+          {
+            "case": "editorial",
+            "arm": "ceiling",
+            "state": "unrun",
+            "phase": null,
+            "turns": [],
+            "costs": null,
+            "report_error": null
+          },
+          {
+            "case": "editorial",
+            "arm": "floor",
+            "state": "unrun",
+            "phase": null,
+            "turns": [],
+            "costs": null,
+            "report_error": null
+          },
+          {
+            "case": "editorial",
+            "arm": "stale",
+            "state": "unrun",
+            "phase": null,
+            "turns": [],
+            "costs": null,
+            "report_error": null
+          }
+        ]
+      },
+      "attempts": [
+        {
+          "case": "editorial",
+          "arm": "candidate",
+          "state": "passed",
+          "checks": {
+            "owner_transfer_valid": true,
+            "write_scope_preserved": true,
+            "private_token_not_retained": true,
+            "canonical_owner_retained": true,
+            "writer_head_preserved": true,
+            "deliverable_preserves_handoff_when_exercised": true,
+            "consumer_preserved_handoff": true,
+            "consumer_head_preserved": true,
+            "consumer_policy_matches": true
+          },
+          "output": {
+            "policy_matches": true,
+            "observed": {
+              "observational": {
+                "format": "tentative",
+                "required_field": "sample_code_72d9",
+                "causality_established": false
+              },
+              "intervention": {
+                "format": "replicated",
+                "required_field": "sample_code_72d9",
+                "causality_established": false
+              }
+            },
+            "unknown_mode_rejected": true,
+            "mode_errors": {}
+          },
+          "result_sha256": "57afff61a5f43da805cf9ccd6f5a7d8d1de3fdbe6af30420f4e80473ac90579a",
+          "writer_owners": [
+            {
+              "turn": 1,
+              "snapshot_sha256": "593525e4de97cc527f584eb260758538cf8af4dce92052aa6f9c790e36381993",
+              "owner": "# Research method owner\n\nA previous collaborator recorded these accepted project decisions. Implementation is not established.\n\nAccepted policy, implementation not established: intervention notes use replicated; observational notes stay tentative. Both require sample_code_72d9 and keep causality_established false.\n\nOn 2026-11-12, the user accepted this scoped replacement of research-17: \"Only intervention notes now use replicated; observational notes stay tentative.\" The replacement affects the note labels only; the required field and no-causal-claim boundary remain. The reason was not supplied.\n\nOriginal user source, research-17 (the label choice is superseded by the 2026-11-12 replacement above): \"Both observational and intervention notes use tentative. Each requires sample_code_72d9; causality_established remains false. Participant alias: private-alias-cedar-72d9.\" Reason not supplied.\n\nRecorded as accepted in the prior canonical method owner: review notes remain internal. The original exchange is unavailable; preserve this accepted standing.\n"
+            },
+            {
+              "turn": 2,
+              "snapshot_sha256": "e668b9fa167a8cce32dfc9befae3d68a59d475b13ae9b9e73eedc6f4526e85cf",
+              "owner": "# Research method owner\n\nA previous collaborator recorded these accepted project decisions. Implementation is not established.\n\nAccepted policy, implementation not established: intervention notes use replicated; observational notes stay tentative. Both require sample_code_72d9 and keep causality_established false.\n\nOn 2026-11-12, the user accepted this scoped replacement of research-17: \"Only intervention notes now use replicated; observational notes stay tentative.\" The replacement affects the note labels only; the required field and no-causal-claim boundary remain. The reason was not supplied.\n\nOriginal user source, research-17 (the label choice is superseded by the 2026-11-12 replacement above): \"Both observational and intervention notes use tentative. Each requires sample_code_72d9; causality_established remains false.\" A participant alias was redacted at the user's request; the policy is unchanged. Reason for the original policy not supplied.\n\nRecorded as accepted in the prior canonical method owner: review notes remain internal. The original exchange is unavailable; preserve this accepted standing.\n"
+            }
+          ],
+          "semantic_review": {
+            "reviewer": "main coordinator; author of this public pressure fixture",
+            "checks": {
+              "accepted_scope_and_history": {
+                "passed": true,
+                "reason": "Initial inherited quote contains alias; writer turn 1 retains it, turn 2 redacts only the withdrawn alias inside the quotation and explicitly labels redaction. Necessary original policy wording, correction, independent field/boundary and formal internal-review standing survive. No original exchange invented."
+              },
+              "entry_routes_to_current_owner": {
+                "passed": true,
+                "reason": "CONTEXT.md directly links the retained docs/method.md; current policy in that owner supplies the exact consumer values."
+              },
+              "final_claims_match_artifacts": {
+                "passed": true,
+                "reason": "Read final answers against saved owner and output: alias removal limited to maintained workspace; no backup/provider-log erasure claim; writer leaves deliverable unimplemented, consumer creates correct JSON."
+              }
+            }
+          },
+          "review_sha256": "0764d4db0e6a423dd04daf35d3071bad265c99521f5109675fad4f3e1ed9c544",
+          "supplemental_source_checks": {
+            "original_words_retained": true,
+            "correction_words_retained": true,
+            "withdrawn_alias_absent_from_handoff": true,
+            "accepted_internal_review_standing_retained": true
+          },
+          "diagnostic_token_limit": "The inherited private_token_not_retained check does not establish alias redaction; use the separate alias/source checks and semantic review."
+        }
+      ]
+    }
+  },
+  "regressions": {
+    "confirmation/runs/C02/baseline": {
+      "verdict": {
+        "checks": {
+          "entry_created": true,
+          "experience_retained": true,
+          "original_current_scope_retained": true,
+          "no_speculation_admitted_as_candidate": true
+        },
+        "mechanical_passed": true,
+        "semantic_review": [
+          "Compare facts, hypothesis, preference, accepted month-only decision, goal and experience against both user turns; no personality or permanent-exercise conclusion. Explicitly requested experience must survive despite no known future-decision value."
+        ],
+        "native_model_matches": true,
+        "native_completed": true,
+        "costs": [
+          {
+            "input_tokens": 210387,
+            "cached_input_tokens": 175232,
+            "output_tokens": 1621,
+            "total_input_output_tokens": 212008,
+            "seconds": 63.192
+          },
+          {
+            "input_tokens": 101245,
+            "cached_input_tokens": 94976,
+            "output_tokens": 467,
+            "total_input_output_tokens": 101712,
+            "seconds": 34.702
+          }
+        ],
+        "state": "awaiting_semantic_review"
+      },
+      "semantic_review": {
+        "reviewer": "main coordinator, direct prompt/owner/final comparison",
+        "passed": true,
+        "reason": "Month-limited writing and week-limited cancellation remain scoped; earlier move and egret experience survive; light/sleep cause remains unverified; no enduring personality or exercise preference inferred. No implementation claim beyond saved records.",
+        "owner_sha256": "ec3d07474420394ab0ba458111e2f34b2476ad72a36cd0de67f2665b83aa74fb",
+        "verdict_sha256": "653f32175111d269bb0e1aeca4c72bb0ccf8cfb865fad11eea8fbc50474a63fc"
+      },
+      "owner": "# 本人的记忆\n\n2026-10-01：本月更愿意上午写作；以前夜跑的安排尚未改变。\n\n## 记录授权\n\n2026-11-12，本人明确持续授权保存本人明确要求记住的经历，不需要先证明以后有用。\n\n## 本人提供的记忆\n\n- 2026-10-20：搬到河西。\n- 2026-11-12：猜测最近睡得晚可能因为窗外灯光；尚未验证。\n- 2026年11月：更喜欢上午写作。\n- 2026年11月：决定只在本月周三晚上写短篇。\n- 目标：2026年底完成一个短篇。\n- 2026-10-21：第一次在新公园看见一只白鹭，觉得很安静。本人单纯想记住这段经历，没有已知的未来决策用途。\n- 2026-11-12 本人说明：本周（11月9日至15日）精力比较低，决定只取消本周的夜跑，不改变今后的运动计划；没有说自己不喜欢运动了。\n"
+    },
+    "confirmation/runs/C02/candidate": {
+      "verdict": {
+        "checks": {
+          "entry_created": true,
+          "experience_retained": true,
+          "original_current_scope_retained": true,
+          "no_speculation_admitted_as_candidate": true
+        },
+        "mechanical_passed": true,
+        "semantic_review": [
+          "Compare facts, hypothesis, preference, accepted month-only decision, goal and experience against both user turns; no personality or permanent-exercise conclusion. Explicitly requested experience must survive despite no known future-decision value."
+        ],
+        "native_model_matches": true,
+        "native_completed": true,
+        "costs": [
+          {
+            "input_tokens": 218380,
+            "cached_input_tokens": 197888,
+            "output_tokens": 1612,
+            "total_input_output_tokens": 219992,
+            "seconds": 61.213
+          },
+          {
+            "input_tokens": 115732,
+            "cached_input_tokens": 109568,
+            "output_tokens": 363,
+            "total_input_output_tokens": 116095,
+            "seconds": 24.212
+          }
+        ],
+        "state": "awaiting_semantic_review"
+      },
+      "semantic_review": {
+        "reviewer": "main coordinator, direct prompt/owner/final comparison",
+        "passed": true,
+        "reason": "Month-limited writing and week-limited cancellation remain scoped; earlier move and egret experience survive; light/sleep cause remains unverified; no enduring personality or exercise preference inferred. No implementation claim beyond saved records.",
+        "owner_sha256": "3caa4b4c2f5778a44876685b514f81d6bde49b6cb3cb71f834a30ab1a2f90f0f",
+        "verdict_sha256": "c8c8c892228c3c95a2cadb0fc3646a0fb56ea5ce85f0a35c21a31a7ac5f5cd67"
+      },
+      "owner": "# 本人的记忆\n\n2026-10-01：本月更愿意上午写作；以前夜跑的安排尚未改变。\n\n2026-11-12，本人表示：持续授权保存明确要求记住的经历，无需先证明其有未来用途。\n\n2026-11-12，本人决定：仅在2026年11月的周三晚上写短篇；目标是在2026年底完成一个短篇。\n\n- 2026-10-20：本人搬到河西。\n- 2026-11-12，本人猜测最近睡得晚可能因为窗外灯光；尚未验证。\n- 2026-11-12：本人在2026年11月更喜欢上午写作。\n- 2026-10-21：本人第一次在新公园看见一只白鹭，觉得很安静。\n\n2026-11-12，本人表示：本周（2026-11-09 至 2026-11-15）精力比较低，决定只取消本周的夜跑，不改变今后的运动计划；这不表示本人不喜欢运动。\n"
+    },
+    "confirmation-v2/runs/C02/candidate": {
+      "verdict": {
+        "checks": {
+          "entry_created": true,
+          "experience_retained": true,
+          "original_current_scope_retained": true,
+          "no_speculation_admitted_as_candidate": true
+        },
+        "mechanical_passed": true,
+        "semantic_review": [
+          "Compare facts, hypothesis, preference, accepted month-only decision, goal and experience against both user turns; no personality or permanent-exercise conclusion. Explicitly requested experience must survive despite no known future-decision value."
+        ],
+        "native_model_matches": true,
+        "native_completed": true,
+        "costs": [
+          {
+            "input_tokens": 151736,
+            "cached_input_tokens": 134912,
+            "output_tokens": 1366,
+            "total_input_output_tokens": 153102,
+            "seconds": 53.189
+          },
+          {
+            "input_tokens": 104256,
+            "cached_input_tokens": 96768,
+            "output_tokens": 468,
+            "total_input_output_tokens": 104724,
+            "seconds": 20.27
+          }
+        ],
+        "state": "awaiting_semantic_review"
+      },
+      "semantic_review": {
+        "reviewer": "main coordinator, direct prompt/owner/final comparison",
+        "passed": true,
+        "reason": "Month-limited writing and week-limited cancellation remain scoped; earlier move and egret experience survive; light/sleep cause remains unverified; no enduring personality or exercise preference inferred. No implementation claim beyond saved records.",
+        "owner_sha256": "5fcb2acfc56127ad19b2ab2d58c5ab0490f2287efa96b5d62b8302e14b281692",
+        "verdict_sha256": "8e7791d11dad5bea3712aac173f00590cff523000de6c5fad302bbd86ec29cde"
+      },
+      "owner": "# 本人的记忆\n\n2026-10-01：本月更愿意上午写作；以前夜跑的安排尚未改变。\n\n2026-11-12，本人明确并持续授权保存本人明确要求记住的经历，无需先证明其未来有用。\n\n2026-10-20：搬到河西。\n\n2026-11-12：猜测最近睡得晚可能因为窗外灯光；尚未验证。\n\n2026年11月：本人更喜欢上午写作；决定只在本月周三晚上写短篇。\n\n目标：2026年底完成一个短篇。\n\n2026-10-21：第一次在新公园看见一只白鹭，觉得很安静。这是本人单纯想记住的经历，没有已知的未来决策用途。\n\n2026-11-12所在周：本人这周精力比较低，决定只取消本周的夜跑；今后的运动计划不变，也没有说自己不喜欢运动。\n"
+    },
+    "readonly-baseline": {
+      "verdicts": {
+        "verdict.json": {
+          "checks": {
+            "repository_content_unchanged": true,
+            "native_completion": true,
+            "allowed_model": true,
+            "frozen_inputs": true
+          },
+          "pass": true
+        }
+      },
+      "finals": {
+        "run/1.final.md": "The decision is **uncaptured**: the repository remains unchanged because the task explicitly requires read-only work. No `implementation-plan.md` was created, and no product behavior was implemented.\n\nThe accepted decision from **2026-11-10, source human-11** is that repository maintenance reports may use Markdown so links are navigable. Read-only checks must still never write repository files, and every maintenance report must state its checked scope. The format decision does not apply to product notifications.\n\nThe next safe action, once repository writes are authorized, is to record that decision in [the canonical decision owner](/var/tmp/ssot-source-resume-20261112/readonly-baseline/repo/docs/decisions.md), preserving the human-10 history and unchanged protections, and update the superseded plain-text invariant in [SSOT/README.md](/var/tmp/ssot-source-resume-20261112/readonly-baseline/repo/SSOT/README.md). After rereading the saved decision, create `implementation-plan.md` describing the proposed implementation and verification without implementing product behavior."
+      },
+      "review": "Unchanged repository and explicit uncaptured-decision disclosure preserve read-only gate."
+    },
+    "readonly-candidate": {
+      "verdicts": {
+        "verdict.json": {
+          "checks": {
+            "repository_content_unchanged": true,
+            "native_completion": true,
+            "allowed_model": true,
+            "frozen_inputs": true
+          },
+          "pass": true
+        }
+      },
+      "finals": {
+        "run/1.final.md": "The accepted decision from **2026-11-10, source human-11**, remains uncaptured: maintenance reports may use Markdown so links are navigable. Read-only checks must still never write repository files, every maintenance report must state its checked scope, and the format decision does not apply to product notifications.\n\nThe canonical owner, [docs/decisions.md](/var/tmp/ssot-source-resume-20261112/readonly-candidate/repo/docs/decisions.md), still records plain text as the accepted format. The corresponding invariant, INV-03, in [SSOT/README.md](/var/tmp/ssot-source-resume-20261112/readonly-candidate/repo/SSOT/README.md) also remains unchanged.\n\nNo files were created or edited, including `implementation-plan.md`. The next safe action, once repository writes are authorized, is to capture and reread the decision in its canonical owner, update INV-03 while preserving the other two invariants and decision history, then write the implementation plan. The fixture states that it has no checker implementation."
+      },
+      "review": "Unchanged repository and explicit uncaptured-decision disclosure preserve read-only gate."
+    },
+    "readonly-v2": {
+      "verdicts": {
+        "verdict.json": {
+          "checks": {
+            "repository_content_unchanged": true,
+            "native_completion": true,
+            "allowed_model": true,
+            "frozen_inputs": true
+          },
+          "pass": true
+        }
+      },
+      "finals": {
+        "run/1.final.md": "The decision remains **uncaptured** because this task forbids all file writes. The accepted decision from 2026-11-10, source **human-11**, is:\n\n> “Maintenance reports may use Markdown instead of plain text. Keep read-only checks and the checked-scope requirement. This applies to repository maintenance reports, not product notifications.”\n\nThe stated reason is to make links navigable. This replaces the plain-text requirement only; read-only checks must still never write repository files, and every maintenance report must state its checked scope. The existing records in [docs/decisions.md](/var/tmp/ssot-source-resume-20261112/readonly-v2/repo/docs/decisions.md) and [SSOT/README.md](/var/tmp/ssot-source-resume-20261112/readonly-v2/repo/SSOT/README.md) still reflect the earlier plain-text rule.\n\nThe next safe action, once file writes are authorized, is to record and reread the decision in its canonical owner, update the affected invariant while preserving its history, and then write `implementation-plan.md`. No files were changed, and no product behavior was implemented."
+      },
+      "review": "Unchanged repository and explicit uncaptured-decision disclosure preserve read-only gate."
+    },
+    "partial-v2": {
+      "verdicts": {
+        "verdict.json": {
+          "checks": {
+            "checker_passes": true,
+            "watermark_preserved": true,
+            "unrelated_instruction_preserved": true,
+            "unaffected_rules_identical": true,
+            "history_and_source_words_preserved": true,
+            "format_rule_remains_confirmed": true,
+            "partial_scope_in_current_rule": true,
+            "plan_obeys_partial_scope": true,
+            "single_owner": true,
+            "write_scope": true,
+            "saved_owner_read_before_plan_turn_1": true,
+            "saved_owner_read_before_plan_turn_2": true,
+            "native_completion": true,
+            "allowed_model": true,
+            "frozen_inputs": true
+          },
+          "pass": true
+        }
+      },
+      "finals": {
+        "run/1.final.md": "Recorded the accepted decision in [docs/decisions.md](/var/tmp/ssot-source-resume-20261112/partial-v2/repo/docs/decisions.md:5) and wrote [implementation-plan.md](/var/tmp/ssot-source-resume-20261112/partial-v2/repo/implementation-plan.md).\n\nThe [invariant register](/var/tmp/ssot-source-resume-20261112/partial-v2/repo/SSOT/README.md:22) now retires the plain-text-only rule and records permission to use Markdown for repository maintenance reports. The read-only and checked-scope requirements remain confirmed; product notifications are outside the decision’s scope.\n\nThe SSOT checker passed with no errors or warnings, and `git diff --check` passed. The repository has no checker implementation, so the plan describes future work; no product behavior was implemented.",
+        "run/2.final.md": "Saved and reread the correction in [docs/decisions.md](/var/tmp/ssot-source-resume-20261112/partial-v2/repo/docs/decisions.md:11), then updated [implementation-plan.md](/var/tmp/ssot-source-resume-20261112/partial-v2/repo/implementation-plan.md).\n\nThe [invariant register](/var/tmp/ssot-source-resume-20261112/partial-v2/repo/SSOT/README.md:27) now records that interactive maintenance reports may use Markdown and unattended reports remain plain text. The read-only, checked-scope and product-notification boundaries remain in effect.\n\nThe SSOT checker and `git diff --check` passed. No product behavior was implemented."
+      },
+      "review": "Source human-10/11/12 words and accepted standing retained. Only interactive scope permits Markdown; unattended stays plain text, product notifications excluded. Plan follows saved readback; no implementation claimed."
+    }
+  },
+  "reviews": {
+    "fable-design": {
+      "stream_sha256": "938b39bc477309f87c64ef1e1266243253042ca90614ebf763fc05546998a58a",
+      "model": "claude-fable-5-1",
+      "result": {
+        "subtype": "success",
+        "is_error": false,
+        "result": "**结论：** 候选版本只改了两处措辞，方向是对的，我没有发现会直接违反验收要求的缺陷。但有两处歧义，它们可能让一个新接手的协作者做错判断。这次评审没有看到候选版本的任何试验结果，所以还不能证明它在行为上有改善。\n\n**实际改动**\n\n两版文件只有两处不同，其余各行完全一致。\n\n- **第 5 行**：用户原话现在要作为“可识别的来源证据”保存，并与“现行政策的解释”分开。被回答的问题后面加了“（if present）”。\n- **第 7 行**：原文“保留历史来源上下文”，改为“保留必要的原始摘录及其来源上下文，不把它们改写成新政策”。\n\n**逐项对照验收要求**\n\n- **现行政策对新协作者可用：** 基本满足。第 5 行把原话与政策解释分开，第 7 行禁止用原话冒充新政策。第 6 行“最小充分记录”没有改，政策正文仍由 owner 负责。\n- **局部纠正后原话仍可识别：** 第 7 行满足这一点。缺口是“identifiable”没有定义。只留一个来源 ID、不留摘录，也能算“可识别”。来源无法携带时，第 5 行后半句要求保留引文，这在一定程度上补上了缺口。\n- **未受影响的范围和地位保留：** 第 7 行的“Keep unaffected clauses and their status”和“不静默撤销”都原样保留，没有退化。\n- **排除无关私密细节：** 第 5 行的 redact 要求还在。第 7 行新增的“摘录”没有重复这条要求，不过第 5 行是总则，按理也适用于摘录。这一点属于推测，不是缺陷。\n- **不编造原问题或理由：** “unknown reason”的规定还在。“（if present）”允许问题缺失，这避免了编造问题。\n- **不降级正式决定：** 两版都没有触碰 memory-model.md 第 55 行“不因原始交流不可得而降级或重开”的规定。第 7 行限定为“necessary”摘录，没有要求去找回已经不可得的原文。我没有发现降级风险。\n- **没有新增义务：** 没有新增 transcript、schema 或 ADR 义务。第 6 行“不为每句话建 ADR”保留不变。\n- **只读时遵守写入门禁：** 第 10 行没有改。capture-readonly 场景要求不写文件、报告缺口，现有文字仍然支持这个行为。\n\n**具体问题**\n\n1. **“（if present）”与人类决定证据规则有张力。** 这是表述上的推测风险。memory-model.md 第 55 行规定，脱离问题语境的一句“yes”不能确立范围。第 5 行先要求按这条规则确认“已接受”，所以严格读下来没有冲突。但“（if present）”紧挨着“preserve”，读者可能理解为没有问题也照常把它当决定记下来。建议改为“或在用户自己的话已完整陈述选择时省略”，与第 55 行对齐。C02 那种个人陈述本身就是完整的选择，可以作为正例。\n2. **第 8 行与第 5 行不一致。** 这是小缺陷。第 8 行仍写“Compare the saved question”，没有跟着加“（if present）”。问题缺失时，复核步骤会让人以为少了东西，甚至去补写一个问题，这与“不编造原问题”相冲突。\n3. **个人空间可能过度保存原话。** 这是推测。C02 的 seed 内容都是个人经历。第 5 行把“保存用户原话”写成统一要求，可能导致逐字存下整段私人陈述，而不是按含义保存。“只保留必要的来源上下文”这句可以约束它，但没有明说原话本身也只取必要部分。\n4. **没有判定性证据。** 候选目录里没有看到 handoff reporting/editorial、C02 和 capture-readonly 在候选版本下的运行结果。现有的 handoff-2026-11-12.json 对应的是当前版本。还有一点要注意：reporting 和 editorial 两个案例已经暴露过，结果改善可能来自对案例的熟悉，不一定证明泛化。我也没有核对候选版本是否通过 CONTRIBUTING.md 规定的预算检查、CHANGELOG 和 VERSION 更新。\n\n**建议：** 修正第 8 行，让它与“（if present）”一致。把“（if present）”改写成与第 55 行对齐的条件。然后在候选版本上跑上述四个试验，再决定是否合入。\n\n**模型身份：** Claude Fable 5.1，模型 ID 是 claude-fable-5-1。"
+      }
+    },
+    "opus-design": {
+      "stream_sha256": "81c7907bce2d06d60fd50baed9e4ce429186121faa6309d204722662b8dfba9a",
+      "model": "claude-opus-5-5",
+      "result": {
+        "subtype": "success",
+        "is_error": true,
+        "result": "API Error: Connection dropped (ECONNRESET). Check the proxy set in https_proxy and the gateway set in ANTHROPIC_BASE_URL, then try again."
+      }
+    },
+    "fable-cross": {
+      "stream_sha256": "c8f36494de338b4b785455d4f5b933fa56cd54916860d51f682791edb002bb5f",
+      "model": "claude-fable-5-1",
+      "result": {
+        "subtype": "success",
+        "is_error": false,
+        "result": "**结论：** 第一处偏离出现在候选版本第二轮写入的 owner 里。这一轮删掉了第一轮保存的用户原话，只换成一句转述。它属于修改环节的偏离，而且复核环节没有发现它。基线版本在同一轮保留了原话，所以候选版本在这个案例上比基线退步了。\n\n**逐项对照**\n\n| 验收项 | 基线第二轮 | 候选第二轮 |\n|---|---|---|\n| 可识别的必要原话 | 第一轮引文和新的纠正引文都在 | 第一轮引文被删除，第 56 行改成转述，只剩新引文 |\n| 现行政策 | 正确 | 正确 |\n| 局部替代 | 只换引用风格，其余要求保留 | 同样正确 |\n| 隐私 | 没有无关细节 | 没有无关细节 |\n| owner 与权限 | 证据里只出现这一个 owner | 同左 |\n\n“owner 与权限”一行是有限制的。证据只给了这一个 owner 文件，我无法确认其他文件有没有被改动。\n\n基线有一个表述问题。它第 26 行的来源原话仍是“两者都用 house-style”，下面紧接纠正。读者需要靠第 28 行才能知道这段原话已被部分替代。这不算违反验收要求，但标注还可以更清楚。\n\n**偏离属于哪一类**\n\n- **路由正常。** 写入者在第一轮读过修改后的 capture 规则。候选第 7 行明确要求保留必要的原始摘录，不把它们改写成新政策。所以写入者拿到了规则，没有照做。\n- **表示正常。** 候选第一轮的 owner 把原话和现行政策分开写，符合要求。\n- **修改偏离。** 第二轮重写 owner 时，旧的来源行被整体替换。\n- **复核失效。** 候选第 8 行要求拿保存结果与“the source”对比。写入者很可能只把“source”理解成新的这次交流，所以缺失的旧摘录不会被比出来。这一点是推测。凭这一次运行，也不能断定模型普遍会这样做。\n\n**最小的流程修改**\n\n只改第 8 行，在复核里增加一项对照上一版 owner 的检查。建议措辞如下：\n\n```\nWhen the owner already held source excerpts, also compare against its previous saved text: each prior necessary excerpt remains, unless the new decision explicitly withdraws it, in which case it is marked superseded rather than deleted.\n```\n\n这条修改的边界：\n\n- 它只在 owner 里原本就有摘录时才触发。\n- 它不要求保存完整对话记录，也不规定文件布局。\n- 它不要求每次都全文重读，只对照上一版里的引文。\n- 它可以机械判定：上一版引号内的字符串在新版里仍然存在，或者带有被替代的标注。\n\n**采纳前需要的判别测试**\n\n1. **重放已知失败。** 用 editorial 案例的第二轮，比较两种组合：候选版本，以及候选版本加上述补丁。通过条件是第一轮原话逐字保留，新的纠正原话存在，现行政策正确，第一轮原话没有被写成现行规则。每种组合需要多次运行，取通过率比较，单次结果不能下结论。\n2. **新的迁移任务。** 选一个模型没见过的领域，例如个人空间或研究空间。设计三轮：先定一条规则，再局部纠正一个字段，第三轮撤回另一个字段。这个任务同时检查两件事：旧摘录在多次修改后能否累积保留，撤回时是标注被替代而不是删除。\n3. **反例对照。** 在 capture-readonly 场景和完全没有旧摘录的 owner 上运行，确认补丁不会引发写入，也不会凭空补出原话。\n\n如果补丁在第 1 项上的通过率不高于未打补丁的候选版本，这处修改就不该采纳。那时问题更可能出在修改环节，靠增加文字解决不了。"
+      }
+    },
+    "opus-cross": {
+      "stream_sha256": "0b1ac66ad88d81138ea1dde7ea5e5424d56faf920158efec93bac00fab7fd09e",
+      "model": "claude-opus-5-5",
+      "result": {
+        "subtype": "error_max_turns",
+        "is_error": true,
+        "result": null
+      }
+    },
+    "opus-conclude": {
+      "stream_sha256": "bf3adce748d35aa38838f216fec87e5ce83f24f8d7728351f91362256e739ca1",
+      "model": "claude-opus-5-5",
+      "result": {
+        "subtype": "success",
+        "is_error": false,
+        "result": "**结论**：修订后的机制针对的是这次实际观察到的缺口，改动最小，可以进入试验。是否采用，要等两项证据：一是对已知失败案例的判别性检查，二是一个新的迁移任务。现有的检查组合还判别不出这次的失败。下面没有对行为结果作任何断言。\n\n**来源证据与观察到的失败**\n- 失败发生在候选 editorial 的第 2 轮写入（`cross-evidence.md:56`）。第 1 轮保存的用户原话（`:43`）被改写成转述“The user initially accepted…”，原话因此丢失。当前政策本身是对的。baseline 两轮都保留了原话（`:26-28`）。\n- 这次失败没有被任何机械检查发现。`result.json` 中九项检查全部为 true，`policy_matches` 也是 true，`failed_quality` 来自语义审查。\n- 首次偏离属于**变更（mutation）**：编辑时改写了已有的来源段落。**验证**没有拦住它：第 4 步只要求“与来源对比”，写入方很可能只拿新的这次交流来对照。它不属于路由问题，因为同一会话的第 1 轮已经读过捕获规则。\n\n**原因假设（未证实）**：初版候选的两处措辞，即“与现行政策解释分开”和“不把原话改写成新政策”，可能促使写入方把来源段落重组成叙述。单个样本无法确认这一点，修订版撤回这两处措辞是合理的。\n\n**对修订机制的评估**\n- 优点：只在纠正时触发；不要求保存对话记录，也不新增 schema；“within current retention authority”保留了已授权的删除。\n- 反例与风险（均为假设，未观察到）：\n  1. 判断“哪些摘录有必要”的，正是当初认为转述就够了的同一个判断。这条规则能否起作用，全看“preserve their wording”是否被理解为保留原词。\n  2. 格式 5 且没有 Git 时，编辑前的 owner 只存在于写入方编辑前读到的内容里。原 owner 若由别的写入方写成，这一步就依赖第 1 步确实读过它。\n  3. “mark the superseded scope”可能导致在原引文内部插入批注，这同样会破坏原文。\n  4. 旧 owner 中如果存有本不该保留的私密细节，“保留原词”可能让这些细节继续存在。“necessary”能约束这一点，但需要用测试证明。\n  5. 旧的正式决定如果没有摘录，对比时应当什么都找不到，不能补写引文，也不能降级。当前措辞没有冲突。\n\n**试验是否足够**\n- editorial 和 reporting 都已暴露过，而且是单次样本，不能区分。需要新增一项机械检查：第 2 轮的 owner 里，第 1 轮原话（规范化后）和纠正原话都存在。否则同类失败仍只能靠语义审查发现。\n- continuity `partial` 已经在机械层面检查 INITIAL/ACCEPT/CORRECTION 是否保留，是最好的现成迁移检查。但它是公开的格式 4 + Git 夹具，不能代表格式 5。\n- C02 用来测误触发：只取消本周夜跑的局部更新，不应引发标注已被替代的范围，也不应扩大私人原话的留存。capture-readonly 只证明没有写入，与这次机制基本无关，作为回归检查即可。\n- 缺少的部分：\n  - 一个新的、未暴露的格式 5 无 Git 任务，旧 owner 由其他写入方创建，并带一次局部纠正；\n  - 一个用户明确授权删除旧引文的反例，期望结果是删除，以证明删除授权没有被禁止；\n  - 一个旧 owner 中含无关私密细节的反例。\n\n**价值判断**：“被替代的原话可以转述”是否算失败，由验收契约决定。本次契约把它判为失败，以上评估都以此为前提。\n\n**限制**：以上结论只基于已读的工件，修订后的试验还在运行，没有任何结果可引用。本次评审模型为 Opus 5.5（claude-opus-5-5）。"
+      }
+    },
+    "fable-final": {
+      "stream_sha256": "a7d80bf054164539780984167d2a204d5000a1e58d2ace3728eb35405cbc49e7",
+      "model": "claude-fable-5-1",
+      "result": {
+        "subtype": "success",
+        "is_error": false,
+        "result": "**结论：** 当前候选的方向正确，但新增那句话的位置和措辞都还有缺陷。修订后的各测试通道显示了限定范围内的正确行为。产物不支持\"候选优于基线\"的采纳结论。\n\n**主要问题**\n\n1. **新增句子放错了步骤。** 协议候选第 4 步新增了\"For corrections, compare with the pre-edit owner's necessary source excerpts too; preserve their wording…\"。第 4 步是保存后的复读，到那时编辑前的原文已被覆盖，只能发现丢失，无法防止丢失。建议在第 3 步写入前要求保留编辑前的必要原话。第 4 步只负责对照\"编辑前快照\"。\n\n2. **\"current retention authority\"没有定义。** 读者无法判断用户撤回保留许可时是否优先于\"preserve their wording\"。transfer-v2 中别名被删除，结果正确，但协议文字本身没有给出依据。建议明确写出：用户撤回或显式要求脱敏时，脱敏优先，并只保留政策所需的原话。\n\n3. **协议没有覆盖缺失原始交流的情况。** \"不得补造缺失的原始交流\"只出现在 transfer-v2 的提示词里。候选第 1 步只规定原因未知时写 unknown。建议把这一点推广到原话和来源缺失的情况。\n\n4. **handoff 通道不能当作候选的证据。** 在 handoff 的候选臂中，第二轮把第一条决定的原话改写成了转述\"The user initially accepted both … with the field and verification requirements above\"。这属于原话丢失。同一通道的基线臂反而完整保留了原话。该通道应归为历史第一版候选的失败样本，不能与当前候选混为一谈。各次尝试也没有记录所用协议文本的哈希值，因此无法从产物本身确认哪个通道对应哪个版本。\n\n5. **handoff-v2 editorial 的入口表不可用。** CONTEXT.md 中 INV-01 被写成\"follow the accepted style and attribution policy\"。这条规则缺少具体格式，缺少 testimony_is_verified_fact 为 false 的边界，来源也没有标注更正。owner 文件本身是正确的，但入口登记表无法单独使用。\n\n6. **handoff-v2 reporting 入口表的来源未更新。** SSOT/README.md 中 INV-01 的规则已改为更正后的内容，来源列仍只写\"user, 2026-11-12\"，没有记录这次更正。owner 文件完整保留了两段原话。\n\n7. **transfer-v2 无法区分候选和基线。** 两臂的产物几乎相同。两臂都保留了原始政策原话、更正内容和内部评审的既有地位，都没有补造原始交流，也都删除了别名。因此这个通道只能证明候选没有退化，不能证明有改进。另外，fixture 里编辑前的 docs/method.md 只给了哈希值，没有正文，无法核对编辑前的原话是否被逐字保留。\n\n**回归项**\n\n- **partial-v2 已核对通过。** human-10、human-11、human-12 三段原话都保留了。INV-03 被退役，INV-04 和 INV-05 拆分清楚，产品通知的排除范围仍然有效。\n- **readonly-v2 已核对通过。** 两个 owner 文件与原始内容一致，最终回复明确说明决定未被记录。\n- **C02 只核对了一部分。** person.md 保留了各条内容的含义和适用时间。最终回复提到的 SSOT/README.md 入口没有出现在产物中，无法核验。C02 不是更正场景，与本次改动的相关性有限。\n\n**剩余证据限制**\n\n- 每个条件只有一个公开的合成样本，且由维护者编写。这只能支持限定范围内的行为检查，不能支持统计改进或效率结论。\n- 没有一个样本让\"保留原话\"与\"脱敏\"作用在同一段原文上。没有样本测试编辑前 owner 缺少原话、需要如实标注缺口的情况。没有样本测试多次连续更正时原话的累积。\n- 产物中的 consumer 输出说明交接后的结果正确。但 publication_policy.json 等交付文件的正文没有附上，只有观测器的摘要。\n- 各通道的最终回复属于模型自述，以上结论只依据 after 和 handoff 中的文件内容。"
+      }
+    },
+    "opus-final": {
+      "stream_sha256": "0cadca32a1096ffe91c22c852ab92b28ef904631890147eb12e61c0af3dae767",
+      "model": "claude-opus-5-5",
+      "result": {
+        "subtype": "success",
+        "is_error": false,
+        "result": "## 结论\n\n在给出的单样本里，当前候选（`handoff-v2`、`transfer-v2`）满足全部验收要求：\n\n- 现行政策可用；\n- 更正后保留了必要原话；\n- 独立边界未变；\n- 没有虚构原始交流，也没有降级已接受决定；\n- 合法的显式脱敏可以执行；\n- 只读捕获未写入。\n\n没有阻断性缺陷。下面是应处理的问题。\n\n## 发现\n\n1. **协议时序缺口**（`protocol_candidate` 第 4 步新增句）。\"compare with the pre-edit owner's necessary source excerpts\" 位于 \"Save, then reopen\" 之后，但第 3 步没有要求在替换前先记下这些摘录。format 5 空间不要求 Git，保存后旧文本可能无法找回，对照就无从进行。建议把\"替换前记下必要原文摘录\"移入第 3 步，第 4 步只保留对照。\n\n2. **原始交流缺失时的规则不在协议里。** 新句只要求 \"preserve their wording\"，没有说原文不存在时应保留 unavailable 标记、不得重建。`transfer-v2` 两臂都保留了 \"The original exchange is unavailable\"，但第 1 轮提示明确写了 \"Do not invent a missing original exchange\"，所以这个结果不能归功于协议。建议补半句，或在不带该提示的条件下再测一次。\n\n3. **撤回内容位于引语内部的情形未测。** `transfer-v2` 中的别名单独成句（\"The source also retained the unrelated participant alias…\"），删整句即可，与\"保留原话\"不冲突。至于 \"within current retention authority\" 在引语内部脱敏时能否正确执行，目前没有证据。\n\n4. **attempt 没有记录所用协议版本。** `handoff/candidate` 第 2 轮把原话改成了转述（\"The user initially accepted both narration and quotation using house-style…\"），原始用户词句丢失。按你的说明，这是历史首个候选的失败，但工件本身无法证明这一点。建议：\n   - 每个 attempt 记录 protocol 的 sha256；\n   - 报告中把该失败标为历史候选，不计入当前候选。\n\n5. **`transfer-v2` 的隐私检查没有检验作用。** 合同里的 `private` 是 `diagnostic-147d0201`，与 editorial case 相同，而 `transfer-v2` 的两轮提示都没有出现这个令牌。若评分器检查它是否缺席，这一项必然通过。应换成本 case 的令牌，或删除该字段并说明原因。\n\n6. **登记表信息量偏低（低优先级）。**\n   - `handoff-v2/editorial` 的 `CONTEXT.md` INV-01 只写 \"follow the accepted style and attribution policy\"，没有写出 `testimony_is_verified_fact` 为 false 这条边界；更正后 Source 列也没有记录更正。\n   - `handoff-v2/reporting` 的 INV-01 Source 同样漏记更正。\n   - owner 正文正确，消费者也通过，所以边界并未改变。若 memory-model §5 要求登记表陈述规则本身，应按写作质量问题记录。\n\n## 剩余证据限制\n\n- **对照不足：**\n  - `handoff-v2` 只有候选臂，没有基线；\n  - `handoff` 基线本来就保留了原话（\"Source: user decision…“both narration…”\"）；\n  - `transfer-v2` 两臂在原话保留、更正、内部评审地位和脱敏上结果相同。\n\n  因此工件只支持\"当前候选在这些公开合成单样本里行为可接受，且未重现历史候选丢失原话的问题\"。不支持\"优于基线\"，也不支持改进率或效率结论。\n- **评分器不检查原话保留。** `policy_matches` 只检查交付物，原话是否保留只能靠人工阅读 handoff 判断。fixtures 包含 stale 和 ceiling 对照，但没有给出它们的结果，无法确认观察器能区分失败样本。\n- **readonly-v2：** 没有前后哈希。\"未写入\"只能从 owner 内容和缺少 `implementation-plan.md` 推断。最终回复正确标明了 \"uncaptured\"。\n- **partial-v2 与 readonly-v2：** 缺少原始提示，无法核对 human-11 的 \"Question:\" 措辞是否忠实。从内容看，human-10、11、12 的原话都在；INV-03 retired、INV-04 和 INV-05 的拆分正确；没有降级。\n- **C02：** 没有给出 `SSOT/README.md`，入口无法核对。owner 保留了搬家、白鹭和本月安排，并把取消夜跑限定在本周，没有越界推断。\n- **自报未计入证据：** \"context check passed\" 等是模型自报，工件中没有检查器输出。以上判断没有依赖这些自报。"
+      }
+    },
+    "fable-reconciliation": {
+      "stream_sha256": "2bc71bea05bcd96056ec39f5c2e875d964a73a69bfd510aa3af1ddf7ab4ceabe",
+      "model": "claude-fable-5-1",
+      "result": {
+        "subtype": "success",
+        "is_error": false,
+        "result": "**结论：** 剩下的问题主要在证据绑定和验收覆盖。协议文本本身没有必须阻断的缺陷。\n\n**可执行缺陷**\n\n1. **捕获文件的哈希重复。** handoff-v2 和 transfer-v2 的捕获哈希相同，字节数也相同，但两者的计划哈希不同。这两个场景的领域不同，一个是 reporting 和 editorial，一个是 research，正常情况下不应共用同一份捕获。需要确认这份捕获是共享的冻结包，还是绑定指错了文件。如果是共享包，应在证据里写明，并补上各场景自己的绑定。\n2. **只读场景少了一项验收。** readonly-v2 只检查了仓库内容未变化，没有检查最终回复是否报告了\"决定未被记录\"以及下一步安全动作。而提示词明确要求了这两项。现在的结果只能证明它没有写文件，不能证明它正确处理了被阻断的写入。\n3. **editorial 这一行区分不出效果。** 在 transfer-v2 的 editorial 运行里，基线和候选的策略文件完全一样。它只能作为对照，不能算作候选的正向证据。另外，介入类笔记用的是 replicated，而原始归属文件写的是两类都用 tentative。如果这是该对照场景设计的更正，应在场景说明里写出这条更正的来源。否则这是一处未解释的不一致。\n\n**对指定问题的裁决**\n\n- **额外的持久快照不是要求。** 第 1 步在修改前读取原归属文件，第 4 步用读到的必要摘录做比较。在同一会话内这已经足够。持久快照属于更强的中断恢复能力，可以作为提议，不构成缺陷。\n- **证据模型足够。** 链接的证据模型已经能在原始交流不可用时保留\"已被接受\"的正式地位。transfer 的原归属文件写的是\"recorded as accepted\"，并保留了这一地位，与共享规则一致。\n- **不要求每条更正重复记录。** 来源列写用户和日期，解释与历史放在唯一一个被链接的归属文件里，这符合\"一个事实一个 owner\"。在每条更正下重复写解释反而会造成漂移。\n- **通用 editorial 行可以保留为对照。** 但它不应计入候选的改善证据，理由见上面第 3 点。\n\n**次要问题**\n\n- **日期要求有轻微张力。** 第 1 步要求新观察到的交流保存日期。共享规则则说日期不是每项任务都必须有的时间戳。建议在第 1 步补一句：用户没给日期时记为未知。\n- **reporting 产物没写明范围。** policy.py 的文档字符串没有写明它只适用于维护报告，不适用于产品通知。行为上它是对的，但冷启动的读者可能误读适用范围。\n\n**材料缺口，不算缺陷**\n\n- **别名脱敏场景还没有结果。** 内联引用的别名脱敏场景仍在运行，现在不能下结论。原归属文件里的私人别名在候选输出中是否被移除，需等这次运行的结果，并单独记录。\n- **诊断标记检查不用于证明脱敏，这一点成立。** 前提是直接的前后对比测试和语义审查结果确实附在证据里。"
+      }
+    },
+    "opus-reconciliation": {
+      "stream_sha256": "175de3d2c5486b241162e793b6f0fd15e7bfde51ecbd9471daa59a188dbb079b",
+      "model": "claude-opus-5-5",
+      "result": {
+        "subtype": "success",
+        "is_error": false,
+        "result": "## 裁决\n\n1. **持久快照**：不是本协议的要求。步骤 1 在改动前读取原 owner，步骤 4 用这次读取做比对，已经满足\"更正要对照原文\"的契约。持久快照是更强的恢复能力。format 5 空间不要求 Git，所以如果保存后、重读前会话中断，改动前的原文可能找不回来。这一点可以加一句写明边界，但不需要新增步骤。\n2. **原话缺失时的已接受地位**：transfer 原 owner 写的是 \"Recorded as accepted… original exchange is unavailable\"，与证据模型一致，没有缺陷。\n3. **每次更正都重复记录来源**：不需要。Source 列写 user/date，原话和历史放在一个链接的 owner 里，符合单一 owner 原则；重复记录会造成内容漂移。partial-v2 的 `single_owner` 和 `history_and_source_words_preserved` 两项都通过了。\n4. **通用 editorial 行**：transfer-v2 中 editorial 场景的 baseline 和 candidate 产物逐字相同，handoff-v2 的 editorial 也是对照。它只能证明候选版本没有回退，不能区分两臂，结果里应写成\"对照通过，无区分力\"。产物中 intervention 为 `replicated`，与原 owner 的\"两类都 tentative\"不同；只要该场景的更正任务确实改了 intervention，结果就正确。这份材料里没有该场景的 prompt，属于缺材料，不算缺陷。如果\"editorial 行\"指的是 README 不变量登记里的某一行，我没看到原文，无法裁决。\n\n## 剩余可执行缺陷\n\n- **readonly-v2 的判定不完整**：只检查了内容未变、原生完成、模型和冻结输入四项，没有检查 prompt 要求的\"报告未捕获的决定和下一步安全动作\"，也没有检查是否谎称已持久化。一个什么都没报告、或声称已保存的运行同样会通过。应补上这两项检查，或者把该场景的声明收窄为\"没有写入\"。\n- **partial-v2 没有检查更正的理由**：判定里没有一项确认 human-12 的理由被记为\"未给出\"，而不是沿用 human-11 的 \"links should be navigable\"。步骤 1 的\"不编造理由\"在更正这条路径上没有被直接测到。\n- **证据绑定需要注明版本**：handoff 和 handoff-v2 的 plan 相同，但捕获文件不同（3183 字节 vs 3189 字节）。请确认结果文件写明结论只来自 v2 的捕获，v1 的数据没有混进来。\n\n## 不属于缺陷\n\n- 别名脱敏由直接的前后对比测试和语义审查承担，不依赖诊断 token，这样可以接受。正在运行的行内引用脱敏场景出结果之前，不要基于它写任何声明。\n- C02 入口符合 format 5 的结构。\"没有已知阻塞问题\"放在 Invariants 段下面，如果是模板约定就不用改。"
+      }
+    }
+  },
+  "archives": [
+    {
+      "path": "~/.local/state/ssot-context/evidence/source-resume-20261112/complete-through-final-review.tar.gz",
+      "bytes": 39990524,
+      "sha256": "e32c4b90c91b46f088e9f9c1e9b72367280c3ba72be2fde7e841b1eba02ed3ef",
+      "excludes": [
+        "codex-home (separate native receipts retained)",
+        "auth.json",
+        "__pycache__"
+      ],
+      "scope": "complete evidence tree through final review; superset of recovered-and-first-cycle.tar.gz",
+      "readback": {
+        "files": 3875,
+        "symlinks": 7,
+        "missing": 0,
+        "extra": 0,
+        "differing": 0,
+        "credential_pattern_hits": 0
+      }
+    },
+    {
+      "path": "~/.local/state/ssot-context/evidence/source-resume-20261112/recovered-and-first-cycle.tar.gz",
+      "bytes": 5848284,
+      "sha256": "71fb1fddd6858605292e21df21fef68aea123f1c9f84edb1e65ad4fe59317754",
+      "excludes": [
+        "codex-home (separate native receipts retained)",
+        "auth.json",
+        "__pycache__"
+      ]
+    }
+  ]
+}

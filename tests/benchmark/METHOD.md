@@ -25,6 +25,8 @@ Calibrate the measurement before a matrix: a known-valid artifact must pass, a m
 
 ## During the experiment
 
+Keep ad hoc calibration outside frozen directories. When importing a frozen Python module, use `python3 -B` so the import cannot add bytecode files, and verify the frozen manifest before native calls. An added cache is an observation failure under the freeze contract; preserve that attempt and fix the calibration command before preparing a new experiment.
+
 The common recorder observes the whole authorized workspace independently of its launch directory. It retains text for review plus byte hashes, file types, modes and symlink targets. It does not follow outside symlinks. Git internals and Python cache contents are excluded explicitly; repository identity requires a separate Git readback where relevant. Missing/unreadable evidence is not an empty successful snapshot.
 
 Record requests, raw output, validated events, native session/model/usage, actual changes and final answers. A malformed event stream is an observer failure even when the process later completes. The recorder continues draining the already running process under its original timeout and waits for exit before the final snapshot; it does not silently replay or leave that process writing after reporting. Known native completion and complete observation remain separate facts.
@@ -40,3 +42,5 @@ Retain failures and incomplete spend. Missing usage stays unknown. Compare cost 
 For each finding, identify the first broken boundary: missing knowledge, undiscoverable owner, incorrect authority/scope, wrong action, lost handoff, host discovery, or defective observation. Change its owner, not the symptom. Run the thin path again, relevant counterexamples, then the predeclared confirmation. If the candidate adds cost or fails to change the observed problem, withdraw it. Keep rejected approaches and their evidence so the next maintainer does not repeat the same intervention.
 
 These fixtures do not establish production reliability, every domain, every model, arbitrary interruption/concurrency or statistical superiority. New real incidents should add a discriminating case to the appropriate lane only when the current suite cannot distinguish the failure. Existing focused tests remain useful; more cases alone are not better coverage.
+
+Before publishing or handing off results, archive frozen inputs and native evidence outside temporary storage, excluding credentials and disposable session-home caches, and record the archive hash with the tracked result account. Check its retained evidence against the frozen identities. A `/tmp` path alone is not durable evidence; if the originals disappear, disclose that gap instead of reconstructing a pass from the narrative.
