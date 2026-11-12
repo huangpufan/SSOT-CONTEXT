@@ -282,9 +282,11 @@ class ContextOrchestrationTest(unittest.TestCase):
 
     def test_skills_free_consumer_receives_only_declared_documents_and_cannot_edit_them(self):
         base = self.root
+        alias = base / 'consumer-root-alias'
+        alias.symlink_to(base, target_is_directory=True)
         for tamper in ('none', 'handoff', 'checkpoint', 'observation-gap', 'aggregate-gap', 'infrastructure-gap', 'aggregate-infrastructure-gap'):
             with self.subTest(tamper=tamper):
-                self.root = base / str(tamper)
+                self.root = alias / str(tamper)
                 contract = longchain_case.definition(control='ceiling')
                 longchain_case.build(self.root / 'fixture', installed.cases.scenarios.write, contract)
                 plan = self.plan()
@@ -292,7 +294,7 @@ class ContextOrchestrationTest(unittest.TestCase):
                 run.save(self.root / 'plan.json', plan)
                 consumer = self.root / 'run/consumer/workspace'
                 def subject(_root, evidence, repo, _prompt, turn, *_args, **kwargs):
-                    self.assertEqual(repo, consumer)
+                    self.assertEqual(repo.resolve(), consumer.resolve())
                     self.assertTrue(kwargs['installed_mode'])  # Observe the real empty catalog rather than suppressing discovery.
                     self.assertFalse((repo / '.agents').exists())
                     self.assertFalse((repo / 'sources').exists())
