@@ -8,6 +8,12 @@ Entries up to 2.86 were derived from the v2 protocol-upgrade ledger, which is pr
 
 ## [Unreleased]
 
+### Fixed
+- Benchmark reports preserve running attempts and known phase spend when final evidence is missing or corrupt, isolate damaged records, and require native model plus reasoning identity for comparable costs. Handoff privacy checks cover hidden project files and expose unreadable scope; reading reports preserve failed/mismatched spend and include reasoning failures. Offline calibration includes meaningful mutations, alternate valid artifacts and real completed native evidence.
+
+### Changed
+- Cold-handoff trials now default to an explicit persistence goal shared by plain/protocol writers, retain automatic capture as a separate estimand, and add an independently authored museum confirmation. The [deepening record](docs/benchmark-deepening-2026-11-12.md) distinguishes measurement repairs, actual subject outcomes and evidence limits; the SSOT protocol remains 5.3.
+
 ## [5.3] - 2026-11-12
 
 ### Changed

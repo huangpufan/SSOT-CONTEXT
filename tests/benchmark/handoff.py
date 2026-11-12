@@ -3,6 +3,7 @@
 import argparse
 import hashlib
 import json
+import math
 import os
 from pathlib import Path
 import shutil
@@ -42,8 +43,12 @@ def prepare(args):
     harness.mkdir(parents=True)
     for name in ('run.py', 'cases.py', 'handoff.py', 'handoff_cases.py'):
         shutil.copy2(HERE / name, harness / name)
+    if (HERE / 'fixtures').is_dir():
+        shutil.copytree(HERE / 'fixtures', harness / 'fixtures')
     shutil.copy2(HERE.parent / 'run-performance-trials.py', root / 'harness/run-performance-trials.py')
+    capture_goal = getattr(args, 'capture_goal', 'explicit')
     plan = {'schema': 1, 'model': T.requested_model(args.model), 'reasoning': 'medium', 'cap': args.cap,
+            'capture_goal': capture_goal,
             'seed': args.seed, 'concurrency': 1, 'cases': {}, 'harness': T.tree_snapshot(root / 'harness'),
             'baseline': freeze_bundle(args.baseline.resolve(), root / 'bundles/baseline'),
             'semantics': list(SEMANTIC), 'confirmation': None if args.confirmation == 'none' else args.confirmation,
@@ -52,7 +57,7 @@ def prepare(args):
         c = cases.contract(case, args.seed)
         for kind in ('initial', 'ceiling', 'stale'):
             cases.build(root / 'fixtures' / case / kind, c, kind)
-        plan['cases'][case] = {'contract': c, 'prompts': cases.prompts(c), 'consumer': cases.consumer_prompt(c),
+        plan['cases'][case] = {'contract': c, 'prompts': cases.prompts(c, capture_goal), 'consumer': cases.consumer_prompt(c),
                                'fixtures': T.tree_snapshot(root / 'fixtures' / case)}
     save(root / 'plan.json', plan)
     (root / 'plan.sha256').write_text(hashlib.sha256((root / 'plan.json').read_bytes()).hexdigest() + '\n')
@@ -119,8 +124,12 @@ turn_state = T.completion_state
 def evidence_identity(directory):
     # Include byte, mode and symlink identities, without reading session homes.
     excluded = {'codex-home', '.git', '__pycache__'}
-    return {p: value for p, value in T.tree_snapshot(directory, exclude_dirs=excluded).items()
-            if not excluded.intersection(Path(p).parts) and p not in ('result.json', 'review.json')}
+    identity = {p: value for p, value in T.tree_snapshot(directory, exclude_dirs=excluded).items()
+                if not excluded.intersection(Path(p).parts) and p not in ('result.json', 'review.json')}
+    unavailable = [p for p, value in identity.items() if value.get('kind') == 'unavailable']
+    if unavailable:
+        raise ValueError('Evidence unavailable: ' + ', '.join(unavailable))
+    return identity
 
 
 
@@ -128,6 +137,8 @@ def execute(args, root, plan):
     if os.environ.get('CI'):
         raise ValueError('Billable models disabled in CI')
     validate(root, plan)
+    if args.case == 'museum' and plan.get('capture_goal', 'automatic') != 'explicit':
+        raise ValueError('Museum confirmation requires an explicitly frozen persistence goal')
     if args.arm == 'candidate' and not (root / 'candidate.json').exists():
         raise ValueError('Attach candidate before execution')
     directory = root / 'runs' / args.case / args.arm
@@ -188,13 +199,16 @@ def execute(args, root, plan):
                 result['writer_turn_checks'].append({'turn': number, 'checks': turn_checks, 'unauthorized_changes': unauthorized})
                 if not all(turn_checks.values()):
                     result['checks'] = turn_checks
-                    result['state'] = 'failed_quality'
+                    result['state'] = 'observer_failure' if turn_checks.get('private_scan_complete') is False else 'failed_quality'
                     return
             failure = turn_state(summaries, 2, plan['model'])
             if failure:
                 result['state'] = failure
                 return
         result['checks'], result['unauthorized_changes'] = cases.writer_checks(repo, c, initial, T.tree_snapshot(repo))
+        if result['checks'].get('private_scan_complete') is False:
+            result['state'] = 'observer_failure'
+            return
         if not result['checks']['owner_transfer_valid']:
             result['state'] = 'failed_quality'
             return
@@ -260,7 +274,14 @@ def execute(args, root, plan):
             result['frozen_artifact_error'] = str(exc)
         save(directory / 'mechanical.json', {k: result[k] for k in ('state', 'phase', 'checks', 'turns')} |
              {k: result[k] for k in ('output', 'calibration_expected_outcome', 'writer_turn_checks') if k in result})
-        result['evidence'] = evidence_identity(directory)
+        try:
+            result['evidence'] = evidence_identity(directory)
+        except (ValueError, OSError) as exc:
+            result['state'] = 'observer_failure'
+            result['evidence'] = None
+            result['evidence_error'] = str(exc)
+            mechanical = load(directory / 'mechanical.json')
+            save(directory / 'mechanical.json', {**mechanical, 'state': 'observer_failure'})
         save(directory / 'result.json', result)
         print(json.dumps({k: result[k] for k in ('case', 'arm', 'state', 'phase', 'checks')}), flush=True)
 
@@ -277,9 +298,12 @@ def review_admissible(directory, arm):
 
 
 def checked_review(record, evidence):
-    if record.get('evidence') != evidence or not record.get('reviewer') or set(record.get('checks', {})) != set(SEMANTIC):
+    if (not isinstance(record, dict) or record.get('evidence') != evidence
+            or not isinstance(record.get('reviewer'), str) or not record['reviewer'].strip()
+            or not isinstance(record.get('checks'), dict) or set(record['checks']) != set(SEMANTIC)):
         raise ValueError('Review must identify reviewer, bind exact evidence and cover semantic obligations')
-    if any(type(v.get('passed')) is not bool or not v.get('reason') for v in record['checks'].values()):
+    if any(not isinstance(v, dict) or type(v.get('passed')) is not bool
+           or not isinstance(v.get('reason'), str) or not v['reason'].strip() for v in record['checks'].values()):
         raise ValueError('Each review obligation needs a boolean and artifact-grounded reason')
 
 
@@ -312,55 +336,167 @@ def review(args, root, plan):
     save(directory / 'result.json', result)
 
 
+def report_record(path):
+    value = load(path)
+    if not isinstance(value, dict):
+        raise ValueError(f'{path.name} must contain an object')
+    return value
+
+
 def verified_result(directory, arm):
-    result = load(directory / 'result.json')
-    if result.get('evidence') != evidence_identity(directory):
-        return {**result, 'state': 'observer_failure', 'report_error': 'Evidence missing or changed after attempt'}
-    stored_state = result['state']
-    try:
-        result = {**result, **load(directory / 'mechanical.json')}
-    except (ValueError, OSError) as exc:
-        return {**result, 'state': 'observer_failure', 'report_error': str(exc)}
-    review_path = directory / 'review.json'
-    if review_path.exists():
-        record = load(review_path)
+    # Read independent receipts before checking integrity: a broken artifact
+    # invalidates acceptance, but does not erase already observed phase spend.
+    errors, receipt, mechanical = [], {}, {}
+    for name in ('result.json', 'mechanical.json'):
+        if name == 'mechanical.json' and receipt.get('state') == 'started' and not (directory / name).exists():
+            continue  # A running attempt has no final mechanical verdict yet.
         try:
-            checked_review(record, result['evidence'])
+            record = report_record(directory / name)
+            if name == 'result.json':
+                receipt = record
+            else:
+                mechanical = record
+            if not isinstance(record.get('state'), str) or not record['state']:
+                raise ValueError(f'{name} has no valid state')
+            if 'turns' in record and not isinstance(record['turns'], list):
+                raise ValueError(f'{name} has invalid turns')
+            if name == 'mechanical.json' and not isinstance(record.get('checks'), dict):
+                raise ValueError('mechanical.json has invalid checks')
+        except (ValueError, OSError) as exc:
+            errors.append(f'{name}: {exc}')
+    result = {**receipt, **mechanical}
+    result['turns'] = mechanical.get('turns') if isinstance(mechanical.get('turns'), list) else receipt.get('turns', [])
+    if not isinstance(result['turns'], list):
+        result['turns'] = []
+    result.setdefault('phase', 'before receipt')
+    try:
+        if errors:
+            raise ValueError('; '.join(errors))
+        if receipt['state'] == 'started':
+            # A final receipt has not sealed the artifacts. A leftover verdict
+            # or review cannot promote an in-flight attempt to completion.
+            return {**result, 'state': 'started'}
+        if receipt.get('evidence') != evidence_identity(directory):
+            raise ValueError('Evidence missing or changed after attempt')
+        review_path = directory / 'review.json'
+        if review_path.exists():
+            record = report_record(review_path)
+            checked_review(record, receipt['evidence'])
             if not review_admissible(directory, arm):
                 raise ValueError('Sealed mechanical verdict does not permit acceptance')
-        except (ValueError, OSError, KeyError) as exc:
-            return {**result, 'state': 'observer_failure', 'report_error': str(exc)}
-        return {**result, 'state': review_state(record, arm)}
-    if stored_state in ('passed', 'calibration_passed'):
-        return {**result, 'state': 'observer_failure', 'report_error': 'Acceptance has no artifact-bound review'}
-    return result
+            return {**result, 'state': review_state(record, arm)}
+        if receipt['state'] in ('passed', 'calibration_passed'):
+            raise ValueError('Acceptance has no artifact-bound review')
+        return result
+    except (ValueError, OSError, KeyError) as exc:
+        return {**result, 'state': 'observer_failure', 'report_error': str(exc)}
+
+
+def known_costs(value):
+    if not isinstance(value, dict):
+        return {}
+    return {key: value[key] for key in run.METRICS if type(value.get(key)) in ((int, float) if key == 'seconds' else (int,))
+            and (type(value[key]) is int or math.isfinite(value[key])) and value[key] >= 0}
+
+
+def observed_turns(directory, turns, model):
+    """Recover cost observations, never acceptance, from retained native receipts."""
+    observed, errors = {}, []
+    for number, turn in enumerate(turns):
+        if not isinstance(turn, dict) or not isinstance(turn.get('phase'), str):
+            errors.append(f'Invalid phase observation at turn {number + 1}')
+            continue
+        phase = turn['phase']
+        if phase in observed:
+            errors.append(f'Duplicate phase observation: {phase}')
+            continue
+        observed[phase] = {**turn, 'costs': known_costs(turn.get('costs')) or None, 'native_identity_verified': False}
+    for role in ('writer', 'consumer'):
+        for path in sorted((directory / role).glob('*.summary.json')):
+            number = path.name.split('.')[0]
+            if not number.isdigit():
+                continue
+            phase = f'writer-{number}' if role == 'writer' else 'consumer'
+            try:
+                summary = report_record(path)
+                cost = known_costs({key: summary.get(key) for key in ('seconds', 'tool_items', 'tool_output_bytes')})
+                usage = summary.get('native_turn_usage')
+                identity_verified = bool(model) and T.native_identity_state(summary, model) is None
+                # Mismatched execution still consumed resources. Native identity
+                # governs comparison, not whether observed usage is retained.
+                if isinstance(usage, dict):
+                    cost.update(known_costs({key: usage.get(key) for key in ('input_tokens', 'cached_input_tokens', 'output_tokens')}))
+                    if all(key in cost for key in ('input_tokens', 'cached_input_tokens')):
+                        if cost['cached_input_tokens'] <= cost['input_tokens']:
+                            cost['uncached_input_tokens'] = cost['input_tokens'] - cost['cached_input_tokens']
+                        else:
+                            cost.pop('cached_input_tokens')
+                retained = observed.setdefault(phase, {'phase': phase, 'costs': None})
+                retained['costs'] = {**cost, **(retained['costs'] or {})} or None
+                retained['native_identity_verified'] = identity_verified
+            except (ValueError, OSError) as exc:
+                errors.append(f'{role}/{path.name}: {exc}')
+                observed.setdefault(phase, {'phase': phase, 'costs': None, 'native_identity_verified': False})
+    ordered = sorted(observed.values(), key=lambda turn: (turn['phase'] == 'consumer',
+                     int(turn['phase'][7:]) if turn['phase'].startswith('writer-') and turn['phase'][7:].isdigit() else 0))
+    return ordered, errors
+
+
+def cost_totals(turns):
+    if not turns:
+        return None, None, False
+    costs = [turn['costs'] or {} for turn in turns]
+    observed = {key: sum(cost[key] for cost in costs if key in cost) for key in run.METRICS if any(key in cost for cost in costs)}
+    total = {key: observed[key] if all(key in cost for cost in costs) else None for key in run.METRICS}
+    complete = all(value is not None for value in total.values()) and all(turn.get('native_identity_verified') for turn in turns)
+    return (total if observed else None), (observed or None), complete
 
 
 def report(root):
     plan = load(root / 'plan.json')
-    validate(root, plan)
+    frozen_error = None
+    try:
+        validate(root, plan)
+    except (ValueError, OSError) as exc:
+        frozen_error = f'Frozen experiment cannot be verified: {exc}'
     rows = []
     for case in cases.CASES:
         for arm in ARMS:
-            path = root / 'runs' / case / arm / 'result.json'
-            result = verified_result(path.parent, arm) if path.exists() else {'state': 'started' if path.parent.exists() else 'unrun', 'phase': 'before receipt' if path.parent.exists() else None, 'turns': []}
-            costs = [t['costs'] for t in result['turns']]
-            total = {k: sum(c[k] for c in costs) for k in run.METRICS} if costs and all(costs) else None
+            directory = root / 'runs' / case / arm
+            result = verified_result(directory, arm) if directory.exists() else {'state': 'unrun', 'turns': []}
+            turns, errors = observed_turns(directory, result['turns'], plan.get('model'))
+            if frozen_error and result['state'] != 'unrun':
+                errors.append(frozen_error)
+            if errors:
+                result = {**result, 'state': 'observer_failure', 'report_error': '; '.join(str(error) for error in [result.get('report_error'), *errors] if error)}
+            total, observed, complete = cost_totals(turns)
             rows.append({'case': case, 'arm': arm, 'state': result['state'], 'phase': result.get('phase'),
-                         'turns': result['turns'], 'costs': total, 'report_error': result.get('report_error')})
+                         'turns': turns, 'costs': total, 'observed_costs': observed, 'costs_complete': complete,
+                         'report_error': result.get('report_error')})
     calibration = {}
     for case in cases.CASES:
         states = {r['arm']: r['state'] for r in rows if r['case'] == case}
         calibration[case] = states['ceiling'] == 'passed' and all(states[a] == 'calibration_passed' for a in ('floor', 'stale'))
     comparisons = [{'case': case, 'pair': [left, right],
-                    'eligible': calibration[case] and all(any(r['case'] == case and r['arm'] == arm and r['state'] == 'passed' and r['costs'] for r in rows) for arm in (left, right))}
+                    'eligible': calibration[case] and all(any(r['case'] == case and r['arm'] == arm and r['state'] == 'passed' and r['costs_complete'] for r in rows) for arm in (left, right))}
                    for case in cases.CASES for left, right in (('plain', 'baseline'), ('baseline', 'candidate'))]
-    save(root / 'report.json', {'limits': plan['limits'], 'confirmation': plan.get('confirmation'), 'calibration_valid': calibration, 'comparisons': comparisons, 'attempts': rows})
+    capture_goal = plan.get('capture_goal', 'automatic')  # Plans predating this field used automatic capture.
+    save(root / 'report.json', {'limits': plan['limits'], 'confirmation': plan.get('confirmation'),
+         'capture_goal': capture_goal, 'report_error': frozen_error,
+         'calibration_valid': calibration, 'comparisons': comparisons, 'attempts': rows})
     lines = ['# Cold handoff results', '', 'All attempts retained. Unknown cost is not zero. Quality precedes cost; no combined score.', '',
+             'Capture goal: ' + capture_goal + '.', '',
              '| Task | Arm | State | Last phase | Seconds | Input | Output |', '| --- | --- | --- | --- | ---: | ---: | ---: |']
     for r in rows:
         cost = r['costs'] or {}
-        lines.append(f"| {r['case']} | {r['arm']} | {r['state']} | {r['phase'] or '—'} | {cost.get('seconds', 'unknown')} | {cost.get('input_tokens', 'unknown')} | {cost.get('output_tokens', 'unknown')} |")
+        def display(key):
+            if cost.get(key) is not None:
+                return str(cost[key])
+            observed = (r['observed_costs'] or {}).get(key)
+            return f'unknown ({observed} observed)' if observed is not None else 'unknown'
+        lines.append(f"| {r['case']} | {r['arm']} | {r['state']} | {r['phase'] or '—'} | {display('seconds')} | {display('input_tokens')} | {display('output_tokens')} |")
+    if frozen_error:
+        lines += ['', frozen_error]
     lines += ['', 'Calibration valid (ceiling plus reviewed absent/stale controls): ' + json.dumps(calibration),
               'Prior exposure and earlier experiment roots belong in the accompanying maintainer report; this report does not track them automatically.',
               'Cost comparisons require valid calibration and both accepted tasks with native usage. Failed controls invalidate comparison, not the retained observations.']
@@ -380,6 +516,8 @@ def main():
     p.add_argument('--model')
     p.add_argument('--cap', type=int, default=300)
     p.add_argument('--seed', type=int, default=20261112)
+    p.add_argument('--capture-goal', choices=('automatic', 'explicit'), default='explicit',
+                   help='Explicit gives all writers the same persistence goal; automatic probes unprompted capture')
     p.add_argument('--confirmation', choices=(*cases.CASES, 'none'), default='editorial',
                    help='Untouched confirmation in this experiment; use none for previously exposed development cases and declare separate confirmation in the maintainer report')
     p.add_argument('--case', choices=cases.CASES, default='reporting')

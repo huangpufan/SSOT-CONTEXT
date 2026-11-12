@@ -19,6 +19,7 @@ import time
 
 
 MODEL = "gpt-6.1-terra"
+REASONING = "medium"
 
 
 def requested_model(value=None):
@@ -153,14 +154,31 @@ def discovery_observation(stdout):
     return {"skills": sorted(skills), "instruction_blocks": instruction_blocks}
 
 
-def completion_state(summaries, expected, model):
-    if any(s.get("native_models") and s["native_models"] != [model] for s in summaries):
+def native_identity_state(summary, model, reasoning=REASONING):
+    """Unknown historical receipts stay unknown; a request is not execution evidence."""
+    models, efforts = summary.get("native_models"), summary.get("native_reasoning")
+    if (summary.get("requested_model") not in (None, model)
+            or isinstance(models, list) and any(isinstance(v, str) and v and v != model for v in models)):
         return "model_mismatch"
+    if (summary.get("requested_reasoning") not in (None, reasoning)
+            or isinstance(efforts, list) and any(isinstance(v, str) and v and v != reasoning for v in efforts)):
+        return "reasoning_mismatch"
+    if (summary.get("requested_model") != model or summary.get("requested_reasoning") != reasoning
+            or models != [model] or efforts != [reasoning]):
+        return "observer_failure"
+    return None
+
+
+def completion_state(summaries, expected, model):
+    identities = [native_identity_state(s, model) for s in summaries]
+    for mismatch in ("model_mismatch", "reasoning_mismatch"):
+        if mismatch in identities:
+            return mismatch
     if any(s["returncode"] or not s.get("native_completed", s["completed"]) for s in summaries):
         return "incomplete"
     if any(s.get("discovery_mismatch") for s in summaries):
         return "delivery_failure"
-    if any(not s.get("observation_complete") or s.get("native_models") != [model] for s in summaries):
+    if any(not s.get("observation_complete") for s in summaries) or "observer_failure" in identities:
         return "observer_failure"
     if len(summaries) != expected:
         return "incomplete"
@@ -196,9 +214,13 @@ def record_native(run_dir, turn, summary, home=None):
         if len(turn_ids) >= turn and turn_ids[turn - 1] in turns:
             summary["native_turn_usage"] = turns[turn_ids[turn - 1]]
             summary["native_turn_id"] = turn_ids[turn - 1]
-        summary["native_models"] = sorted({record["payload"].get("model")
-            for record in records if record.get("type") == "turn_context"
-            and record.get("payload", {}).get("model")})
+        contexts = [record["payload"] for record in records if record.get("type") == "turn_context"
+                    and len(turn_ids) >= turn
+                    and record["payload"].get("root_turn_id", record["payload"].get("turn_id")) == turn_ids[turn - 1]]
+        # Keep missing values in the receipt: dropping one would turn a partially
+        # observed identity into a falsely verified model/reasoning combination.
+        summary["native_models"] = sorted({context.get("model") for context in contexts}, key=str)
+        summary["native_reasoning"] = sorted({context.get("effort") for context in contexts}, key=str)
         messages = [r["payload"] for r in records if r.get("type") == "response_item"
                     and isinstance(r.get("payload"), dict) and r["payload"].get("type") == "message"]
         summary["native_discovery"] = discovery_observation(json.dumps(messages))
@@ -309,7 +331,7 @@ def execute_turn(root, run_dir, repo, prompt, turn, cap, sandbox_command=None,
     command += ["--ignore-user-config", "--ignore-rules", "-m", model]
     if not installed_mode:
         command += ["-c", "project_doc_max_bytes=0"]
-    command += ["-c", 'model_reasoning_effort="medium"',
+    command += ["-c", f'model_reasoning_effort="{REASONING}"',
                 "-c", 'approval_policy="never"', "-c", 'sandbox_mode="danger-full-access"',
                 "--disable", "multi_agent", "--json"]
     if turn == 1:
@@ -379,7 +401,8 @@ def execute_turn(root, run_dir, repo, prompt, turn, cap, sandbox_command=None,
     native_completed = any(e.get("type") == "turn.completed" for e in events)
     observation_complete = not observation_errors and not any(v.get("kind") == "unavailable"
         for tree in (tree_before, tree_after) for v in tree.values())
-    summary = {"requested_model": model, "allow_no_git": allow_no_git, "installed_mode": installed_mode,
+    summary = {"requested_model": model, "requested_reasoning": REASONING,
+               "allow_no_git": allow_no_git, "installed_mode": installed_mode,
                "workspace_root": str(repo), "launch_dir": str(launch_dir),
                "seconds": round(time.monotonic() - started, 3),
                "returncode": code, "completed": native_completed and observation_complete,
@@ -406,7 +429,9 @@ def execute_turn(root, run_dir, repo, prompt, turn, cap, sandbox_command=None,
         summary["observation_complete"] = False
         summary["completed"] = False
     summary["model_identity_verified"] = summary.get("native_models") == [model]
-    if not summary["model_identity_verified"]:
+    summary["reasoning_identity_verified"] = summary.get("native_reasoning") == [REASONING]
+    summary["native_identity_state"] = native_identity_state(summary, model)
+    if summary["native_identity_state"]:
         summary["completed"] = False  # All callers stop before another billable dependent turn.
     save(run_dir / f"{turn}.summary.json", summary)
     return summary

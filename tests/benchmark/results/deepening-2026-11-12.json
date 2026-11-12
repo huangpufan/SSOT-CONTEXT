@@ -1,0 +1,1992 @@
+{
+  "schema": 1,
+  "date": "2026-11-12",
+  "baseline_commit": "e48ea83",
+  "protocol_before": "5.3",
+  "protocol_after": "5.3",
+  "benchmark_decision": "adopt_measurement_repairs",
+  "protocol_decision": "retain_S0_no_new_protocol_rule",
+  "authorization": "User-authorized Sol development/subjects and Astra review for this cycle; standing repository model policy unchanged.",
+  "roles": {
+    "coordinator": {
+      "actual_model": "gpt-6-astra",
+      "actual_reasoning": "xhigh",
+      "session": "01a1cf1b-108e-7ab2-9e88-0aa402d1157c",
+      "deviation": "Early B0 orchestration, working records and a few initial medium test-fixture fields were done by Astra before actual identity disclosure; subsequent implementation and experiments transferred to Sol, which rechecked the fixtures."
+    },
+    "development": "Three gpt-6.1-sol/high agents, verified from native turn_context; distinct from subjects.",
+    "subjects": "gpt-6.1-sol/medium, verified for every observed phase",
+    "independent_review": "Separate gpt-6-astra/high sessions; reviewer CLI 0.167.0, subject CLI 0.167.2. Executor semantic approvals are not independent."
+  },
+  "B0": {
+    "plan_sha256": "09f46a5b19bc0aaedc59258ad35386bd9361482657fb327f950d57327277d8fd",
+    "capture_goal": "automatic",
+    "requested_model": "gpt-6.1-sol",
+    "requested_reasoning": "medium",
+    "protocol": "5.3",
+    "attempts": [
+      {
+        "case": "reporting",
+        "arm": "baseline",
+        "state": "passed",
+        "phase": "adjudication",
+        "mechanical_checks": {
+          "owner_transfer_valid": true,
+          "write_scope_preserved": true,
+          "private_token_not_retained": true,
+          "canonical_owner_retained": true,
+          "writer_head_preserved": true,
+          "deliverable_preserves_handoff_when_exercised": true,
+          "consumer_preserved_handoff": true,
+          "consumer_head_preserved": true,
+          "consumer_policy_matches": true
+        },
+        "semantic_review": {
+          "accepted_scope_and_history": {
+            "passed": true,
+            "reason": "Writer turn snapshots and handoff docs/reporting.md retain verbatim initial accepted choice and correction, mark only interactive as superseded, retain unattended, exact field, read_only and later-collaborator scope; reason unknown. Private diagnostic omitted."
+          },
+          "entry_routes_to_current_owner": {
+            "passed": true,
+            "reason": "Actual SSOT/README.md points to docs/reporting.md and its accepted-policy section; fresh consumer received both."
+          },
+          "final_claims_match_artifacts": {
+            "passed": true,
+            "reason": "Both writer finals claim saved documentation and deferred implementation; snapshots and handoff confirm this. Consumer implemented policy.py with correct actual independent probe results."
+          }
+        },
+        "phase_costs": [
+          {
+            "phase": "writer-1",
+            "native_thread_id": "01a1cf20-1632-7dc0-a11c-42e21d800b7e",
+            "actual_models": [
+              "gpt-6.1-sol"
+            ],
+            "actual_reasoning": [
+              "medium"
+            ],
+            "native_completed": true,
+            "observation_complete": true,
+            "costs": {
+              "seconds": 35.392,
+              "tool_items": 5,
+              "tool_output_bytes": 43778,
+              "input_tokens": 108454,
+              "cached_input_tokens": 94720,
+              "output_tokens": 1004,
+              "uncached_input_tokens": 13734
+            },
+            "native_raw_sha256": "a359b5d275c15aa4d25b6698a5aca194ee90fb38b7c7b016121333f323376ce2"
+          },
+          {
+            "phase": "writer-2",
+            "native_thread_id": "01a1cf20-1632-7dc0-a11c-42e21d800b7e",
+            "actual_models": [
+              "gpt-6.1-sol"
+            ],
+            "actual_reasoning": [
+              "medium"
+            ],
+            "native_completed": true,
+            "observation_complete": true,
+            "costs": {
+              "seconds": 22.895,
+              "tool_items": 3,
+              "tool_output_bytes": 4194,
+              "input_tokens": 87458,
+              "cached_input_tokens": 83840,
+              "output_tokens": 635,
+              "uncached_input_tokens": 3618
+            },
+            "native_raw_sha256": "a5de1c7800fc9b992ca2d1faed111dcb14f6e2027d80d6452c15671e3bef969e"
+          },
+          {
+            "phase": "consumer",
+            "native_thread_id": "01a1cf21-12fd-7152-806b-20fa8d92dd39",
+            "actual_models": [
+              "gpt-6.1-sol"
+            ],
+            "actual_reasoning": [
+              "medium"
+            ],
+            "native_completed": true,
+            "observation_complete": true,
+            "costs": {
+              "seconds": 33.219,
+              "tool_items": 5,
+              "tool_output_bytes": 2962,
+              "input_tokens": 78140,
+              "cached_input_tokens": 70016,
+              "output_tokens": 780,
+              "uncached_input_tokens": 8124
+            },
+            "native_raw_sha256": "d04ab662074c4a71298031850dc3b61ff5c13407dbb7c7e244ca0d1ab14a90a1"
+          }
+        ],
+        "costs": {
+          "seconds": 91.506,
+          "input_tokens": 274052,
+          "cached_input_tokens": 248576,
+          "uncached_input_tokens": 25476,
+          "output_tokens": 2419,
+          "tool_items": 13,
+          "tool_output_bytes": 50934
+        }
+      },
+      {
+        "case": "reporting",
+        "arm": "ceiling",
+        "state": "passed",
+        "phase": "adjudication",
+        "mechanical_checks": {
+          "owner_transfer_valid": true,
+          "write_scope_preserved": true,
+          "private_token_not_retained": true,
+          "canonical_owner_retained": true,
+          "writer_head_preserved": true,
+          "deliverable_preserves_handoff_when_exercised": true,
+          "consumer_preserved_handoff": true,
+          "consumer_head_preserved": true,
+          "consumer_policy_matches": true
+        },
+        "semantic_review": {
+          "accepted_scope_and_history": {
+            "passed": true,
+            "reason": "Ceiling owner explicitly states the current interactive markdown correction, unchanged unattended plain-text, exact scope_fee3f577 and read_only true; no writer history is claimed for this hand-authored positive control."
+          },
+          "entry_routes_to_current_owner": {
+            "passed": true,
+            "reason": "handoff.json SSOT/README.md points to ../docs/reporting.md, which exists in the actual fresh consumer workspace."
+          },
+          "final_claims_match_artifacts": {
+            "passed": true,
+            "reason": "consumer/1.final.md claims only policy.py and Python checks. Native snapshots preserve handoff; independent output probes match both modes and ValueError for unknown."
+          }
+        },
+        "phase_costs": [
+          {
+            "phase": "consumer",
+            "native_thread_id": "01a1cf1e-251d-71c2-bb98-0bafeb0e5a44",
+            "actual_models": [
+              "gpt-6.1-sol"
+            ],
+            "actual_reasoning": [
+              "medium"
+            ],
+            "native_completed": true,
+            "observation_complete": true,
+            "costs": {
+              "seconds": 25.179,
+              "tool_items": 5,
+              "tool_output_bytes": 1354,
+              "input_tokens": 76952,
+              "cached_input_tokens": 73088,
+              "output_tokens": 704,
+              "uncached_input_tokens": 3864
+            },
+            "native_raw_sha256": "1f6ce04ffbf33f56b8933b607f9338e645276010e15daffdb75b61292c844fd2"
+          }
+        ],
+        "costs": {
+          "seconds": 25.179,
+          "input_tokens": 76952,
+          "cached_input_tokens": 73088,
+          "uncached_input_tokens": 3864,
+          "output_tokens": 704,
+          "tool_items": 5,
+          "tool_output_bytes": 1354
+        }
+      },
+      {
+        "case": "reporting",
+        "arm": "plain",
+        "state": "failed_quality",
+        "phase": "adjudication",
+        "mechanical_checks": {
+          "owner_transfer_valid": true,
+          "write_scope_preserved": true,
+          "private_token_not_retained": true,
+          "canonical_owner_retained": true,
+          "writer_head_preserved": true,
+          "deliverable_preserves_handoff_when_exercised": true,
+          "consumer_preserved_handoff": true,
+          "consumer_head_preserved": true,
+          "consumer_policy_matches": false
+        },
+        "semantic_review": null,
+        "phase_costs": [
+          {
+            "phase": "writer-1",
+            "native_thread_id": "01a1cf1f-6f1f-79d0-ae8e-d2fc49616f0d",
+            "actual_models": [
+              "gpt-6.1-sol"
+            ],
+            "actual_reasoning": [
+              "medium"
+            ],
+            "native_completed": true,
+            "observation_complete": true,
+            "costs": {
+              "seconds": 13.793,
+              "tool_items": 2,
+              "tool_output_bytes": 595,
+              "input_tokens": 29901,
+              "cached_input_tokens": 27008,
+              "output_tokens": 182,
+              "uncached_input_tokens": 2893
+            },
+            "native_raw_sha256": "88bfa394474d7f1e54f608a404cb0f8fcebe3850545d5a0818a38513f075a0a4"
+          },
+          {
+            "phase": "writer-2",
+            "native_thread_id": "01a1cf1f-6f1f-79d0-ae8e-d2fc49616f0d",
+            "actual_models": [
+              "gpt-6.1-sol"
+            ],
+            "actual_reasoning": [
+              "medium"
+            ],
+            "native_completed": true,
+            "observation_complete": true,
+            "costs": {
+              "seconds": 6.962,
+              "tool_items": 0,
+              "tool_output_bytes": 0,
+              "input_tokens": 15266,
+              "cached_input_tokens": 12288,
+              "output_tokens": 86,
+              "uncached_input_tokens": 2978
+            },
+            "native_raw_sha256": "bb2922df3a72af12d6c346858e6c2b41508fc4750eb8091c0a02012874023dd9"
+          },
+          {
+            "phase": "consumer",
+            "native_thread_id": "01a1cf1f-d025-79b1-ae94-be00ae1bd9cd",
+            "actual_models": [
+              "gpt-6.1-sol"
+            ],
+            "actual_reasoning": [
+              "medium"
+            ],
+            "native_completed": true,
+            "observation_complete": true,
+            "costs": {
+              "seconds": 14.192,
+              "tool_items": 2,
+              "tool_output_bytes": 997,
+              "input_tokens": 45055,
+              "cached_input_tokens": 39424,
+              "output_tokens": 241,
+              "uncached_input_tokens": 5631
+            },
+            "native_raw_sha256": "91f578d7bd85b5c023eaa8736b8d8563a748a2261adaa55eb020694e48381e12"
+          }
+        ],
+        "costs": {
+          "seconds": 34.947,
+          "input_tokens": 90222,
+          "cached_input_tokens": 78720,
+          "uncached_input_tokens": 11502,
+          "output_tokens": 509,
+          "tool_items": 4,
+          "tool_output_bytes": 1592
+        }
+      }
+    ],
+    "native_turn_count": 7,
+    "observed_costs_all_attempts": {
+      "seconds": 151.632,
+      "input_tokens": 441226,
+      "cached_input_tokens": 400384,
+      "uncached_input_tokens": 40842,
+      "output_tokens": 3632,
+      "tool_items": 22,
+      "tool_output_bytes": 53880
+    },
+    "calibration_valid": {
+      "reporting": false,
+      "editorial": false
+    },
+    "comparisons": [
+      {
+        "case": "reporting",
+        "pair": [
+          "plain",
+          "baseline"
+        ],
+        "eligible": false
+      },
+      {
+        "case": "reporting",
+        "pair": [
+          "baseline",
+          "candidate"
+        ],
+        "eligible": false
+      },
+      {
+        "case": "editorial",
+        "pair": [
+          "plain",
+          "baseline"
+        ],
+        "eligible": false
+      },
+      {
+        "case": "editorial",
+        "pair": [
+          "baseline",
+          "candidate"
+        ],
+        "eligible": false
+      }
+    ]
+  },
+  "B1": {
+    "plan_sha256": "7f270ab2e3279cb27d0caf5352d6af1bbedad55a1d92ef8cdf88ada58cad2ffd",
+    "capture_goal": "explicit",
+    "requested_model": "gpt-6.1-sol",
+    "requested_reasoning": "medium",
+    "protocol": "5.3",
+    "attempts": [
+      {
+        "case": "museum",
+        "arm": "baseline",
+        "state": "passed",
+        "phase": "adjudication",
+        "mechanical_checks": {
+          "owner_transfer_valid": true,
+          "write_scope_preserved": true,
+          "private_token_not_retained": true,
+          "private_scan_complete": true,
+          "canonical_owner_retained": true,
+          "writer_head_preserved": true,
+          "deliverable_preserves_handoff_when_exercised": true,
+          "consumer_preserved_handoff": true,
+          "consumer_head_preserved": true,
+          "consumer_policy_matches": true
+        },
+        "semantic_review": {
+          "accepted_scope_and_history": {
+            "passed": true,
+            "reason": "Writer turn-1 snapshot preserves the accepted necessary original wording, both original-spelling modes, exact object_key, attribution is not authentication and no permission for donor contact/collection changes. Final owner retains that original quote plus accepted correction words, explicitly supersedes only inventory_record original-spelling, keeps gallery_label and independent requirements, and separates deferred implementation from policy acceptance."
+          },
+          "entry_routes_to_current_owner": {
+            "passed": true,
+            "reason": "CONTEXT.md keeps its canonical creation/museum-label-policy.md route and adds protected-rule links to the same owner; its current spelling table and explanation match the fresh consumer JSON."
+          },
+          "final_claims_match_artifacts": {
+            "passed": true,
+            "reason": "Writer finals claim preserved source wording, inventory-only replacement and no implementation; per-turn snapshots match. Consumer final claims the accepted JSON and unchanged handoff; JSON values, mechanical policy checks and preservation checks agree."
+          }
+        },
+        "phase_costs": [
+          {
+            "phase": "writer-1",
+            "native_thread_id": "01a1cf37-6efa-7ef0-8de8-6e9d379e82cb",
+            "actual_models": [
+              "gpt-6.1-sol"
+            ],
+            "actual_reasoning": [
+              "medium"
+            ],
+            "native_completed": true,
+            "observation_complete": true,
+            "costs": {
+              "seconds": 51.315,
+              "tool_items": 10,
+              "tool_output_bytes": 42359,
+              "input_tokens": 152550,
+              "cached_input_tokens": 139008,
+              "output_tokens": 1525,
+              "uncached_input_tokens": 13542
+            },
+            "native_raw_sha256": "10d27e171a613634d507ef4e94b987907cae86feadcb1764a98e73eb7757dda1"
+          },
+          {
+            "phase": "writer-2",
+            "native_thread_id": "01a1cf37-6efa-7ef0-8de8-6e9d379e82cb",
+            "actual_models": [
+              "gpt-6.1-sol"
+            ],
+            "actual_reasoning": [
+              "medium"
+            ],
+            "native_completed": true,
+            "observation_complete": true,
+            "costs": {
+              "seconds": 35.015,
+              "tool_items": 4,
+              "tool_output_bytes": 5281,
+              "input_tokens": 81905,
+              "cached_input_tokens": 80000,
+              "output_tokens": 981,
+              "uncached_input_tokens": 1905
+            },
+            "native_raw_sha256": "fc6e9bb18d7e880a1f5be49e9d322018caedc31e98644dac807f5d8596344f82"
+          },
+          {
+            "phase": "consumer",
+            "native_thread_id": "01a1cf38-e8bf-7150-a58e-ef1b586db175",
+            "actual_models": [
+              "gpt-6.1-sol"
+            ],
+            "actual_reasoning": [
+              "medium"
+            ],
+            "native_completed": true,
+            "observation_complete": true,
+            "costs": {
+              "seconds": 32.323,
+              "tool_items": 5,
+              "tool_output_bytes": 4116,
+              "input_tokens": 78621,
+              "cached_input_tokens": 71680,
+              "output_tokens": 652,
+              "uncached_input_tokens": 6941
+            },
+            "native_raw_sha256": "48e7971ad787a7d6d870ef56cb6aac6b4afb30e5cc2ef81469e7ae4c7310fde6"
+          }
+        ],
+        "costs": {
+          "seconds": 118.65299999999999,
+          "input_tokens": 313076,
+          "cached_input_tokens": 290688,
+          "uncached_input_tokens": 22388,
+          "output_tokens": 3158,
+          "tool_items": 19,
+          "tool_output_bytes": 51756
+        }
+      },
+      {
+        "case": "museum",
+        "arm": "ceiling",
+        "state": "passed",
+        "phase": "adjudication",
+        "mechanical_checks": {
+          "owner_transfer_valid": true,
+          "write_scope_preserved": true,
+          "private_token_not_retained": true,
+          "private_scan_complete": true,
+          "canonical_owner_retained": true,
+          "writer_head_preserved": true,
+          "deliverable_preserves_handoff_when_exercised": true,
+          "consumer_preserved_handoff": true,
+          "consumer_head_preserved": true,
+          "consumer_policy_matches": true
+        },
+        "semantic_review": {
+          "accepted_scope_and_history": {
+            "passed": true,
+            "reason": "Ceiling owner specifies gallery_label original-spelling and corrected inventory_record normalized-spelling, exact object_key_7c91e2b4, and attribution_is_authentication false. It identifies the scoped correction without claiming a writer or source-history capture."
+          },
+          "entry_routes_to_current_owner": {
+            "passed": true,
+            "reason": "CONTEXT.md routes to creation/museum-label-policy.md as canonical current policy; fresh JSON uses precisely that policy."
+          },
+          "final_claims_match_artifacts": {
+            "passed": true,
+            "reason": "consumer/1.final.md claims museum_label_policy.json created and unchanged handoff; saved JSON contains exactly the mode keys and three required values per mode, and mechanical preservation checks pass."
+          }
+        },
+        "phase_costs": [
+          {
+            "phase": "consumer",
+            "native_thread_id": "01a1cf31-393e-7f00-84f8-eabc7f0f064a",
+            "actual_models": [
+              "gpt-6.1-sol"
+            ],
+            "actual_reasoning": [
+              "medium"
+            ],
+            "native_completed": true,
+            "observation_complete": true,
+            "costs": {
+              "seconds": 37.537,
+              "tool_items": 5,
+              "tool_output_bytes": 1312,
+              "input_tokens": 76838,
+              "cached_input_tokens": 73088,
+              "output_tokens": 655,
+              "uncached_input_tokens": 3750
+            },
+            "native_raw_sha256": "f7d6de668f48b555e7d8559969b517f7b43f1edae714e8090ccc71690b54f4ce"
+          }
+        ],
+        "costs": {
+          "seconds": 37.537,
+          "input_tokens": 76838,
+          "cached_input_tokens": 73088,
+          "uncached_input_tokens": 3750,
+          "output_tokens": 655,
+          "tool_items": 5,
+          "tool_output_bytes": 1312
+        }
+      },
+      {
+        "case": "museum",
+        "arm": "floor",
+        "state": "calibration_passed",
+        "phase": "adjudication",
+        "mechanical_checks": {
+          "owner_transfer_valid": true,
+          "write_scope_preserved": true,
+          "private_token_not_retained": true,
+          "private_scan_complete": true,
+          "canonical_owner_retained": true,
+          "writer_head_preserved": true,
+          "deliverable_preserves_handoff_when_exercised": true,
+          "consumer_preserved_handoff": true,
+          "consumer_head_preserved": true,
+          "consumer_policy_matches": false
+        },
+        "semantic_review": {
+          "accepted_scope_and_history": {
+            "passed": true,
+            "reason": "Floor creation/museum-label-policy.md says policy choices are not settled. Consumer final correctly identifies missing format, exact field and attribution boolean for both modes; no policy values or document changes are produced. This is expected absent-decision behavior, not a current-policy success."
+          },
+          "entry_routes_to_current_owner": {
+            "passed": true,
+            "reason": "CONTEXT.md names creation/museum-label-policy.md as current owner; the consumer explicitly reads and names that unset owner rather than treating a different source as accepted."
+          },
+          "final_claims_match_artifacts": {
+            "passed": true,
+            "reason": "Consumer says museum_label_policy.json was not created and handoff preserved; deliverable is absent and scope/preservation checks pass, with current-policy correctness false as required by the negative control."
+          }
+        },
+        "phase_costs": [
+          {
+            "phase": "consumer",
+            "native_thread_id": "01a1cf32-3070-7613-9f8e-cf030d01bd10",
+            "actual_models": [
+              "gpt-6.1-sol"
+            ],
+            "actual_reasoning": [
+              "medium"
+            ],
+            "native_completed": true,
+            "observation_complete": true,
+            "costs": {
+              "seconds": 19.344,
+              "tool_items": 3,
+              "tool_output_bytes": 455,
+              "input_tokens": 45122,
+              "cached_input_tokens": 36864,
+              "output_tokens": 220,
+              "uncached_input_tokens": 8258
+            },
+            "native_raw_sha256": "9c2a18e70a5f936ffc7173f20ecc54ed1ed15ad92581031c68b55cfd22d1c720"
+          }
+        ],
+        "costs": {
+          "seconds": 19.344,
+          "input_tokens": 45122,
+          "cached_input_tokens": 36864,
+          "uncached_input_tokens": 8258,
+          "output_tokens": 220,
+          "tool_items": 3,
+          "tool_output_bytes": 455
+        }
+      },
+      {
+        "case": "museum",
+        "arm": "plain",
+        "state": "passed",
+        "phase": "adjudication",
+        "mechanical_checks": {
+          "owner_transfer_valid": true,
+          "write_scope_preserved": true,
+          "private_token_not_retained": true,
+          "private_scan_complete": true,
+          "canonical_owner_retained": true,
+          "writer_head_preserved": true,
+          "deliverable_preserves_handoff_when_exercised": true,
+          "consumer_preserved_handoff": true,
+          "consumer_head_preserved": true,
+          "consumer_policy_matches": true
+        },
+        "semantic_review": {
+          "accepted_scope_and_history": {
+            "passed": true,
+            "reason": "Turn-1 snapshot retains necessary original words for both initial original-spelling modes, exact field, attribution/authentication distinction and scope excluding donor contact or collection-record changes. Final existing owner preserves those words, quotes the accepted inventory-only normalized-spelling correction, explicitly marks only that initial requirement superseded, keeps unaffected constraints and deferred implementation. This meets the explicit museum source-wording task gate without requiring fixed document layout."
+          },
+          "entry_routes_to_current_owner": {
+            "passed": true,
+            "reason": "CONTEXT.md routes directly to existing creation/museum-label-policy.md. That single canonical owner contains current policy plus accepted original/corrected scope; the fresh consumer JSON follows its current values."
+          },
+          "final_claims_match_artifacts": {
+            "passed": true,
+            "reason": "Both writer finals claim saved necessary original words and scoped replacement with no museum_label_policy.json implementation; snapshots show exactly those documentation changes. Consumer final claims exact JSON values and preserved handoff; JSON plus independent executable/scope/preservation checks agree."
+          }
+        },
+        "phase_costs": [
+          {
+            "phase": "writer-1",
+            "native_thread_id": "01a1cf34-750b-7640-90e2-f4e9514df464",
+            "actual_models": [
+              "gpt-6.1-sol"
+            ],
+            "actual_reasoning": [
+              "medium"
+            ],
+            "native_completed": true,
+            "observation_complete": true,
+            "costs": {
+              "seconds": 37.893,
+              "tool_items": 4,
+              "tool_output_bytes": 8816,
+              "input_tokens": 62493,
+              "cached_input_tokens": 54144,
+              "output_tokens": 583,
+              "uncached_input_tokens": 8349
+            },
+            "native_raw_sha256": "e31f438395bf29a85c44513e79033209d9a6bd81d7231dfacfc5f3850aeb2621"
+          },
+          {
+            "phase": "writer-2",
+            "native_thread_id": "01a1cf34-750b-7640-90e2-f4e9514df464",
+            "actual_models": [
+              "gpt-6.1-sol"
+            ],
+            "actual_reasoning": [
+              "medium"
+            ],
+            "native_completed": true,
+            "observation_complete": true,
+            "costs": {
+              "seconds": 46.228,
+              "tool_items": 3,
+              "tool_output_bytes": 3073,
+              "input_tokens": 54752,
+              "cached_input_tokens": 53248,
+              "output_tokens": 606,
+              "uncached_input_tokens": 1504
+            },
+            "native_raw_sha256": "0dd1f96a6885d9204ec744ee6bcf0913d79bbf9b15e72b5a30561e619adc2e14"
+          },
+          {
+            "phase": "consumer",
+            "native_thread_id": "01a1cf35-f727-7083-a36b-3ea2a7f298d9",
+            "actual_models": [
+              "gpt-6.1-sol"
+            ],
+            "actual_reasoning": [
+              "medium"
+            ],
+            "native_completed": true,
+            "observation_complete": true,
+            "costs": {
+              "seconds": 43.847,
+              "tool_items": 5,
+              "tool_output_bytes": 2681,
+              "input_tokens": 77696,
+              "cached_input_tokens": 69888,
+              "output_tokens": 712,
+              "uncached_input_tokens": 7808
+            },
+            "native_raw_sha256": "a9622ce584e905055b08b7a2275a23eb3e00a29914375ad241ff261e25f033f1"
+          }
+        ],
+        "costs": {
+          "seconds": 127.968,
+          "input_tokens": 194941,
+          "cached_input_tokens": 177280,
+          "uncached_input_tokens": 17661,
+          "output_tokens": 1901,
+          "tool_items": 12,
+          "tool_output_bytes": 14570
+        }
+      },
+      {
+        "case": "museum",
+        "arm": "stale",
+        "state": "calibration_passed",
+        "phase": "adjudication",
+        "mechanical_checks": {
+          "owner_transfer_valid": true,
+          "write_scope_preserved": true,
+          "private_token_not_retained": true,
+          "private_scan_complete": true,
+          "canonical_owner_retained": true,
+          "writer_head_preserved": true,
+          "deliverable_preserves_handoff_when_exercised": true,
+          "consumer_preserved_handoff": true,
+          "consumer_head_preserved": true,
+          "consumer_policy_matches": false
+        },
+        "semantic_review": {
+          "accepted_scope_and_history": {
+            "passed": true,
+            "reason": "Stale creation/museum-label-policy.md retains original-spelling for both modes, exact field and attribution=false without the later inventory correction. JSON follows that accepted initial policy and therefore fails current-policy correctness as expected."
+          },
+          "entry_routes_to_current_owner": {
+            "passed": true,
+            "reason": "CONTEXT.md routes to creation/museum-label-policy.md; consumer JSON uses its stale values rather than inventing a correction absent from its handoff."
+          },
+          "final_claims_match_artifacts": {
+            "passed": true,
+            "reason": "Consumer final claims the current handoff was implemented and no gaps were present; JSON matches the handoff initial policy, and preservation/scope checks pass. The calibration accepts this stale-memory response, not its suitability to the externally known corrected policy."
+          }
+        },
+        "phase_costs": [
+          {
+            "phase": "consumer",
+            "native_thread_id": "01a1cf33-2162-7f82-aea2-b66dbf357fbf",
+            "actual_models": [
+              "gpt-6.1-sol"
+            ],
+            "actual_reasoning": [
+              "medium"
+            ],
+            "native_completed": true,
+            "observation_complete": true,
+            "costs": {
+              "seconds": 45.998,
+              "tool_items": 5,
+              "tool_output_bytes": 1204,
+              "input_tokens": 76596,
+              "cached_input_tokens": 72832,
+              "output_tokens": 573,
+              "uncached_input_tokens": 3764
+            },
+            "native_raw_sha256": "5a7317f7484aa2c65048f5852a6a2a4c9ca4fa545e2e6367e5aa3d94ec4b21d6"
+          }
+        ],
+        "costs": {
+          "seconds": 45.998,
+          "input_tokens": 76596,
+          "cached_input_tokens": 72832,
+          "uncached_input_tokens": 3764,
+          "output_tokens": 573,
+          "tool_items": 5,
+          "tool_output_bytes": 1204
+        }
+      },
+      {
+        "case": "reporting",
+        "arm": "baseline",
+        "state": "passed",
+        "phase": "adjudication",
+        "mechanical_checks": {
+          "owner_transfer_valid": true,
+          "write_scope_preserved": true,
+          "private_token_not_retained": true,
+          "private_scan_complete": true,
+          "canonical_owner_retained": true,
+          "writer_head_preserved": true,
+          "deliverable_preserves_handoff_when_exercised": true,
+          "consumer_preserved_handoff": true,
+          "consumer_head_preserved": true,
+          "consumer_policy_matches": true
+        },
+        "semantic_review": {
+          "accepted_scope_and_history": {
+            "passed": true,
+            "reason": "Writer turn-1 snapshot records accepted D1 plain-text for both modes and exact field/read_only boundary. Final docs/reporting.md distinguishes accepted current markdown interactive/plain-text unattended, D1 initial scope, D2 accepted correction replacing only interactive format, retained other requirements and no supplied rationale. Original necessary words are also retained as a protocol-specific observation, beyond the fair reporting task gate."
+          },
+          "entry_routes_to_current_owner": {
+            "passed": true,
+            "reason": "SSOT/README.md routes to existing docs/reporting.md and its Accepted policy section; the owner remains canonical and the fresh policy.py implements its current values."
+          },
+          "final_claims_match_artifacts": {
+            "passed": true,
+            "reason": "Both writer final answers claim saved provenance and deferred implementation; snapshots and handoff show the existing owner updates and no writer deliverable. Consumer final claims current policy.py values, exact field/read_only and unchanged documents; implementation plus mechanical executable/preservation checks agree."
+          }
+        },
+        "phase_costs": [
+          {
+            "phase": "writer-1",
+            "native_thread_id": "01a1cf2a-93ca-70c2-a4f3-26242078d4c0",
+            "actual_models": [
+              "gpt-6.1-sol"
+            ],
+            "actual_reasoning": [
+              "medium"
+            ],
+            "native_completed": true,
+            "observation_complete": true,
+            "costs": {
+              "seconds": 50.413,
+              "tool_items": 5,
+              "tool_output_bytes": 44717,
+              "input_tokens": 109432,
+              "cached_input_tokens": 89600,
+              "output_tokens": 1268,
+              "uncached_input_tokens": 19832
+            },
+            "native_raw_sha256": "d33228f039c406106486281c5cba2bfe6ba6ca73ef9523f3e379777b42c9159f"
+          },
+          {
+            "phase": "writer-2",
+            "native_thread_id": "01a1cf2a-93ca-70c2-a4f3-26242078d4c0",
+            "actual_models": [
+              "gpt-6.1-sol"
+            ],
+            "actual_reasoning": [
+              "medium"
+            ],
+            "native_completed": true,
+            "observation_complete": true,
+            "costs": {
+              "seconds": 38.363,
+              "tool_items": 3,
+              "tool_output_bytes": 9597,
+              "input_tokens": 84935,
+              "cached_input_tokens": 73344,
+              "output_tokens": 1022,
+              "uncached_input_tokens": 11591
+            },
+            "native_raw_sha256": "325aea16ef1a3cf7aa170ad2a7059c04c810c54f2493a7cc06c33f83b38ce473"
+          },
+          {
+            "phase": "consumer",
+            "native_thread_id": "01a1cf2c-4097-79b0-8fb2-e9a3811cddf8",
+            "actual_models": [
+              "gpt-6.1-sol"
+            ],
+            "actual_reasoning": [
+              "medium"
+            ],
+            "native_completed": true,
+            "observation_complete": true,
+            "costs": {
+              "seconds": 55.069,
+              "tool_items": 5,
+              "tool_output_bytes": 4512,
+              "input_tokens": 79014,
+              "cached_input_tokens": 70400,
+              "output_tokens": 731,
+              "uncached_input_tokens": 8614
+            },
+            "native_raw_sha256": "2db0e5b3312fd528e4d001fe375ad6842117341147db7240f48564ce3c20741a"
+          }
+        ],
+        "costs": {
+          "seconds": 143.845,
+          "input_tokens": 273381,
+          "cached_input_tokens": 233344,
+          "uncached_input_tokens": 40037,
+          "output_tokens": 3021,
+          "tool_items": 13,
+          "tool_output_bytes": 58826
+        }
+      },
+      {
+        "case": "reporting",
+        "arm": "ceiling",
+        "state": "passed",
+        "phase": "adjudication",
+        "mechanical_checks": {
+          "owner_transfer_valid": true,
+          "write_scope_preserved": true,
+          "private_token_not_retained": true,
+          "private_scan_complete": true,
+          "canonical_owner_retained": true,
+          "writer_head_preserved": true,
+          "deliverable_preserves_handoff_when_exercised": true,
+          "consumer_preserved_handoff": true,
+          "consumer_head_preserved": true,
+          "consumer_policy_matches": true
+        },
+        "semantic_review": {
+          "accepted_scope_and_history": {
+            "passed": true,
+            "reason": "Ceiling handoff docs/reporting.md explicitly gives interactive markdown and corrected unattended plain-text, exact scope_fee3f577, read_only true; no writer/history claim is made in this positive control."
+          },
+          "entry_routes_to_current_owner": {
+            "passed": true,
+            "reason": "Handoff SSOT/README.md Task routes links ../docs/reporting.md as the single current owner; policy.py implements those current values."
+          },
+          "final_claims_match_artifacts": {
+            "passed": true,
+            "reason": "consumer/1.final.md claims a policy.py implementation and unchanged handoff; saved policy.py returns exactly the required three keys and rejects unknown modes, while mechanical consumer preservation and scope checks pass."
+          }
+        },
+        "phase_costs": [
+          {
+            "phase": "consumer",
+            "native_thread_id": "01a1cf28-1fd1-7ef0-be16-657ec755c2cc",
+            "actual_models": [
+              "gpt-6.1-sol"
+            ],
+            "actual_reasoning": [
+              "medium"
+            ],
+            "native_completed": true,
+            "observation_complete": true,
+            "costs": {
+              "seconds": 27.874,
+              "tool_items": 5,
+              "tool_output_bytes": 1354,
+              "input_tokens": 77120,
+              "cached_input_tokens": 70784,
+              "output_tokens": 795,
+              "uncached_input_tokens": 6336
+            },
+            "native_raw_sha256": "9f902b8f981770c72ca45e4883f3a7d31ec2b679421afcf9865ad75ae843a1d1"
+          }
+        ],
+        "costs": {
+          "seconds": 27.874,
+          "input_tokens": 77120,
+          "cached_input_tokens": 70784,
+          "uncached_input_tokens": 6336,
+          "output_tokens": 795,
+          "tool_items": 5,
+          "tool_output_bytes": 1354
+        }
+      },
+      {
+        "case": "reporting",
+        "arm": "floor",
+        "state": "calibration_passed",
+        "phase": "adjudication",
+        "mechanical_checks": {
+          "owner_transfer_valid": true,
+          "write_scope_preserved": true,
+          "private_token_not_retained": true,
+          "private_scan_complete": true,
+          "canonical_owner_retained": true,
+          "writer_head_preserved": true,
+          "deliverable_preserves_handoff_when_exercised": true,
+          "consumer_preserved_handoff": true,
+          "consumer_head_preserved": true,
+          "consumer_policy_matches": false
+        },
+        "semantic_review": {
+          "accepted_scope_and_history": {
+            "passed": true,
+            "reason": "Floor docs/reporting.md says choices are not settled yet; the consumer correctly identifies all missing values for both modes and invents no accepted policy. This is the expected absent-decision control, not a current-policy pass."
+          },
+          "entry_routes_to_current_owner": {
+            "passed": true,
+            "reason": "SSOT/README.md links ../docs/reporting.md as the single owner; consumer/1.final.md names that owner and its unset state."
+          },
+          "final_claims_match_artifacts": {
+            "passed": true,
+            "reason": "consumer/1.final.md says all files were left unchanged; no policy.py exists, current-policy check is false, and consumer scope/preservation checks pass."
+          }
+        },
+        "phase_costs": [
+          {
+            "phase": "consumer",
+            "native_thread_id": "01a1cf28-efca-7a02-8930-07a41c4718c4",
+            "actual_models": [
+              "gpt-6.1-sol"
+            ],
+            "actual_reasoning": [
+              "medium"
+            ],
+            "native_completed": true,
+            "observation_complete": true,
+            "costs": {
+              "seconds": 13.218,
+              "tool_items": 2,
+              "tool_output_bytes": 597,
+              "input_tokens": 44980,
+              "cached_input_tokens": 41856,
+              "output_tokens": 223,
+              "uncached_input_tokens": 3124
+            },
+            "native_raw_sha256": "b8f80e3d6ca327f1b0c37ad30749feb70ecb7ad855a85c0b0178c9fe755e9bf6"
+          }
+        ],
+        "costs": {
+          "seconds": 13.218,
+          "input_tokens": 44980,
+          "cached_input_tokens": 41856,
+          "uncached_input_tokens": 3124,
+          "output_tokens": 223,
+          "tool_items": 2,
+          "tool_output_bytes": 597
+        }
+      },
+      {
+        "case": "reporting",
+        "arm": "plain",
+        "state": "passed",
+        "phase": "adjudication",
+        "mechanical_checks": {
+          "owner_transfer_valid": true,
+          "write_scope_preserved": true,
+          "private_token_not_retained": true,
+          "private_scan_complete": true,
+          "canonical_owner_retained": true,
+          "writer_head_preserved": true,
+          "deliverable_preserves_handoff_when_exercised": true,
+          "consumer_preserved_handoff": true,
+          "consumer_head_preserved": true,
+          "consumer_policy_matches": true
+        },
+        "semantic_review": {
+          "accepted_scope_and_history": {
+            "passed": true,
+            "reason": "Turn-1 owner says the user explicitly accepted the initial plain-text policy, replaces an unsettled owner and explicitly asserts no earlier accepted format; its phrase scoped correction is imprecise but context does not invent a prior accepted decision. Final owner distinguishes initial acceptance and subsequent interactive-only markdown replacement, retains unattended/exact field/read_only, and records source standing. Legitimate paraphrase meets the frozen reporting task gate; no verbatim protocol duty is imposed on plain."
+          },
+          "entry_routes_to_current_owner": {
+            "passed": true,
+            "reason": "SSOT/README.md keeps the existing route to docs/reporting.md, which owns current values and provenance. Fresh consumer policy.py implements the same current requirements."
+          },
+          "final_claims_match_artifacts": {
+            "passed": true,
+            "reason": "Writer finals claim saved policy/provenance and no deliverable; each snapshot retains documentation and no writer policy.py. Consumer final claims policy.py and preserved handoff; actual code plus executable/preservation checks match. This is a bounded acceptance, not a claim that wording is perfect."
+          }
+        },
+        "phase_costs": [
+          {
+            "phase": "writer-1",
+            "native_thread_id": "01a1cf2e-55f1-7833-8bf8-33dd9f13d1e8",
+            "actual_models": [
+              "gpt-6.1-sol"
+            ],
+            "actual_reasoning": [
+              "medium"
+            ],
+            "native_completed": true,
+            "observation_complete": true,
+            "costs": {
+              "seconds": 42.545,
+              "tool_items": 6,
+              "tool_output_bytes": 3039,
+              "input_tokens": 61715,
+              "cached_input_tokens": 54144,
+              "output_tokens": 833,
+              "uncached_input_tokens": 7571
+            },
+            "native_raw_sha256": "bc632a3df72d33ca0bdab5033a3244ae0a4061ec8ed2482ddae7c6b3b1d7c077"
+          },
+          {
+            "phase": "writer-2",
+            "native_thread_id": "01a1cf2e-55f1-7833-8bf8-33dd9f13d1e8",
+            "actual_models": [
+              "gpt-6.1-sol"
+            ],
+            "actual_reasoning": [
+              "medium"
+            ],
+            "native_completed": true,
+            "observation_complete": true,
+            "costs": {
+              "seconds": 33.444,
+              "tool_items": 3,
+              "tool_output_bytes": 3805,
+              "input_tokens": 52274,
+              "cached_input_tokens": 46336,
+              "output_tokens": 613,
+              "uncached_input_tokens": 5938
+            },
+            "native_raw_sha256": "5cf96d8023d88a234e968c64ea8332c0cc53ab6c051566877ac7883bfa29661d"
+          },
+          {
+            "phase": "consumer",
+            "native_thread_id": "01a1cf2f-ae4d-7872-9ee7-fcba278965bf",
+            "actual_models": [
+              "gpt-6.1-sol"
+            ],
+            "actual_reasoning": [
+              "medium"
+            ],
+            "native_completed": true,
+            "observation_complete": true,
+            "costs": {
+              "seconds": 56.003,
+              "tool_items": 5,
+              "tool_output_bytes": 2825,
+              "input_tokens": 78027,
+              "cached_input_tokens": 71552,
+              "output_tokens": 896,
+              "uncached_input_tokens": 6475
+            },
+            "native_raw_sha256": "99cd492a80b9c2e098d8810f8c9552bcac0a8a5fc7e32ca04873159413141885"
+          }
+        ],
+        "costs": {
+          "seconds": 131.99200000000002,
+          "input_tokens": 192016,
+          "cached_input_tokens": 172032,
+          "uncached_input_tokens": 19984,
+          "output_tokens": 2342,
+          "tool_items": 14,
+          "tool_output_bytes": 9669
+        }
+      },
+      {
+        "case": "reporting",
+        "arm": "stale",
+        "state": "calibration_passed",
+        "phase": "adjudication",
+        "mechanical_checks": {
+          "owner_transfer_valid": true,
+          "write_scope_preserved": true,
+          "private_token_not_retained": true,
+          "private_scan_complete": true,
+          "canonical_owner_retained": true,
+          "writer_head_preserved": true,
+          "deliverable_preserves_handoff_when_exercised": true,
+          "consumer_preserved_handoff": true,
+          "consumer_head_preserved": true,
+          "consumer_policy_matches": false
+        },
+        "semantic_review": {
+          "accepted_scope_and_history": {
+            "passed": true,
+            "reason": "Stale docs/reporting.md retains initial plain-text for both modes, required scope_fee3f577 and read_only true, without the later interactive correction. Consumer policy.py follows that initial policy and current-policy correctness is false as intended."
+          },
+          "entry_routes_to_current_owner": {
+            "passed": true,
+            "reason": "SSOT/README.md routes to docs/reporting.md; consumer output exactly follows the stale current owner rather than inventing the missing correction."
+          },
+          "final_claims_match_artifacts": {
+            "passed": true,
+            "reason": "consumer/1.final.md explicitly claims plain-text for both modes and unchanged handoff; policy.py and mechanical preservation checks match that claim. This accepts negative-control behavior, not current-policy correctness."
+          }
+        },
+        "phase_costs": [
+          {
+            "phase": "consumer",
+            "native_thread_id": "01a1cf29-a9e6-7d61-96c5-95453b6b3e87",
+            "actual_models": [
+              "gpt-6.1-sol"
+            ],
+            "actual_reasoning": [
+              "medium"
+            ],
+            "native_completed": true,
+            "observation_complete": true,
+            "costs": {
+              "seconds": 37.524,
+              "tool_items": 5,
+              "tool_output_bytes": 1249,
+              "input_tokens": 76812,
+              "cached_input_tokens": 69632,
+              "output_tokens": 716,
+              "uncached_input_tokens": 7180
+            },
+            "native_raw_sha256": "f5f8e79d3d8806813b04d67cc8427324a125f78fed0d3fbe3f4464a3d81df02a"
+          }
+        ],
+        "costs": {
+          "seconds": 37.524,
+          "input_tokens": 76812,
+          "cached_input_tokens": 69632,
+          "uncached_input_tokens": 7180,
+          "output_tokens": 716,
+          "tool_items": 5,
+          "tool_output_bytes": 1249
+        }
+      }
+    ],
+    "native_turn_count": 18,
+    "observed_costs_all_attempts": {
+      "seconds": 703.953,
+      "input_tokens": 1370882,
+      "cached_input_tokens": 1238400,
+      "uncached_input_tokens": 132482,
+      "output_tokens": 13604,
+      "tool_items": 83,
+      "tool_output_bytes": 140992
+    },
+    "calibration_valid": {
+      "reporting": true,
+      "editorial": false,
+      "museum": true
+    },
+    "comparisons": [
+      {
+        "case": "reporting",
+        "pair": [
+          "plain",
+          "baseline"
+        ],
+        "eligible": true
+      },
+      {
+        "case": "reporting",
+        "pair": [
+          "baseline",
+          "candidate"
+        ],
+        "eligible": false
+      },
+      {
+        "case": "editorial",
+        "pair": [
+          "plain",
+          "baseline"
+        ],
+        "eligible": false
+      },
+      {
+        "case": "editorial",
+        "pair": [
+          "baseline",
+          "candidate"
+        ],
+        "eligible": false
+      },
+      {
+        "case": "museum",
+        "pair": [
+          "plain",
+          "baseline"
+        ],
+        "eligible": true
+      },
+      {
+        "case": "museum",
+        "pair": [
+          "baseline",
+          "candidate"
+        ],
+        "eligible": false
+      }
+    ]
+  },
+  "final_reading_smoke": {
+    "purpose": "Final reading report/identity pipeline plus typo non-trigger smoke; identical S0 bundles in both labeled arms, not a protocol-effect comparison.",
+    "plan_sha256": "20c9de20c1aa04f4e999160230b2f1c08258ade0b69678c85a5fcfa856caf6b5",
+    "protocol": "5.3",
+    "requested_model": "gpt-6.1-sol",
+    "requested_reasoning": "medium",
+    "native_turn_count": 2,
+    "native_identity": [
+      {
+        "attempt": "typo-r1/baseline",
+        "actual_models": [
+          "gpt-6.1-sol"
+        ],
+        "actual_reasoning": [
+          "medium"
+        ],
+        "native_thread_id": "01a1cf39-ff9f-7ee1-93c1-5fdc02bd5e83",
+        "native_completed": true,
+        "observation_complete": true
+      },
+      {
+        "attempt": "typo-r1/candidate",
+        "actual_models": [
+          "gpt-6.1-sol"
+        ],
+        "actual_reasoning": [
+          "medium"
+        ],
+        "native_thread_id": "01a1cf3a-62eb-7112-b9c1-9ac3524ebc9a",
+        "native_completed": true,
+        "observation_complete": true
+      }
+    ],
+    "report": {
+      "comparison": "protocol",
+      "attempts": [
+        {
+          "pair": "typo-r1",
+          "case": "typo",
+          "arm": "baseline",
+          "state": "passed",
+          "turn": 1,
+          "quality_passed": true,
+          "usage_source": "native",
+          "identity_state": null,
+          "report_error": null,
+          "cost_comparable": true,
+          "seconds": 23.075,
+          "input_tokens": 45519,
+          "output_tokens": 176,
+          "cached_input_tokens": 42240,
+          "uncached_input_tokens": 3279,
+          "tool_items": 3,
+          "tool_output_bytes": 220
+        },
+        {
+          "pair": "typo-r1",
+          "case": "typo",
+          "arm": "candidate",
+          "state": "passed",
+          "turn": 1,
+          "quality_passed": true,
+          "usage_source": "native",
+          "identity_state": null,
+          "report_error": null,
+          "cost_comparable": true,
+          "seconds": 22.029,
+          "input_tokens": 45484,
+          "output_tokens": 166,
+          "cached_input_tokens": 42240,
+          "uncached_input_tokens": 3244,
+          "tool_items": 3,
+          "tool_output_bytes": 214
+        }
+      ],
+      "pairs": [
+        {
+          "pair": "typo-r1",
+          "case": "typo",
+          "eligible": true,
+          "baseline": {
+            "seconds": 23.075,
+            "input_tokens": 45519,
+            "output_tokens": 176,
+            "cached_input_tokens": 42240,
+            "uncached_input_tokens": 3279,
+            "tool_items": 3,
+            "tool_output_bytes": 220
+          },
+          "candidate": {
+            "seconds": 22.029,
+            "input_tokens": 45484,
+            "output_tokens": 166,
+            "cached_input_tokens": 42240,
+            "uncached_input_tokens": 3244,
+            "tool_items": 3,
+            "tool_output_bytes": 214
+          }
+        }
+      ]
+    }
+  },
+  "real_artifact_report_calibration": {
+    "source_unchanged": true,
+    "method": "Original B0 completed artifacts copied without session homes/Git/cache; B0/B1 report functions observe same clones; report HERE points to unchanged cloned frozen B0 inputs. No product outputs or native receipts regenerated.",
+    "samples": [
+      {
+        "scenario": "valid",
+        "harness": "B0",
+        "wrapper_returncode": 0,
+        "report_completed": true,
+        "state": "passed",
+        "observed_costs": {
+          "seconds": 25.179,
+          "input_tokens": 76952,
+          "output_tokens": 704,
+          "cached_input_tokens": 73088,
+          "uncached_input_tokens": 3864,
+          "tool_items": 5,
+          "tool_output_bytes": 1354
+        },
+        "report_error_type": null
+      },
+      {
+        "scenario": "valid",
+        "harness": "B1",
+        "wrapper_returncode": 0,
+        "report_completed": true,
+        "state": "passed",
+        "observed_costs": {
+          "seconds": 25.179,
+          "input_tokens": 76952,
+          "output_tokens": 704,
+          "cached_input_tokens": 73088,
+          "uncached_input_tokens": 3864,
+          "tool_items": 5,
+          "tool_output_bytes": 1354
+        },
+        "report_error_type": null
+      },
+      {
+        "scenario": "missing-result",
+        "harness": "B0",
+        "wrapper_returncode": 0,
+        "report_completed": true,
+        "state": "started",
+        "observed_costs": null,
+        "report_error_type": null
+      },
+      {
+        "scenario": "missing-result",
+        "harness": "B1",
+        "wrapper_returncode": 0,
+        "report_completed": true,
+        "state": "observer_failure",
+        "observed_costs": {
+          "seconds": 25.179,
+          "input_tokens": 76952,
+          "output_tokens": 704,
+          "cached_input_tokens": 73088,
+          "uncached_input_tokens": 3864,
+          "tool_items": 5,
+          "tool_output_bytes": 1354
+        },
+        "report_error_type": null
+      },
+      {
+        "scenario": "corrupt-result",
+        "harness": "B0",
+        "wrapper_returncode": 0,
+        "report_completed": false,
+        "state": null,
+        "observed_costs": null,
+        "report_error_type": "JSONDecodeError"
+      },
+      {
+        "scenario": "corrupt-result",
+        "harness": "B1",
+        "wrapper_returncode": 0,
+        "report_completed": true,
+        "state": "observer_failure",
+        "observed_costs": {
+          "seconds": 25.179,
+          "input_tokens": 76952,
+          "output_tokens": 704,
+          "cached_input_tokens": 73088,
+          "uncached_input_tokens": 3864,
+          "tool_items": 5,
+          "tool_output_bytes": 1354
+        },
+        "report_error_type": null
+      },
+      {
+        "scenario": "missing-review",
+        "harness": "B0",
+        "wrapper_returncode": 0,
+        "report_completed": true,
+        "state": "observer_failure",
+        "observed_costs": {
+          "seconds": 25.179,
+          "input_tokens": 76952,
+          "output_tokens": 704,
+          "cached_input_tokens": 73088,
+          "uncached_input_tokens": 3864,
+          "tool_items": 5,
+          "tool_output_bytes": 1354
+        },
+        "report_error_type": null
+      },
+      {
+        "scenario": "missing-review",
+        "harness": "B1",
+        "wrapper_returncode": 0,
+        "report_completed": true,
+        "state": "observer_failure",
+        "observed_costs": {
+          "seconds": 25.179,
+          "input_tokens": 76952,
+          "output_tokens": 704,
+          "cached_input_tokens": 73088,
+          "uncached_input_tokens": 3864,
+          "tool_items": 5,
+          "tool_output_bytes": 1354
+        },
+        "report_error_type": null
+      },
+      {
+        "scenario": "corrupt-review",
+        "harness": "B0",
+        "wrapper_returncode": 0,
+        "report_completed": false,
+        "state": null,
+        "observed_costs": null,
+        "report_error_type": "JSONDecodeError"
+      },
+      {
+        "scenario": "corrupt-review",
+        "harness": "B1",
+        "wrapper_returncode": 0,
+        "report_completed": true,
+        "state": "observer_failure",
+        "observed_costs": {
+          "seconds": 25.179,
+          "input_tokens": 76952,
+          "output_tokens": 704,
+          "cached_input_tokens": 73088,
+          "uncached_input_tokens": 3864,
+          "tool_items": 5,
+          "tool_output_bytes": 1354
+        },
+        "report_error_type": null
+      },
+      {
+        "scenario": "started",
+        "harness": "B0",
+        "wrapper_returncode": 0,
+        "report_completed": true,
+        "state": "observer_failure",
+        "observed_costs": {
+          "seconds": 25.179,
+          "input_tokens": 76952,
+          "output_tokens": 704,
+          "cached_input_tokens": 73088,
+          "uncached_input_tokens": 3864,
+          "tool_items": 5,
+          "tool_output_bytes": 1354
+        },
+        "report_error_type": null
+      },
+      {
+        "scenario": "started",
+        "harness": "B1",
+        "wrapper_returncode": 0,
+        "report_completed": true,
+        "state": "started",
+        "observed_costs": {
+          "seconds": 25.179,
+          "input_tokens": 76952,
+          "output_tokens": 704,
+          "cached_input_tokens": 73088,
+          "uncached_input_tokens": 3864,
+          "tool_items": 5,
+          "tool_output_bytes": 1354
+        },
+        "report_error_type": null
+      }
+    ]
+  },
+  "post_confirmation_integrity_calibration": {
+    "source_unchanged": true,
+    "method": "Post-freeze real museum baseline artifacts copied; original receipts/outputs untouched; corrupt review and changed owner must invalidate acceptance but preserve observed spend and neighboring rows.",
+    "rows": [
+      {
+        "scenario": "pristine",
+        "process_returncode": 0,
+        "affected_row": {
+          "case": "museum",
+          "arm": "baseline",
+          "state": "passed",
+          "phase": "adjudication",
+          "turns": [
+            {
+              "phase": "writer-1",
+              "costs": {
+                "seconds": 51.315,
+                "tool_items": 10,
+                "tool_output_bytes": 42359,
+                "input_tokens": 152550,
+                "output_tokens": 1525,
+                "cached_input_tokens": 139008,
+                "uncached_input_tokens": 13542
+              },
+              "native_identity_verified": true
+            },
+            {
+              "phase": "writer-2",
+              "costs": {
+                "seconds": 35.015,
+                "tool_items": 4,
+                "tool_output_bytes": 5281,
+                "input_tokens": 81905,
+                "output_tokens": 981,
+                "cached_input_tokens": 80000,
+                "uncached_input_tokens": 1905
+              },
+              "native_identity_verified": true
+            },
+            {
+              "phase": "consumer",
+              "costs": {
+                "seconds": 32.323,
+                "tool_items": 5,
+                "tool_output_bytes": 4116,
+                "input_tokens": 78621,
+                "output_tokens": 652,
+                "cached_input_tokens": 71680,
+                "uncached_input_tokens": 6941
+              },
+              "native_identity_verified": true
+            }
+          ],
+          "costs": {
+            "seconds": 118.65299999999999,
+            "input_tokens": 313076,
+            "output_tokens": 3158,
+            "cached_input_tokens": 290688,
+            "uncached_input_tokens": 22388,
+            "tool_items": 19,
+            "tool_output_bytes": 51756
+          },
+          "observed_costs": {
+            "seconds": 118.65299999999999,
+            "input_tokens": 313076,
+            "output_tokens": 3158,
+            "cached_input_tokens": 290688,
+            "uncached_input_tokens": 22388,
+            "tool_items": 19,
+            "tool_output_bytes": 51756
+          },
+          "costs_complete": true,
+          "report_error": null
+        },
+        "unaffected_reporting_plain_state": "passed",
+        "comparisons": [
+          {
+            "case": "reporting",
+            "pair": [
+              "plain",
+              "baseline"
+            ],
+            "eligible": true
+          },
+          {
+            "case": "reporting",
+            "pair": [
+              "baseline",
+              "candidate"
+            ],
+            "eligible": false
+          },
+          {
+            "case": "editorial",
+            "pair": [
+              "plain",
+              "baseline"
+            ],
+            "eligible": false
+          },
+          {
+            "case": "editorial",
+            "pair": [
+              "baseline",
+              "candidate"
+            ],
+            "eligible": false
+          },
+          {
+            "case": "museum",
+            "pair": [
+              "plain",
+              "baseline"
+            ],
+            "eligible": true
+          },
+          {
+            "case": "museum",
+            "pair": [
+              "baseline",
+              "candidate"
+            ],
+            "eligible": false
+          }
+        ]
+      },
+      {
+        "scenario": "corrupt-review",
+        "process_returncode": 0,
+        "affected_row": {
+          "case": "museum",
+          "arm": "baseline",
+          "state": "observer_failure",
+          "phase": "adjudication",
+          "turns": [
+            {
+              "phase": "writer-1",
+              "costs": {
+                "seconds": 51.315,
+                "tool_items": 10,
+                "tool_output_bytes": 42359,
+                "input_tokens": 152550,
+                "output_tokens": 1525,
+                "cached_input_tokens": 139008,
+                "uncached_input_tokens": 13542
+              },
+              "native_identity_verified": true
+            },
+            {
+              "phase": "writer-2",
+              "costs": {
+                "seconds": 35.015,
+                "tool_items": 4,
+                "tool_output_bytes": 5281,
+                "input_tokens": 81905,
+                "output_tokens": 981,
+                "cached_input_tokens": 80000,
+                "uncached_input_tokens": 1905
+              },
+              "native_identity_verified": true
+            },
+            {
+              "phase": "consumer",
+              "costs": {
+                "seconds": 32.323,
+                "tool_items": 5,
+                "tool_output_bytes": 4116,
+                "input_tokens": 78621,
+                "output_tokens": 652,
+                "cached_input_tokens": 71680,
+                "uncached_input_tokens": 6941
+              },
+              "native_identity_verified": true
+            }
+          ],
+          "costs": {
+            "seconds": 118.65299999999999,
+            "input_tokens": 313076,
+            "output_tokens": 3158,
+            "cached_input_tokens": 290688,
+            "uncached_input_tokens": 22388,
+            "tool_items": 19,
+            "tool_output_bytes": 51756
+          },
+          "observed_costs": {
+            "seconds": 118.65299999999999,
+            "input_tokens": 313076,
+            "output_tokens": 3158,
+            "cached_input_tokens": 290688,
+            "uncached_input_tokens": 22388,
+            "tool_items": 19,
+            "tool_output_bytes": 51756
+          },
+          "costs_complete": true,
+          "report_error": "Expecting property name enclosed in double quotes: line 1 column 2 (char 1)"
+        },
+        "unaffected_reporting_plain_state": "passed",
+        "comparisons": [
+          {
+            "case": "reporting",
+            "pair": [
+              "plain",
+              "baseline"
+            ],
+            "eligible": true
+          },
+          {
+            "case": "reporting",
+            "pair": [
+              "baseline",
+              "candidate"
+            ],
+            "eligible": false
+          },
+          {
+            "case": "editorial",
+            "pair": [
+              "plain",
+              "baseline"
+            ],
+            "eligible": false
+          },
+          {
+            "case": "editorial",
+            "pair": [
+              "baseline",
+              "candidate"
+            ],
+            "eligible": false
+          },
+          {
+            "case": "museum",
+            "pair": [
+              "plain",
+              "baseline"
+            ],
+            "eligible": false
+          },
+          {
+            "case": "museum",
+            "pair": [
+              "baseline",
+              "candidate"
+            ],
+            "eligible": false
+          }
+        ]
+      },
+      {
+        "scenario": "changed-owner",
+        "process_returncode": 0,
+        "affected_row": {
+          "case": "museum",
+          "arm": "baseline",
+          "state": "observer_failure",
+          "phase": "adjudication",
+          "turns": [
+            {
+              "phase": "writer-1",
+              "costs": {
+                "seconds": 51.315,
+                "tool_items": 10,
+                "tool_output_bytes": 42359,
+                "input_tokens": 152550,
+                "output_tokens": 1525,
+                "cached_input_tokens": 139008,
+                "uncached_input_tokens": 13542
+              },
+              "native_identity_verified": true
+            },
+            {
+              "phase": "writer-2",
+              "costs": {
+                "seconds": 35.015,
+                "tool_items": 4,
+                "tool_output_bytes": 5281,
+                "input_tokens": 81905,
+                "output_tokens": 981,
+                "cached_input_tokens": 80000,
+                "uncached_input_tokens": 1905
+              },
+              "native_identity_verified": true
+            },
+            {
+              "phase": "consumer",
+              "costs": {
+                "seconds": 32.323,
+                "tool_items": 5,
+                "tool_output_bytes": 4116,
+                "input_tokens": 78621,
+                "output_tokens": 652,
+                "cached_input_tokens": 71680,
+                "uncached_input_tokens": 6941
+              },
+              "native_identity_verified": true
+            }
+          ],
+          "costs": {
+            "seconds": 118.65299999999999,
+            "input_tokens": 313076,
+            "output_tokens": 3158,
+            "cached_input_tokens": 290688,
+            "uncached_input_tokens": 22388,
+            "tool_items": 19,
+            "tool_output_bytes": 51756
+          },
+          "observed_costs": {
+            "seconds": 118.65299999999999,
+            "input_tokens": 313076,
+            "output_tokens": 3158,
+            "cached_input_tokens": 290688,
+            "uncached_input_tokens": 22388,
+            "tool_items": 19,
+            "tool_output_bytes": 51756
+          },
+          "costs_complete": true,
+          "report_error": "Evidence missing or changed after attempt"
+        },
+        "unaffected_reporting_plain_state": "passed",
+        "comparisons": [
+          {
+            "case": "reporting",
+            "pair": [
+              "plain",
+              "baseline"
+            ],
+            "eligible": true
+          },
+          {
+            "case": "reporting",
+            "pair": [
+              "baseline",
+              "candidate"
+            ],
+            "eligible": false
+          },
+          {
+            "case": "editorial",
+            "pair": [
+              "plain",
+              "baseline"
+            ],
+            "eligible": false
+          },
+          {
+            "case": "editorial",
+            "pair": [
+              "baseline",
+              "candidate"
+            ],
+            "eligible": false
+          },
+          {
+            "case": "museum",
+            "pair": [
+              "plain",
+              "baseline"
+            ],
+            "eligible": false
+          },
+          {
+            "case": "museum",
+            "pair": [
+              "baseline",
+              "candidate"
+            ],
+            "eligible": false
+          }
+        ]
+      }
+    ]
+  },
+  "semantic_clarification": {
+    "fixed_at_utc": "2026-11-12T09:54:02.074525+00:00",
+    "outcomes_not_yet_inspected": [
+      "reporting/plain",
+      "museum/all"
+    ],
+    "task_gates": {
+      "reporting": "Enough provenance: accepted standing, original and corrected scope and their relationship. Legitimate paraphrase allowed. Do not impose protocol quotation duty on plain.",
+      "museum": "Both turns explicitly require necessary original source wording/words; preserve necessary original statements and identify superseded scope, without fixed headings or layout."
+    },
+    "prompt_changed": false,
+    "protocol_bundle_changed": false,
+    "basis": "Frozen task prompts, not outcome-specific protocol imposition; independently identified by Astra review before plain outcomes."
+  },
+  "limitations": [
+    "Public small synthetic tasks; single observed pair per domain, no statistical superiority, general cost saving or production reliability claim.",
+    "Automatic capture and explicit persistence are different estimands and are not pooled.",
+    "Reporting permits provenance-preserving paraphrase; museum explicitly requests necessary original wording.",
+    "Museum varies domain and independent authorship but retains the two-mode JSON topology; no longitudinal or arbitrary concurrency confirmation.",
+    "Reporting plain first-turn scoped-correction wording is imprecise; the same snapshot explicitly replaces unsettled state and asserts no prior accepted format, so it does not invent prior accepted history.",
+    "Final reading-only reporting repairs were made after handoff B1 freeze. Frozen B1 handoff harness remains unchanged; native transport bytes and handoff-consumed helper ASTs match. A separate two-turn same-S0 typo smoke checks the final reading path; malformed result/summary and wrong-identity boundaries remain offline calibration.",
+    "Task-token scan examines literal regular-file bytes in hidden project directories without following symlinks; it does not decompress Git objects. Per-turn snapshots cannot observe a write then deletion within the same tool call/turn, so this is not complete event or leakage auditing and has no malicious-subject security guarantee."
+  ],
+  "cost_scope": {
+    "native_elapsed": "Model/tools/observation for each subject phase; preparation, post-run oracle/review and operator work excluded.",
+    "human_minutes": null,
+    "human_minutes_status": "unknown; not measured",
+    "subject_directed_human_interventions": 0,
+    "rework_observations": [
+      "B0 report/identity/privacy measurement defects repaired and calibrated in B1; no old native attempt replaced.",
+      "Neighboring reading-report cost/state/corrupt-receipt repairs were made offline before the separate final reading smoke."
+    ],
+    "development_model_costs": null,
+    "development_model_costs_status": "not normalized or measured as a complete task total",
+    "unplanned_native_retries": 0,
+    "unplanned_subject_reruns": 0,
+    "review_model_usage": "Separate reviewer raw token-count receipts retained; no normalized reviewer cost folded into subject totals.",
+    "whole_batch_wall": {
+      "start_surface": "execution-contract frozen_at_utc, after preparation and before first native call",
+      "start_utc": "2026-11-12T09:47:38.997780+00:00",
+      "end_surface": "all ten handoff attempts complete and artifact-bound executor reviews applied; report generated",
+      "end_utc": "2026-11-12T10:07:42.513844+00:00",
+      "freeze_to_reviewed_report_seconds": 1203.516064,
+      "native_phase_seconds_sum": 703.953,
+      "includes": "Serial launch, installation/probes, agent inspection/review, report work and waits within this interval",
+      "excludes": "B0, pre-freeze preparation, later reading smoke and archive/readback; human minutes remain unknown",
+      "human_minutes": null
+    }
+  },
+  "archive": {
+    "archive": "/home/hpf/.local/state/ssot-context/evidence/benchmark-deepening-20261112/evidence.tar.gz",
+    "sha256": "a87ded1d68cfcde0235e9f3aa60539d1f69ee1986a3b231a3436cf77eaf2ccd0",
+    "bytes": 22705378,
+    "manifest_sha256": "4c948d483e624856559bb5553752a14e630abba9d80a53b92061784ac5c6c7a4",
+    "entries_verified": 8161,
+    "readback_rebuild_returncode": 0,
+    "readback_log": "/home/hpf/.local/state/ssot-context/evidence/benchmark-deepening-20261112/readback.log",
+    "independent_readback_review": {
+      "path": "/home/hpf/.local/state/ssot-context/evidence/benchmark-deepening-20261112/readback-review.md",
+      "sha256": "c26f1a20ef6ab5a6587a12633fbd0f67abfb73cb1647aa7e31c6135aaffd5e44",
+      "reviewer_actual_model": "gpt-6-astra",
+      "reviewer_actual_reasoning": "high",
+      "scope": "Tar member hashes/types/modes/links, frozen inputs, native count/account identities and read-only exact regeneration of all three reports; no native rerun."
+    },
+    "independent_readback_native_receipt": {
+      "path": "/home/hpf/.local/state/ssot-context/evidence/benchmark-deepening-20261112/readback-native-receipt.json",
+      "sha256": "8fc66a68b7e612b0f501997aa014601e74476035a403126ebdc4cfcd7d9f16e7"
+    },
+    "final_document_gate": {
+      "command": "bash tests/test-bundle-shape.sh",
+      "cwd": "/home/hpf/project/SSOT-CONTEXT",
+      "result": "pass=57 fail=0",
+      "log": "/home/hpf/.local/state/ssot-context/evidence/benchmark-deepening-20261112/final-doc-shape.log",
+      "log_sha256": "5841ff90ed1dbef71cba491cc09b78b479c49024759c1fe068f7ffb4667ad9a6",
+      "owned_diff_check": "git diff --check on six experiment-owned delivery files, exit 0"
+    }
+  },
+  "subject_native_turn_count": 27,
+  "subject_observed_costs_all_attempts": {
+    "seconds": 900.6890000000001,
+    "input_tokens": 1903111,
+    "cached_input_tokens": 1723264,
+    "uncached_input_tokens": 179847,
+    "output_tokens": 17578,
+    "tool_items": 111,
+    "tool_output_bytes": 195306
+  }
+}

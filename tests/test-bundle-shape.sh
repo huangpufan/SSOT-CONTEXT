@@ -164,7 +164,22 @@ done < <(git -C "$PROJECT_ROOT" ls-files -co --exclude-standard -z -- '*.md')
 HOME_PATH_PATTERN="$(printf '/%s/[^\\\\`[:space:]]+' 'home')"
 USERS_PATH_PATTERN="$(printf '/%s/[^\\\\`[:space:]]+' 'Users')"
 ORIGIN_NAME="$(printf 'sisy%s' 'phus')"
-HYGIENE_PATTERN="(${HOME_PATH_PATTERN}|${USERS_PATH_PATTERN}|${ORIGIN_NAME}|[0-9a-f]{40})"
+COMMIT_SHA_PATTERN='(^|[^0-9a-f])[0-9a-f]{40}([^0-9a-f]|$)'
+HYGIENE_PATTERN="(${HOME_PATH_PATTERN}|${USERS_PATH_PATTERN}|${ORIGIN_NAME}|${COMMIT_SHA_PATTERN})"
+COMMIT_SHA_40="$(printf '%040d' 0)"
+COMMIT_SHA_64="$(printf '%064d' 0)"
+COMMIT_SHA_TEST_ERRORS=0
+for sample in "$COMMIT_SHA_40" "commit=$COMMIT_SHA_40."; do
+  if ! printf '%s\n' "$sample" | grep -qE "$COMMIT_SHA_PATTERN"; then
+    COMMIT_SHA_TEST_ERRORS=$((COMMIT_SHA_TEST_ERRORS + 1))
+  fi
+done
+for sample in "$COMMIT_SHA_64" "sha256=$COMMIT_SHA_64."; do
+  if printf '%s\n' "$sample" | grep -qE "$COMMIT_SHA_PATTERN"; then
+    COMMIT_SHA_TEST_ERRORS=$((COMMIT_SHA_TEST_ERRORS + 1))
+  fi
+done
+[[ "$COMMIT_SHA_TEST_ERRORS" -eq 0 ]] && pass "hygiene rejects complete 40-hex tokens and permits SHA-256, bare or in text" || fail "commit SHA hygiene calibration"
 HYGIENE_FILES=()
 while IFS= read -r -d '' f; do
   grep -qE "$HYGIENE_PATTERN" "$PROJECT_ROOT/$f" && HYGIENE_FILES+=("$f")

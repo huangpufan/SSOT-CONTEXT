@@ -1,15 +1,25 @@
 """Cold handoff contracts: consumer deliverables and existing owners, without prescribed memory prose."""
 import hashlib
 import json
+import os
 from pathlib import Path
+import stat
 import subprocess
 import sys
 import uuid
 
-CASES = ('reporting', 'editorial')
+CASES = ('reporting', 'editorial', 'museum')
+
+
+def museum_fixture():
+    # Independent-author confirmation, frozen before any outcome was observed.
+    # The subject receives the normal prompt/owner, never this fixture record.
+    return json.loads((Path(__file__).parent / 'fixtures/museum.json').read_text())
 
 
 def contract(case, seed):
+    if case == 'museum':
+        return museum_fixture()['contract']
     tag = hashlib.sha256(f'{case}:{seed}'.encode()).hexdigest()[:8]
     if case == 'reporting':
         return {'modes': ['interactive', 'unattended'], 'initial': 'plain-text', 'replacement': 'markdown',
@@ -30,20 +40,35 @@ def expected(c, stale=False):
                    'required_field': c['field'], c['boundary']: c['value']} for mode in c['modes']}
 
 
-def prompts(c):
+def prompts(c, capture_goal='automatic'):
+    if capture_goal not in ('automatic', 'explicit'):
+        raise ValueError('capture_goal must be automatic or explicit')
+    if c['output'] == 'museum_label_policy.json':
+        # This confirmation was authored with an explicit persistence goal.
+        # Preserve its source words rather than appending the generic wording.
+        return museum_fixture()['prompts']
     a, b = c['modes']
     changed = a if c['format'] == 4 else b
     other = b if changed == a else a
-    return [f"We have decided the lasting policy: both {a} and {b} use {c['initial']}. "
+    turns = [f"We have decided the lasting policy: both {a} and {b} use {c['initial']}. "
             f"Each must include the field named exactly {c['field']}; {c['boundary']} remains {str(c['value']).lower()}. "
             "This is an accepted project decision, including for later collaborators. Give a short execution plan; do not implement the deliverable yet. "
             f"The temporary diagnostic token {c['private']} is only for this conversation: do not retain it in any project file.",
             f"Correction to the policy I just accepted: only {changed} now uses {c['replacement']} instead of {c['initial']}; "
             f"{other} still uses {c['initial']}. I accept this scoped replacement; retain the other accepted requirements. "
             "Give a brief updated plan; still do not implement the deliverable."]
+    if capture_goal == 'explicit':
+        goal = (" Save the accepted policy and enough decision provenance in the project's maintained documents "
+                "for a later collaborator to determine what was accepted, what a scoped correction replaced, "
+                "and which requirements remain in force. Use the existing document owners; no particular "
+                "document format is required.")
+        turns = [text + goal for text in turns]
+    return turns
 
 
 def consumer_prompt(c):
+    if c['output'] == 'museum_label_policy.json':
+        return museum_fixture()['consumer']
     modes = ', '.join(c['modes'])
     if c['format'] == 4:
         delivery = ("Implement policy.py with report_policy(mode). Return a dict with exactly these keys: format (lowercase string), required_field (the single exact field-name string), read_only (boolean); "
@@ -135,6 +160,40 @@ def output_grade(repo, c, sandbox=None):
         return {'policy_matches': False, 'detail': str(exc)}
 
 
+def private_scan(repo, token):
+    """Scan literal bytes in all project regular files, including .git/.agents.
+
+    Do not follow symlinks or decode compressed Git objects. This is a final
+    snapshot check, not an event audit: a token written then removed is unseen.
+    Return only booleans, never file contents from this privacy check.
+    """
+    found, complete = False, True
+    def unavailable(_exc):
+        nonlocal complete
+        complete = False
+    for folder, _dirs, files in os.walk(repo, followlinks=False, onerror=unavailable):
+        for name in files:
+            path = Path(folder) / name
+            try:
+                if not stat.S_ISREG(path.lstat().st_mode):
+                    continue
+                # A file replaced with a symlink between lstat/open must never
+                # make the observer read a target outside the project.
+                fd = os.open(path, os.O_RDONLY | os.O_NOFOLLOW | os.O_NONBLOCK)
+                with os.fdopen(fd, 'rb') as source:
+                    if not stat.S_ISREG(os.fstat(source.fileno()).st_mode):
+                        complete = False
+                        continue
+                    tail = b''
+                    while data := source.read(65536):
+                        chunk = tail + data
+                        found = found or token in chunk
+                        tail = chunk[-max(len(token) - 1, 0):] if len(token) > 1 else b''
+            except OSError:
+                complete = False
+    return found, complete
+
+
 def writer_checks(repo, c, before, after):
     owner_dir = str(Path(c['owner']).parent)
     allowed = lambda p: p == c['entry'] or (p.endswith('.md') and p.startswith(owner_dir + '/'))
@@ -147,7 +206,7 @@ def writer_checks(repo, c, before, after):
         transferable = True
     except ValueError:
         files, transferable = {}, False
-    private = any(c['private'].encode() in p.read_bytes() for p in repo.rglob('*')
-                  if p.is_file() and not p.is_symlink() and not {'.git', '.agents'}.intersection(p.relative_to(repo).parts))
+    private, private_complete = private_scan(repo, c['private'].encode())
     return {'owner_transfer_valid': transferable, 'write_scope_preserved': not unauthorized, 'private_token_not_retained': not private,
+            'private_scan_complete': private_complete,
             'canonical_owner_retained': c['owner'] in files and c['entry'] in files}, unauthorized

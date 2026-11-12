@@ -53,7 +53,10 @@ class HandoffTest(unittest.TestCase):
                 self.assertFalse(placeholder['policy_matches'])
                 self.assertEqual(placeholder['observed'], {})
                 self.assertEqual(set(placeholder['mode_errors']), set(spec['modes']))
-            self.assertNotEqual(c.contract(case, 18)['field'], spec['field'])
+            if case == 'museum':
+                self.assertEqual(c.contract(case, 18)['field'], spec['field'])  # Independently frozen confirmation.
+            else:
+                self.assertNotEqual(c.contract(case, 18)['field'], spec['field'])
 
     def test_writer_scope_privacy_and_alternative_layout(self):
         spec = c.contract('reporting', 2)
@@ -78,7 +81,8 @@ class HandoffTest(unittest.TestCase):
             c.handoff_files(repo)
 
     def test_native_state_never_turns_observer_gap_into_quality(self):
-        good = {'observation_complete': True, 'native_models': ['gpt-6.1-terra'], 'completed': True, 'returncode': 0}
+        good = {'observation_complete': True, 'requested_model': 'gpt-6.1-terra', 'native_models': ['gpt-6.1-terra'],
+                'requested_reasoning': 'medium', 'native_reasoning': ['medium'], 'completed': True, 'returncode': 0}
         self.assertIsNone(h.turn_state([good], 1, 'gpt-6.1-terra'))
         self.assertEqual(h.turn_state([good], 2, 'gpt-6.1-terra'), 'incomplete')
         self.assertEqual(h.turn_state([{**good, 'observation_complete': False}], 1, 'gpt-6.1-terra'), 'observer_failure')
@@ -162,7 +166,8 @@ class HandoffTest(unittest.TestCase):
                     self.assertFalse((repo / 'scratch.bin').exists())
                     self.assertFalse((repo / '.agents').exists())
                     c.write(repo, spec['output'], json.dumps(c.expected(spec)))
-                summary = {'observation_complete': True, 'native_models': [plan['model']],
+                summary = {'observation_complete': True, 'requested_model': plan['model'], 'native_models': [plan['model']],
+                    'requested_reasoning': 'medium', 'native_reasoning': ['medium'],
                     'native_discovery': {'skills': [], 'instruction_blocks': [{'ssot_wired': False}]},
                     'completed': True, 'returncode': 0, 'seconds': 1, 'tool_items': 1, 'tool_output_bytes': 3,
                     'native_turn_usage': {'input_tokens': 10, 'cached_input_tokens': 0, 'output_tokens': 2}}

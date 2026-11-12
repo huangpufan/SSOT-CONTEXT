@@ -6,6 +6,7 @@ import csv
 import hashlib
 import importlib.util
 import json
+import math
 import os
 from pathlib import Path
 import random
@@ -147,9 +148,7 @@ def prompt(bundle, case):
 def costs(summary, expected_model=None):
     usage = summary.get("native_turn_usage")
     expected_model = transport.requested_model(expected_model)
-    if not usage or summary.get("native_models") != [expected_model]:
-        return None
-    if summary.get("requested_model", expected_model) != expected_model:
+    if not usage or transport.native_identity_state(summary, expected_model):
         return None
     fields = ("input_tokens", "cached_input_tokens", "output_tokens")
     if any(not isinstance(usage.get(k), int) or usage[k] < 0 for k in fields):
@@ -159,6 +158,113 @@ def costs(summary, expected_model=None):
     return {**{k: summary[k] for k in ("seconds", "tool_items", "tool_output_bytes")},
             **{k: usage[k] for k in fields},
             "uncached_input_tokens": usage["input_tokens"] - usage["cached_input_tokens"]}
+
+
+def observed_reading_costs(summary):
+    """Observed spend survives wrong/unknown identity; missing usage stays unknown."""
+    usage = summary.get("native_turn_usage")
+    usage = usage if isinstance(usage, dict) else {}
+    observed = {key: None for key in METRICS}
+    for key in ("seconds", "tool_items", "tool_output_bytes"):
+        value = summary.get(key)
+        types = (int, float) if key == "seconds" else (int,)
+        if type(value) in types and math.isfinite(value) and value >= 0:
+            observed[key] = value
+    for key in ("input_tokens", "cached_input_tokens", "output_tokens"):
+        value = usage.get(key)
+        if type(value) is int and value >= 0:
+            observed[key] = value
+    actual_input, cached = observed["input_tokens"], observed["cached_input_tokens"]
+    if actual_input is not None and cached is not None:
+        if cached <= actual_input:
+            observed["uncached_input_tokens"] = actual_input - cached
+        else:
+            observed["cached_input_tokens"] = None
+    return observed
+
+
+def reading_turn_costs(summary, model):
+    """Reading-only receipt: measurement and comparison eligibility are separate."""
+    observed = observed_reading_costs(summary)
+    comparable = costs(summary, model) if all(observed[key] is not None for key in METRICS) else None
+    return {"costs": comparable, "observed_costs": observed,
+            "identity_state": transport.native_identity_state(summary, model),
+            "usage_source": "native" if all(observed[k] is not None for k in
+                ("input_tokens", "cached_input_tokens", "output_tokens")) else "missing_or_partial_native_usage"}
+
+
+def reading_report_turn(directory, turn, model):
+    """Re-read saved evidence without editing an attempt or inventing its identity."""
+    summary = directory / f'{turn["turn"]}.summary.json'
+    try:
+        saved = json.loads(summary.read_text())
+        if not isinstance(saved, dict):
+            raise ValueError("native summary is not an object")
+        return {**turn, **reading_turn_costs(saved, model)}
+    except (OSError, ValueError) as exc:
+        error = f"{summary}: {type(exc).__name__}: {exc}"
+    # Old receipts can still show recorded spend. Without the native summary
+    # they cannot establish that model and effort met this experiment's request.
+    observed = turn.get("observed_costs") or turn.get("costs") or {}
+    return {**turn, "costs": None, "identity_state": "observer_failure",
+            "report_error": error,
+            "observed_costs": {key: observed.get(key) for key in METRICS}}
+
+
+def reading_report_attempt(directory, model):
+    """One protected view supplies spend, state and reading diagnostics alike."""
+    try:
+        if not directory.exists():
+            return {"state": "unrun", "turns": [], "report_error": None}
+    except OSError as exc:
+        return {"state": "observer_failure", "turns": [],
+                "report_error": f"{directory}: {type(exc).__name__}: {exc}"}
+    result = directory / "result.json"
+    errors, turns, state = [], {}, "observer_failure"
+    try:
+        saved = json.loads(result.read_text())
+        if not isinstance(saved, dict) or not isinstance(saved.get("state"), str):
+            raise ValueError("result must be an object with a state string")
+        if not isinstance(saved.get("turns"), list):
+            raise ValueError("result turns must be a list")
+        state = saved["state"]
+        if state == "passed" and not saved["turns"]:
+            errors.append(f"{result}: passed result has no turns")
+        for index, turn in enumerate(saved["turns"]):
+            if (not isinstance(turn, dict) or type(turn.get("turn")) is not int or turn["turn"] < 1
+                    or turn["turn"] in turns):
+                errors.append(f"{result}: invalid or duplicate turn at index {index}")
+                continue
+            turn = dict(turn)
+            for field in ("costs", "observed_costs", "reading"):
+                if turn.get(field) is not None and not isinstance(turn[field], dict):
+                    errors.append(f"{result}: turn {turn['turn']} {field} must be an object or null")
+                    turn[field] = None
+            turns[turn["turn"]] = turn
+    except (OSError, ValueError) as exc:
+        errors.append(f"{result}: {type(exc).__name__}: {exc}")
+    try:
+        for summary in sorted(directory.glob("*.summary.json")):
+            match = re.fullmatch(r"([1-9][0-9]*)\.summary\.json", summary.name)
+            if not match:
+                errors.append(f"{summary}: invalid native turn filename")
+                continue
+            number = int(match[1])
+            if number not in turns:
+                turns[number] = {"turn": number}
+                errors.append(f"{result}: turn {number} absent from result; retained summary observation")
+    except OSError as exc:
+        errors.append(f"{directory}: {type(exc).__name__}: {exc}")
+    observed = [reading_report_turn(directory, turn, model) for _, turn in sorted(turns.items())]
+    errors.extend(turn["report_error"] for turn in observed if turn.get("report_error"))
+    if errors:
+        state = "observer_failure"
+    elif state == "passed":
+        for failure in ("model_mismatch", "reasoning_mismatch", "observer_failure"):
+            if any(turn.get("identity_state") == failure for turn in observed):
+                state = failure
+                break
+    return {"state": state, "turns": observed, "report_error": "; ".join(errors) or None}
 
 
 def reading_observations(run_dir, turn):
@@ -251,8 +357,8 @@ def run_models(args):
                 result["turns"].append({"turn": turn, "completed": summary["completed"] and summary["returncode"] == 0,
                                         "observation_complete": summary["observation_complete"],
                                         "model_matches": summary.get("native_models") == [plan["model"]],
-                                        "quality_passed": verdict["passed"], "costs": costs(summary, plan["model"]),
-                                        "usage_source": "native" if costs(summary, plan["model"]) else "missing_or_wrong_model",
+                                        "reasoning_matches": summary.get("native_reasoning") == [plan["reasoning"]],
+                                        "quality_passed": verdict["passed"], **reading_turn_costs(summary, plan["model"]),
                                         "reading": reading_observations(run_dir, turn)})
                 if transport.completion_state([summary], 1, plan["model"]):
                     break
@@ -277,31 +383,55 @@ def aggregate(result):
 
 def report(root):
     plan = json.loads((root / "plan.json").read_text())
-    rows, comparisons = [], []
+    rows, comparisons, attempts = [], [], []
     for pair in plan["pairs"]:
         values = {}
         for arm in ("baseline", "candidate"):
-            path = root / "runs" / pair["id"] / arm / "result.json"
-            value = json.loads(path.read_text()) if path.exists() else {"state": "unrun", "turns": []}
+            directory = root / "runs" / pair["id"] / arm
+            value = reading_report_attempt(directory, plan.get("model", transport.MODEL))
+            attempts.append({"pair": pair["id"], "arm": arm, **value})
             values[arm] = aggregate(value)
             # All attempted turns retain their cost, including quality failures/timeouts.
             for t in value["turns"] or [{"turn": 0, "costs": None}]:
                 rows.append({"pair": pair["id"], "case": pair["case"], "arm": arm, "state": value["state"],
                              "turn": t["turn"], "quality_passed": t.get("quality_passed"),
-                             "usage_source": t.get("usage_source", "missing"), **(t["costs"] or {})})
+                             "usage_source": t.get("usage_source", "missing"),
+                             "identity_state": t.get("identity_state", "observer_failure"),
+                             "report_error": value["report_error"],
+                             "cost_comparable": value["state"] == "passed" and t["costs"] is not None,
+                             **{key: (t.get("observed_costs") or {}).get(key) for key in METRICS}})
         comparisons.append({"pair": pair["id"], "case": pair["case"], "eligible": all(values.values()), **values})
     save(root / "report.json", {"comparison": plan["comparison"], "attempts": rows, "pairs": comparisons})
     with (root / "report.csv").open("w") as f:
-        writer = csv.DictWriter(f, fieldnames=("pair", "case", "arm", "state", "turn", "quality_passed", "usage_source", *METRICS))
+        writer = csv.DictWriter(f, fieldnames=("pair", "case", "arm", "state", "turn", "quality_passed", "usage_source",
+                                               "identity_state", "report_error", "cost_comparable", *METRICS))
         writer.writeheader(); writer.writerows(rows)
     lines = [f"# Reading benchmark: {plan['comparison']}", "", "Descriptive observations, not statistical or billing claims. Costs cover whole tasks; warm includes both turns.",
-             "Failed, incomplete, infra and unrun attempts remain visible. Only paired passes with native usage enter cost comparisons.", "",
-             "| Case | Arm | Pass | Quality fail | Incomplete | Observer failure | Model mismatch | Infra | Unrun |", "| --- | --- | ---: | ---: | ---: | ---: | ---: | ---: | ---: |"]
+             "Failed, incomplete, infra and unrun attempts retain observed spend; missing usage stays unknown. Only paired passes with verified model, reasoning and native usage enter cost comparisons.", ""]
+    state_labels = {"passed": "Pass", "failed_quality": "Quality fail", "incomplete": "Incomplete",
+                    "observer_failure": "Observer failure", "model_mismatch": "Model mismatch",
+                    "reasoning_mismatch": "Reasoning mismatch", "delivery_failure": "Delivery failure",
+                    "infra": "Infra", "unrun": "Unrun"}
+    for state in sorted({row["state"] for row in rows} - state_labels.keys()):
+        state_labels[state] = state
+    lines += ["| Case | Arm | " + " | ".join(state_labels.values()) + " |",
+              "| --- | --- | " + " | ".join("---:" for _ in state_labels) + " |"]
     for case in plan["cases"]:
         for arm in ("baseline", "candidate"):
             states = {r["pair"]: r["state"] for r in rows if r["case"] == case and r["arm"] == arm}
-            counts = [list(states.values()).count(s) for s in ("passed", "failed_quality", "incomplete", "observer_failure", "model_mismatch", "infra", "unrun")]
+            counts = [list(states.values()).count(s) for s in state_labels]
             lines.append(f"| {case} | {arm} | " + " | ".join(map(str, counts)) + " |")
+    lines += ["", "## Observed attempt spend", "",
+              "These observations include failed and mismatched executions. They are not comparable costs; unknown is not zero.", "",
+              "| Pair | Arm | Turn | State | " + " | ".join(METRICS) + " |",
+              "| --- | --- | ---: | --- | " + " | ".join("---:" for _ in METRICS) + " |"]
+    for row in rows:
+        lines.append(f'| {row["pair"]} | {row["arm"]} | {row["turn"]} | {row["state"]} | '
+                     + " | ".join(str(row[key]) if row[key] is not None else "unknown" for key in METRICS) + " |")
+    if any(attempt["report_error"] for attempt in attempts):
+        lines += ["", "## Evidence errors", ""]
+        lines += [f'- {attempt["pair"]}/{attempt["arm"]}: {attempt["report_error"]}'
+                  for attempt in attempts if attempt["report_error"]]
     for case in plan["cases"]:
         selected = [p for p in comparisons if p["case"] == case and p["eligible"]]
         total = sum(p["case"] == case for p in comparisons)
@@ -323,15 +453,11 @@ def report(root):
     lines += ["", "## Returned reading evidence", "", "Exact source phrases observed in command output; absence is unknown, not proof a document was unread. These diagnostics do not grade correctness.", "",
               "| Pair | Arm | Turn | Contract | Eligibility | Updated promotion | Distractors | Preflight |",
               "| --- | --- | ---: | --- | --- | --- | ---: | --- |"]
-    for pair in plan["pairs"]:
-        for arm in ("baseline", "candidate"):
-            path = root / "runs" / pair["id"] / arm / "result.json"
-            if not path.exists():
-                continue
-            for turn in json.loads(path.read_text())["turns"]:
-                observed = turn.get("reading", {})
-                keys = ("contract_seen", "eligibility_seen", "updated_promotion_seen", "distractor_documents_seen", "preflight_seen")
-                lines.append(f"| {pair['id']} | {arm} | {turn['turn']} | " + " | ".join(str(observed.get(k, "unknown")) for k in keys) + " |")
+    for attempt in attempts:
+        for turn in attempt["turns"]:
+            observed = turn.get("reading") or {}
+            keys = ("contract_seen", "eligibility_seen", "updated_promotion_seen", "distractor_documents_seen", "preflight_seen")
+            lines.append(f"| {attempt['pair']} | {attempt['arm']} | {turn['turn']} | " + " | ".join(str(observed.get(k, "unknown")) for k in keys) + " |")
     (root / "report.md").write_text("\n".join(lines) + "\n")
 
 
