@@ -34,14 +34,14 @@ def freeze_bundle(source, target):
 
 def prepare(args):
     root = args.output.resolve()
-    if root.exists() or not any(root.is_relative_to(Path(p)) for p in ('/tmp', '/var/tmp')):
+    if root.exists() or not any(root.is_relative_to(Path(p).resolve()) for p in ('/tmp', '/var/tmp')):
         raise ValueError('Use a new output under /tmp or /var/tmp')
     if not args.baseline or not args.model or args.cap < 1:
         raise ValueError('Preparation requires baseline, authorized model and positive cap')
     root.mkdir(parents=True)
     harness = root / 'harness/benchmark'
     harness.mkdir(parents=True)
-    for name in ('run.py', 'cases.py', 'handoff.py', 'handoff_cases.py'):
+    for name in ('run.py', 'cases.py', 'handoff.py', 'handoff_cases.py', 'judgment_cases.py'):
         shutil.copy2(HERE / name, harness / name)
     if (HERE / 'fixtures').is_dir():
         shutil.copytree(HERE / 'fixtures', harness / 'fixtures')
@@ -53,7 +53,10 @@ def prepare(args):
             'baseline': freeze_bundle(args.baseline.resolve(), root / 'bundles/baseline'),
             'semantics': list(SEMANTIC), 'confirmation': None if args.confirmation == 'none' else args.confirmation,
             'limits': 'Public synthetic contracts; no population estimate. Main author also reviews semantics.'}
-    for case in cases.CASES:
+    selected = getattr(args, 'cases', None) or ('reporting', 'editorial', 'museum')
+    if args.confirmation != 'none' and args.confirmation not in selected:
+        raise ValueError('Confirmation must be among the prepared cases, or none')
+    for case in selected:
         c = cases.contract(case, args.seed)
         for kind in ('initial', 'ceiling', 'stale'):
             cases.build(root / 'fixtures' / case / kind, c, kind)
@@ -86,10 +89,19 @@ def attach(root, plan, source):
          'manifest': freeze_bundle(source.resolve(), root / 'bundles/candidate')})
 
 
-def setup(repo, bundle, c, protocol, directory):
+def setup(repo, bundle, c, protocol, directory, consumer=False, arm=None):
     instructions = (f'# Workspace rules\n\nMaintained context starts at {c["entry"]}; {c["owner"]} owns the policy and its accepted changes.\n'
         f'Authorized documentation edits: {c["entry"]} and Markdown beneath {str(Path(c["owner"]).parent)}/; preserve the existing policy owner. Other files, including AGENTS.md, stay unchanged.\n'
         'Work only here. Do not commit, push, install dependencies, access other projects, invoke other models or delegate.\n')
+    if 'allowed_writer_paths' in c:
+        instructions = (f'# Workspace rules\n\nMaintained context starts at {c["entry"]}; {c["owner"]} owns the brief and accepted changes.\n'
+            + 'Authorized documentation edits: ' + ', '.join(c['allowed_writer_paths']) + '. Preserve existing owners.\n'
+            + 'All other existing files, including AGENTS.md, remain unchanged. Work only here; do not commit, push, install dependencies, access other projects, invoke other models or delegate.\n')
+    if consumer and c.get('evaluation') == 'prose':
+        instructions = (f'# Workspace rules\n\nMaintained context starts at {c["entry"]}; preserve its owners.\n'
+            + 'This task may edit only: ' + ', '.join(cases.consumer_paths(c, arm)) + '. '
+            + 'The user task and maintained decisions determine which of these edits are currently authorized; a path allowance does not unlock a frozen file.\n'
+            + 'Work only here; do not commit, push, install dependencies, access other projects, invoke other models or delegate.\n')
     if protocol:
         command = ['bash', str(bundle / 'install.sh'), '--quickstart', '--agent', 'codex', '--scope', 'project', '--lang', 'en']
         installed = subprocess.run(command, cwd=repo, env={**os.environ, 'SOURCE_DIR': str(bundle)}, capture_output=True, text=True, timeout=40)
@@ -146,10 +158,13 @@ def execute(args, root, plan):
         raise ValueError('Attempt already exists; never replay partial work or overwrite evidence')
     directory.mkdir(parents=True)
     c = plan['cases'][args.case]['contract']
+    prose = c.get('evaluation') == 'prose'
     bundle = root / 'bundles' / ('candidate' if args.arm == 'candidate' else 'baseline')
     # Plain controls never mount the protocol bundle into their subject sandbox.
     empty = directory / 'empty-tools'
     result = {'case': args.case, 'arm': args.arm, 'state': 'started', 'turns': [], 'checks': {}, 'phase': 'setup'}
+    if prose:
+        result.update(evaluation='prose', semantic_obligations=[*SEMANTIC, *cases.judgment_cases.SEMANTIC])
     save(directory / 'result.json', result)
     try:
         empty.mkdir()
@@ -201,7 +216,7 @@ def execute(args, root, plan):
                     result['checks'] = turn_checks
                     result['state'] = 'observer_failure' if turn_checks.get('private_scan_complete') is False else 'failed_quality'
                     return
-            failure = turn_state(summaries, 2, plan['model'])
+            failure = turn_state(summaries, len(prompts), plan['model'])
             if failure:
                 result['state'] = failure
                 return
@@ -213,7 +228,7 @@ def execute(args, root, plan):
             result['state'] = 'failed_quality'
             return
         result['checks']['writer_head_preserved'] = writer_head is None or subprocess.check_output(['git', 'rev-parse', 'HEAD'], cwd=repo) == writer_head
-        transferred = cases.handoff_files(repo)
+        transferred = cases.handoff_files(repo, c)
         save(directory / 'handoff.json', transferred)
         consumer = directory / 'consumer'
         consumer.mkdir()
@@ -221,7 +236,7 @@ def execute(args, root, plan):
         fresh.mkdir()
         for name, content in transferred.items():
             cases.write(fresh, name, content)
-        setup(fresh, bundle, c, False, consumer)
+        setup(fresh, bundle, c, False, consumer, consumer=True, arm=args.arm)
         if c["format"] == 4:
             run.init_git(fresh)
         prompt = plan['cases'][args.case]['consumer']
@@ -247,13 +262,22 @@ def execute(args, root, plan):
         after = T.tree_snapshot(fresh)
         result['probe_changed_paths'] = sorted(p for p in native_after.keys() | after.keys() if native_after.get(p) != after.get(p))
         result['checks']['deliverable_preserves_handoff_when_exercised'] = not result['probe_changed_paths']
-        changes = {p for p in before.keys() | native_after.keys() if before.get(p) != native_after.get(p)}
-        result['checks']['consumer_preserved_handoff'] = changes <= {c['output'], '__pycache__'}
+        result['checks'].update(cases.consumer_change_checks(c, before, native_after, args.arm))
         result['checks']['consumer_head_preserved'] = consumer_head is None or subprocess.check_output(['git', 'rev-parse', 'HEAD'], cwd=fresh) == consumer_head
         result['output'] = verdict
-        result['checks']['consumer_policy_matches'] = verdict['policy_matches']
+        if prose:
+            result['checks']['deliverable_readable'] = verdict['deliverable_readable']
+            # An absent deliverable is permissible for a missing-knowledge control,
+            # but only its artifact-bound review can establish the expected behavior.
+            if args.arm != 'floor':
+                result['checks']['deliverable_present'] = verdict['present']
+        else:
+            result['checks']['consumer_policy_matches'] = verdict['policy_matches']
         result['phase'] = 'adjudication'
-        if args.arm in ('floor', 'stale'):
+        if prose:
+            result['state'] = failure or (('calibration_pending' if args.arm in ('floor', 'stale') else 'semantic_pending')
+                                          if all(result['checks'].values()) else 'failed_quality')
+        elif args.arm in ('floor', 'stale'):
             placeholder = verdict.get('observed') == {} and (c['format'] == 5 or set(verdict.get('mode_errors', {})) == set(c['modes']))
             negative = (not (fresh / c['output']).exists() or placeholder) if args.arm == 'floor' else (
                 json.dumps(verdict.get('observed'), sort_keys=True) == json.dumps(cases.expected(c, stale=True), sort_keys=True)
@@ -273,7 +297,7 @@ def execute(args, root, plan):
             result['state'] = 'observer_failure'
             result['frozen_artifact_error'] = str(exc)
         save(directory / 'mechanical.json', {k: result[k] for k in ('state', 'phase', 'checks', 'turns')} |
-             {k: result[k] for k in ('output', 'calibration_expected_outcome', 'writer_turn_checks') if k in result})
+             {k: result[k] for k in ('output', 'calibration_expected_outcome', 'writer_turn_checks', 'evaluation', 'semantic_obligations') if k in result})
         try:
             result['evidence'] = evidence_identity(directory)
         except (ValueError, OSError) as exc:
@@ -289,6 +313,11 @@ def execute(args, root, plan):
 def review_admissible(directory, arm):
     verdict = load(directory / 'mechanical.json')
     checks = verdict['checks']
+    if verdict.get('evaluation') == 'prose':
+        expected = 'calibration_pending' if arm in ('floor', 'stale') else 'semantic_pending'
+        return (verdict['state'] == expected and bool(checks)
+                and verdict.get('semantic_obligations') == [*SEMANTIC, *cases.judgment_cases.SEMANTIC]
+                and all(v is True for v in checks.values()))
     if arm in ('floor', 'stale'):
         return (verdict['state'] == 'calibration_pending' and verdict.get('calibration_expected_outcome') is True
                 and checks.get('consumer_policy_matches') is False
@@ -297,10 +326,10 @@ def review_admissible(directory, arm):
             and all(v is True for v in checks.values()))
 
 
-def checked_review(record, evidence):
+def checked_review(record, evidence, obligations=SEMANTIC):
     if (not isinstance(record, dict) or record.get('evidence') != evidence
             or not isinstance(record.get('reviewer'), str) or not record['reviewer'].strip()
-            or not isinstance(record.get('checks'), dict) or set(record['checks']) != set(SEMANTIC)):
+            or not isinstance(record.get('checks'), dict) or set(record['checks']) != set(obligations)):
         raise ValueError('Review must identify reviewer, bind exact evidence and cover semantic obligations')
     if any(not isinstance(v, dict) or type(v.get('passed')) is not bool
            or not isinstance(v.get('reason'), str) or not v['reason'].strip() for v in record['checks'].values()):
@@ -328,7 +357,8 @@ def review(args, root, plan):
         raise ValueError('Evidence changed after adjudication')
     if not review_admissible(directory, args.arm):
         raise ValueError('Sealed mechanical verdict does not permit acceptance')
-    checked_review(record, result['evidence'])
+    obligations = load(directory / 'mechanical.json').get('semantic_obligations', SEMANTIC)
+    checked_review(record, result['evidence'], obligations)
     if not existing.exists():
         save(existing, record)
     # Idempotent recovery if the reviewer stopped after review.json was saved.
@@ -381,7 +411,7 @@ def verified_result(directory, arm):
         review_path = directory / 'review.json'
         if review_path.exists():
             record = report_record(review_path)
-            checked_review(record, receipt['evidence'])
+            checked_review(record, receipt['evidence'], mechanical.get('semantic_obligations', SEMANTIC))
             if not review_admissible(directory, arm):
                 raise ValueError('Sealed mechanical verdict does not permit acceptance')
             return {**result, 'state': review_state(record, arm)}
@@ -460,7 +490,8 @@ def report(root):
     except (ValueError, OSError) as exc:
         frozen_error = f'Frozen experiment cannot be verified: {exc}'
     rows = []
-    for case in cases.CASES:
+    selected = tuple(plan.get('cases', cases.CASES))
+    for case in selected:
         for arm in ARMS:
             directory = root / 'runs' / case / arm
             result = verified_result(directory, arm) if directory.exists() else {'state': 'unrun', 'turns': []}
@@ -474,12 +505,13 @@ def report(root):
                          'turns': turns, 'costs': total, 'observed_costs': observed, 'costs_complete': complete,
                          'report_error': result.get('report_error')})
     calibration = {}
-    for case in cases.CASES:
+    for case in selected:
         states = {r['arm']: r['state'] for r in rows if r['case'] == case}
         calibration[case] = states['ceiling'] == 'passed' and all(states[a] == 'calibration_passed' for a in ('floor', 'stale'))
     comparisons = [{'case': case, 'pair': [left, right],
-                    'eligible': calibration[case] and all(any(r['case'] == case and r['arm'] == arm and r['state'] == 'passed' and r['costs_complete'] for r in rows) for arm in (left, right))}
-                   for case in cases.CASES for left, right in (('plain', 'baseline'), ('baseline', 'candidate'))]
+                    'eligible': plan.get('cases', {}).get(case, {}).get('contract', {}).get('comparison_supported', True)
+                    and calibration[case] and all(any(r['case'] == case and r['arm'] == arm and r['state'] == 'passed' and r['costs_complete'] for r in rows) for arm in (left, right))}
+                   for case in selected for left, right in (('plain', 'baseline'), ('baseline', 'candidate'))]
     capture_goal = plan.get('capture_goal', 'automatic')  # Plans predating this field used automatic capture.
     save(root / 'report.json', {'limits': plan['limits'], 'confirmation': plan.get('confirmation'),
          'capture_goal': capture_goal, 'report_error': frozen_error,
@@ -516,6 +548,8 @@ def main():
     p.add_argument('--model')
     p.add_argument('--cap', type=int, default=300)
     p.add_argument('--seed', type=int, default=20261112)
+    p.add_argument('--cases', choices=cases.CASES, nargs='+',
+                   help='Cases to freeze; default preserves reporting, editorial and museum. Prose judgment is opt-in.')
     p.add_argument('--capture-goal', choices=('automatic', 'explicit'), default='explicit',
                    help='Explicit gives all writers the same persistence goal; automatic probes unprompted capture')
     p.add_argument('--confirmation', choices=(*cases.CASES, 'none'), default='editorial',

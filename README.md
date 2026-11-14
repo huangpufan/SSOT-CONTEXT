@@ -122,6 +122,7 @@ Updating never rewrites your context documents. Existing repositories stay on fo
 
 - [Install guide](./INSTALL.md): setup, wiring, upgrade, removal and recovery.
 - [Design](./DESIGN.md): why the bundle is shaped this way.
+- [Evolving research and creative projects](./docs/evolving-research-and-creative-projects.md) (Chinese guide): practical examples using existing owners, scoped revisions, uncertain sources and deferred synchronization.
 - [Evolution review](./docs/evolution-review-2026-11-12.md): current improvements, real continuation trials and evidence limits.
 - [Evaluation](./tests/benchmark/README.md): task outcomes, cold handoff, plain-docs controls and evidence limits.
 - [Changelog](./CHANGELOG.md): what changed in each version.

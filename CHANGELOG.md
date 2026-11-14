@@ -9,6 +9,8 @@ Entries up to 2.86 were derived from the v2 protocol-upgrade ledger, which is pr
 ## [Unreleased]
 
 ### Added
+- A [practical Chinese guide](docs/evolving-research-and-creative-projects.md) shows how evolving research and creative projects can use existing owners, scoped decisions, source limits, historical material and deferred synchronization. It adds no runtime reading obligation or consumer format.
+- Opt-in prose handoffs evaluate concrete judgment and useful proposals separately from file/scope checks, with artifact-bound semantic review, explicit research transfers and actual partial-unlock actions. See the [evaluation account](docs/open-judgment-2026-11-14.md); this guidance and evaluation work leaves protocol 5.3 unchanged.
 - Installed continuity trials now connect multi-owner capture, a real partial-owner process interruption, cold recovery, duplicate/conflict handling with genuinely new independent progress, limited-use withdrawal and a fresh executable handoff. An independently authored format-4 Python queue task confirms a different maintenance shape; ceiling, floor and stale consumers calibrate both. See the [context trial guide](tests/context/README.md) and [continuity account](tests/context/results/continuity-deepening-2026-11-12.json) for observed paths and limits.
 
 ### Fixed

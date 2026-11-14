@@ -7,8 +7,9 @@ import stat
 import subprocess
 import sys
 import uuid
+import judgment_cases
 
-CASES = ('reporting', 'editorial', 'museum')
+CASES = ('reporting', 'editorial', 'museum', *judgment_cases.CASES)
 
 
 def museum_fixture():
@@ -18,6 +19,8 @@ def museum_fixture():
 
 
 def contract(case, seed):
+    if case in judgment_cases.CASES:
+        return judgment_cases.fixture(case)['contract']
     if case == 'museum':
         return museum_fixture()['contract']
     tag = hashlib.sha256(f'{case}:{seed}'.encode()).hexdigest()[:8]
@@ -41,6 +44,10 @@ def expected(c, stale=False):
 
 
 def prompts(c, capture_goal='automatic'):
+    if c.get('evaluation') == 'prose':
+        if capture_goal != 'explicit':
+            raise ValueError('Judgment cases require explicit persistence')
+        return judgment_cases.fixture(c['case'])['prompts']
     if capture_goal not in ('automatic', 'explicit'):
         raise ValueError('capture_goal must be automatic or explicit')
     if c['output'] == 'museum_label_policy.json':
@@ -67,6 +74,8 @@ def prompts(c, capture_goal='automatic'):
 
 
 def consumer_prompt(c):
+    if c.get('evaluation') == 'prose':
+        return judgment_cases.fixture(c['case'])['consumer']
     if c['output'] == 'museum_label_policy.json':
         return museum_fixture()['consumer']
     modes = ', '.join(c['modes'])
@@ -88,6 +97,8 @@ def write(root, name, text):
 
 
 def build(root, c, kind='initial'):
+    if c.get('evaluation') == 'prose':
+        return judgment_cases.build(root, c, kind)
     root.mkdir(parents=True)
     write(root, c['entry'], f"---\nssot_format: {c['format']}\nlanguage: en\n---\n# Maintained context\n\n"
           + ("## Invariants\n\nNo admitted constraints yet.\n\n## Open questions\n\nPolicy choices live in their owner.\n\n## Known traps and limits\n\nNone recorded.\n\n## Task routes\n\n" if c['format'] == 4 else "")
@@ -107,11 +118,14 @@ def build(root, c, kind='initial'):
     write(root, 'note.txt', 'This task does not own this note.\n')
 
 
-def handoff_files(repo):
+def handoff_files(repo, contract=None):
     """Explicit transfer boundary: maintained Markdown owners, no logs/history/skills."""
     files = {}
-    for name in ('SSOT', 'docs', 'creation'):
+    roots = ('SSOT', 'docs', 'creation', *(contract or {}).get('transfer_roots', []))
+    for name in dict.fromkeys(roots):
         base = repo / name
+        if not base.resolve().is_relative_to(repo.resolve()):
+            raise ValueError('handoff root escapes its workspace')
         if not base.exists():
             continue
         for path in base.rglob('*.md'):
@@ -125,6 +139,8 @@ def handoff_files(repo):
 
 
 def output_grade(repo, c, sandbox=None):
+    if c.get('evaluation') == 'prose':
+        return judgment_cases.output_observation(repo, c)
     target = repo / c['output']
     if not target.is_file() or target.is_symlink():
         return {'policy_matches': False, 'detail': 'deliverable absent or symlink'}
@@ -196,17 +212,31 @@ def private_scan(repo, token):
 
 def writer_checks(repo, c, before, after):
     owner_dir = str(Path(c['owner']).parent)
-    allowed = lambda p: p == c['entry'] or (p.endswith('.md') and p.startswith(owner_dir + '/'))
+    allowed = lambda p: (p in c['allowed_writer_paths'] if 'allowed_writer_paths' in c else
+                         p == c['entry'] or (p.endswith('.md') and p.startswith(owner_dir + '/')))
     changed = {p for p in set(before) | set(after) if before.get(p) != after.get(p)}
     # Newly created directories are permitted only beneath maintained owner roots.
     unauthorized = [p for p in changed if not allowed(p) and not
                     (p in after and after[p]['kind'] == 'directory' and (p == owner_dir or p.startswith(owner_dir + '/')))]
     try:
-        files = handoff_files(repo)
+        files = handoff_files(repo, c)
         transferable = True
     except ValueError:
         files, transferable = {}, False
     private, private_complete = private_scan(repo, c['private'].encode())
     return {'owner_transfer_valid': transferable, 'write_scope_preserved': not unauthorized, 'private_token_not_retained': not private,
+            'protected_paths_preserved': all(before.get(p) == after.get(p) for p in c.get('protected_paths', [])),
             'private_scan_complete': private_complete,
             'canonical_owner_retained': c['owner'] in files and c['entry'] in files}, unauthorized
+
+
+def consumer_paths(c, arm=None):
+    return c.get('consumer_paths_by_arm', {}).get(arm, c.get('allowed_consumer_paths', [c['output']]))
+
+
+def consumer_change_checks(c, before, after, arm):
+    changed = {p for p in before.keys() | after.keys() if before.get(p) != after.get(p)}
+    checks = {'consumer_preserved_handoff': changed <= set(consumer_paths(c, arm)) | {'__pycache__'}}
+    if arm not in ('floor', 'stale') and c.get('required_consumer_changes'):
+        checks['required_actions_observed'] = set(c['required_consumer_changes']) <= changed
+    return checks

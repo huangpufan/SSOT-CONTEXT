@@ -16,6 +16,23 @@ import run
 
 
 class ContextOrchestrationTest(unittest.TestCase):
+    def test_prepare_accepts_canonical_temp_aliases_and_rejects_outside(self):
+        original = Path.resolve
+        def aliases(path, *a, **kw):
+            if str(path) == '/tmp' or str(path).startswith('/tmp/'):
+                return Path('/private') / str(path).lstrip('/')
+            return original(path, *a, **kw)
+        args = argparse.Namespace(output=Path('/tmp/ssot-context-symlink-contract'))
+        for prepare in (run.prepare, installed.freeze):
+            with self.subTest(prepare=prepare.__module__), patch.object(Path, 'resolve', aliases), \
+                    patch.object(Path, 'mkdir', side_effect=RuntimeError('accepted-root')):
+                with self.assertRaisesRegex(RuntimeError, 'accepted-root'):
+                    prepare(args)
+                args.output = Path('/opt/ssot-context-outside-contract')
+                with self.assertRaisesRegex(ValueError, 'new .*output'):
+                    prepare(args)
+                args.output = Path('/tmp/ssot-context-symlink-contract')
+
     def setUp(self):
         self.temp = tempfile.TemporaryDirectory(dir='/tmp')
         self.root = Path(self.temp.name)

@@ -28,7 +28,7 @@ ORDINARY = "请给一篇有关搬家的短篇写一个80字左右的开头，安
 
 def freeze(args):
     root = args.output.resolve()
-    if root.exists() or not any(root.is_relative_to(Path(base)) for base in ("/tmp", "/var/tmp")):
+    if root.exists() or not any(root.is_relative_to(Path(base).resolve()) for base in ("/tmp", "/var/tmp")):
         raise ValueError("Use a new /tmp or /var/tmp output")
     root.mkdir(parents=True)
     source = root / "install-source"
@@ -51,7 +51,7 @@ def freeze(args):
     harness = root / "harness"
     shutil.copytree(Path(__file__).resolve().parent, harness / "context", ignore=shutil.ignore_patterns("__pycache__"))
     (harness / "benchmark").mkdir()
-    for name in ("run.py", "cases.py", "handoff.py", "handoff_cases.py"):
+    for name in ("run.py", "cases.py", "handoff.py", "handoff_cases.py", "judgment_cases.py"):
         shutil.copy2(Path(__file__).resolve().parent.parent / "benchmark" / name, harness / "benchmark" / name)
     for name in ("run-performance-trials.py", "continuity_cases.py"):
         shutil.copy2(Path(__file__).resolve().parent.parent / name, harness / name)

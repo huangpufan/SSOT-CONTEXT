@@ -66,13 +66,13 @@ def git_observation(repo):
 
 def prepare(args):
     root = args.output.resolve()
-    if root.exists() or not any(root.is_relative_to(Path(p)) for p in ("/tmp", "/var/tmp")):
+    if root.exists() or not any(root.is_relative_to(Path(p).resolve()) for p in ("/tmp", "/var/tmp")):
         raise ValueError("Use a new output directory under /tmp or /var/tmp")
     root.mkdir(parents=True)
     harness = root / "harness"
     shutil.copytree(HERE, harness / "context", ignore=shutil.ignore_patterns("__pycache__"))
     (harness / "benchmark").mkdir()
-    for name in ("run.py", "cases.py", "handoff.py", "handoff_cases.py"):
+    for name in ("run.py", "cases.py", "handoff.py", "handoff_cases.py", "judgment_cases.py"):
         shutil.copy2(HERE.parent / "benchmark" / name, harness / "benchmark" / name)
     for name in ("run-performance-trials.py", "continuity_cases.py"):
         shutil.copy2(HERE.parent / name, harness / name)

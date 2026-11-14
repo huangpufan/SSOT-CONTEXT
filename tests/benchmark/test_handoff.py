@@ -19,7 +19,7 @@ class HandoffTest(unittest.TestCase):
         self.temp.cleanup()
 
     def test_contract_mutants_and_both_output_shapes(self):
-        for case in c.CASES:
+        for case in ('reporting', 'editorial', 'museum'):
             spec = c.contract(case, 17)
             repo = self.root / case
             c.build(repo, spec, 'ceiling')

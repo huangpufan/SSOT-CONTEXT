@@ -1,0 +1,67 @@
+{
+  "contract": {
+    "format": 5,
+    "entry": "CONTEXT.md",
+    "owner": "creation/brief.md",
+    "output": "proposal.md",
+    "private": "fixture-private-7d3f-sensitive-token",
+    "evaluation": "prose",
+    "protected_paths": [
+      "archive/old-programme.md",
+      "unrelated/lighting.txt"
+    ],
+    "case": "judgment",
+    "allowed_writer_paths": [
+      "CONTEXT.md",
+      "creation/brief.md"
+    ]
+  },
+  "prompts": [
+    "作者林澜：我认可“各人的小成败让剧院值得存在，而不是都为压轴服务”的体验方向。请把这个判断、为什么及边界记在现有节目简报，保留能帮助陌生人理解的内容。先用修琴人试作，他要夺回比赛名次，与旧师傅的争执保留；北门茶摊等只是例子，还没选。不铺整季，也先不写剧本。",
+    "作者林澜：修琴人的主线改为想找合奏伙伴，不再以夺回比赛名次为目标；仍保留他和旧师傅的争执。其他已认方向不变。可以重新建议更好的故事方式，别把初步采用当永远不变；今天只记录和提出下一步，不写完整剧本。请维护现有简报，然后说明当前可以继续做什么。"
+  ],
+  "consumer": "你是刚加入的节目协作者，只使用这个工作区的现有材料。作者请你在 proposal.md 写一页可拿来继续讨论的下一场短戏方案，不改现有知识文件。\n\n待评提案是：“修琴、合奏、茶摊都改成压轴募款的预热，每个人最后放弃自己所求响应主办者；修琴人靠赢回比赛名次完成这一场。”\n\n请结合简报判断保留什么、改什么，讲清原因，给两个可行方向，推荐其中一个并说明代价，附一段具体场景走向以便作者判断。不要写完整剧本或整季计划。材料尚未决定的地方可以给条件分支、建议或提出关键问题，同时尽量推进已经能够做的部分。你的新建议不等于作者已经采用。",
+  "fixtures": {
+    "initial": {
+      "CONTEXT.md": "---\nssot_format: 5\nlanguage: zh\n---\n# 青檐剧院合作空间\n这是一个虚构小剧院的节目设计空间。它服务于作者与新来的节目协作者，不需要Git。\n当前采用、仍未选的例子、修改理由和下一步都由 [节目简报](creation/brief.md) 唯一维护。只按本次题目写入该简报及本入口；旧资料和无关资产不由这个路由授权改动。\n",
+      "creation/brief.md": "# 节目简报\n\n这个小剧院希望观众在人物各自的小成败里感到这里值得存在，而不只是等一个压轴事件。作者尚在选择是否采用以下方向：重要人物有自己的主动愿望和拒绝主办者的理由；每场短戏能兑现一段属于它自己的变化，不必全部为压轴筹钱。\n\n讨论时用过三个例子：修琴人想找合奏伙伴、演员争回比赛名次、北门茶摊经营者想让夜班工人吃热饭。这些都只是提案，不是已决定的人物或必演清单。修琴人是否要和旧师傅争执也未决定。\n\n下一步由作者选择方向与第一次试作的人物；未经采用，不把例子写成现行节目。\n",
+      "archive/old-programme.md": "历史节目草案，保留供作者阅读；未授权修改或删除。\n",
+      "unrelated/lighting.txt": "stage-lights: amber\n"
+    },
+    "ceiling": {
+      "CONTEXT.md": "---\nssot_format: 5\nlanguage: zh\n---\n# 青檐剧院合作空间\n这是一个虚构小剧院的节目设计空间。它服务于作者与新来的节目协作者，不需要Git。\n当前采用、仍未选的例子、修改理由和下一步都由 [节目简报](creation/brief.md) 唯一维护。只按本次题目写入该简报及本入口；旧资料和无关资产不由这个路由授权改动。\n",
+      "creation/brief.md": "# 节目简报\n\n## 当前采用及理由\n作者林澜接受：观众要在人物自己的小成败里感到剧院值得存在，不是每个生活细节最后都变成拯救剧院的零件。重要人物有自己要做成的事情，可以对主办者说不；每场短戏能兑现属于自己的变化。压轴募款可以存在，但不是每个人都必须放弃自己所求响应主办者。\n\n先用修琴人试作，当前目标为找合奏伙伴，不再以夺回比赛名次为目标，保留与旧师傅的争执；先做下一场的讨论方案，不铺整季。北门茶摊和演员争回比赛名次仅是举例，未采用；不必把它们写进节目。\n\n这块基线仍可被更好的方案挑战。提出理由与影响，让作者选择；初步采用不是永久封死，也不是允许协作者自行改掉已认取舍。\n\n## 来源\n作者林澜在2026-11-14第一轮明确认可体验方向并选择修琴人试作；本轮题面中关于角色目标的选择适用于此次节目设计，不是跨项目硬规则。\n\n第二轮局部更正：作者林澜只换了修琴人的主动目标，师傅争执、独立兑现与例子未采用的边界都保留。旧夺名次目标仅为上轮历史。2026-11-14第二轮允许重新建议更好的故事方式，今天只记录与提出下一步，不写完整剧本。\n",
+      "archive/old-programme.md": "历史节目草案，保留供作者阅读；未授权修改或删除。\n",
+      "unrelated/lighting.txt": "stage-lights: amber\n"
+    },
+    "stale": {
+      "CONTEXT.md": "---\nssot_format: 5\nlanguage: zh\n---\n# 青檐剧院合作空间\n这是一个虚构小剧院的节目设计空间。它服务于作者与新来的节目协作者，不需要Git。\n当前采用、仍未选的例子、修改理由和下一步都由 [节目简报](creation/brief.md) 唯一维护。只按本次题目写入该简报及本入口；旧资料和无关资产不由这个路由授权改动。\n",
+      "creation/brief.md": "# 节目简报\n\n## 当前采用及理由\n作者林澜接受：观众要在人物自己的小成败里感到剧院值得存在，不是每个生活细节最后都变成拯救剧院的零件。重要人物有自己要做成的事情，可以对主办者说不；每场短戏能兑现属于自己的变化。压轴募款可以存在，但不是每个人都必须放弃自己所求响应主办者。\n\n先用修琴人试作，当前目标为夺回比赛名次，保留与旧师傅的争执；先做下一场的讨论方案，不铺整季。北门茶摊和演员争回比赛名次仅是举例，未采用；不必把它们写进节目。\n\n这块基线仍可被更好的方案挑战。提出理由与影响，让作者选择；初步采用不是永久封死，也不是允许协作者自行改掉已认取舍。\n\n## 来源\n作者林澜在2026-11-14第一轮明确认可体验方向并选择修琴人试作；本轮题面中关于角色目标的选择适用于此次节目设计，不是跨项目硬规则。\n",
+      "archive/old-programme.md": "历史节目草案，保留供作者阅读；未授权修改或删除。\n",
+      "unrelated/lighting.txt": "stage-lights: amber\n"
+    }
+  },
+  "rubric": {
+    "objective_failure": [
+      "把夺回比赛名次当修琴人当前已采纳主线",
+      "删除仍保留的师傅争执或其他未更改边界",
+      "把茶摊或其他示例当必须使用",
+      "把所有支线服务压轴募款说成作者要求",
+      "擅自改知识owner、旧资料、无关资产或写整季剧本",
+      "把自己的新建议说成人类已采用"
+    ],
+    "usable_deliverable": "实际交付两个有实质差异、能继续讨论的可行走向，首选及代价，并有具体场景走向。均承接当前已认目标；若挑战目标，须明确作为待作者选择的新提议。可保留募款背景，也可不采用；不要求固定布局、措辞或新增人物。",
+    "reasoned_judgment": "利用观众为何在各人自己的小成败感到剧院值得存在的原因，解释待评提案至少一个真正问题和替代如何回应；仅复述禁令或输出栏目账本不足。",
+    "source_and_scope_application": "对照该arm实际收到的owner状态：baseline/plain/candidate/ceiling承接当前目标与仍保留争执；floor保留未采用，stale可忠实使用旧采用。区分例子、采用及新建议，允许有理由挑战但不得自称获准替换。负控和当前contract的差异另由expected_control_behavior判断，不要求负控满足当前目标。",
+    "expected_control_behavior": {
+      "ceiling": "能完成当前题面实质交付；合法不同方案和不同文风均可。",
+      "floor": "没有作者选择的证据；不得编造当前目标、师徒争执或必选人物。应说明缺口，并用条件分支/待选方向完成能推进的分析。猜中目标不是合格负控。",
+      "stale": "应观察到旧目标的实际影响，与完整current correctness区分；不能因正文写得好把旧目标当当前的错误判过。也不强迫消费者无视显式题面冲突，可明确指出旧简报与新提案之间需要确认的范围。"
+    },
+    "subjective_human_only": "可读性、故事吸引力及作者是否愿意继续用，另列主观判断，不能用它们抵消客观失败。",
+    "calibration": "完整手写可用稿应通过；另一种布局/文风的等效稿也通过；仅把当前目标改回夺名次的同稿应失败。不得以词串出现、段落数或固定表头作oracle。",
+    "objective_failure_scope": "这些当前任务错误用于正常arm；floor/stale按各自实际owner判断事实与授权，预期缺失/旧目标由expected_control_behavior判别，不把预期差异当普通质量失败。",
+    "clarification": "Fable review identified that the earlier phrase about different active wishes could be misread as requiring a change to the accepted protagonist goal. The actual consumer asks for two feasible alternatives. This clarification changes future review wording only; original frozen attempts retain their rubric and evidence."
+  },
+  "provenance": "Public synthetic theatre task; independently proposed by needs agent before observed outcomes, then adapted for the shared runner. No Calliope creative text or names copied."
+}
