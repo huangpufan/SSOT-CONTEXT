@@ -106,6 +106,8 @@ Skill 只在 Agent 加载它们时生效。它们不会在后台采集材料，�
 
 Antigravity App 使用 `--agent agy`，项目安装与 Codex 共用 `.agents/skills`。[安装指南](./INSTALL.md#when-a-skill-appears-unavailable)区分 App、CLI 和独立 IDE 的位置，并说明如何核验实际会话发现。
 
+若希望本机安装即时跟随同一份源码，使用[本机软链接安装](./INSTALL.md#link-local-installations-to-one-checkout)。普通安装仍保留独立副本；软链接依赖持续保留的源码 checkout。
+
 安装器登记了 **70 多种 Agent** 的安装路径，包括 Claude Code、Codex、Cursor、Windsurf、Gemini CLI、GitHub Copilot、OpenCode 和 Cline。登记了路径不等于行为完全一致，安装后请重启 Agent，确认它能发现这些 Skill。查看全部标识与路径：
 
 ```bash

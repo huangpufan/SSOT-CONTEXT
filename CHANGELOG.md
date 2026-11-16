@@ -26,6 +26,7 @@ Entries up to 2.86 were derived from the v2 protocol-upgrade ledger, which is pr
 ## [5.4] - 2026-11-16
 
 ### Added
+- An explicit local symlink setup points existing installations directly to one persistent checkout, preserving originals in external backups and leaving unrelated skills intact. Copy installation remains the default; local-only links are not automatically committed to consumer repositories.
 - Conditional hot/warm/cold context guidance for oversized entries, repeated reconstruction from history and requested consolidation. Existing owners and source records remain authoritative; targeted historical lookup preserves low-frequency constraints and partial exceptions. See the [design account](docs/context-tiering-design-2026-11-16.md) and [native trials](tests/context/trials-5.4.md).
 - Antigravity App installation key `antigravity-app` (alias `agy`) uses the shared `~/.gemini/config/skills` global location and existing `.agents/skills` project path. Standalone IDE and legacy CLI keys retain their supported global locations and scoped upgrade/uninstall behavior. Installation guidance distinguishes file delivery, session discovery and actual skill reads.
 

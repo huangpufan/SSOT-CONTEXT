@@ -151,7 +151,27 @@ Explain that the agent handles the lifecycle: preflight before substantive work,
 
 Check the actual workspace and agent surface, the installed path (including symlink resolution), then a fresh session's skill catalog and an actual read of the selected `SKILL.md` and protocol version. A file check alone proves neither discovery nor execution; a model's claim to have used a skill needs a matching read or load receipt. If the catalog contains the skill but it was not selected, inspect the instruction route and request trigger before adding another copy. If new files are absent from an old session, start a new conversation in the intended workspace. Antigravity CLI also documents `/skills reload`; in the App, `/ssot-doctor` explicitly selects a focused review. Ordinary requests should still select the appropriate skill automatically.
 
+## Link local installations to one checkout
+
+Use this only when the user wants local installations to follow a persistent source checkout. Changes and new files in that checkout become visible through the links immediately; already loaded sessions still need refresh or restart. It does not fetch remote changes in the background. Keep the source checkout in place and keep frozen trial bundles as independent copies.
+
+`tools/link-local.py` replaces only the six named SSOT skill directories in explicitly selected existing installations. It preserves surrounding skill-directory symlinks and unrelated skills, deduplicates shared locations, and moves originals into a required external backup directory with a recovery manifest. It refuses source replacement, unknown skill owners, changes since planning and cross-filesystem backup moves. A normal failure restores touched originals; after a process kill, inspect the saved manifest and originals before resuming. Backups can contain local modifications and should stay private.
+
+Run from the persistent SSOT-CONTEXT checkout. Repeat `--base` for additional **actual** agent skills directories; inventory and distinguish source checkouts, active installations and historical/generated trial snapshots before selecting them:
+
+```bash
+python3 tools/link-local.py --base /path/to/project/.agents/skills
+python3 tools/link-local.py --base /path/to/project/.agents/skills \
+  --apply --backup-root /path/to/private/ssot-installation-backups
+```
+
+The first command only prints a plan. Links point directly to the checkout's skill directories, including both `assets/templates/en/` and `assets/templates/zh/`; choose the consumer's declared documentation language when using those templates. This avoids a second generated copy that can become stale. Verify link targets, tools, template reads and a fresh agent session after conversion. A local source edit through any linked installation changes the shared source; maintain skill changes in that owner.
+
+If installed copies are tracked by Git, conversion appears as deleted tracked files and new directory links. Agree whether the links are local-only or part of the repository's distribution before committing them. Do not hide changes with index flags or push machine-dependent paths without authorization. To restore a local-only conversion, use its exact saved paths and originals; do not reset unrelated work.
+
 ## Update or remove an existing installation
+
+For an installation already linked to a persistent local checkout, update that checkout instead of running the copy installer. Repoint it with the local-link command below if its source moved. The normal installer still produces independent copies and can replace links when explicitly used to reinstall; do not silently change an agreed live installation back to copies.
 
 Resolve the target agent and scope as above. To update, use the downloaded installer:
 

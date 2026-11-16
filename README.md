@@ -106,6 +106,8 @@ Corrections compare the saved result with necessary earlier source excerpts as w
 
 For Antigravity App, use `--agent agy`; project installation shares `.agents/skills` with Codex. The [install guide](./INSTALL.md#when-a-skill-appears-unavailable) distinguishes App/CLI/IDE locations and checks actual session discovery.
 
+For local installations that should follow the same source immediately, use the [local symlink setup](./INSTALL.md#link-local-installations-to-one-checkout). Normal installations remain independent copies; local links require the persistent source checkout.
+
 The installer knows the installation paths for **70+ agents**, including Claude Code, Codex, Cursor, Windsurf, Gemini CLI, GitHub Copilot, OpenCode and Cline. A known path does not prove identical behavior, so after installing, restart the agent and confirm it finds the skills. To list every key and path:
 
 ```bash
