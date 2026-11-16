@@ -28,9 +28,14 @@ Common keys and project locations:
 | Cursor | `cursor` | `.agents/skills/` |
 | Windsurf | `windsurf` | `.windsurf/skills/` |
 | Gemini CLI | `gemini-cli` | `.agents/skills/` |
+| Antigravity App / shared App and CLI setup | `antigravity-app` (alias `agy`) | `.agents/skills/` |
+| Standalone Antigravity IDE | `antigravity` | `.agents/skills/` |
+| Antigravity CLI with its legacy global location | `antigravity-cli` | `.agents/skills/` |
 | GitHub Copilot | `github-copilot` | `.agents/skills/` |
 
 For other agents or global locations, use the installer's `--list-agents` output. Its registry is the authority for paths; respect configuration overrides shown there.
+
+Antigravity surfaces share the project path. The App key uses `~/.gemini/config/skills`, the current shared App/CLI/IDE global location. Existing `antigravity` and `antigravity-cli` keys retain the legacy global locations supported by the standalone IDE and CLI respectively; the App does not consume those legacy locations. This preserves scoped upgrades/uninstalls of existing installations. Choose the key for the actual surface and inspect existing copies before a global change; installing to a new location does not migrate or remove an old one. Compare discovered versions in a fresh session when multiple locations exist. See [Google's skill locations](https://antigravity.google/docs/skills). A project-only request does not authorize changing machine-wide installations.
 
 ## 2. Install the bundle
 
@@ -116,6 +121,7 @@ Make clear that these are instructions for the agent: apply the skills automatic
 | Cursor | `.cursor/rules/ssot.mdc`, or the repository's existing `.cursorrules` |
 | Windsurf | `.windsurf/rules/ssot.md`, or the repository's existing `.windsurfrules` |
 | Gemini CLI | `GEMINI.md` |
+| Antigravity App / CLI / IDE | Existing `AGENTS.md`, `GEMINI.md`, or supported project rules pointing to that owner |
 | Other agents | Their supported repository-instruction entry |
 
 Read existing instructions first. Follow any pointer or symlink to the repository's shared instruction owner, and update that one source. Keep one marked block in that owner so future updates can replace just this section. Reconcile older, unmarked SSOT instructions in place; preserve unrelated instructions and avoid duplicate blocks. Adapt the heading level if needed, preserving the routes and exceptions. Copy only the marked block from the template, not the template's surrounding explanation. When creating a tool-specific rules file, use that agent's supported activation format.
@@ -140,6 +146,10 @@ Remove the temporary installer directory you created after verification. Report:
 - that the user must restart the agent session to load the skills and repository instructions, then can describe tasks as usual.
 
 Explain that the agent handles the lifecycle: preflight before substantive work, an offer to bootstrap when `SSOT/` is missing or unfinished, immediate capture of accepted durable decisions through closeout, and reconciliation before finishing a substantive batch, with doctor used for checks and catch-up. Do not hand routine skill invocation back to the user as a manual checklist. Do not claim the skills are active before restart and discovery are confirmed. Do not ask the user to choose a global installation again after a successful project-only setup.
+
+### When a skill appears unavailable
+
+Check the actual workspace and agent surface, the installed path (including symlink resolution), then a fresh session's skill catalog and an actual read of the selected `SKILL.md` and protocol version. A file check alone proves neither discovery nor execution; a model's claim to have used a skill needs a matching read or load receipt. If the catalog contains the skill but it was not selected, inspect the instruction route and request trigger before adding another copy. If new files are absent from an old session, start a new conversation in the intended workspace. Antigravity CLI also documents `/skills reload`; in the App, `/ssot-doctor` explicitly selects a focused review. Ordinary requests should still select the appropriate skill automatically.
 
 ## Update or remove an existing installation
 

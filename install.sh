@@ -596,13 +596,15 @@ declare -A AGENT_ALIASES=(
   [hermes]=hermes-agent
   [codearts]=codearts-agent
   [antigravity-c]=antigravity-cli
+  [agy]=antigravity-app
 )
 
 # REGISTRY-START — tabs only between fields; do not reformat
 # shellcheck disable=SC2016  # $HOME/$XDG/$ENV are placeholders resolved at runtime
 AGENT_REGISTRY_RAW='aider-desk	AiderDesk	.aider-desk/skills	$HOME/.aider-desk/skills	dir:$HOME/.aider-desk
 amp	Amp	.agents/skills	$XDG/agents/skills	dir:$XDG/amp
-antigravity	Antigravity	.agents/skills	$HOME/.gemini/antigravity/skills	dir:$HOME/.gemini/antigravity
+antigravity	Antigravity IDE	.agents/skills	$HOME/.gemini/antigravity/skills	dir:$HOME/.gemini/antigravity
+antigravity-app	Antigravity App	.agents/skills	$HOME/.gemini/config/skills	dir:$HOME/.gemini/config;cmd:agy
 antigravity-cli	Antigravity CLI	.agents/skills	$HOME/.gemini/antigravity-cli/skills	dir:$HOME/.gemini/antigravity-cli
 astrbot	AstrBot	data/skills	$HOME/.astrbot/data/skills	dir:$HOME/.astrbot;dir:./data/skills
 autohand-code	Autohand Code CLI	.autohand/skills	$ENV:AUTOHAND_HOME/skills;alt:$HOME/.autohand/skills	env:AUTOHAND_HOME;dir:$HOME/.autohand

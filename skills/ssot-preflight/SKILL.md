@@ -2,7 +2,7 @@
 name: ssot-preflight
 description: Read relevant maintained context before substantive repository work or work in a declared context space. Find protected rules, owners and blocking questions for code, configuration, documentation, review, debugging or planning. Use for an explicit request to maintain non-repository context; ordinary chat, research answers or creative writing without a declared space do not trigger setup. Skip pure commands and meaning-preserving typo or formatting edits.
 metadata:
-  protocol_version: "5.3"
+  protocol_version: "5.4"
   bundle: "SSOT-CONTEXT"
 ---
 
@@ -31,6 +31,8 @@ Read `SSOT/README.md` with normal file tools (`cat`, `rg`, `sed`, or equivalents
 5. **What you rely on.** When an SSOT statement decides how you will implement something, check the evidence appropriate to its domain first (memory-model §3). Code shows implementation, not whether a human decision was accepted. Note the mismatch so closeout fixes the document, or so you can report the violation.
 
 Reuse retained instructions and model sections until updates or context loss. Each new task rereads README and relevant owners, including dirty and untracked content; unchanged `HEAD` is insufficient. Within a task, reuse unchanged passages; reread after edits, scope changes or uncertain freshness. Batch independent reads and bound excerpts.
+
+For oversized entries, repeated reconstruction from history, or requested tiering/compression, use [context tiers](references/context-tiering.md#when-reading-has-become-costly). Ordinary reading keeps the routes above.
 
 ## 3. Find what the change must preserve
 

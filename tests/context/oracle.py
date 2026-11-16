@@ -7,9 +7,22 @@ import subprocess
 import sys
 import tempfile
 import shlex
+import importlib.util
 
 import cases
 import source_oracle
+import tiering_case
+
+
+def native_benchmark():
+    """Load cost/identity helpers by path, independent of a CLI's `run` module."""
+    name = "ssot_context_cost_helpers"
+    if name not in sys.modules:
+        spec = importlib.util.spec_from_file_location(name, Path(__file__).resolve().parent.parent / "benchmark" / "run.py")
+        module = importlib.util.module_from_spec(spec)
+        spec.loader.exec_module(module)
+        sys.modules[name] = module
+    return sys.modules[name]
 
 
 def snapshot(repo):
@@ -21,6 +34,12 @@ def snapshot(repo):
 
 def grade(repo, case, before, watermark, run_dir=None, turns=0):
     after = snapshot(repo)
+    if case == tiering_case.RECALL_CASE:
+        return tiering_case.grade_recall(before, after)
+    if case == tiering_case.CASE:
+        path = run_dir / "1.after.json" if run_dir else None
+        writer = json.loads(path.read_text()) if path and path.exists() else {}
+        return tiering_case.grade(before, writer, after)
     if case in ("C06", "C07", "E2E-source"):
         return source_oracle.grade(repo, case, run_dir, snapshot)
     if case not in ("C01", "D03"):
@@ -255,8 +274,7 @@ def native_costs(summary, model, native_path=None):
 
 def observed_native_costs(summary):
     """Actual spend remains observed even when execution cannot be compared."""
-    from run import bench
-    observed = bench.observed_reading_costs(summary)
+    observed = native_benchmark().observed_reading_costs(summary)
     incoming, outgoing = observed["input_tokens"], observed["output_tokens"]
     observed["total_input_output_tokens"] = incoming + outgoing if incoming is not None and outgoing is not None else None
     return observed
@@ -316,10 +334,9 @@ def native_usage_boundary(summary, native_path=None):
 
 
 def native_observation(summary, model, native_path=None):
-    from run import bench
     boundary, usage = native_usage_boundary(summary, native_path)
     observed = observed_native_costs({**summary, 'native_turn_usage': usage})
-    identity = bench.transport.native_identity_state(summary, model)
+    identity = native_benchmark().transport.native_identity_state(summary, model)
     fields = ('input_tokens', 'cached_input_tokens', 'output_tokens', 'total_input_output_tokens', 'seconds')
     comparable = {key: observed[key] for key in fields} if not identity and boundary['status'] == 'complete' and all(observed.get(key) is not None for key in fields) else None
     complete = {key: observed[key] if key == 'seconds' or boundary['status'] == 'complete' else None for key in fields}

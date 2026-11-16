@@ -1,0 +1,364 @@
+{
+  "schema": 1,
+  "baseline": "5.3 @ 7548a47",
+  "candidate": "5.4",
+  "observations": [
+    {
+      "case": "C09-tiering",
+      "arm": "baseline",
+      "actual_model": "gpt-6.1-terra",
+      "reasoning": "medium",
+      "turns": 2,
+      "costs": {
+        "input_tokens": 359133,
+        "cached_input_tokens": 320896,
+        "output_tokens": 2485,
+        "seconds": 133.788,
+        "tool_items": 18,
+        "tool_output_bytes": 70715
+      },
+      "receipts": [
+        {
+          "summary_sha256": "3a1e7a064bb61b3307c8ee88f6b4b7afb864fcc3dd00d01106afe842cad731a4",
+          "native_sha256": "2dd33b41ecb7c50e6293603911bf2e82680a4ba18bde4c7c9fad887f78b2dfad",
+          "usage_status": "complete"
+        },
+        {
+          "summary_sha256": "eb85490792df7ad48bfae33b5bef348b9dc2102b510b4635a1a46733c8faddde",
+          "native_sha256": "d229903b8fa1df094ecded9f7caa76b8957b31ce954cbc49238a1ce1fd2fd289",
+          "usage_status": "complete"
+        }
+      ],
+      "fresh_consumer": true,
+      "entry_chars_before": 7953,
+      "entry_chars_after": 1148,
+      "mechanical_passed": true,
+      "semantic_passed": true,
+      "native_sessions": [
+        "01a1e2c8-e310-7b91-a7df-7e191a1b4ab5",
+        "01a1e2ca-36e1-7442-9d1a-18da8b0fd19f"
+      ]
+    },
+    {
+      "case": "C09-tiering",
+      "arm": "candidate",
+      "actual_model": "gpt-6.1-terra",
+      "reasoning": "medium",
+      "turns": 2,
+      "costs": {
+        "input_tokens": 310142,
+        "cached_input_tokens": 277632,
+        "output_tokens": 2377,
+        "seconds": 114.861,
+        "tool_items": 12,
+        "tool_output_bytes": 71206
+      },
+      "receipts": [
+        {
+          "summary_sha256": "499dcbc4070ffe1882ab7294653532d1cbbadbad90cd8eb5f79aba31883d90ae",
+          "native_sha256": "3349b08bef3dd0a246d0dff1ea9f9deb157e3d1ee36a5e62da7b1818abd5c412",
+          "usage_status": "complete"
+        },
+        {
+          "summary_sha256": "b8fcfbdba12e5700ca2820aca3e88bc89b73b4901e524f5e79a14b815a7349c7",
+          "native_sha256": "3fa988f143ed986eef8421fd560b9dcefd365da00b762947bda1e67663751f6d",
+          "usage_status": "complete"
+        }
+      ],
+      "fresh_consumer": true,
+      "entry_chars_before": 7953,
+      "entry_chars_after": 1222,
+      "mechanical_passed": true,
+      "semantic_passed": true,
+      "native_sessions": [
+        "01a1e2d3-f540-7312-8515-e2f06a682884",
+        "01a1e2d5-19c1-7bb0-8323-95b6be590d50"
+      ]
+    },
+    {
+      "case": "C10-recall",
+      "arm": "baseline",
+      "actual_model": "gpt-6.1-terra",
+      "reasoning": "medium",
+      "turns": 1,
+      "costs": {
+        "input_tokens": 108829,
+        "cached_input_tokens": 93440,
+        "output_tokens": 561,
+        "seconds": 48.686,
+        "tool_items": 6,
+        "tool_output_bytes": 13572
+      },
+      "receipts": [
+        {
+          "summary_sha256": "771ec85ee9dccd3d8f06e548f937be61d2a7d8db8f8d39064c00388b2f4321f7",
+          "native_sha256": "cb63ea1bdea9bf9e2f56e5c9e3591f883bbe4ddfad2d43e1daa04e3eeba97970",
+          "usage_status": "complete"
+        }
+      ],
+      "mechanical_passed": true,
+      "semantic_passed": true
+    },
+    {
+      "case": "C10-recall",
+      "arm": "candidate",
+      "actual_model": "gpt-6.1-terra",
+      "reasoning": "medium",
+      "turns": 1,
+      "costs": {
+        "input_tokens": 109002,
+        "cached_input_tokens": 97664,
+        "output_tokens": 531,
+        "seconds": 45.782,
+        "tool_items": 7,
+        "tool_output_bytes": 13974
+      },
+      "receipts": [
+        {
+          "summary_sha256": "03ab54c032d422e316ab47e6c3c0057357e45f22a0786257e5f9209f1b8d8f01",
+          "native_sha256": "242830c0d8f301fcda3fc65ff342a24c993626ec200f4bf84d1a15f327a024c8",
+          "usage_status": "complete"
+        }
+      ],
+      "mechanical_passed": true,
+      "semantic_passed": true
+    },
+    {
+      "case": "D03",
+      "arm": "baseline",
+      "actual_model": "gpt-6.1-terra",
+      "reasoning": "medium",
+      "turns": 2,
+      "costs": {
+        "input_tokens": 441788,
+        "cached_input_tokens": 370688,
+        "output_tokens": 3488,
+        "seconds": 142.713,
+        "tool_items": 32,
+        "tool_output_bytes": 59005
+      },
+      "receipts": [
+        {
+          "summary_sha256": "60ab8d8dcd215ea5b1ca6eeeb49fc1f14d37bd3eb4a9ca4c1608f79fbcb31304",
+          "native_sha256": "9379427d6e17f00505e60b76ce8c4485625d1d6ceeed6dc1cad16bbe6a166c68",
+          "usage_status": "complete"
+        },
+        {
+          "summary_sha256": "54a84f1b54988d47133ea77bfe69f626eaa5cc4f62ca97bee4d3f5986c26aac7",
+          "native_sha256": "fcf15b5891a1b515258cc3973f36e5941fd903754463ee8697e98698eceb5486",
+          "usage_status": "complete"
+        }
+      ],
+      "mechanical_passed": true,
+      "semantic_passed": true
+    },
+    {
+      "case": "D03",
+      "arm": "candidate",
+      "actual_model": "gpt-6.1-terra",
+      "reasoning": "medium",
+      "turns": 2,
+      "costs": {
+        "input_tokens": 438935,
+        "cached_input_tokens": 411264,
+        "output_tokens": 3864,
+        "seconds": 133.521,
+        "tool_items": 37,
+        "tool_output_bytes": 71109
+      },
+      "receipts": [
+        {
+          "summary_sha256": "f06a937e58268245fe24e03ff3ff04516cddfe07b81736826968189d25ec54fd",
+          "native_sha256": "ed23e44f5e3340a2eee1e37034a56187c3e3b4a1c081c1814ecf97e035fedd9e",
+          "usage_status": "complete"
+        },
+        {
+          "summary_sha256": "fd8efac04db6bcbbfa5184237eee75e1c87d97c325a6d14a15701a8988d73daf",
+          "native_sha256": "cc2d1b576ce8d0e0c10d8cd77ccf97cb38c05305ec96c3a8398165825547232a",
+          "usage_status": "complete"
+        }
+      ],
+      "mechanical_passed": true,
+      "semantic_passed": true
+    },
+    {
+      "case": "D06",
+      "arm": "baseline",
+      "actual_model": "gpt-6.1-terra",
+      "reasoning": "medium",
+      "turns": 1,
+      "costs": {
+        "input_tokens": 80503,
+        "cached_input_tokens": 71936,
+        "output_tokens": 228,
+        "seconds": 43.046,
+        "tool_items": 3,
+        "tool_output_bytes": 145
+      },
+      "receipts": [
+        {
+          "summary_sha256": "7bfd00dbdfb4d75ac7e96cbb79b3fcf3e880633446ae9a149fbcf7dfd48d5349",
+          "native_sha256": "03d343bf6cf55ca44e3ee1d3c1ecd8bfa842bc81783ecdf654f5a3032ea0e4eb",
+          "usage_status": "complete"
+        }
+      ],
+      "mechanical_passed": true,
+      "semantic_passed": true
+    },
+    {
+      "case": "D06",
+      "arm": "candidate",
+      "actual_model": "gpt-6.1-terra",
+      "reasoning": "medium",
+      "turns": 1,
+      "costs": {
+        "input_tokens": 60277,
+        "cached_input_tokens": 51840,
+        "output_tokens": 181,
+        "seconds": 36.917,
+        "tool_items": 2,
+        "tool_output_bytes": 145
+      },
+      "receipts": [
+        {
+          "summary_sha256": "371b88b1e7caf7035a7fefac36725f88a65bae57db72b49ae954b31659fa95b8",
+          "native_sha256": "5b494c2d8aa46f08f1de34622ad9eed3539cc13f3bf1f94341f65e5e967fd622",
+          "usage_status": "complete"
+        }
+      ],
+      "mechanical_passed": true,
+      "semantic_passed": true
+    }
+  ],
+  "semantic_review": {
+    "status": "passed_for_checked_paths",
+    "review_sha256": "2ef07cb04559433d2780331e754cc799e3172bfb791c9301cb1ace6462d84e0a",
+    "report": "../trials-5.4.md",
+    "limits": [
+      "One observation per case and arm, fixed order; both arms pass.",
+      "Format 5 tiering and targeted retrieval observed; format 4 only correction and typo regression controls.",
+      "No general reliability, monetary savings, physical storage tier, or complete user-task cost claim."
+    ]
+  },
+  "evidence_archive": "tiering-20261116-ejppf66v",
+  "baseline_commit": "7548a4749806dc5558bc999b7c108b47907e7630",
+  "frozen_experiments": [
+    {
+      "archive_subdirectory": "ssot-tiering-20261116-ejppf66v",
+      "plan_sha256": "fa566c06b116e309755b07ae54e9722b1406c7befa5d1e721f38a60af5864b66",
+      "harness_manifest_sha256": "7f0ba34683102d978a1b16956c539c789eedc143f2e50971b84e339e27a9fb57",
+      "baseline_manifest_sha256": "bf16e5228a819aabf084974db56d5ef75c239a19d6e67012ba186fec6fccc7e8",
+      "cases": {
+        "C09-tiering": {
+          "fixture_manifest_sha256": "f8fbb1d25fa428b095c8c3a22735a2d4d5c9c61537b7dba62f5c72c60569e9f3",
+          "tasks_sha256": "c233abd01086311df4853820b38cbc8ce43afe5302b7dd1dffb86d656faeec5c"
+        },
+        "D03": {
+          "fixture_manifest_sha256": "29aadaf8b64a0e63c1a6eabec2cf731448959feff5dace4fd6d16f3e4b4420df",
+          "tasks_sha256": "c47a104e48c264305ca08f792fcd7b52f70cde4c2b60bad75dad13364426d684"
+        },
+        "D06": {
+          "fixture_manifest_sha256": "5abd0a650d510156607033ec00716aaaba1dad4a862cbb345e1e52694aa4fc08",
+          "tasks_sha256": "a13da06a859aa1bf40296d7fe2733c234b9fd8f2137b2e0965f7274fef97e5c2"
+        }
+      }
+    },
+    {
+      "archive_subdirectory": "ssot-tiering-20261116-ejppf66v-r2",
+      "plan_sha256": "71f52979556d4058be2c5104e683eaef46db4ddf3ce2f56cfb4668639dbfe8d8",
+      "harness_manifest_sha256": "f569bd71fe46c4ad45055f5d3467322f4939823eba29e4eb048d5b418fc81bfe",
+      "baseline_manifest_sha256": "bf16e5228a819aabf084974db56d5ef75c239a19d6e67012ba186fec6fccc7e8",
+      "cases": {
+        "C09-tiering": {
+          "fixture_manifest_sha256": "f8fbb1d25fa428b095c8c3a22735a2d4d5c9c61537b7dba62f5c72c60569e9f3",
+          "tasks_sha256": "c233abd01086311df4853820b38cbc8ce43afe5302b7dd1dffb86d656faeec5c"
+        },
+        "C10-recall": {
+          "fixture_manifest_sha256": "afbffa0065a1f225c0cd0881752380442eb3f11faa4606014cc7ee578c9baeda",
+          "tasks_sha256": "3f6f2c330c53c5a03c963d16550ccc60005cf6445081b9aa837d436f9c61bfea"
+        },
+        "D03": {
+          "fixture_manifest_sha256": "29aadaf8b64a0e63c1a6eabec2cf731448959feff5dace4fd6d16f3e4b4420df",
+          "tasks_sha256": "c47a104e48c264305ca08f792fcd7b52f70cde4c2b60bad75dad13364426d684"
+        },
+        "D06": {
+          "fixture_manifest_sha256": "5abd0a650d510156607033ec00716aaaba1dad4a862cbb345e1e52694aa4fc08",
+          "tasks_sha256": "a13da06a859aa1bf40296d7fe2733c234b9fd8f2137b2e0965f7274fef97e5c2"
+        }
+      }
+    }
+  ],
+  "candidate_manifest_sha256": "b4d4f8a6f85896ac2ec659ffedbdf00b3c910be2a7ea0f10b0d6fc774d99288f",
+  "candidate_attachment_sha256": "6e436d9bf602aaeb8a3915c0367b5470b9fb5d34d4c3f5377fa2ab620c5e28cc",
+  "retained_reporting_failure": {
+    "case": "C09-tiering",
+    "arm": "baseline",
+    "experiment": "ssot-tiering-20261116-ejppf66v",
+    "failed_boundary": "reporting after both native sessions completed",
+    "cause": "ambiguous import of run module",
+    "reanalysis_sha256": "70bc9ef3eb12f74656b1ac085fc14d11cf5e416480e4cf32ea180940990d5174",
+    "fixture_and_baseline_manifest_equal": true,
+    "subject_replayed": false
+  },
+  "calliope": {
+    "preinstall_head": "9d286859dbf1d26a9a694ec4f2a047a666ac60e4",
+    "scope": "project",
+    "installed_protocol": "5.4",
+    "installed_file_byte_matches": 39,
+    "discovery_previously_worked_at_5_3": true,
+    "global_install_changed": false,
+    "preservation_receipt_sha256": "214449b7a5861f144ede640134ecc780369750169dea76f8e6cbf50d75fa2675",
+    "make_check_log_sha256": "974447fa6900294589bf3df10616e13f8dd6c36fc6e2f541ce14aa490fca0e87",
+    "agy": {
+      "session": "26dee1de-f798-4a52-9545-d0f70026c3e7",
+      "requested_model": "gemini-4-carbon-medium",
+      "actual_response_models": [
+        "gemini-4-carbon"
+      ],
+      "actual_effort": "not independently echoed",
+      "final_status": "CASCADE_RUN_STATUS_IDLE",
+      "catalog_skill_count": 6,
+      "actual_file_reads": [
+        ".agents/skills/ssot-doctor/SKILL.md",
+        ".agents/skills/ssot-preflight/SKILL.md",
+        "README.md",
+        ".agents/skills/ssot-preflight/references/context-spaces.md",
+        ".agents/skills/ssot-preflight/references/context-tiering.md",
+        ".agents/skills/ssot-preflight/references/memory-model.md",
+        ".agents/skills/ssot-doctor/references/structural-review.md",
+        "docs/创作示例/02_谁准长明/10_项目控制/00_索引.md",
+        "docs/创作示例/02_谁准长明/10_项目控制/01_当前工作边界与目录规则.md",
+        "docs/创作示例/02_谁准长明/10_项目控制/02_如今认下与仍留白.md",
+        "docs/创作示例/02_谁准长明/10_项目控制/03_悬案与资产账本.md",
+        "docs/创作示例/02_谁准长明/10_项目控制/04_设计决策历史/00_索引.md",
+        "docs/agents/01_运行协议/行文三档声口.md",
+        "docs/agents/01_运行协议/术语表.md",
+        ".agents/skills/ssot-doctor/assets/scripts/ssot-check.py",
+        "docs/创作示例/02_谁准长明/10_项目控制/04_设计决策历史/2026-11/2026-11-15_01.md",
+        "docs/agents/00_索引.md",
+        ".agents/skills/ssot-skill/SKILL.md"
+      ],
+      "receipt_sha256": "02f1544bcaa80157faf9b75326b5819eb9ddc8b509d081d9058028099cefd394",
+      "trajectory_sha256": "691d9904ae08dd1dee32563af59cf7a3ed9887647a49ca68b64cf2bf73696394"
+    },
+    "codex": {
+      "session": "01a1e2d8-2563-74f0-b53c-d23d832e063c",
+      "contexts": [
+        {
+          "model": "gpt-6.1-terra",
+          "effort": "medium",
+          "cwd": "/home/hpf/project/calliope"
+        }
+      ],
+      "catalog_skill_count": 6,
+      "actual_file_reads": [
+        ".codex/skills/ssot-doctor/SKILL.md",
+        ".codex/skills/ssot-preflight/SKILL.md",
+        ".codex/skills/ssot-preflight/references/context-tiering.md"
+      ],
+      "receipt_sha256": "cbbf86fba379b30a06f47be5624ecc8a5686ff4db35edc787af9131cb83bfbb2",
+      "native_sha256": "1e72e3901026efbfe8140686b5a126c43b3a7581ff093887beaabecd09ba4a84",
+      "catalog_probe_sha256": "a333bbef1799cee6ec3109927e1b65a631e4ceb5854ce2ace94de7513217cb7a"
+    }
+  }
+}

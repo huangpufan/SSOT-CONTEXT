@@ -21,6 +21,8 @@ The project was previously named SSOT-SKILL; old skill names still work ([detail
 
 ## Principles
 
+- **Keep daily reading small and history recoverable.** Hot task context, maintained topic owners and cold sources have different access costs. [Tiering and reconciliation](./skills/ssot-preflight/references/context-tiering.md) guide requested consolidation, partial replacements and frozen dependencies without creating another set of owners. Actual context eviction belongs to the host.
+
 - **Evolve from long-term context needs.** Needs anywhere within a development project, or beyond software and our own projects, can guide improvements. Start with what people need to understand, do or preserve over time; the [design direction](./DESIGN.md#accepted-direction-evolve-from-context-needs) explains how needs become tested changes.
 - **One fact, one owner.** SSOT means Single Source of Truth: each fact has one document responsible for keeping it correct, and other documents link to it.
 - **People's rules stay people's decisions.** Rules you confirm are listed in the entry. The agent works within them, never changes them, and stops to ask when a task conflicts with one.
@@ -101,6 +103,8 @@ The skills act only when the agent loads them. They do not collect material in t
 Corrections compare the saved result with necessary earlier source excerpts as well as the new exchange, within current retention authority. The [5.3 trials](./tests/context/trials-5.3.md) record source-preservation failures and bounded checks of this readback rule.
 
 ## Supported agents
+
+For Antigravity App, use `--agent agy`; project installation shares `.agents/skills` with Codex. The [install guide](./INSTALL.md#when-a-skill-appears-unavailable) distinguishes App/CLI/IDE locations and checks actual session discovery.
 
 The installer knows the installation paths for **70+ agents**, including Claude Code, Codex, Cursor, Windsurf, Gemini CLI, GitHub Copilot, OpenCode and Cline. A known path does not prove identical behavior, so after installing, restart the agent and confirm it finds the skills. To list every key and path:
 

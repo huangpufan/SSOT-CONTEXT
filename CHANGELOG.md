@@ -23,6 +23,19 @@ Entries up to 2.86 were derived from the v2 protocol-upgrade ledger, which is pr
 ### Changed
 - Cold-handoff trials now default to an explicit persistence goal shared by plain/protocol writers, retain automatic capture as a separate estimand, and add an independently authored museum confirmation. The [deepening record](docs/benchmark-deepening-2026-11-12.md) distinguishes measurement repairs, actual subject outcomes and evidence limits; the SSOT protocol remains 5.3.
 
+## [5.4] - 2026-11-16
+
+### Added
+- Conditional hot/warm/cold context guidance for oversized entries, repeated reconstruction from history and requested consolidation. Existing owners and source records remain authoritative; targeted historical lookup preserves low-frequency constraints and partial exceptions. See the [design account](docs/context-tiering-design-2026-11-16.md) and [native trials](tests/context/trials-5.4.md).
+- Antigravity App installation key `antigravity-app` (alias `agy`) uses the shared `~/.gemini/config/skills` global location and existing `.agents/skills` project path. Standalone IDE and legacy CLI keys retain their supported global locations and scoped upgrade/uninstall behavior. Installation guidance distinguishes file delivery, session discovery and actual skill reads.
+
+### Changed
+- Format 4 and format 5 share reconciliation of affected owners, live summaries, templates/examples, partial historical replacements and frozen dependencies. Immediate decision capture also refreshes misleading entry statements and deferred-use boundaries before dependent work. General-space wiring explicitly loads selected skill instructions and reports unavailable skills.
+- Runtime protocol allowance increases from 17,000 to 18,000 words for this conditional guidance; other budgets and consumer formats are unchanged. No host context eviction, storage migration or general token-saving guarantee is introduced.
+
+### Fixed
+- Native context cost reporting resolves its helper by path instead of importing an ambiguous `run` module. A real completed baseline exposed the CLI-only collision; original observations are retained and reanalysed without replaying paid calls.
+
 ## [5.3] - 2026-11-12
 
 ### Changed

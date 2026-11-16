@@ -21,6 +21,8 @@
 
 ## 原则
 
+- **日常少读，需要时找得回。** 当前任务工作集、持续维护的主题正文和冷历史各有访问方式。[分层与变更对账](./skills/ssot-preflight/references/context-tiering.md)指导按需整理、局部替代和冻结依赖，沿用现有 owner。已经进入会话的内容何时退出上下文，由宿主控制。
+
 - **从长期 context 需求出发演进。** 开发项目内的任何事情，以及软件之外、自有项目之外的需求，都可以推动完善。先看人们长期需要理解、完成或保留什么；[演进方向](./DESIGN.md#accepted-direction-evolve-from-context-needs)说明怎样把需求变成经过验证的改进。
 - **一条事实，一个 owner。** SSOT 即 Single Source of Truth（单一事实源）：每条事实有一篇负责维护它的文档，其他文档通过链接引用。
 - **人定的规则始终由人决定。** 你确认过的规则登记在入口里。Agent 在规则内工作，不会改规则；任务和规则冲突时，它会停下来问你。
@@ -101,6 +103,8 @@ Skill 只在 Agent 加载它们时生效。它们不会在后台采集材料，�
 更正决定后，复核保存结果时既对照新交流，也在当前保留授权范围内核对必要的早期来源摘录。[5.3 试验](./tests/context/trials-5.3.md)记录了原话丢失的失败，以及对这条复核规则的有限验证。
 
 ## 支持的 Agent
+
+Antigravity App 使用 `--agent agy`，项目安装与 Codex 共用 `.agents/skills`。[安装指南](./INSTALL.md#when-a-skill-appears-unavailable)区分 App、CLI 和独立 IDE 的位置，并说明如何核验实际会话发现。
 
 安装器登记了 **70 多种 Agent** 的安装路径，包括 Claude Code、Codex、Cursor、Windsurf、Gemini CLI、GitHub Copilot、OpenCode 和 Cline。登记了路径不等于行为完全一致，安装后请重启 Agent，确认它能发现这些 Skill。查看全部标识与路径：
 

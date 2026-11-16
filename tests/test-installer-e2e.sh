@@ -779,5 +779,41 @@ else
 fi
 
 echo
+# Scenario 26: Antigravity App and Codex share one symlinked project owner.
+SCENARIO26="$WORK_ROOT/scenario26"
+mkdir -p "$SCENARIO26/project/.codex/skills/unrelated" "$SCENARIO26/project/.agents"
+ln -s ../.codex/skills "$SCENARIO26/project/.agents/skills"
+printf 'preserve unrelated skill\n' > "$SCENARIO26/project/.codex/skills/unrelated/SKILL.md"
+HOME="$SCENARIO26" SOURCE_DIR="$PROJECT_ROOT" \
+  bash -c "cd '$SCENARIO26/project' && bash '$INSTALLER' --non-interactive --agent agy --scope project --lang zh --yes" \
+  >/dev/null 2>&1 || fail "scenario26 project install exit code"
+assert_file "scenario26: App alias reaches shared physical owner" "$SCENARIO26/project/.codex/skills/ssot-preflight/references/context-tiering.md"
+[[ -L "$SCENARIO26/project/.agents/skills" ]] && pass "scenario26: shared symlink preserved" || fail "scenario26: shared symlink replaced"
+assert_grep "scenario26: unrelated skill preserved" "$SCENARIO26/project/.codex/skills/unrelated/SKILL.md" 'preserve unrelated'
+HOME="$SCENARIO26" SOURCE_DIR="$PROJECT_ROOT" \
+  bash -c "cd '$SCENARIO26/project' && bash '$INSTALLER' --upgrade --agent codex,agy --scope project" \
+  >/dev/null 2>&1 || fail "scenario26 shared upgrade exit code"
+assert_file "scenario26: shared upgrade remains readable" "$SCENARIO26/project/.agents/skills/ssot-closeout/SKILL.md"
+
+# Scenario 27: App defaults and supported legacy surfaces remain separate targets.
+SCENARIO27="$WORK_ROOT/scenario27"
+mkdir -p "$SCENARIO27"
+HOME="$SCENARIO27" SOURCE_DIR="$PROJECT_ROOT" \
+  bash "$INSTALLER" --non-interactive --agent agy --scope global --lang en --yes \
+  >/dev/null 2>&1 || fail "scenario27 App global install exit code"
+assert_file "scenario27: App uses shared config discovery" "$SCENARIO27/.gemini/config/skills/ssot-preflight/SKILL.md"
+assert_no_dir "scenario27: no legacy App copy" "$SCENARIO27/.gemini/antigravity/skills"
+HOME="$SCENARIO27" SOURCE_DIR="$PROJECT_ROOT" \
+  bash "$INSTALLER" --non-interactive --agent antigravity,antigravity-cli --scope global --lang en --yes \
+  >/dev/null 2>&1 || fail "scenario27 legacy global install exit code"
+assert_file "scenario27: IDE legacy key remains addressable" "$SCENARIO27/.gemini/antigravity/skills/ssot-preflight/SKILL.md"
+assert_file "scenario27: CLI legacy key remains addressable" "$SCENARIO27/.gemini/antigravity-cli/skills/ssot-preflight/SKILL.md"
+HOME="$SCENARIO27" SOURCE_DIR="$PROJECT_ROOT" \
+  bash "$INSTALLER" --uninstall --agent agy --scope global --yes \
+  >/dev/null 2>&1 || fail "scenario27 scoped uninstall exit code"
+assert_no_file "scenario27: scoped App uninstall removed its bundle" "$SCENARIO27/.gemini/config/skills/ssot-preflight/SKILL.md"
+assert_file "scenario27: scoped uninstall preserves legacy IDE" "$SCENARIO27/.gemini/antigravity/skills/ssot-preflight/SKILL.md"
+assert_file "scenario27: scoped uninstall preserves legacy CLI" "$SCENARIO27/.gemini/antigravity-cli/skills/ssot-preflight/SKILL.md"
+
 echo "=== RESULT: pass=$PASS fail=$FAIL ==="
 [[ $FAIL -eq 0 ]] && exit 0 || exit 1

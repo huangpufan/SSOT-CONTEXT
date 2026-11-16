@@ -184,9 +184,17 @@ def run_arm(args, root, plan):
                 prompt = task
                 if turn == 1:
                     prompt = prompt_for(task)
-                summary = bench.transport.execute_turn(root, directory, repo, prompt, turn, plan["cap"],
-                    sandbox_command=sandbox, codex_home=home, capture_checkpoints=True, model=model,
+                cold_consumer = case == cases.tiering_case.CASE and turn == 2
+                evidence_dir = directory / "consumer" if cold_consumer else directory
+                session_home = directory / "consumer-home" if cold_consumer else home
+                if cold_consumer:
+                    evidence_dir.mkdir()
+                    prompt = prompt_for(task)
+                summary = bench.transport.execute_turn(root, evidence_dir, repo, prompt, 1 if cold_consumer else turn, plan["cap"],
+                    sandbox_command=sandbox_for(session_home) if cold_consumer else sandbox, codex_home=session_home, capture_checkpoints=True, model=model,
                     allow_no_git=not (repo / ".git").exists())
+                if cold_consumer:
+                    summary["evidence_directory"] = "consumer"
                 summaries.append(summary)
                 if summary["returncode"] or not summary["completed"]:
                     break

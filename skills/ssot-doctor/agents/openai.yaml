@@ -1,4 +1,4 @@
 interface:
   display_name: "SSOT Doctor"
   short_description: "Check, review, or catch up SSOT"
-  default_prompt: "Use $ssot-doctor to check this space's maintained context against domain evidence or catch it up from supplied sources."
+  default_prompt: "Use $ssot-doctor to check maintained context against domain evidence, review costly reading and tiering, or catch it up from supplied sources."

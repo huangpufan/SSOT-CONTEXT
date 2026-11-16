@@ -63,6 +63,7 @@ jobs:
           python3 tests/context/test_context_orchestration.py
           python3 tests/context/test_longchain.py
           python3 tests/context/test_queue_confirmation.py
+          python3 tests/context/test_tiering.py
 
   mermaid-templates:
     name: parse template diagrams

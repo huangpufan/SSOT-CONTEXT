@@ -3,12 +3,13 @@ import importlib.util
 from pathlib import Path
 import scenarios
 import source_cases
+import tiering_case
 
 HERE = Path(__file__).resolve().parent
 SPEC = importlib.util.spec_from_file_location("continuity", HERE.parent / "continuity_cases.py")
 continuity = importlib.util.module_from_spec(SPEC)
 SPEC.loader.exec_module(continuity)
-CASES = ("C01", "D03", *scenarios.CASES, "C06", "C07")
+CASES = ("C01", "D03", *scenarios.CASES, "C06", "C07", tiering_case.CASE, tiering_case.RECALL_CASE)
 
 MATERIAL = {
     "SPACE.md": """# 一个可持续的生活空间
@@ -34,6 +35,12 @@ TASK = """这里是我的长期生活与工作空间，不是软件仓库，没�
 
 
 def build(repo, case):
+    if case == tiering_case.RECALL_CASE:
+        tiering_case.build_recall(repo, scenarios.write)
+        return None
+    if case == tiering_case.CASE:
+        tiering_case.build(repo, scenarios.write)
+        return None
     if case in ("C06", "C07"):
         source_cases.build(repo, scenarios.write, interrupted=case == "C07")
         return None
@@ -50,6 +57,10 @@ def build(repo, case):
 
 
 def tasks(case):
+    if case == tiering_case.RECALL_CASE:
+        return [tiering_case.RECALL_TASK]
+    if case == tiering_case.CASE:
+        return tiering_case.TASKS
     if case in ("C06", "C07"):
         return source_cases.tasks(case)
     if case == "C01":
