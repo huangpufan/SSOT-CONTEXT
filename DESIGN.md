@@ -6,6 +6,16 @@ This file records the design inherited from version 3 and the ownership changes 
 
 A new agent often lacks the history of the work. SSOT-CONTEXT maintains small routed context: what a subject is for, how its parts relate, which choices people established, why they matter and where the traps are. It began with development repositories and now adds explicitly declared research, creative, personal and organizational spaces. Existing development format 4 remains supported. General format 5 is defined in [context-spaces.md](./skills/ssot-preflight/references/context-spaces.md); its [accepted direction](./docs/context-generalization-2026-11-10.md) preserves development protections and distinguishes planned work from observed results. Reading and upkeep should justify their cost on whole tasks.
 
+## Accepted direction: evolve from context needs
+
+On 2026-11-16 the user set the continuing direction for this project: “我们会不断从任意的对于长期维护的 context 的需求出发，注意，是从需求出发，然后去完善和增强我们的这个 skill。我所开发的项目里面的任何东西都算，当然，不局限于我所开发的项目”. This governs how maintainers discover and evaluate improvements to the bundle. Any need to maintain context over time can inform that work: everything within a development project is eligible, as are needs outside software and outside the user's own projects. The domains above are examples, not an exhaustive list.
+
+Begin with whose context needs to survive, what they need to understand, do or preserve later, how the situation changes, and what is lost when context fails. Authorized experiences and exact expressions can be valuable in their own right. Examine how the current skills, content owners and host tools serve that need before proposing a feature or rule. An existing route may already suffice; an observed gap may belong to a consumer document, template, integration, evaluation method or shared protocol. Choose the responsible owner and the smallest reliable improvement, preserving the context needed to understand it.
+
+Keep investigating as real use exposes new needs. For each proposed improvement, retain enough of its motivating scenario, current support, remaining uncertainty and observable success to test it; use an existing task or research owner rather than requiring a new ledger in every consumer. Distinguish demonstrated failures from untested needs and deliberate capability boundaries. [Protocol review](./CONTRIBUTING.md#changing-the-protocol) and the [evaluation method](./tests/benchmark/METHOD.md) determine whether a shared change earns its whole-task cost. A request for discussion yields recommendations until implementation is authorized. Broad relevance does not grant access to other projects, collect private material, or change consumer owners.
+
+The [2026-11-16 needs review](./docs/context-needs-review-2026-11-16.md) applies this direction to the current bundle; its proposed investigations are not shipped capabilities.
+
 ## What happened in v2
 
 Version 2 grew from 0.8 MB of skills (2.50, June 2026) to 1.9 MB (2.86, October 2026), and its lint script grew from 50 KB to 400 KB of Bash. There were 36 protocol versions in four months. Most later commits reconciled clauses that earlier fixes had made inconsistent.

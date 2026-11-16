@@ -21,6 +21,7 @@ The project was previously named SSOT-SKILL; old skill names still work ([detail
 
 ## Principles
 
+- **Evolve from long-term context needs.** Needs anywhere within a development project, or beyond software and our own projects, can guide improvements. Start with what people need to understand, do or preserve over time; the [design direction](./DESIGN.md#accepted-direction-evolve-from-context-needs) explains how needs become tested changes.
 - **One fact, one owner.** SSOT means Single Source of Truth: each fact has one document responsible for keeping it correct, and other documents link to it.
 - **People's rules stay people's decisions.** Rules you confirm are listed in the entry. The agent works within them, never changes them, and stops to ask when a task conflicts with one.
 - **Extract knowledge selectively; preserve records you authorize.** Keep intent, how the parts fit together, decisions and their reasons, rejected options and traps. Field lists, version numbers and logs stay in their originals; link to original documents and private conversations. In a general space, experiences and exact words you ask to preserve can stay with their authorized owner even without future decision value; see the [space model](./skills/ssot-preflight/references/context-spaces.md#what-the-material-means).
