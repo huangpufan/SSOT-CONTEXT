@@ -1,11 +1,13 @@
 #!/usr/bin/env python3
 """Offline oracle/fixture checks. Never invokes a model."""
+from argparse import Namespace
 import json
 from pathlib import Path
 import tempfile
 import unittest
 
 import cases
+import delegation_case as delegation
 import oracle
 import run
 
@@ -80,6 +82,49 @@ class ContextChecks(unittest.TestCase):
         frozen = run.manifest(folder)
         (folder / "oracle.py").write_text("changed")
         self.assertNotEqual(frozen, run.manifest(folder))
+
+    def test_prepare_accepts_a_git_fixture_as_the_first_case(self):
+        output = self.root / "prepared"
+        run.prepare(Namespace(
+            output=output, baseline=Path(__file__).resolve().parents[2],
+            baseline_ref="test", cases=[delegation.MIXED], connector=None,
+            model="gpt-6.1-terra", cap=1, concurrency=1,
+        ))
+        plan = json.loads((output / "plan.json").read_text())
+        self.assertTrue((output / "fixtures" / delegation.MIXED / ".git").is_dir())
+        self.assertEqual(plan["cases"][delegation.MIXED]["tasks"], delegation.tasks(delegation.MIXED))
+
+    def test_delegated_capture_checks_source_separation_and_scope(self):
+        repo = self.root / "repo"
+        head = cases.build(repo, delegation.MIXED)
+        before = oracle.snapshot(repo)
+        owner = repo / delegation.OWNER
+        plan = repo / delegation.PLAN
+        owner.write_text(before[delegation.OWNER] +
+                         f'\nSource {delegation.SOURCE_ID}. Question: {delegation.QUESTION}\n'
+                         f'Owner replied: "{delegation.HUMAN}"\n')
+        plan.write_text(f"Interactive Markdown only.\n{delegation.TASK_ONLY}\n")
+        self.assertTrue(oracle.grade(repo, delegation.MIXED, before, head)["mechanical_passed"])
+        approved = owner.read_text()
+        owner.write_text(approved.replace(delegation.SOURCE_ID, "coordinator"))
+        self.assertFalse(oracle.grade(repo, delegation.MIXED, before, head)["checks"]["actual_source_retained"])
+        owner.write_text(approved + f'The owner permanently requires "{delegation.TASK_ONLY}".\n')
+        self.assertFalse(oracle.grade(repo, delegation.MIXED, before, head)["checks"]["temporary_label_absent_from_memory"])
+        owner.write_text(approved)
+        plan.write_text("Interactive Markdown only.\n")
+        self.assertFalse(oracle.grade(repo, delegation.MIXED, before, head)["checks"]["temporary_label_used_in_plan"])
+
+    def test_unverified_delegation_can_finish_the_independent_typo(self):
+        repo = self.root / "repo"
+        head = cases.build(repo, delegation.UNVERIFIED)
+        before = oracle.snapshot(repo)
+        self.assertFalse(oracle.grade(repo, delegation.UNVERIFIED, before, head)["mechanical_passed"])
+        (repo / "note.txt").write_text("maintenance\n")
+        self.assertFalse(oracle.grade(repo, delegation.UNVERIFIED, before, head)["mechanical_passed"])
+        (repo / "note.txt").write_text(before["note.txt"].replace("maintenence", "maintenance"))
+        self.assertTrue(oracle.grade(repo, delegation.UNVERIFIED, before, head)["mechanical_passed"])
+        (repo / delegation.OWNER).write_text("The coordinator's proposal was accepted.\n")
+        self.assertFalse(oracle.grade(repo, delegation.UNVERIFIED, before, head)["mechanical_passed"])
 
     def test_all_additional_fixtures_build_without_model_calls(self):
         for case in cases.scenarios.CASES:

@@ -10,6 +10,7 @@ import shlex
 import importlib.util
 
 import cases
+import delegation_case
 import source_oracle
 import tiering_case
 
@@ -34,6 +35,13 @@ def snapshot(repo):
 
 def grade(repo, case, before, watermark, run_dir=None, turns=0):
     after = snapshot(repo)
+    if case in delegation_case.CASES:
+        checks, review = delegation_case.grade(case, before, after)
+        if run_dir and case == delegation_case.MIXED:
+            checks["capture_readback_before_plan"] = cases.continuity.capture_order(
+                run_dir, 1, delegation_case.HUMAN
+            )
+        return {"checks": checks, "mechanical_passed": all(checks.values()), "semantic_review": review}
     if case == tiering_case.RECALL_CASE:
         return tiering_case.grade_recall(before, after)
     if case == tiering_case.CASE:

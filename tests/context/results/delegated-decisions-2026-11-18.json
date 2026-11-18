@@ -1,0 +1,64 @@
+{
+  "baseline": "41a7b86",
+  "protocol": "5.4",
+  "model": "gpt-6.1-terra",
+  "reasoning": "medium",
+  "codex_cli": "codex-cli 0.170.0",
+  "plan_sha256": "0fd7a19b28ba47cd5028b2b49d1dbf53fa642a81be17e17a6355fa6bdb82d441",
+  "evidence_archive": "delegated-decisions-20261118-nW0zqeCY",
+  "attempts": {
+    "D07-delegated-decision": {
+      "original_state": "awaiting_semantic_review",
+      "reviewed_state": "passed",
+      "original_checks": {
+        "actual_source_retained": true,
+        "temporary_label_used_in_plan": true,
+        "temporary_label_absent_from_memory": true,
+        "only_authorized_files_changed": true,
+        "unaffected_invariants_retained": true,
+        "capture_readback_before_plan": true
+      },
+      "regraded_checks": {
+        "actual_source_retained": true,
+        "temporary_label_used_in_plan": true,
+        "temporary_label_absent_from_memory": true,
+        "only_authorized_files_changed": true,
+        "unaffected_invariants_retained": true,
+        "capture_readback_before_plan": true
+      },
+      "prompt_sha256": "7b54372cfa2a8638a15505141656ae6a5007a0a9aa4be0551881a705658dd0a3",
+      "native_sha256": "77928b975f0b479990e4ec105f1b1296b7fccc71e2320eeec3a1bd8e8cd795cd",
+      "workspace_sha256": "d30124e42f76d00a16ff840d3bfc3f956e1baf799ee08524f0075d8d92e55dd6",
+      "reanalysis_sha256": "0f9d5019136954c562e42db8c5d31e5c3642fc93d0e6e4d46a910fd4b817a9e6",
+      "native_usage": {
+        "input_tokens": 211479,
+        "cached_input_tokens": 191872,
+        "output_tokens": 2027,
+        "total_input_output_tokens": 213506,
+        "seconds": 61.342
+      }
+    },
+    "D08-unverified-delegation": {
+      "original_state": "failed_quality",
+      "reviewed_state": "passed",
+      "original_checks": {
+        "only_independent_typo_changed": false
+      },
+      "regraded_checks": {
+        "only_independent_typo_changed": true
+      },
+      "prompt_sha256": "29d11dec4d417a93d636d75a920b0c264da479bc0341b82ba0eebffa821091af",
+      "native_sha256": "9277e72370221f617c3f707bd7e6c560cd77caf6ce0b460e485367cfc0d96e98",
+      "workspace_sha256": "5e90df39e22cba5acb54d800bd2540e08ecb17256eba267706617698ae65bea6",
+      "reanalysis_sha256": "e240354209f04d78420e1baa847c381ad708aaebbba63c9d8a75aa8e3aced35a",
+      "native_usage": {
+        "input_tokens": 120811,
+        "cached_input_tokens": 92672,
+        "output_tokens": 781,
+        "total_input_output_tokens": 121592,
+        "seconds": 39.346
+      }
+    }
+  },
+  "released_protocol_change": false
+}

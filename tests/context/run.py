@@ -78,9 +78,11 @@ def prepare(args):
         shutil.copy2(HERE.parent / name, harness / name)
     bundle = root / "bundles/baseline"
     shutil.copytree(args.baseline / "skills", bundle / "skills", ignore=shutil.ignore_patterns("__pycache__"))
+    fixtures = root / "fixtures"
+    fixtures.mkdir()
     fixture_data = {}
     for case in args.cases:
-        repo = root / "fixtures" / case
+        repo = fixtures / case
         watermark = cases.build(repo, case)
         fixture_data[case] = {"manifest": manifest(repo), "watermark": watermark, "tasks": cases.tasks(case),
                               "before": oracle.snapshot(repo)}
