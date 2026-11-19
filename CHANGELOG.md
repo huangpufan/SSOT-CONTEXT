@@ -23,6 +23,12 @@ Entries up to 2.86 were derived from the v2 protocol-upgrade ledger, which is pr
 ### Changed
 - Cold-handoff trials now default to an explicit persistence goal shared by plain/protocol writers, retain automatic capture as a separate estimand, and add an independently authored museum confirmation. The [deepening record](docs/benchmark-deepening-2026-11-12.md) distinguishes measurement repairs, actual subject outcomes and evidence limits; the SSOT protocol remains 5.3.
 
+## [5.5] - 2026-11-19
+
+### Changed
+- Preflight locates the entry format and headings before opening relevant sections. For large development entries it searches the full scope of the invariant register, then reads the applicable rows and owners with their exceptions. See the [large-entry trial evidence](docs/large-entry-preflight-2026-11-19.md).
+- The bilingual development instruction blocks route the reader to preflight before opening the entry. The installation guide explains how to refresh the block and verify the active skill version in independent Git worktrees.
+
 ## [5.4] - 2026-11-16
 
 ### Added

@@ -167,6 +167,8 @@ python3 tools/link-local.py --base /path/to/project/.agents/skills \
 
 The first command only prints a plan. Links point directly to the checkout's skill directories, including both `assets/templates/en/` and `assets/templates/zh/`; choose the consumer's declared documentation language when using those templates. This avoids a second generated copy that can become stale. Verify link targets, tools, template reads and a fresh agent session after conversion. A local source edit through any linked installation changes the shared source; maintain skill changes in that owner.
 
+A linked installation applies to the paths you selected. A separate Git worktree can still get older tracked copies of the same skills from its checked-out commit. Verify the installation from the worktree where the agent will actually start, including the version it opens.
+
 If installed copies are tracked by Git, conversion appears as deleted tracked files and new directory links. Agree whether the links are local-only or part of the repository's distribution before committing them. Do not hide changes with index flags or push machine-dependent paths without authorization. To restore a local-only conversion, use its exact saved paths and originals; do not reset unrelated work.
 
 ## Update or remove an existing installation
@@ -191,7 +193,7 @@ A scoped upgrade honors both `--agent` and `--scope`. Bare `--upgrade` scans eve
 
 After removal, verify the bundle files are absent. Preserve generated `SSOT/` documentation and unrelated skills. Reconcile obsolete trigger instructions with any remaining SSOT installation; the installer itself does not edit instruction files. Remove the temporary installer directory afterward.
 
-After an update, repeat verification and reconcile the instruction block, then request a session restart. Installing new skill files never changes the repository's `SSOT/` by itself.
+After an update, [reconcile the managed instruction block](#4-wire-the-skills-into-the-repos-agent-instructions-file), restart the session and verify discovery. The development block supplied by 5.5 routes the reader to preflight before opening the entry. Installing new skill files never changes the repository's `SSOT/` by itself.
 
 ### Failed or interrupted replacement
 

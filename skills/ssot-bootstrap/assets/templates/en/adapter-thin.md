@@ -5,9 +5,9 @@ Add the block below to the repository's agent instruction file (`AGENTS.md`, `CL
 <!-- SSOT-CONTEXT:BEGIN -->
 ## SSOT workflow
 
-This repository routes its long-term memory through `SSOT/README.md` to canonical repository owners. Use the SSOT skills automatically; users describe tasks normally.
+Use the SSOT skills automatically for this repository. Users describe tasks normally.
 
-- **Start:** before substantive work (code, configuration, documentation, review, debugging, or planning), use `$ssot-preflight`.
+- **Start:** for substantive work (code, configuration, documentation, review, debugging, or planning), load `$ssot-preflight` before opening `SSOT/README.md`. Start the entry with its header and headings.
 - **Decision now:** when the user confirms, corrects, rejects, or limits a durable choice, use `$ssot-closeout` immediately, including discussion-only work; save and reread the decision before dependent work.
 - **Finish:** before the final response or commit of a substantive change batch, use `$ssot-closeout`. It writes nothing when no durable fact changed.
 - **Create or migrate:** use `$ssot-bootstrap`, only with the user's agreement.

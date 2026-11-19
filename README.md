@@ -61,7 +61,7 @@ The script installs the skills and prints an instruction block, but does not edi
 
 Describe tasks normally. Four skills handle the workflow automatically:
 
-- [`ssot-preflight`](./skills/ssot-preflight/SKILL.md) reads the entry and the relevant owners before substantive work.
+- [`ssot-preflight`](./skills/ssot-preflight/SKILL.md) reads the routes, applicable constraints and relevant owners before substantive work. Long development entries are read by section.
 - [`ssot-bootstrap`](./skills/ssot-bootstrap/SKILL.md) creates or migrates the context, only with your agreement.
 - [`ssot-closeout`](./skills/ssot-closeout/SKILL.md) saves accepted decisions as they happen and records durable changes when a batch finishes. When nothing durable changed, it writes nothing.
 - [`ssot-doctor`](./skills/ssot-doctor/SKILL.md) checks health and catches the context up with work done outside this workflow.
@@ -123,7 +123,7 @@ When starting agents inside independent child repositories, a parent installatio
 Read https://raw.githubusercontent.com/huangpufan/SSOT-CONTEXT/main/INSTALL.md and update SSOT-CONTEXT for this agent in the current project. Preserve the template language.
 ```
 
-Updating never rewrites your context documents. Existing repositories stay on format 4; writing a format-5 space needs bundle 5.0 or newer, so upgrade every agent that writes to it. Manual commands, uninstalling, recovery from an interrupted install, and migration from 2.x or 3.x are in the [install guide](./INSTALL.md#update-or-remove-an-existing-installation).
+After updating the skill files, refresh the repository’s managed instruction block and restart the agent. Updating never rewrites your context documents. Existing repositories stay on format 4; writing a format-5 space needs bundle 5.0 or newer, so upgrade every agent that writes to it. Manual commands, uninstalling, recovery from an interrupted install, and migration from 2.x or 3.x are in the [install guide](./INSTALL.md#update-or-remove-an-existing-installation).
 
 ## Documentation
 

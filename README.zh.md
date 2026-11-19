@@ -61,7 +61,7 @@ curl -fsSL https://raw.githubusercontent.com/huangpufan/SSOT-CONTEXT/main/instal
 
 照常描述任务即可，四个 Skill 会自动处理工作流程：
 
-- [`ssot-preflight`](./skills/ssot-preflight/SKILL.md)：实质性工作开始前，读入口和相关 owner。
+- [`ssot-preflight`](./skills/ssot-preflight/SKILL.md) 在实质性工作开始前读取任务路由、适用约束及相关权威来源。开发仓库的长入口按章节读取。
 - [`ssot-bootstrap`](./skills/ssot-bootstrap/SKILL.md)：建立或迁移 context，必须经你同意。
 - [`ssot-closeout`](./skills/ssot-closeout/SKILL.md)：决定被接受时立即保存，一批工作收尾时记录长期变化；没有长期变化就什么都不写。
 - [`ssot-doctor`](./skills/ssot-doctor/SKILL.md)：检查健康，并补上在这个流程之外完成的工作。
@@ -123,7 +123,7 @@ curl -fsSL https://raw.githubusercontent.com/huangpufan/SSOT-CONTEXT/main/instal
 请阅读 https://raw.githubusercontent.com/huangpufan/SSOT-CONTEXT/main/INSTALL.md，为当前 Agent 更新本项目的 SSOT-CONTEXT，保留原模板语言。
 ```
 
-更新不会改写你的 context 文档。已有仓库继续使用 format 4；写入 format 5 空间需要 bundle 5.0 或更新版本，所以每个会写入它的 Agent 都要升级。手动命令、卸载、安装中断后的恢复，以及从 2.x 或 3.x 迁移，见[安装指南](./INSTALL.md#update-or-remove-an-existing-installation)。
+更新技能文件后，刷新仓库中受管理的指令块，再重启 Agent。更新不会改写你的 context 文档。已有仓库继续使用 format 4；写入 format 5 空间需要 bundle 5.0 或更新版本，所以每个会写入它的 Agent 都要升级。手动命令、卸载、安装中断后的恢复，以及从 2.x 或 3.x 迁移，见[安装指南](./INSTALL.md#update-or-remove-an-existing-installation)。
 
 ## 文档
 

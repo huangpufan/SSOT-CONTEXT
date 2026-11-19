@@ -1,4 +1,4 @@
 interface:
   display_name: "SSOT Preflight"
-  short_description: "Read relevant repository or space context"
+  short_description: "Find and read the context sections a task needs"
   default_prompt: "Use $ssot-preflight before substantive work in this repository or declared context space."
