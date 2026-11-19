@@ -42,7 +42,7 @@ General bootstrap is done when its agreed scope has a usable entry/routes, real-
 
 ## Mechanical check
 
-Run `python3 <ssot-doctor>/assets/scripts/ssot-check.py ENTRY`, replacing the skill directory and selected entry path with their actual locations; [the checker](../../ssot-doctor/assets/scripts/ssot-check.py) also accepts the entry's directory. Its format-5 scope is the entry and directly linked local owners, not every original or external space. Use the plain invocation for structural checks. Add `--since COMMIT` only for a requested Git comparison; unavailable history makes that comparison incomplete, never a reason to create Git. Report errors and incomplete scope, and repair authorized errors before finishing.
+Run `python3 <ssot-doctor>/assets/scripts/ssot-check.py ENTRY`, passing the declared entry file to [the checker](../../ssot-doctor/assets/scripts/ssot-check.py). A directory selects its own `README.md`. Verify the entry path in the result. Its format-5 scope is the entry and directly linked local owners, not every original or external space. Use the plain invocation for structural checks. Add `--since COMMIT` only for a requested Git comparison; unavailable history makes that comparison incomplete, never a reason to create Git. Report errors and incomplete scope, and repair authorized errors before finishing.
 
 ## Stop using, supersede, withdraw or delete
 

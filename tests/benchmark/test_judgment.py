@@ -125,6 +125,23 @@ class JudgmentTest(unittest.TestCase):
         self.assertNotIn('creation/poster.md', instructions)
         self.assertIn('does not unlock a frozen file', instructions)
 
+    def test_research_revision_transfers_sources_and_checks_the_later_action(self):
+        c = cases.contract('research-revision', 0)
+        repo = self.root / 'research'
+        cases.build(repo, c)
+        self.assertEqual(len(cases.prompts(c, 'explicit')), 3)
+        self.assertEqual(cases.handoff_files(repo, c), j.fixture(c['case'])['fixtures']['initial'])
+        before = h.T.tree_snapshot(repo)
+        (repo / c['output']).write_text('Draft submitted.')
+        def checks(arm):
+            return cases.consumer_change_checks(c, before, h.T.tree_snapshot(repo), arm)
+        self.assertFalse(checks('baseline')['required_actions_observed'])
+        (repo / 'creation/card.md').write_text('Revised card for the pilot.')
+        self.assertTrue(all(checks('baseline').values()))
+        self.assertFalse(checks('stale')['consumer_preserved_handoff'])
+        (repo / 'creation/poster.md').write_text('Revised print run.')
+        self.assertFalse(checks('baseline')['consumer_preserved_handoff'])
+
     def test_partial_unlock_requires_actual_action_without_unlocking_poster(self):
         c = cases.contract('judgment-partial-unlock', 0)
         repo = self.root / 'actions'

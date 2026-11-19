@@ -18,6 +18,10 @@ For floor and stale, `source_and_scope_application` evaluates the knowledge that
 
 For multi-artifact review, check each judgment against the actual path and a short passage from that artifact; matching a verdict to the wrong file is a review failure, not a product result.
 
+The `research-revision` case follows a reading-room pilot across three writer turns and a fresh shift lead. The lead must use a scoped source correction and a partial release to edit the duty card and produce a reversible pilot proposal. The printed poster stays frozen. Use `--cases research-revision --capture-goal explicit --confirmation none` with the preparation command, then run the frozen harness with `--case research-revision`. Both plain and protocol writers receive the same requests. The comparison concerns these artifacts and does not measure adoption by a real reading room.
+
+For a blinded content review, give the reader the initial materials and the owner's instructions in order. For each anonymous arm include the maintained files actually transferred in `handoff.json`, then the consumer's changed documents. Keep those stages labeled and verify the packet against its sources before asking for a preference. A proposal can legitimately cite an owner updated during the writer turns.
+
 Other opt-in prose cases use the same interface:
 
 - `judgment-sources` retains explicitly scoped research originals and tests applying known source limits, mechanism-based rejection and a same-name exception to useful guidance. It does not establish discovery of a hidden defect or the independent contribution of the second correction. Cost comparisons are disabled because stale knowledge can recover from original evidence.

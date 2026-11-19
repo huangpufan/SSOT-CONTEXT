@@ -3,7 +3,7 @@ import json
 from pathlib import Path
 
 CASES = ('judgment', 'judgment-sources', 'judgment-partial-unlock', 'judgment-partial-unlock-open',
-         'confirmation-community-repair')
+         'confirmation-community-repair', 'research-revision')
 SEMANTIC = ('usable_deliverable', 'reasoned_judgment', 'source_and_scope_application',
             'expected_control_behavior')
 

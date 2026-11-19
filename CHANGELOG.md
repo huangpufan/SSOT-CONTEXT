@@ -23,6 +23,13 @@ Entries up to 2.86 were derived from the v2 protocol-upgrade ledger, which is pr
 ### Changed
 - Cold-handoff trials now default to an explicit persistence goal shared by plain/protocol writers, retain automatic capture as a separate estimand, and add an independently authored museum confirmation. The [deepening record](docs/benchmark-deepening-2026-11-12.md) distinguishes measurement repairs, actual subject outcomes and evidence limits; the SSOT protocol remains 5.3.
 
+## [5.6] - 2026-11-19
+
+### Fixed
+- The confirmed-rule check preserves the case of names and the spacing of code literals. Status labels remain case-insensitive.
+- General-space checks now name the selected entry in the final verdict. The space protocol uses the declared entry file and explains when a directory selects `README.md`.
+- Doctor establishes repair scope before reviewing findings. A narrowly requested fix leaves other findings for the report. See the [5.6 trials](docs/context-checks-5.6.md).
+
 ## [5.5] - 2026-11-19
 
 ### Changed

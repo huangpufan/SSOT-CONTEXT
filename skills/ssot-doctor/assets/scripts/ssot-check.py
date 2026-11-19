@@ -3,6 +3,8 @@
 
 Usage: ssot-check.py [SSOT_DIR|FORMAT5_ENTRY] [--since COMMIT] (default: ./SSOT)
 
+A directory selects its README.md. Pass the file for any other format-5 entry.
+
 --since COMMIT lists only mentions of files removed after COMMIT or in
 uncommitted changes, and counts the older ones in one line; it also compares
 confirmed invariants with COMMIT instead of HEAD. Closeout uses it to see what
@@ -837,17 +839,23 @@ def check_confirmed(report, readme, text, since):
         report.unchecked.append(f"confirmed invariants: git failed ({error})")
         return
     new, when = register_rows(text), f"since {since}" if since else "since the last commit"
-    norm = lambda cell: " ".join(cell.strip("`* ").split()).lower()
+    def comparable(cell, column):
+        if column == 2:  # Exact names and code span contents can be part of the contract.
+            return re.sub(r"(?<!`)(`+)(?!`).*?(?<!`)\1(?!`)|\s+",
+                          lambda m: m[0] if m[1] else " ", cell)
+        return " ".join(cell.strip("`* ").split()).lower()
+
     approved = []
     for ident, (_, cells) in old.items():
-        if norm(cells[4]) != "confirmed":
+        if comparable(cells[4], 4) != "confirmed":
             continue
         if ident not in new:
             report.add("ERROR", readme, None, f"confirmed invariant {ident} was removed {when}; restore it "
                                               "(a rule the user retires keeps its row, with status retired)")
             continue
         number, now = new[ident]
-        changed = [name for name, at in (("kind", 1), ("rule", 2), ("status", 4)) if norm(cells[at]) != norm(now[at])]
+        changed = [name for name, at in (("kind", 1), ("rule", 2), ("status", 4))
+                   if comparable(cells[at], at) != comparable(now[at], at)]
         if not changed:
             continue
         dates, before = DATE_RE.findall(now[5]), DATE_RE.findall(cells[5])
@@ -855,8 +863,8 @@ def check_confirmed(report, readme, text, since):
             approved.append(ident)
             continue
         report.add("ERROR", readme, number,
-                   f"confirmed invariant {ident} changed its {' and '.join(changed)} {when}. A confirmed rule "
-                   "changes only through an accepted decision. First check this task and existing owners for "
+                   f"confirmed invariant {ident} changed its {' and '.join(changed)} {when}. An editorial correction can cite the existing "
+                   "decision; changing the protection requires acceptance. First check this task and existing owners for "
                    "human-decision evidence (memory-model section 3). With matching acceptance, keep only the "
                    "authorized change and repair Source with that evidence. Keep unknown approval dates unknown; "
                    "label any actual record/capture date as such, not as approval or replacement order. Without "
@@ -1072,7 +1080,7 @@ def main(argv):
     counts = f"{report.errors} error(s), {report.warnings} warning(s)"
     if report.unchecked:
         counts += f", {len(report.unchecked)} part(s) not checked"
-    print(f"ssot-check: {verdict} - {counts} in {ssot_dir}")
+    print(f"ssot-check: {verdict} - {counts} in {readme if GENERAL[0] or named_entry else ssot_dir}")
     return {"INCOMPLETE": 3, "FAIL": 1, "PASS": 0}[verdict]
 
 

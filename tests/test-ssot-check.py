@@ -162,6 +162,24 @@ class CheckerTest(unittest.TestCase):
         self.write("architecture.md", ARCHITECTURE + "\n[Broken](missing-owner.md)\n")
         self.assert_error("broken link: missing-owner.md")
 
+    def test_named_space_and_directory_report_the_entry_actually_checked(self):
+        self.valid()
+        entry = README.replace("ssot_format: 4", "ssot_format: 5")
+        self.write("README.md", entry)
+        named = self.write("field-notes.md", entry + "\n[Guide](missing-guide.md)\n")
+        code, default = self.run_checker(self.ssot)
+        self.assertEqual(code, 0, default)
+        self.assertIn(os.path.join(self.ssot, "README.md"), default.splitlines()[-1])
+        code, selected = self.run_checker(named)
+        self.assertEqual(code, 1, selected)
+        self.assertIn("broken link: missing-guide.md", selected)
+        self.assertIn(named, selected.splitlines()[-1])
+        os.remove(os.path.join(self.ssot, "README.md"))
+        self.write("field-notes.md", entry)
+        code, selected = self.run_checker(named)
+        self.assertEqual(code, 0, selected)
+        self.assertIn(named, selected.splitlines()[-1])
+
     def test_format5_external_owner_is_a_reported_route_without_implicit_read(self):
         self.valid()
         self.write("README.md", README.replace("ssot_format: 4", "ssot_format: 5").replace(
@@ -1270,6 +1288,21 @@ class CheckerTest(unittest.TestCase):
             self.edit_confirmed(row)
             out = self.assert_error(f"confirmed invariant INV-01 changed its {what} since the last commit")
             self.assertIn("README.md:18", out)
+
+    def test_confirmed_rule_preserves_exact_names_and_literal_spacing(self):
+        self.repo_with()
+        rule = "Write Report.csv with `--Exact` and the label `A  B`"
+        row = self.CONFIRMED.replace("A retry never charges twice", rule)
+        self.edit_confirmed(row)
+        self.commit()
+        for old, new in (("Report.csv", "report.csv"), ("--Exact", "--exact"), ("A  B", "A B")):
+            with self.subTest(new=new):
+                self.edit_confirmed(row.replace(old, new))
+                self.assert_error("confirmed invariant INV-01 changed its rule")
+        self.edit_confirmed(row.replace("Write Report", "Write  Report").replace("confirmed", "CONFIRMED"))
+        self.assert_clean()
+        self.edit_confirmed(row.replace("Report.csv", "report.csv").replace("2026-05-02", "2026-05-02, user 2026-11-19"))
+        self.assertIn("with a newly dated Source", self.assert_clean())
 
     def test_removed_confirmed_rule_is_an_error(self):
         self.repo_with()

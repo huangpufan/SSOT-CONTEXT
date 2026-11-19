@@ -5,6 +5,8 @@ description: Check, review or catch up maintained repository or general-space co
 
 # SSOT Doctor
 
+For a review, report proposed corrections. For an authorized repair or catch-up, follow the requested scope. A request to fix one finding covers that finding; report other issues even when they share the same file.
+
 Inspect the explicit entry or default `SSOT/README.md`: 5 uses [general context spaces](../ssot-preflight/references/context-spaces.md), especially Doctor/catch-up; 4 uses the repository route below; known v2/v3 stays read-only pending agreed migration. Unknown/future formats stay read-only without downgrade. Explicit source processing uses the conditional [source contract](references/source-integration.md). Ordinary undeclared chat/research/creation skips this skill; non-Git context is not failed repository setup.
 
 Find where `SSOT/` is wrong, missing, contradictory, or hard to use, and say exactly how far your check went. The model you check against is [`memory-model.md`](../ssot-preflight/references/memory-model.md).
@@ -25,7 +27,7 @@ For lifecycle, ownership or requirement-to-evidence gaps, choose the relevant me
 
 For costly reading, history accumulation or requested tiering/compression, review [context tiers](../ssot-preflight/references/context-tiering.md) within the requested scope; measure use, preservation and affected guidance, not archive size alone.
 
-- **Truth.** In each document, pick the statements a future task would act on, such as contracts, state ownership, commands, defaults, and "planned" labels, and check each against its domain evidence (memory-model §3); a fresh helper that did not write them checks best. Look hardest at two kinds: statements with "all", "only", "every", "never", or "always", which often miss an exception; and statements taken from a design document, an ADR, or a code comment, which may describe intent the code does not implement. Fix or qualify each one that does not hold, and label unbuilt intent as planned. Start with areas that changed recently in `git log`.
+- **Truth.** In each document, pick the statements a future task would act on, such as contracts, state ownership, commands, defaults, and "planned" labels, and check each against its domain evidence (memory-model §3); a fresh helper that did not write them checks best. Look hardest at two kinds: statements with "all", "only", "every", "never", or "always", which often miss an exception; and statements taken from a design document, an ADR, or a code comment, which may describe intent the code does not implement. Identify unsupported claims and distinguish unbuilt intent from current behavior. In a repair, correct the affected text. Start with areas that changed recently in `git log`.
 - **Consistency.** Look for one fact stated two different ways, and for superseded decisions still presented as current.
 - **Invariants.** Every row links to its canonical owner inside the repository. No rule changed meaning or status without a recorded user decision. Each candidate meets the admission rule in memory-model §5; candidates are not a backlog for the user to confirm.
 - **What does not belong.** Flag restated code, proof of a single task, edit history, and status about the documents themselves.
@@ -46,4 +48,4 @@ For first or comprehensive decision recovery across AI products, or supplied con
 
 ## 6. Report
 
-Report the scope, the checker result, and the findings ordered by impact, each with its file and evidence. Separate what you fixed from what remains, and list what you did not check. Fix things only when the user asked for fixes or another SSOT skill sent you here to fix them. Otherwise report and let the user decide.
+Report the scope, the checker result, and the findings ordered by impact, each with its file and evidence. Separate what you fixed from what remains, and list what you did not check.

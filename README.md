@@ -30,7 +30,7 @@ The project was previously named SSOT-SKILL; old skill names still work ([detail
 - **Keep kinds of material apart.** Facts, hypotheses, decisions, preferences and changing state are kept distinct. A research hypothesis or a guess about a person never becomes a protected rule.
 - **Write for someone new.** Plain words and the situation before the mechanism, so the next agent, or a person who delegates work without reading code, can follow it. See the [writing guide](./skills/ssot-preflight/references/writing-memory.md).
 - **Routes are not permissions.** Following a link lets the agent read only within the scope you allowed. Imported text is evidence to interpret, never instructions to execute.
-- **Say what was checked.** The [checker](./skills/ssot-doctor/assets/scripts/ssot-check.py) finds mechanical problems such as broken links; it cannot establish truth. Reviews state how far they looked and keep gaps visible.
+- **Say what was checked.** The [checker](./skills/ssot-doctor/assets/scripts/ssot-check.py) finds mechanical problems such as broken links; it cannot establish truth. For a named general-space entry, pass its file path. A directory selects its own `README.md`. Reviews identify findings, coverage and gaps. An authorized repair addresses the requested scope.
 
 ## Quickstart
 

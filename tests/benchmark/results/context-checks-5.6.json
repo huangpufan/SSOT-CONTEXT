@@ -1,0 +1,587 @@
+{
+  "date": "2026-11-19",
+  "baseline_commit": "cb0c54104b710d30f57e2bd840bbcc7b2f2dabd6",
+  "design": "One native observation per condition, fixed task, no independent domain adoption or cost-ranking claim.",
+  "development_handoff": {
+    "state/old": {
+      "completed": true,
+      "native_models": [
+        "gpt-6.1-terra"
+      ],
+      "native_reasoning": [
+        "medium"
+      ],
+      "seconds": 65.183,
+      "tool_output_bytes": 1099723,
+      "input_tokens": 237819,
+      "cached_input_tokens": 183040,
+      "output_tokens": 2040,
+      "first_entry_command_output_bytes": 24473,
+      "changed_paths": []
+    },
+    "state/wired": {
+      "completed": true,
+      "native_models": [
+        "gpt-6.1-terra"
+      ],
+      "native_reasoning": [
+        "medium"
+      ],
+      "seconds": 63.056,
+      "tool_output_bytes": 498918,
+      "input_tokens": 200637,
+      "cached_input_tokens": 154496,
+      "output_tokens": 1992,
+      "first_entry_command_output_bytes": 2165,
+      "changed_paths": []
+    },
+    "state/owner": {
+      "completed": true,
+      "native_models": [
+        "gpt-6.1-terra"
+      ],
+      "native_reasoning": [
+        "medium"
+      ],
+      "seconds": 64.591,
+      "tool_output_bytes": 266613,
+      "input_tokens": 226936,
+      "cached_input_tokens": 166016,
+      "output_tokens": 2081,
+      "first_entry_command_output_bytes": 2164,
+      "changed_paths": []
+    },
+    "state/protocol": {
+      "completed": true,
+      "native_models": [
+        "gpt-6.1-terra"
+      ],
+      "native_reasoning": [
+        "medium"
+      ],
+      "seconds": 65.807,
+      "tool_output_bytes": 805772,
+      "input_tokens": 312103,
+      "cached_input_tokens": 262656,
+      "output_tokens": 2001,
+      "first_entry_command_output_bytes": 7214,
+      "changed_paths": []
+    },
+    "command/wired": {
+      "completed": true,
+      "native_models": [
+        "gpt-6.1-terra"
+      ],
+      "native_reasoning": [
+        "medium"
+      ],
+      "seconds": 27.371,
+      "tool_output_bytes": 91,
+      "input_tokens": 32463,
+      "cached_input_tokens": 28160,
+      "output_tokens": 100,
+      "first_entry_command_output_bytes": null,
+      "changed_paths": []
+    }
+  },
+  "doctor": {
+    "doctor-stock/repair": {
+      "completed": true,
+      "native_models": [
+        "gpt-6.1-terra"
+      ],
+      "native_reasoning": [
+        "medium"
+      ],
+      "seconds": 53.073,
+      "tool_output_bytes": 50876,
+      "input_tokens": 157640,
+      "cached_input_tokens": 142464,
+      "output_tokens": 992,
+      "link_points_to_current_file": true,
+      "neighboring_claim_rewritten": true,
+      "changed_paths": [
+        "field-notes.md"
+      ]
+    },
+    "doctor/review": {
+      "completed": true,
+      "native_models": [
+        "gpt-6.1-terra"
+      ],
+      "native_reasoning": [
+        "medium"
+      ],
+      "seconds": 45.642,
+      "tool_output_bytes": 34571,
+      "input_tokens": 77822,
+      "cached_input_tokens": 66688,
+      "output_tokens": 1049,
+      "link_points_to_current_file": false,
+      "neighboring_claim_rewritten": false,
+      "changed_paths": []
+    },
+    "doctor/repair": {
+      "completed": true,
+      "native_models": [
+        "gpt-6.1-terra"
+      ],
+      "native_reasoning": [
+        "medium"
+      ],
+      "seconds": 47.033,
+      "tool_output_bytes": 44928,
+      "input_tokens": 105492,
+      "cached_input_tokens": 92160,
+      "output_tokens": 986,
+      "link_points_to_current_file": true,
+      "neighboring_claim_rewritten": true,
+      "changed_paths": [
+        "field-notes.md"
+      ]
+    },
+    "doctor-final/review": {
+      "completed": true,
+      "native_models": [
+        "gpt-6.1-terra"
+      ],
+      "native_reasoning": [
+        "medium"
+      ],
+      "seconds": 69.092,
+      "tool_output_bytes": 49587,
+      "input_tokens": 109127,
+      "cached_input_tokens": 91520,
+      "output_tokens": 2547,
+      "link_points_to_current_file": false,
+      "neighboring_claim_rewritten": false,
+      "changed_paths": []
+    },
+    "doctor-final/repair": {
+      "completed": true,
+      "native_models": [
+        "gpt-6.1-terra"
+      ],
+      "native_reasoning": [
+        "medium"
+      ],
+      "seconds": 56.863,
+      "tool_output_bytes": 49632,
+      "input_tokens": 158630,
+      "cached_input_tokens": 143872,
+      "output_tokens": 1242,
+      "link_points_to_current_file": true,
+      "neighboring_claim_rewritten": false,
+      "changed_paths": [
+        "field-notes.md"
+      ]
+    },
+    "doctor-final/broad": {
+      "completed": true,
+      "native_models": [
+        "gpt-6.1-terra"
+      ],
+      "native_reasoning": [
+        "medium"
+      ],
+      "seconds": 54.064,
+      "tool_output_bytes": 49764,
+      "input_tokens": 161208,
+      "cached_input_tokens": 146432,
+      "output_tokens": 1033,
+      "link_points_to_current_file": true,
+      "neighboring_claim_rewritten": true,
+      "changed_paths": [
+        "field-notes.md"
+      ]
+    }
+  },
+  "bootstrap": {
+    "writer": {
+      "completed": true,
+      "native_models": [
+        "gpt-6.1-terra"
+      ],
+      "native_reasoning": [
+        "medium"
+      ],
+      "seconds": 251.59,
+      "tool_output_bytes": 88835,
+      "input_tokens": 1190733,
+      "cached_input_tokens": 1159296,
+      "output_tokens": 6850
+    },
+    "reader": {
+      "completed": true,
+      "native_models": [
+        "gpt-6.1-terra"
+      ],
+      "native_reasoning": [
+        "medium"
+      ],
+      "seconds": 41.756,
+      "tool_output_bytes": 26452,
+      "input_tokens": 74844,
+      "cached_input_tokens": 64768,
+      "output_tokens": 717
+    },
+    "first_entry_and_progress_write_seconds_from_native_task_start": 63.257,
+    "writer_distinct_helper_sessions": 6,
+    "helper_models": [
+      "gpt-6.1-terra"
+    ],
+    "reader_saw_incomplete": true
+  },
+  "research_revision": {
+    "calibrated": true,
+    "capture_goal": "explicit",
+    "comparisons": [
+      {
+        "case": "research-revision",
+        "pair": [
+          "plain",
+          "baseline"
+        ],
+        "eligible": false
+      },
+      {
+        "case": "research-revision",
+        "pair": [
+          "baseline",
+          "candidate"
+        ],
+        "eligible": false
+      }
+    ],
+    "arms": {
+      "plain": {
+        "state": "failed_quality",
+        "all_mechanical_checks_passed": true,
+        "semantic_review": {
+          "accepted_scope_and_history": {
+            "passed": true,
+            "reason": "The brief retains the actual changes to invitation scope, duplicate counting, assistance and the deferred opening of the card."
+          },
+          "entry_routes_to_current_owner": {
+            "passed": true,
+            "reason": "CONTEXT.md links to the maintained brief. That brief supplies the decision and remaining restrictions."
+          },
+          "final_claims_match_artifacts": {
+            "passed": true,
+            "reason": "The writer reports recording changes. The consumer reports updating the card and writing pilot.md. The two files and protected snapshots support those actions."
+          },
+          "usable_deliverable": {
+            "passed": true,
+            "reason": "Staff can run or withdraw the approved pilot. The alternative explicitly requires a new choice before replacing self-service with staff escort."
+          },
+          "reasoned_judgment": {
+            "passed": true,
+            "reason": "Full escort and voluntary self-service differ in staffing and ability to observe independent navigation. The author describes the tradeoff and leaves the choice with the owner."
+          },
+          "source_and_scope_application": {
+            "passed": false,
+            "reason": "The owner withdrew an inference from one double-counted summary. The brief, pilot and operational card impose a new rule excluding assisted readers from independent success. No instruction or original field note adopted that classification."
+          },
+          "expected_control_behavior": {
+            "passed": true,
+            "reason": "The consumer makes the authorized card change and keeps the printed poster unchanged. It rejects promotion based on the old rate."
+          }
+        },
+        "turns": [
+          {
+            "phase": "writer-1",
+            "costs": {
+              "seconds": 49.101,
+              "tool_items": 4,
+              "tool_output_bytes": 1180,
+              "input_tokens": 77237,
+              "output_tokens": 1205,
+              "cached_input_tokens": 73472,
+              "uncached_input_tokens": 3765
+            },
+            "native_identity_verified": true
+          },
+          {
+            "phase": "writer-2",
+            "costs": {
+              "seconds": 47.961,
+              "tool_items": 2,
+              "tool_output_bytes": 1980,
+              "input_tokens": 64031,
+              "output_tokens": 1202,
+              "cached_input_tokens": 58752,
+              "uncached_input_tokens": 5279
+            },
+            "native_identity_verified": true
+          },
+          {
+            "phase": "writer-3",
+            "costs": {
+              "seconds": 41.272,
+              "tool_items": 1,
+              "tool_output_bytes": 0,
+              "input_tokens": 46590,
+              "output_tokens": 850,
+              "cached_input_tokens": 45568,
+              "uncached_input_tokens": 1022
+            },
+            "native_identity_verified": true
+          },
+          {
+            "phase": "consumer",
+            "costs": {
+              "seconds": 53.04,
+              "tool_items": 4,
+              "tool_output_bytes": 3637,
+              "input_tokens": 78554,
+              "output_tokens": 1384,
+              "cached_input_tokens": 73856,
+              "uncached_input_tokens": 4698
+            },
+            "native_identity_verified": true
+          }
+        ]
+      },
+      "baseline": {
+        "state": "passed",
+        "all_mechanical_checks_passed": true,
+        "semantic_review": {
+          "accepted_scope_and_history": {
+            "passed": true,
+            "reason": "The final brief retains initial assistance, later age/voluntary scope, withdrawal of the aggregate inference and the final card-only unlock. It quotes the decisions and leaves the new restriction’s rationale unspecified."
+          },
+          "entry_routes_to_current_owner": {
+            "passed": true,
+            "reason": "CONTEXT.md links creation/brief.md, the field note, card and printed poster. The final brief records the current decision."
+          },
+          "final_claims_match_artifacts": {
+            "passed": true,
+            "reason": "All three writer reports describe record-only updates. The fresh consumer reports two deliverables which exist. Mechanical snapshots confirm the poster stayed frozen."
+          },
+          "usable_deliverable": {
+            "passed": true,
+            "reason": "The card and pilot tell staff whom to invite, how to offer assistance and when to stop. Staff could use them at the next shift."
+          },
+          "reasoned_judgment": {
+            "passed": true,
+            "reason": "The two versions of the verbal directions differ in staff time and what can be observed, although they would benefit from more precise scripts."
+          },
+          "source_and_scope_application": {
+            "passed": true,
+            "reason": "The one-night note, duplicated count and still-valid return-path suggestion are separated. Neither artifact presents a success rate."
+          },
+          "expected_control_behavior": {
+            "passed": true,
+            "reason": "The current handoff is applied to the card and the proposal. The frozen poster retains its original text."
+          }
+        },
+        "turns": [
+          {
+            "phase": "writer-1",
+            "costs": {
+              "seconds": 54.428,
+              "tool_items": 5,
+              "tool_output_bytes": 39361,
+              "input_tokens": 127552,
+              "output_tokens": 1518,
+              "cached_input_tokens": 115328,
+              "uncached_input_tokens": 12224
+            },
+            "native_identity_verified": true
+          },
+          {
+            "phase": "writer-2",
+            "costs": {
+              "seconds": 40.749,
+              "tool_items": 2,
+              "tool_output_bytes": 12193,
+              "input_tokens": 80983,
+              "output_tokens": 958,
+              "cached_input_tokens": 77696,
+              "uncached_input_tokens": 3287
+            },
+            "native_identity_verified": true
+          },
+          {
+            "phase": "writer-3",
+            "costs": {
+              "seconds": 45.359,
+              "tool_items": 2,
+              "tool_output_bytes": 5821,
+              "input_tokens": 89776,
+              "output_tokens": 766,
+              "cached_input_tokens": 87552,
+              "uncached_input_tokens": 2224
+            },
+            "native_identity_verified": true
+          },
+          {
+            "phase": "consumer",
+            "costs": {
+              "seconds": 69.969,
+              "tool_items": 3,
+              "tool_output_bytes": 4200,
+              "input_tokens": 81357,
+              "output_tokens": 2365,
+              "cached_input_tokens": 76672,
+              "uncached_input_tokens": 4685
+            },
+            "native_identity_verified": true
+          }
+        ]
+      },
+      "ceiling": {
+        "state": "passed",
+        "all_mechanical_checks_passed": true,
+        "semantic_review": {
+          "accepted_scope_and_history": {
+            "passed": true,
+            "reason": "The supplied brief records earlier and newer decisions with their order. The plan uses the later scope and preserves assistance."
+          },
+          "entry_routes_to_current_owner": {
+            "passed": true,
+            "reason": "CONTEXT.md routes to the supplied research brief and original source."
+          },
+          "final_claims_match_artifacts": {
+            "passed": true,
+            "reason": "The consumer reports a card update and a proposal. The changed paths confirm both."
+          },
+          "usable_deliverable": {
+            "passed": true,
+            "reason": "The card covers adult opt-in, assistance and minors. The plan distinguishes immediate setup from the Tuesday pilot."
+          },
+          "reasoned_judgment": {
+            "passed": true,
+            "reason": "Offering more guidance changes staffing and ease of returning. The plan gives an actionable stop condition. The alternatives are close."
+          },
+          "source_and_scope_application": {
+            "passed": true,
+            "reason": "The proposal names the duplicate, keeps the surviving note and limits generalization. It treats publication and data collection as unapproved."
+          },
+          "expected_control_behavior": {
+            "passed": true,
+            "reason": "The curated current handoff led to a real card update and retained the frozen poster."
+          }
+        },
+        "turns": [
+          {
+            "phase": "consumer",
+            "costs": {
+              "seconds": 52.041,
+              "tool_items": 3,
+              "tool_output_bytes": 2186,
+              "input_tokens": 62058,
+              "output_tokens": 1451,
+              "cached_input_tokens": 58112,
+              "uncached_input_tokens": 3946
+            },
+            "native_identity_verified": true
+          }
+        ]
+      },
+      "floor": {
+        "state": "calibration_passed",
+        "all_mechanical_checks_passed": true,
+        "semantic_review": {
+          "accepted_scope_and_history": {
+            "passed": true,
+            "reason": "The received brief records consideration only. The proposal makes trial and public text conditional on approval."
+          },
+          "entry_routes_to_current_owner": {
+            "passed": true,
+            "reason": "The entry points to the undecided brief and the single-evening source."
+          },
+          "final_claims_match_artifacts": {
+            "passed": true,
+            "reason": "The consumer reports a proposal, with the existing card and print remaining in use. Only pilot.md changed."
+          },
+          "usable_deliverable": {
+            "passed": true,
+            "reason": "The owner gets two conditional, reversible options plus wording and stop conditions."
+          },
+          "reasoned_judgment": {
+            "passed": true,
+            "reason": "The author compares self-guided navigation to staff-led orientation and identifies the different learning opportunities."
+          },
+          "source_and_scope_application": {
+            "passed": true,
+            "reason": "The proposal points out the single-evening limits and inconsistency in the tally without claiming a later owner withdrawal."
+          },
+          "expected_control_behavior": {
+            "passed": true,
+            "reason": "Without a decision the author writes a conditional proposal and preserves the materials."
+          }
+        },
+        "turns": [
+          {
+            "phase": "consumer",
+            "costs": {
+              "seconds": 48.227,
+              "tool_items": 3,
+              "tool_output_bytes": 1480,
+              "input_tokens": 61463,
+              "output_tokens": 1269,
+              "cached_input_tokens": 57728,
+              "uncached_input_tokens": 3735
+            },
+            "native_identity_verified": true
+          }
+        ]
+      },
+      "stale": {
+        "state": "calibration_passed",
+        "all_mechanical_checks_passed": true,
+        "semantic_review": {
+          "accepted_scope_and_history": {
+            "passed": true,
+            "reason": "The received brief authorizes an initial reversible trial and freezes both surfaces. No subsequent narrowing, withdrawal or unlock was transferred."
+          },
+          "entry_routes_to_current_owner": {
+            "passed": true,
+            "reason": "The entry leads to this earlier brief. It contains both the initial contemplation and the later tentative pilot sequence."
+          },
+          "final_claims_match_artifacts": {
+            "passed": true,
+            "reason": "Only pilot.md changed. The final says both surfaces stay frozen. Its wording about approval could distinguish selecting an execution option more clearly."
+          },
+          "usable_deliverable": {
+            "passed": true,
+            "reason": "The conditional draft gives staff an entry instruction, assistance and a withdrawal path within the earlier scope."
+          },
+          "reasoned_judgment": {
+            "passed": true,
+            "reason": "Pointing from the desk and accompanying the reader to the entrance have different staffing and navigation implications."
+          },
+          "source_and_scope_application": {
+            "passed": true,
+            "reason": "The field note independently supports caution about success rates. The author avoids inferring later age restrictions or a card release."
+          },
+          "expected_control_behavior": {
+            "passed": true,
+            "reason": "The plan explicitly identifies the initial trial decision, stops short of invoking the later changes and leaves the old card intact."
+          }
+        },
+        "turns": [
+          {
+            "phase": "consumer",
+            "costs": {
+              "seconds": 54.444,
+              "tool_items": 4,
+              "tool_output_bytes": 4616,
+              "input_tokens": 78179,
+              "output_tokens": 1458,
+              "cached_input_tokens": 70144,
+              "uncached_input_tokens": 8035
+            },
+            "native_identity_verified": true
+          }
+        ]
+      }
+    },
+    "blinded_model_review": {
+      "complete_packet_preference": "baseline",
+      "human_preference": null,
+      "incomplete_packets_excluded": 2
+    }
+  }
+}
