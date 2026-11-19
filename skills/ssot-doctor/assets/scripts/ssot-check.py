@@ -2,8 +2,12 @@
 """Mechanical checks for development format 4 and general context format 5.
 
 Usage: ssot-check.py [SSOT_DIR|FORMAT5_ENTRY] [--since COMMIT] (default: ./SSOT)
+       ssot-check.py FORMAT5_ENTRY --owners [FILE ...]
 
 A directory selects README.md. Pass the file for another format-5 entry.
+--owners checks the entry and only the named directly linked Markdown owners,
+relative to the entry directory. Omit names for an entry-only check. Links to
+other paths and Git history are outside this selection.
 
 --since COMMIT lists only mentions of files removed after COMMIT or in
 uncommitted changes, and counts the older ones in one line; it also compares
@@ -32,6 +36,7 @@ checker crashed or could not examine part of the tree, such as an unreadable
 directory or a failing git), which is never a pass.
 """
 
+import argparse
 import os
 import re
 import subprocess
@@ -67,8 +72,9 @@ SHA_RE = re.compile(r"^[0-9a-f]{7,40}$")
 
 
 class Report:
-    def __init__(self, root):
+    def __init__(self, root, documents=None):
         self.root = root
+        self.documents = documents
         self.lines = []
         self.errors = 0
         self.warnings = 0
@@ -337,6 +343,8 @@ def check_link(report, doc, number, target):
         if not GENERAL[0]:
             return
     resolved, fragment = resolve(doc, target)
+    if report.documents is not None and resolved not in report.documents:
+        return
     if not repository_local(resolved):
         if GENERAL[0]:
             try:
@@ -975,8 +983,14 @@ def checked_documents(ssot_dir, readme, report):
             if SCHEME_RE.match(target) or (unquote(target).startswith("/") and not GENERAL[0]):
                 continue
             path, _ = resolve(readme, target)
+            if report.documents is not None and path not in report.documents:
+                continue
             if path.lower().endswith(".md") and repository_local(path) and os.path.isfile(path):
                 documents.add(path)
+    if report.documents is not None:
+        for path in sorted(report.documents - documents):
+            report.add("ERROR", path, None, "selected owner must be an existing directly linked local Markdown file")
+        report.documents = documents
     yield from sorted(documents)
 
 
@@ -999,24 +1013,38 @@ def ledgers(directory):
 
 
 def main(argv):
-    args, since = list(argv[1:]), None
-    if args in (["-h"], ["--help"]):
+    if argv[1:] in (["-h"], ["--help"]):
         print((__doc__ or "").strip())
         return 0
-    if "--since" in args:
-        at = args.index("--since")
-        since = args[at + 1] if at + 1 < len(args) else ""
-        del args[at:at + 2]
-    if len(args) > 1 or since == "" or (since and since.startswith("-")) or any(a.startswith("-") for a in args):
-        print((__doc__ or "").strip())
-        return 2
-    selected = os.path.abspath(args[0] if args else "SSOT")
+    parser = argparse.ArgumentParser(add_help=False, allow_abbrev=False)
+    parser.add_argument("entry", nargs="?", default="SSOT")
+    mode = parser.add_mutually_exclusive_group()
+    mode.add_argument("--since")
+    mode.add_argument("--owners", nargs="*")
+    args = parser.parse_args(argv[1:])
+    since = args.since
+    if since == "" or (since and since.startswith("-")):
+        parser.error("--since requires a commit")
+    selected = os.path.abspath(args.entry)
     named_entry = os.path.isfile(selected)
+    scoped = args.owners is not None
+    if scoped and not named_entry:
+        parser.error("--owners requires a format-5 entry file")
     ssot_dir = os.path.dirname(selected) if named_entry else selected
     if not os.path.isdir(ssot_dir):
         print(f"ERROR no SSOT directory at {ssot_dir}")
         return 2
-    report = Report(ssot_dir)
+    documents = None
+    if scoped:
+        documents = {os.path.abspath(os.path.join(ssot_dir, name)) for name in args.owners}
+        documents.add(selected)
+        # A selected spelling must still identify that file within the space.
+        root = os.path.realpath(ssot_dir)
+        for path in sorted(documents):
+            relative = os.path.relpath(path, ssot_dir)
+            if not inside(path, root) or os.path.realpath(path) != os.path.normpath(os.path.join(root, relative)):
+                parser.error(f"select a file inside the space by its actual path: {relative}")
+    report = Report(ssot_dir, documents)
     REPO_ROOT[0] = repository_root(ssot_dir)
     readme = selected if named_entry else os.path.join(ssot_dir, "README.md")
     GENERAL[0] = False
@@ -1034,7 +1062,11 @@ def main(argv):
         GENERAL[0] = meta.get("ssot_format") == "5"
         if GENERAL[0]:
             REPO_ROOT[0] = os.path.realpath(ssot_dir)
-            report.add("INFO", readme, None, "format 5: selected entry and direct local owners; external routes are not read")
+            if scoped:
+                names = ", ".join(os.path.relpath(p, ssot_dir) for p in sorted(documents))
+                report.add("INFO", readme, None, f"selected files: {names}. Other link targets and Git history excluded")
+            else:
+                report.add("INFO", readme, None, "format 5: selected entry and direct local owners; external routes are not read")
         if named_entry and not GENERAL[0]:
             report.add("ERROR", readme, 1, "a named entry file requires ssot_format: 5; verify its writer and format")
             return report.finish(readme)
@@ -1042,8 +1074,9 @@ def main(argv):
             if not meta.get("language"):
                 report.add("ERROR", readme, 1, "front matter needs `language:` (for example en or zh-CN)")
             check_invariants(report, readme, text, ssot_dir)
-            check_confirmed(report, readme, text, since)
-            check_reviewed_through(report, readme, meta.get("reviewed_through"))
+            if not scoped:
+                check_confirmed(report, readme, text, since)
+                check_reviewed_through(report, readme, meta.get("reviewed_through"))
             if not GENERAL[0]:
                 for path in ledgers(ssot_dir):
                     report.add("WARN", path, None,
@@ -1086,11 +1119,13 @@ def main(argv):
             report.add("WARN", doc, wrapped[0],
                        f"{len(wrapped)} paragraph(s) are broken across short lines (lines {lines}); "
                        "write each paragraph or list item as one line and let the editor wrap it")
-    check_removed_paths(report, ssot_dir, mentions, since)
+    if not scoped:
+        check_removed_paths(report, ssot_dir, mentions, since)
     for path in sorted(UNDECODABLE):
         report.add("WARN", path, None, "not valid UTF-8; undecodable bytes were replaced while checking")
 
-    return report.finish(readme if GENERAL[0] else ssot_dir)
+    surface = readme if GENERAL[0] else ssot_dir
+    return report.finish(surface + " (selected files only)" if scoped else surface)
 
 
 if __name__ == "__main__":

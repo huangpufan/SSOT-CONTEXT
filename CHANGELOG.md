@@ -23,6 +23,12 @@ Entries up to 2.86 were derived from the v2 protocol-upgrade ledger, which is pr
 ### Changed
 - Cold-handoff trials now default to an explicit persistence goal shared by plain/protocol writers, retain automatic capture as a separate estimand, and add an independently authored museum confirmation. The [deepening record](docs/benchmark-deepening-2026-11-12.md) distinguishes measurement repairs, actual subject outcomes and evidence limits; the SSOT protocol remains 5.3.
 
+## [5.9] - 2026-11-20
+
+### Fixed
+- General-space checks can limit body and anchor reads to the entry and named owners when retained originals have restricted use. Conversation recovery checks current permission before searching content. The existing permissions owner can carry a payload-free stop-use notice across loss of task progress.
+- Git catch-up reads merged commit messages, including decisions in empty commits. Its saved position advances only across contiguous reviewed work. Both consumer formats stay compatible. Selected-file checking raises the checker budget by 2 KiB and the bundle budget by 3 KiB. Runtime reading limits stay fixed. See the [design and trials](docs/catchup-5.9.md).
+
 ## [5.8] - 2026-11-19
 
 ### Fixed

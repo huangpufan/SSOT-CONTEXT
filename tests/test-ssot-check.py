@@ -212,6 +212,60 @@ class CheckerTest(unittest.TestCase):
         self.assertEqual(code, 1, out)
         self.assertIn("broken link: missing-field-log.md", out)
 
+    def test_selected_general_owners_limit_actual_content_reads(self):
+        self.valid()
+        entry = self.write("entry.md", README.replace("ssot_format: 4", "ssot_format: 5") +
+                           "\n[Retained locator](original.md#source)\n")
+        original = self.write("original.md", "# Source\n\n[Private plate](missing-plate.png)\n")
+        self.write("architecture.md", ARCHITECTURE +
+                   "\n[Earlier wording](original.md#L1) and [current wording](#missing-heading).\n")
+        # Observe opens inside the CLI. A clean report alone could hide an anchor read.
+        observer = textwrap.dedent("""
+            import os, runpy, sys
+            watched, checker, *args = sys.argv[1:]
+            def audit(event, arguments):
+                if event == "open" and arguments[0] == watched:
+                    print("OPENED ORIGINAL", file=sys.stderr)
+            sys.addaudithook(audit)
+            sys.argv = [checker, *args]
+            runpy.run_path(checker, run_name="__main__")
+        """)
+        def observe(*args):
+            return subprocess.run([sys.executable, "-c", observer, original, CHECKER, entry, *args],
+                                  cwd=self.repo, text=True, capture_output=True)
+        full = observe()
+        self.assertEqual(full.returncode, 1, full.stdout)
+        self.assertIn("OPENED ORIGINAL", full.stderr)
+        self.assertIn("missing-plate.png", full.stdout)
+        scoped = observe("--owners", "architecture.md")
+        self.assertEqual(scoped.returncode, 1, scoped.stdout)
+        self.assertIn("missing heading anchor", scoped.stdout)
+        self.assertIn("selected files only", scoped.stdout.splitlines()[-1])
+        self.assertNotIn("OPENED ORIGINAL", scoped.stderr)
+        self.assertNotIn("missing-plate.png", scoped.stdout)
+        entry_only = observe("--owners")
+        self.assertEqual(entry_only.returncode, 0, entry_only.stdout)
+        self.assertNotIn("OPENED ORIGINAL", entry_only.stderr)
+        self.assertIn("Git history excluded", entry_only.stdout)
+
+    def test_selected_owners_require_direct_local_files_and_explicit_entry(self):
+        self.valid()
+        entry = self.write("entry.md", README.replace("ssot_format: 4", "ssot_format: 5"))
+        self.write("unrouted.md", "# Other\n\n[Private plate](missing-plate.png)\n")
+        code, out = self.run_checker(entry, "--owners", "unrouted.md", "absent.md")
+        self.assertEqual(code, 1, out)
+        for name in ("unrouted.md", "absent.md"):
+            self.assertIn(name, out)
+        self.assertNotIn("missing-plate.png", out)
+        os.symlink("unrouted.md", os.path.join(self.ssot, "alias.md"))
+        for args in ((entry, "--owners", "alias.md"), (entry, "--owners", "../other.md"),
+                     (self.ssot, "--owners"), (entry, "--owners", "--since", "HEAD")):
+            code, out = self.run_checker(*args)
+            self.assertEqual(code, 2, out)
+        code, out = self.run_checker(os.path.join(self.ssot, "README.md"), "--owners")
+        self.assertEqual(code, 1, out)
+        self.assertIn("requires ssot_format: 5", out)
+
     def test_unrecognized_named_entry_does_not_select_the_enclosing_directory(self):
         self.valid()
         self.write("other-space.md", "[Broken](unrelated-missing.md)\n")

@@ -43,8 +43,8 @@ Detailed shared material belongs in a reference, read at the point of use. `SKIL
 | All `SKILL.md` files together | 3,600 words |
 | Everything an agent may read at runtime (`SKILL.md` + `references/`) | 18,000 words |
 | Templates, per language | 16 KiB |
-| `ssot-check.py` | 50 KiB |
-| All of `skills/` | 220 KiB |
+| `ssot-check.py` | 52 KiB |
+| All of `skills/` | 223 KiB |
 
 Version 4.0 raises entrypoints to 3,600 words, runtime protocol to 13,000 words, and the checker to 48 KiB for immediate decision capture, accessible conversation-source recovery, external-owner routes, preservation-aware migration, and checks on those routes. Measured template and whole-bundle sizes fit their existing limits, which remain unchanged.
 
@@ -53,6 +53,8 @@ Version 4.1 raises only the runtime limit to 13,800 words. Real adoption and beh
 Version 4.4 raises the runtime limit to 14,000 words for native reading, stale-route recovery and conditional section navigation. The changed routing adds 82 words; no unrelated authorization, recovery or writing rules were shortened. The benchmark measures this reading policy independently from index changes; its evidence and limits are recorded with the release. Other budgets remain unchanged.
 
 Version 5.0 sets 17,000 runtime words and 220 KiB of skills for a conditional general-space model and source-state/readback reference adapter. Existing development format 4, protection and recovery text remains; general spaces use format 5 so old writers that discover them take their read-only branch. Added references are reached only for relevant tasks. The coordinator accepted the observed bounded cost tradeoff for this release after native quality/reading review; this is not a user statement accepting higher costs or a performance-improvement claim. See the [native result account](tests/context/results/context-evolution-5.0-2026-11-10.json) and [implementation report](tests/trials-5.0.md). Entrypoint, template and checker limits remain unchanged; a size pass alone is never a behavioral release gate.
+
+Version 5.9 allows 52 KiB for the checker and 223 KiB for the bundle. The former limits left 77 and 70 bytes respectively. A real checker run opened a withdrawn Markdown original through a retained link. The additional code bounds document and anchor reads to an explicit selection and reports its coverage. The agent reading budgets stay fixed. See the [checks and tradeoffs](docs/catchup-5.9.md).
 
 A budget is a reason to rethink responsibilities, never a reason to cut a recovery or authorization branch to fit, and never a reason to rewrite unrelated rule text to make room: such edits are untested changes. In 3.5 the owner raised the limits from 3,000 and 8,000 words, with room left on purpose, after a trial branch had tightened about 40 unrelated sentences to fit new rules into the old limits; in 3.7 the owner raised the runtime limit from 9,500 to 10,000 words for the mining changes, instead of cutting other rules; in 3.9 the owner raised the checker limit from 40 to 44 KiB for the check on confirmed invariants; in 3.10 the owner raised the runtime limit from 10,000 to 11,000 words for the row-fixing step in mining. A v2 word cap once rejected a complete entrypoint for being complete. Raising a limit requires the same evidence as adding a rule. Record the reason in `CHANGELOG.md`.
 

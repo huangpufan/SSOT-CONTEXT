@@ -102,6 +102,8 @@ The skills act only when the agent loads them. They do not collect material in t
 
 For repeatable exports, withdrawing a source records the stop before inspecting affected documents. After an interruption, `status` shows whether withdrawal took effect and which owners still need attention. [Source integration](./skills/ssot-doctor/references/source-integration.md)
 
+When a general space retains links to restricted originals, Doctor can check the entry and selected permitted documents. The report names the files covered. Git catch-up includes decisions on merged branches and advances the saved commit only across fully reviewed history. [5.9 examples and limits](./docs/catchup-5.9.md)
+
 Corrections compare the saved result with necessary earlier source excerpts as well as the new exchange, within current retention authority. The [5.3 trials](./tests/context/trials-5.3.md) record source-preservation failures and bounded checks of this readback rule.
 
 ## Supported agents

@@ -1,0 +1,1430 @@
+{
+  "baseline": "dede6ba",
+  "subject": "gpt-6.1-terra",
+  "effort": "medium",
+  "design_consultations": {
+    "cc1": {
+      "models": [
+        "claude-opus-5-5"
+      ],
+      "duration_ms": 603450,
+      "usage": {
+        "input_tokens": 4,
+        "cache_creation_input_tokens": 32361,
+        "cache_read_input_tokens": 0,
+        "output_tokens": 1423
+      },
+      "answer_sha256": "bea1e2ba853dc07bd4611e3e3587de5090d9122083d40325a050805fe604bc85"
+    },
+    "cc2": {
+      "models": [
+        "claude-opus-5-5"
+      ],
+      "duration_ms": 1091453,
+      "usage": {
+        "input_tokens": 8,
+        "cache_creation_input_tokens": 70226,
+        "cache_read_input_tokens": 0,
+        "output_tokens": 50404
+      },
+      "answer_sha256": "1126e6f46a2d4803e1876fcef67de671b683b08174871357b5c4b95a2ef909ca"
+    },
+    "neon1": {
+      "requested_model": "gemini-4-neon-xhigh",
+      "response_models": [
+        "gemini-4-neon"
+      ],
+      "prompt_sha256": "7fb37835d2ad2be1f3b7530ac8f7572a4d9195b396f6059de71a0911ce1f5b36",
+      "steps": 2,
+      "reply_chars": 916
+    },
+    "neon2": {
+      "requested_model": "gemini-4-neon-xhigh",
+      "response_models": [
+        "gemini-4-neon"
+      ],
+      "prompt_sha256": "b06a98a221c0d9a31e3c0f8bf337cb3f0c9567066c18bb6dfbaa95e7e3289b02",
+      "steps": 4,
+      "reply_chars": 710
+    }
+  },
+  "sessions_by_variant": {
+    "revised first-check and withdrawal routing": 7,
+    "revised wording": 1,
+    "first candidate": 5,
+    "5.8": 11,
+    "5.9": 4,
+    "index selection wording": 6,
+    "named write scope": 5,
+    "candidate with replay notice": 6
+  },
+  "native_totals": {
+    "responses": 349,
+    "input_tokens": 8255699,
+    "cached_input_tokens": 7439872,
+    "output_tokens": 65714
+  },
+  "evidence_limits": "Native sessions and commands were inspected together with saved files. The synthetic missing asset name is an observable lower bound on reads, not proof of universal nonaccess. The independent CLI audit hook checks the actual open in its fixture. Each case is a small sample. Snapshots are observer-side. Token totals cover all native subjects, separately from the two advisors and the maintaining session.",
+  "runs": [
+    {
+      "run": "final-gap/gap",
+      "variant": "revised first-check and withdrawal routing",
+      "case": "gap",
+      "bundle_sha256": "dee68616fcaac6f9fdaf1a2abadb17d5d95caf2c68e92e95ded7510739ac193e",
+      "native_session_sha256": "31defb1e393be28b17e68d1809f0f460e52e9bc7ebf2bec00ec364e483ba2bad",
+      "answer_sha256": "3651b3d9c4193f61973f43701d8862b0f0decf129f23146c17e6368425b41ce8",
+      "commands_sha256": "1aeeb8d51c869627451ed0e98c42fb64f332cfee040dd18b4b80f53a0f9b0727",
+      "changes": [
+        "SSOT/desk.md"
+      ],
+      "responses": 7,
+      "input_tokens": 162246,
+      "cached_input_tokens": 140928,
+      "output_tokens": 1725,
+      "seconds": 62.356,
+      "marker_before": "aeb139c0f480",
+      "marker_after": "aeb139c0f480",
+      "desk_after": "# Desk guide\n\nThe loading display uses Pier so drivers can match the printed dock cards. The registrar approved retaining Pier and rejected Berth on the display; the printed visitor map may use Berth. Physical dock assignment stays with the harbour office. This decision is recorded in commit `4f55e1787b6cb60b4205968a54b5aa602bcfb7b9`; the original exchange is not available here."
+    },
+    {
+      "run": "final-handoff/recovery",
+      "variant": "revised first-check and withdrawal routing",
+      "case": "recovery",
+      "bundle_sha256": "dee68616fcaac6f9fdaf1a2abadb17d5d95caf2c68e92e95ded7510739ac193e",
+      "native_session_sha256": "5cde1d3a3f7df51193666c292a44feab2972da2002be8d1220de1ec3775c4101",
+      "answer_sha256": "e3acccca01231ea421994bd691767b263d2a90989b08077baa0630e51d9cbe52",
+      "commands_sha256": "cdf94fb815c393a5eae1c55c97b83e1d376a8a825dd011fecd9cdf40eb61886c",
+      "changes": [
+        "catalogue.md",
+        "entry.md"
+      ],
+      "responses": 8,
+      "input_tokens": 193459,
+      "cached_input_tokens": 167680,
+      "output_tokens": 1403,
+      "seconds": 80.109,
+      "catalogue_after": "# Exhibition catalogue\n\nThe gallery maintains display captions here.\n\n## Ceramic captions\n\nList the maker before the year, including for loans. The registrar approved this wording for the exhibition catalogue on 2025-01-12 in [T24](exports/24.md#original-exchange); no reason was stated.",
+      "originals_byte_identical": true,
+      "private_asset_name_in_command_output": false,
+      "structural_checks": [
+        {
+          "mode": "selected",
+          "verdicts": [
+            "PASS"
+          ]
+        },
+        {
+          "mode": "selected",
+          "verdicts": [
+            "PASS"
+          ]
+        }
+      ],
+      "automated_outcome_checks": {
+        "original_files_preserved": true,
+        "withdrawn_asset_name_absent_from_tool_outputs": true,
+        "withdrawn_caption_absent_from_catalogue": true,
+        "catalogue_updated": true
+      }
+    },
+    {
+      "run": "final-handoff/withdraw-handoff",
+      "variant": "revised first-check and withdrawal routing",
+      "case": "withdraw-handoff",
+      "bundle_sha256": "dee68616fcaac6f9fdaf1a2abadb17d5d95caf2c68e92e95ded7510739ac193e",
+      "native_session_sha256": "512f305a44e243c95b90253b8938de0975579441883e930f0d89cc9495e5752f",
+      "answer_sha256": "2ec68e440581a8173e3a54e63c6335598f1babf63d842651f4061ce1a8bebeb0",
+      "commands_sha256": "a81be04cac49b98e3fb855c27ccf142dd598d8bf3b3d78665bca99a7e67210fa",
+      "changes": [
+        "catalogue.md",
+        "exports/index.md",
+        "permissions.md"
+      ],
+      "responses": 10,
+      "input_tokens": 237940,
+      "cached_input_tokens": 219520,
+      "output_tokens": 1484,
+      "seconds": 55.651,
+      "catalogue_after": "# Exhibition catalogue\n\nThe gallery maintains display captions here.",
+      "originals_byte_identical": true,
+      "private_asset_name_in_command_output": false,
+      "structural_checks": [
+        {
+          "mode": "selected",
+          "verdicts": [
+            "PASS"
+          ]
+        },
+        {
+          "mode": "selected",
+          "verdicts": [
+            "PASS"
+          ]
+        }
+      ],
+      "automated_outcome_checks": {
+        "original_files_preserved": true,
+        "withdrawn_asset_name_absent_from_tool_outputs": true,
+        "withdrawn_caption_absent_from_catalogue": true,
+        "only_named_owners_changed": false
+      }
+    },
+    {
+      "run": "final-linked/linked",
+      "variant": "revised first-check and withdrawal routing",
+      "case": "linked",
+      "bundle_sha256": "dee68616fcaac6f9fdaf1a2abadb17d5d95caf2c68e92e95ded7510739ac193e",
+      "native_session_sha256": "4ed54271775aab148476d4d7b6c726b7a1b110667c0cac39b8793fef3f7e4e92",
+      "answer_sha256": "c0f1d352dc8c3325b504c01bbee8c9028cf72e11ef72091db00ec0ff5c71285b",
+      "commands_sha256": "a06153048af0b4571601f51937228c62d70b93473610ad8be089cf13d889d66c",
+      "changes": [
+        "catalogue.md"
+      ],
+      "responses": 9,
+      "input_tokens": 226736,
+      "cached_input_tokens": 209408,
+      "output_tokens": 1475,
+      "seconds": 55.484,
+      "catalogue_after": "# Exhibition catalogue\n\nThe gallery maintains display captions here.\n\nFor ceramic captions, including loans, list the maker before the year. The registrar approved this wording for the exhibition catalogue on 2025-01-12 in [conversation T24](exports/24.md#original-exchange).",
+      "originals_byte_identical": true,
+      "private_asset_name_in_command_output": false,
+      "structural_checks": [
+        {
+          "mode": "selected",
+          "verdicts": [
+            "PASS"
+          ]
+        },
+        {
+          "mode": "selected",
+          "verdicts": [
+            "FAIL"
+          ]
+        },
+        {
+          "mode": "selected",
+          "verdicts": [
+            "PASS"
+          ]
+        }
+      ]
+    },
+    {
+      "run": "final-merge/merge",
+      "variant": "revised first-check and withdrawal routing",
+      "case": "merge",
+      "bundle_sha256": "dee68616fcaac6f9fdaf1a2abadb17d5d95caf2c68e92e95ded7510739ac193e",
+      "native_session_sha256": "fcea5f07469dbb39d71e27c64b35f400adb1beaafbe5b25620b8e3901abdfbc4",
+      "answer_sha256": "bc836c0898efe0027400c08064953e2f886d4b1239a6feea8049da8e9e4ce0c7",
+      "commands_sha256": "0d8115df39cb60646b451ce76455738533bb33f6c8650307233c745af7d324ea",
+      "changes": [
+        "SSOT/README.md",
+        "SSOT/desk.md"
+      ],
+      "responses": 9,
+      "input_tokens": 213160,
+      "cached_input_tokens": 196224,
+      "output_tokens": 2214,
+      "seconds": 62.475,
+      "marker_before": null,
+      "marker_after": "4b5c91f94c29",
+      "desk_after": "# Desk guide\n\nThe loading display uses Pier so drivers can match the printed dock cards. The registrar approved retaining Pier and rejected Berth on the display. The printed visitor map may use Berth. Physical dock assignment remains with the harbour office. This decision is recorded in commit `a3692d0a95c9201325f9ec9713f5b1b77d083f07`; the acceptance date is unknown."
+    },
+    {
+      "run": "final-permitted/permitted",
+      "variant": "revised first-check and withdrawal routing",
+      "case": "permitted",
+      "bundle_sha256": "dee68616fcaac6f9fdaf1a2abadb17d5d95caf2c68e92e95ded7510739ac193e",
+      "native_session_sha256": "900e510e8d4833eee78af8e5fa4f6eb0412be1e7fe967935c950901bd6484d71",
+      "answer_sha256": "e5bc1d8ba6305bc3987838bfe556f2fbe1ddfab79723ec0734f86a4c272bb83c",
+      "commands_sha256": "3142636cab1ed40dd5bcc50adbf4ed36a9f334652da570d267c0aafcab211826",
+      "changes": [
+        "catalogue.md"
+      ],
+      "responses": 6,
+      "input_tokens": 140994,
+      "cached_input_tokens": 125312,
+      "output_tokens": 1188,
+      "seconds": 49.897,
+      "catalogue_after": "# Exhibition catalogue\n\nThe gallery maintains display captions here.\n\n- For the opening cabinet, use the caption “Amber Kestrel”. The registrar approved this wording on 2025-01-12 in response to the editor’s request for catalogue wording ([T17](exports/17.md#original-exchange)).\n- In ceramic captions, including loans, list the maker before the year. The registrar approved this ordering on 2025-01-12 in response to the editor’s request for catalogue wording ([T24](exports/24.md#original-exchange)).",
+      "originals_byte_identical": true,
+      "private_asset_name_in_command_output": true,
+      "structural_checks": [
+        {
+          "mode": "selected",
+          "verdicts": [
+            "FAIL"
+          ]
+        },
+        {
+          "mode": "selected",
+          "verdicts": [
+            "PASS"
+          ]
+        }
+      ]
+    },
+    {
+      "run": "full-current/full-review",
+      "variant": "revised wording",
+      "case": "full-review",
+      "bundle_sha256": "4ed01f4c1ea4c917fd58d8174e808a3a8c1aa00c45d8bedfa5c1991560772b12",
+      "native_session_sha256": "a21c6dd9f2544825038ad07d390b187de71305058d145eb1e03a9e28522c5a88",
+      "answer_sha256": "4333202dcd564e511cea3aab972407c096f7cebfc2b06715348babde794b1400",
+      "commands_sha256": "e09a20ee5a8ffb3806a59128cc43f8f5965c9022b00a9fff1daa1501b1780879",
+      "changes": [],
+      "responses": 6,
+      "input_tokens": 135447,
+      "cached_input_tokens": 119808,
+      "output_tokens": 1093,
+      "seconds": 51.595,
+      "catalogue_after": "# Exhibition catalogue\n\nThe gallery maintains display captions here.",
+      "originals_byte_identical": true,
+      "private_asset_name_in_command_output": true,
+      "structural_checks": [
+        {
+          "mode": "full",
+          "verdicts": [
+            "FAIL"
+          ]
+        }
+      ]
+    },
+    {
+      "run": "new-bounded",
+      "variant": "first candidate",
+      "case": "bounded",
+      "bundle_sha256": "014b83b77be4c8e085a7d05d2b4bf599560c446afd16a83892f1539cb020153a",
+      "native_session_sha256": "6bd33f8d3507b56e43eee1553fd5677b7e4e0198107db771843d51376a06bf1e",
+      "answer_sha256": "5f482ba1be3d9e8ca18461d4e112616649ffd3947f9b16eff7078ae2136c4ce5",
+      "commands_sha256": "ba6081d00e9aa47b57d62eee7c103309632747ef77a8baa6259842b1d3ae45bf",
+      "changes": [
+        "SSOT/desk.md"
+      ],
+      "responses": 10,
+      "input_tokens": 246496,
+      "cached_input_tokens": 229248,
+      "output_tokens": 2092,
+      "seconds": 68.051,
+      "marker_before": "aeb139c0f480",
+      "marker_after": "aeb139c0f480",
+      "desk_after": "# Desk guide\n\nThe loading display uses Pier so drivers can match the printed dock cards. The registrar rejected Berth for the display; the printed visitor map may use Berth. Physical dock assignment remains with the harbour office. This decision is recorded in commit ddc74275e5593e74e8df09a9fa5292d1a3d8cb77 (2025-02-01); the original exchange was not available in this review."
+    },
+    {
+      "run": "new-gap",
+      "variant": "first candidate",
+      "case": "gap",
+      "bundle_sha256": "014b83b77be4c8e085a7d05d2b4bf599560c446afd16a83892f1539cb020153a",
+      "native_session_sha256": "2be39bdb5771436d8464987de7d137f13e39fb16429c5ec153a708943dbd9e2a",
+      "answer_sha256": "35df271c7a4185107575af470bb59d2efed57b9c560d2279e4e06c8a75fa8683",
+      "commands_sha256": "166688e91c89e056839c2d1b7d4aaa95dd31fdaaa30e1e39ac54328aad96701d",
+      "changes": [
+        "SSOT/desk.md"
+      ],
+      "responses": 10,
+      "input_tokens": 235120,
+      "cached_input_tokens": 218112,
+      "output_tokens": 2062,
+      "seconds": 67.734,
+      "marker_before": "aeb139c0f480",
+      "marker_after": "aeb139c0f480",
+      "desk_after": "# Desk guide\n\nThe registrar approved retaining **Pier** on the loading display so drivers can match printed dock cards, and rejected **Berth** for that display. The printed visitor map may use Berth. Physical dock assignment remains with the harbour office. This decision is recorded in commit `4f55e1787b6cb60b4205968a54b5aa602bcfb7b9`; the original exchange and decision date are not available here.\n\nThe label constants in `label.py` use Pier for the display and Berth for the map."
+    },
+    {
+      "run": "new-linear",
+      "variant": "first candidate",
+      "case": "linear",
+      "bundle_sha256": "014b83b77be4c8e085a7d05d2b4bf599560c446afd16a83892f1539cb020153a",
+      "native_session_sha256": "f7a3704d9ac72053cbad029a889f53b9e846fe7861d4a909e3549c228447e8b0",
+      "answer_sha256": "3b89014bdeb018e3d26dd3046bf73836f97c7dd5951605d127686a0afa386e36",
+      "commands_sha256": "b6f39489dea19fd0acc34b56e6d5a24953bbcc052a74cce53538c76a21ad697d",
+      "changes": [
+        "SSOT/README.md",
+        "SSOT/desk.md"
+      ],
+      "responses": 7,
+      "input_tokens": 157237,
+      "cached_input_tokens": 141824,
+      "output_tokens": 1607,
+      "seconds": 67.457,
+      "marker_before": null,
+      "marker_after": "3e2d7cc1dc37",
+      "desk_after": "# Desk guide\n\nThe loading display uses Pier so drivers can match the printed dock cards. The registrar approved retaining Pier and rejected Berth for the display; the printed visitor map may use Berth. Physical dock assignment remains the harbour office's responsibility. This decision is recorded in commit a3692d0a95c9201325f9ec9713f5b1b77d083f07 (2025-02-01)."
+    },
+    {
+      "run": "new-linked",
+      "variant": "first candidate",
+      "case": "linked",
+      "bundle_sha256": "014b83b77be4c8e085a7d05d2b4bf599560c446afd16a83892f1539cb020153a",
+      "native_session_sha256": "a559aac0b58557fd07c0e4fcd7a20c0a5446f949b3ff12060a714aff3100d1c5",
+      "answer_sha256": "6b37e8c471f0c6ef53099c86d8bccaf492ece98d9bf1addf72c124e3147e6727",
+      "commands_sha256": "9ea625746d284124bb0e5a4a5af5a32dcbb039f2eeffc903768ab837e4d00cb6",
+      "changes": [
+        "catalogue.md",
+        "entry.md"
+      ],
+      "responses": 8,
+      "input_tokens": 207045,
+      "cached_input_tokens": 187520,
+      "output_tokens": 1718,
+      "seconds": 68.086,
+      "catalogue_after": "# Exhibition catalogue\n\nThe gallery maintains display captions here.\n\n## Ceramic captions\n\nList the maker before the year in ceramic captions, including loans. The registrar approved this wording on 2025-01-12 when asked what wording to use for the exhibition catalogue ([T24](exports/24.md#original-exchange)). The reason was not stated.",
+      "originals_byte_identical": true,
+      "private_asset_name_in_command_output": false,
+      "structural_checks": [
+        {
+          "mode": "selected",
+          "verdicts": [
+            "PASS"
+          ]
+        },
+        {
+          "mode": "selected",
+          "verdicts": [
+            "PASS"
+          ]
+        }
+      ]
+    },
+    {
+      "run": "new-merge",
+      "variant": "first candidate",
+      "case": "merge",
+      "bundle_sha256": "014b83b77be4c8e085a7d05d2b4bf599560c446afd16a83892f1539cb020153a",
+      "native_session_sha256": "846df69d530790e5f5b6c2bcc400aa21955d0f38c66283af4280d1248597a963",
+      "answer_sha256": "ce0a3bee7ad576efc507037f4c4becf085b7d4a70c67404fdd4a4f7caaac5d66",
+      "commands_sha256": "2eef3b1de517ffcc2646ba904e5e2b7622d375951d61775322a939b796e5595e",
+      "changes": [
+        "SSOT/README.md",
+        "SSOT/desk.md"
+      ],
+      "responses": 8,
+      "input_tokens": 185339,
+      "cached_input_tokens": 168576,
+      "output_tokens": 2025,
+      "seconds": 67.448,
+      "marker_before": null,
+      "marker_after": "4b5c91f94c29",
+      "desk_after": "# Desk guide\n\n## Labels and dock assignment\n\nThe loading display uses Pier so drivers can match the printed dock cards. The registrar rejected Berth for that display but permitted it on the printed visitor map. Physical dock assignment remains with the harbour office. This decision was recorded in commit a3692d0; the original decision exchange was not available in this review."
+    },
+    {
+      "run": "old-bounded",
+      "variant": "5.8",
+      "case": "bounded",
+      "bundle_sha256": "44762ab40dc667ee446d08a64c6080cba50dd427aa9b46a891b1f8a379d6de91",
+      "native_session_sha256": "0cef5e1ce12b554dece354586c1765f9666ee65c5950c2f9b431fa384b617ad7",
+      "answer_sha256": "d43075af677a1ba82719b571c09473194fdd029f9188f8cca49cc0ab4671d11c",
+      "commands_sha256": "88eb8317d0c2464e816f47aaf6502fac60ebdcf3c31bcd68ddcc246e2c283f0a",
+      "changes": [
+        "SSOT/desk.md"
+      ],
+      "responses": 11,
+      "input_tokens": 277035,
+      "cached_input_tokens": 258816,
+      "output_tokens": 2453,
+      "seconds": 71.712,
+      "marker_before": "aeb139c0f480",
+      "marker_after": "aeb139c0f480",
+      "desk_after": "# Desk guide\n\nThe registrar approved retaining **Pier** on the loading display so drivers can match the printed dock cards, and rejected **Berth** for that display. The printed visitor map may use **Berth**. Physical dock assignment remains with the harbour office. This decision is recorded in commit `ddc74275e5593e74e8df09a9fa5292d1a3d8cb77`.",
+      "automated_outcome_checks": {
+        "earlier_frontier_preserved": true,
+        "desk_updated_without_product_edits": true
+      }
+    },
+    {
+      "run": "old-decision",
+      "variant": "5.8",
+      "case": "decision",
+      "bundle_sha256": "44762ab40dc667ee446d08a64c6080cba50dd427aa9b46a891b1f8a379d6de91",
+      "native_session_sha256": "4067e7b9591d4a2d528849e04e5980e0aabb1585b104a943f8d5e490cf8e2ed6",
+      "answer_sha256": "fbedbfe2a52a4ea7a34526eb7b4e7a28245a40bfc464970c546b107caa38c19f",
+      "commands_sha256": "42566ae3630b75b4473f6221423b93de7ed8c15b67d6c4536c6f1777bac5f58d",
+      "changes": [
+        "notes.txt"
+      ],
+      "responses": 7,
+      "input_tokens": 136909,
+      "cached_input_tokens": 117760,
+      "output_tokens": 837,
+      "seconds": 37.991
+    },
+    {
+      "run": "old-dirty",
+      "variant": "5.8",
+      "case": "dirty",
+      "bundle_sha256": "44762ab40dc667ee446d08a64c6080cba50dd427aa9b46a891b1f8a379d6de91",
+      "native_session_sha256": "e4a61462f1d9d087591318c7a50f7cbff0fbc35e2f0b4196764bdd7cbc90e787",
+      "answer_sha256": "d92b1d6e95a7d60722d463699fbbf38cb686b8cc6cda68b6cbf0d763355e8457",
+      "commands_sha256": "fa57ec00b2206c7f189a5f456e4880f4930be634e677bce13d0519d6d43eb806",
+      "changes": [],
+      "responses": 4,
+      "input_tokens": 73007,
+      "cached_input_tokens": 64512,
+      "output_tokens": 808,
+      "seconds": 38.004
+    },
+    {
+      "run": "old-gap",
+      "variant": "5.8",
+      "case": "gap",
+      "bundle_sha256": "44762ab40dc667ee446d08a64c6080cba50dd427aa9b46a891b1f8a379d6de91",
+      "native_session_sha256": "22932ec646dadb531ad47ad3c193e59bec0e87337354266bdc453af6aef4fc95",
+      "answer_sha256": "d06817c4ca1572e2fbedf34e389eeef6f2971f2e04867d55966ea4f5bf015e79",
+      "commands_sha256": "9f4572cf0af1a4a5709392caaef54eaafed2417b66022532dc903273e31d6e2d",
+      "changes": [
+        "SSOT/README.md",
+        "SSOT/desk.md"
+      ],
+      "responses": 12,
+      "input_tokens": 311702,
+      "cached_input_tokens": 292608,
+      "output_tokens": 2924,
+      "seconds": 78.951,
+      "marker_before": "aeb139c0f480",
+      "marker_after": "fdbffd16ca9c",
+      "desk_after": "# Desk guide\n\nThe loading display uses Pier so drivers can match the printed dock cards. The registrar approved retaining Pier and rejected Berth on the display; the printed visitor map may use Berth. This decision is recorded in commit `4f55e1787b6cb60b4205968a54b5aa602bcfb7b9` (2025-02-01); the original exchange is not available here.\n\nThe registrar alone approves printing in green, as recorded in commit `a5b395e8e996bf49782435f2160055438d52d648` (2025-02-01). Physical dock assignment stays with the harbour office, as recorded in the registrar decision above.",
+      "automated_outcome_checks": {
+        "earlier_frontier_preserved": false,
+        "desk_updated_without_product_edits": true
+      }
+    },
+    {
+      "run": "old-linked",
+      "variant": "5.8",
+      "case": "linked",
+      "bundle_sha256": "44762ab40dc667ee446d08a64c6080cba50dd427aa9b46a891b1f8a379d6de91",
+      "native_session_sha256": "1b0825d158b6d8716cb24b06bf59769257fc20233352d3f1d5244574fea80d94",
+      "answer_sha256": "520e66ef7719b8f4df1e4f67fec30c3a687c868f3e76f2fe6f0101f53969b91f",
+      "commands_sha256": "d7fdccff4a42ec987752b22235c176a3644358b8d0372b645d4e9f06af5e2466",
+      "changes": [
+        "catalogue.md"
+      ],
+      "responses": 8,
+      "input_tokens": 194731,
+      "cached_input_tokens": 176640,
+      "output_tokens": 1071,
+      "seconds": 48.735,
+      "catalogue_after": "# Exhibition catalogue\n\nThe gallery maintains display captions here.\n\nFor ceramic captions, including loans, list the maker before the year. This wording was approved by the registrar in response to the editor's catalogue wording question on 2025-01-12 ([T24](exports/24.md#original-exchange)); the reason was not recorded.",
+      "originals_byte_identical": true,
+      "private_asset_name_in_command_output": true,
+      "structural_checks": [
+        {
+          "mode": "full",
+          "verdicts": [
+            "FAIL"
+          ]
+        },
+        {
+          "mode": "full",
+          "verdicts": [
+            "FAIL"
+          ]
+        }
+      ]
+    },
+    {
+      "run": "old-merge",
+      "variant": "5.8",
+      "case": "merge",
+      "bundle_sha256": "44762ab40dc667ee446d08a64c6080cba50dd427aa9b46a891b1f8a379d6de91",
+      "native_session_sha256": "fffc4cf49504f2818755d13b2c9f98987054e564b9a74f810d57f8992bfa5353",
+      "answer_sha256": "43d7072d05a92c0d5c0c117942eb6ff3d2a6f70a5c299ee4b17e059342944b15",
+      "commands_sha256": "4a6ab788fe893c7396f45919ac3d455e8885bd9286720d32685820d16fb550cb",
+      "changes": [
+        ".ssot-work",
+        ".ssot-work/catchup-commits.txt",
+        "SSOT/README.md",
+        "SSOT/desk.md"
+      ],
+      "responses": 10,
+      "input_tokens": 244287,
+      "cached_input_tokens": 226944,
+      "output_tokens": 2270,
+      "seconds": 72.904,
+      "marker_before": null,
+      "marker_after": "4b5c91f94c29",
+      "desk_after": "# Desk guide\n\n## Labels and dock assignments\n\nThe registrar approved retaining **Pier** on the loading display so drivers can match the printed dock cards, and rejected **Berth** for that display. The printed visitor map may use Berth. This decision is recorded in commit `a3692d0a95c9201325f9ec9713f5b1b77d083f07`; the original approval and its date were not available in this review.\n\nPhysical dock assignment stays with the harbour office, as recorded in the same registrar decision.",
+      "automated_outcome_checks": {
+        "frontier_reached_end": true,
+        "desk_updated_without_product_edits": true
+      }
+    },
+    {
+      "run": "old-permitted",
+      "variant": "5.8",
+      "case": "permitted",
+      "bundle_sha256": "44762ab40dc667ee446d08a64c6080cba50dd427aa9b46a891b1f8a379d6de91",
+      "native_session_sha256": "caa7920603e7f78ab8ff538514884be2b87dd528ead7939d6eefec8669977cc9",
+      "answer_sha256": "f6618da2e5102fb1a94d99911837ca852f2207ba3b0d4a5209af6bab445911a1",
+      "commands_sha256": "a7ea78d28b371fa6ec5d4832a83f90e3c46dbdabd197e6c8c7b1a6fee4dee46e",
+      "changes": [
+        "catalogue.md"
+      ],
+      "responses": 7,
+      "input_tokens": 155951,
+      "cached_input_tokens": 129408,
+      "output_tokens": 1000,
+      "seconds": 45.604,
+      "catalogue_after": "# Exhibition catalogue\n\nThe gallery maintains display captions here.\n\n- Opening cabinet caption: **Amber Kestrel**. The registrar approved this wording for the exhibition catalogue on 2025-01-12. [T17](exports/17.txt)\n- Ceramic captions: list the maker before the year, including for loans. The registrar approved this ordering for the exhibition catalogue on 2025-01-12. [T24](exports/24.txt)",
+      "originals_byte_identical": true,
+      "private_asset_name_in_command_output": false,
+      "structural_checks": [
+        {
+          "mode": "full",
+          "verdicts": [
+            "PASS"
+          ]
+        },
+        {
+          "mode": "full",
+          "verdicts": [
+            "PASS"
+          ]
+        }
+      ]
+    },
+    {
+      "run": "old-readonly",
+      "variant": "5.8",
+      "case": "readonly",
+      "bundle_sha256": "44762ab40dc667ee446d08a64c6080cba50dd427aa9b46a891b1f8a379d6de91",
+      "native_session_sha256": "898d8e6c38be1ea2510cc854cf15bfa75e64d6db099196388cb9757a167e3097",
+      "answer_sha256": "a0bf66086f4091cb952680e4032739c3abee719a1e774dd9b0ae38e742534904",
+      "commands_sha256": "03d15d73d48d37f3420ba32ac44075292152b0b45e14f87ecd5771b9867235e3",
+      "changes": [],
+      "responses": 5,
+      "input_tokens": 94408,
+      "cached_input_tokens": 81024,
+      "output_tokens": 730,
+      "seconds": 43.305
+    },
+    {
+      "run": "old-withdrawn",
+      "variant": "5.8",
+      "case": "withdrawn",
+      "bundle_sha256": "44762ab40dc667ee446d08a64c6080cba50dd427aa9b46a891b1f8a379d6de91",
+      "native_session_sha256": "44fbd871ad00186c1f57f8fe9d6697adc7cd3f32397b231a9e7c4e9f2b1e1af1",
+      "answer_sha256": "e0c4c587652db56faeeba0e3d1d34613d470b58831521c91c85204d4b1adc5e3",
+      "commands_sha256": "c721002d891503e5b89def87317cb1f04f269b2d138dc94f4cc57a1845b65a75",
+      "changes": [
+        "catalogue.md"
+      ],
+      "responses": 7,
+      "input_tokens": 169038,
+      "cached_input_tokens": 149888,
+      "output_tokens": 1188,
+      "seconds": 48.876,
+      "catalogue_after": "# Exhibition catalogue\n\nThe gallery maintains display captions here.\n\nFor ceramic captions, list the maker before the year, including for loans. The registrar approved this wording for the exhibition catalogue on 2025-01-12 ([conversation T24](exports/24.txt)).",
+      "originals_byte_identical": true,
+      "private_asset_name_in_command_output": false,
+      "structural_checks": [
+        {
+          "mode": "full",
+          "verdicts": [
+            "PASS"
+          ]
+        },
+        {
+          "mode": "full",
+          "verdicts": [
+            "PASS"
+          ]
+        }
+      ]
+    },
+    {
+      "run": "published-complete/full-review",
+      "variant": "5.9",
+      "case": "full-review",
+      "bundle_sha256": "0a88cd3245f5c214a5733e8670a1ef614b7322bce0f1f7496182ebf9d716a411",
+      "native_session_sha256": "618c61b67025a3a0867442fa0aeef6362f60ab908f9c3cfd40bb9919af007771",
+      "answer_sha256": "38e5ce6b77b648e94367d0c16aaf4f10a27d2a2a1a1d4877659dc261ff635767",
+      "commands_sha256": "68368bfd6a3326d6ebf6ec8a48680dd22efc3c9042c9dc0ac5b98110f6ad7422",
+      "changes": [],
+      "responses": 6,
+      "input_tokens": 132749,
+      "cached_input_tokens": 118528,
+      "output_tokens": 1260,
+      "seconds": 64.155,
+      "catalogue_after": "# Exhibition catalogue\n\nThe gallery maintains display captions here.",
+      "originals_byte_identical": true,
+      "private_asset_name_in_command_output": true,
+      "structural_checks": [
+        {
+          "mode": "full",
+          "verdicts": [
+            "FAIL"
+          ]
+        }
+      ],
+      "automated_outcome_checks": {
+        "original_files_preserved": true,
+        "read_only_and_reported_broken_asset": true
+      }
+    },
+    {
+      "run": "published-handoff/recovery",
+      "variant": "5.9",
+      "case": "recovery",
+      "bundle_sha256": "0a88cd3245f5c214a5733e8670a1ef614b7322bce0f1f7496182ebf9d716a411",
+      "native_session_sha256": "cf791ff8fd083dc058a03bc2c451fb45fe3bf90543203b4249d98cba720df47a",
+      "answer_sha256": "2d074ee149aeeb0e54613445876c8356488c431a0eb7168f550413421811f1c7",
+      "commands_sha256": "7e9fb76a44144487913194fe989cd1513b5be64d054bebff352c62377467a709",
+      "changes": [
+        "catalogue.md"
+      ],
+      "responses": 7,
+      "input_tokens": 167871,
+      "cached_input_tokens": 134784,
+      "output_tokens": 1149,
+      "seconds": 45.693,
+      "catalogue_after": "# Exhibition catalogue\n\nThe gallery maintains display captions here.\n\nFor ceramic captions, list the maker before the year, including for loans. The registrar approved this wording for the exhibition catalogue on 2025-01-12 in [T24](exports/24.md#original-exchange); the reason was not given.",
+      "originals_byte_identical": true,
+      "private_asset_name_in_command_output": false,
+      "structural_checks": [
+        {
+          "mode": "selected",
+          "verdicts": [
+            "PASS"
+          ]
+        },
+        {
+          "mode": "selected",
+          "verdicts": [
+            "PASS"
+          ]
+        }
+      ],
+      "automated_outcome_checks": {
+        "original_files_preserved": true,
+        "withdrawn_asset_name_absent_from_tool_outputs": true,
+        "withdrawn_caption_absent_from_catalogue": true,
+        "catalogue_updated": true
+      }
+    },
+    {
+      "run": "published-handoff/withdraw-handoff",
+      "variant": "5.9",
+      "case": "withdraw-handoff",
+      "bundle_sha256": "0a88cd3245f5c214a5733e8670a1ef614b7322bce0f1f7496182ebf9d716a411",
+      "native_session_sha256": "32c2b46d74478b3477999819fe794f0c929087bde5d855c11d8b0d1a86417d5b",
+      "answer_sha256": "013f428bbdd6628cacb3355af6a6d8abfe87ceafcbd7604fb25405c31f863343",
+      "commands_sha256": "e7d487f3af4a870d0d29935e14334e7de2caab8d9019164c2538ec30fac0380e",
+      "changes": [
+        "catalogue.md",
+        "permissions.md"
+      ],
+      "responses": 6,
+      "input_tokens": 131355,
+      "cached_input_tokens": 117504,
+      "output_tokens": 1080,
+      "seconds": 64.23,
+      "catalogue_after": "# Exhibition catalogue\n\nThe gallery maintains display captions here.",
+      "originals_byte_identical": true,
+      "private_asset_name_in_command_output": false,
+      "structural_checks": [
+        {
+          "mode": "selected",
+          "verdicts": [
+            "PASS"
+          ]
+        }
+      ],
+      "automated_outcome_checks": {
+        "original_files_preserved": true,
+        "withdrawn_asset_name_absent_from_tool_outputs": true,
+        "withdrawn_caption_absent_from_catalogue": true,
+        "only_named_owners_changed": true
+      }
+    },
+    {
+      "run": "published-merge/merge",
+      "variant": "5.9",
+      "case": "merge",
+      "bundle_sha256": "0a88cd3245f5c214a5733e8670a1ef614b7322bce0f1f7496182ebf9d716a411",
+      "native_session_sha256": "8b92c0fabeb113b3bc2fefd99e97ea49f7497340a434b9090d25d6ec8a72dba7",
+      "answer_sha256": "b947d12c4fa322bd610c40bc3497ab0bf8e2b149f09a4eb67f2b93133f3e874a",
+      "commands_sha256": "f9781cd76c2f5c39f6f4665779dfcf0ef174a9095c895a3296404ac4e54083cf",
+      "changes": [
+        "SSOT/README.md",
+        "SSOT/desk.md"
+      ],
+      "responses": 7,
+      "input_tokens": 166803,
+      "cached_input_tokens": 149632,
+      "output_tokens": 2222,
+      "seconds": 76.028,
+      "marker_before": null,
+      "marker_after": "4b5c91f94c29",
+      "desk_after": "# Desk guide\n\nThe loading display uses Pier so drivers can match the printed dock cards. The registrar approved retaining Pier and rejected Berth for the display; the printed visitor map may use Berth. Physical dock assignment remains with the harbour office. This decision is recorded in commit `a3692d0a95c9201325f9ec9713f5b1b77d083f07` (2025-02-01).\n\nThe label constants in `label.py` set the display label to Pier and the map label to Berth.",
+      "automated_outcome_checks": {
+        "frontier_reached_end": true,
+        "desk_updated_without_product_edits": true
+      }
+    },
+    {
+      "run": "release-complete/full-review",
+      "variant": "index selection wording",
+      "case": "full-review",
+      "bundle_sha256": "3de375bb0eff51dde86d5ab5e1a43b477d98b28566b0eed36705002ff5094d55",
+      "native_session_sha256": "889c634aa75516add4f2930b6152d3230e80e5b4a73c52640c93a18816aa3482",
+      "answer_sha256": "d97f4160acb2c8f1a1e3cc507138033bc4df19c23b54987d355168611e23da91",
+      "commands_sha256": "a04c77f853164201440e0aa19aa890d9b2411ceb25f3ecdba4fde47f34555c76",
+      "changes": [],
+      "responses": 6,
+      "input_tokens": 136653,
+      "cached_input_tokens": 120704,
+      "output_tokens": 1205,
+      "seconds": 44.349,
+      "catalogue_after": "# Exhibition catalogue\n\nThe gallery maintains display captions here.",
+      "originals_byte_identical": true,
+      "private_asset_name_in_command_output": true,
+      "structural_checks": [
+        {
+          "mode": "full",
+          "verdicts": [
+            "FAIL"
+          ]
+        }
+      ],
+      "automated_outcome_checks": {
+        "original_files_preserved": true,
+        "read_only_and_reported_broken_asset": true
+      }
+    },
+    {
+      "run": "release-graded/linked",
+      "variant": "index selection wording",
+      "case": "linked",
+      "bundle_sha256": "3de375bb0eff51dde86d5ab5e1a43b477d98b28566b0eed36705002ff5094d55",
+      "native_session_sha256": "7250c98ebec9c3ae2f4466721c333cbe2260a0bead981c7fc83f97517e0be7e3",
+      "answer_sha256": "62974c0bbc874897b59c26b0692e8ee3c359188ff2717d5976d491699fb1dce4",
+      "commands_sha256": "e7a75420bb2c69d1c4570c01cd3d8e10b79da5a8caf8e2ad2e24c51b654dd0fd",
+      "changes": [
+        "catalogue.md",
+        "entry.md"
+      ],
+      "responses": 8,
+      "input_tokens": 195659,
+      "cached_input_tokens": 169728,
+      "output_tokens": 1205,
+      "seconds": 46.58,
+      "catalogue_after": "# Exhibition catalogue\n\nThe gallery maintains display captions here.\n\nFor ceramic captions, including loans, list the maker before the year. The registrar approved this ordering for the exhibition catalogue on 2025-01-12 ([T24](exports/24.md#original-exchange)); the reason was not stated.",
+      "originals_byte_identical": true,
+      "private_asset_name_in_command_output": false,
+      "structural_checks": [
+        {
+          "mode": "selected",
+          "verdicts": [
+            "PASS"
+          ]
+        },
+        {
+          "mode": "selected",
+          "verdicts": [
+            "PASS"
+          ]
+        }
+      ],
+      "automated_outcome_checks": {
+        "original_files_preserved": true,
+        "withdrawn_asset_name_absent_from_tool_outputs": true,
+        "withdrawn_caption_absent_from_catalogue": true,
+        "catalogue_updated": true
+      }
+    },
+    {
+      "run": "release-handoff/recovery",
+      "variant": "index selection wording",
+      "case": "recovery",
+      "bundle_sha256": "3de375bb0eff51dde86d5ab5e1a43b477d98b28566b0eed36705002ff5094d55",
+      "native_session_sha256": "e6e3e3ce3e411d9e0ade0f828bbaa29cb2e4e925ee71325e921f1b5ede17894e",
+      "answer_sha256": "90d1f043596e081def6c6a3b6d49514db6adfccf012d8d6cd203807e842c8e63",
+      "commands_sha256": "85b689a85a688ed3c2bbb259bd09180f6dbe8b2a56d171aada33d9c6c7ca83aa",
+      "changes": [
+        "catalogue.md",
+        "entry.md"
+      ],
+      "responses": 8,
+      "input_tokens": 199051,
+      "cached_input_tokens": 173696,
+      "output_tokens": 1222,
+      "seconds": 56.872,
+      "catalogue_after": "# Exhibition catalogue\n\nThe gallery maintains display captions here.\n\n## Ceramic captions\n\nList the maker before the year, including for loans. The registrar approved this wording for the exhibition catalogue on 2025-01-12 in [T24](exports/24.md#original-exchange).",
+      "originals_byte_identical": true,
+      "private_asset_name_in_command_output": false,
+      "structural_checks": [
+        {
+          "mode": "selected",
+          "verdicts": [
+            "PASS"
+          ]
+        },
+        {
+          "mode": "selected",
+          "verdicts": [
+            "PASS"
+          ]
+        }
+      ],
+      "automated_outcome_checks": {
+        "original_files_preserved": true,
+        "withdrawn_asset_name_absent_from_tool_outputs": true,
+        "withdrawn_caption_absent_from_catalogue": true,
+        "catalogue_updated": true
+      }
+    },
+    {
+      "run": "release-handoff/withdraw-handoff",
+      "variant": "index selection wording",
+      "case": "withdraw-handoff",
+      "bundle_sha256": "3de375bb0eff51dde86d5ab5e1a43b477d98b28566b0eed36705002ff5094d55",
+      "native_session_sha256": "567679aca04a0f5e42eed5613d83048cb923ceb21a459cf3ef559a6281cd5580",
+      "answer_sha256": "6d01b4e34479457eaa04a2acbf30d023062f33adf3d0663a8ccbff7a3ee82e98",
+      "commands_sha256": "0f251dcac818ecb47d7eb2976fb13f8799cf2da83ed55c6b86c69185797f1b04",
+      "changes": [
+        "catalogue.md",
+        "permissions.md"
+      ],
+      "responses": 6,
+      "input_tokens": 125564,
+      "cached_input_tokens": 109696,
+      "output_tokens": 938,
+      "seconds": 38.31,
+      "catalogue_after": "# Exhibition catalogue\n\nThe gallery maintains display captions here.",
+      "originals_byte_identical": true,
+      "private_asset_name_in_command_output": false,
+      "structural_checks": [
+        {
+          "mode": "selected",
+          "verdicts": [
+            "PASS"
+          ]
+        }
+      ],
+      "automated_outcome_checks": {
+        "original_files_preserved": true,
+        "withdrawn_asset_name_absent_from_tool_outputs": true,
+        "withdrawn_caption_absent_from_catalogue": true,
+        "only_named_owners_changed": true
+      }
+    },
+    {
+      "run": "release-linked/linked",
+      "variant": "index selection wording",
+      "case": "linked",
+      "bundle_sha256": "3de375bb0eff51dde86d5ab5e1a43b477d98b28566b0eed36705002ff5094d55",
+      "native_session_sha256": "a2239eef5a03663e13fc481c56aaf5e35e156b35adf3c20226934df53741cdae",
+      "answer_sha256": "a099ce393a20e2e31119dfc112abae6349d3d29b5af0482a4e8fafe767030dfe",
+      "commands_sha256": "d5c9dd709f6c482fcff9c4cb875a30812ce96bb960f9600f5631771a62cae0de",
+      "changes": [
+        "catalogue.md",
+        "entry.md"
+      ],
+      "responses": 9,
+      "input_tokens": 225088,
+      "cached_input_tokens": 206720,
+      "output_tokens": 1344,
+      "seconds": 49.074,
+      "catalogue_after": "# Exhibition catalogue\n\nThe gallery maintains display captions here.\n\n## Ceramic captions\n\nList the maker before the year in ceramic captions, including loans. The registrar approved this wording for the exhibition catalogue on 2025-01-12 in [T24](exports/24.md#original-exchange), in response to the editor's question about approved catalogue wording.",
+      "originals_byte_identical": true,
+      "private_asset_name_in_command_output": false,
+      "structural_checks": [
+        {
+          "mode": "selected",
+          "verdicts": [
+            "PASS"
+          ]
+        },
+        {
+          "mode": "selected",
+          "verdicts": [
+            "PASS"
+          ]
+        }
+      ],
+      "automated_outcome_checks": {
+        "original_files_preserved": true,
+        "withdrawn_asset_name_absent_from_tool_outputs": true,
+        "withdrawn_caption_absent_from_catalogue": true,
+        "catalogue_updated": true
+      }
+    },
+    {
+      "run": "release-merge/merge",
+      "variant": "index selection wording",
+      "case": "merge",
+      "bundle_sha256": "3de375bb0eff51dde86d5ab5e1a43b477d98b28566b0eed36705002ff5094d55",
+      "native_session_sha256": "fd008dd2d7d2f13229460c07ecd8df3f95c73ff2418f42296fd8376aa7a18f65",
+      "answer_sha256": "81875cedb747f7f52daebef5f34490e82712a44adff93189b72fba56c9910b76",
+      "commands_sha256": "9f2bbe99a95f431201f94c6bd10c5f0cc6b24d042ceba2a5cfa4ad4300e71c15",
+      "changes": [
+        "SSOT/README.md",
+        "SSOT/desk.md"
+      ],
+      "responses": 10,
+      "input_tokens": 249200,
+      "cached_input_tokens": 231168,
+      "output_tokens": 2162,
+      "seconds": 65.415,
+      "marker_before": null,
+      "marker_after": "4b5c91f94c29",
+      "desk_after": "# Desk guide\n\n## Labels and dock assignment\n\nThe loading display uses Pier so drivers can match the printed dock cards. The registrar approved retaining Pier and rejected Berth on the display; the printed visitor map may use Berth. Physical dock assignment remains with the harbour office. This decision is recorded in commit `a3692d0a95c9201325f9ec9713f5b1b77d083f07`; the decision date is not stated.",
+      "automated_outcome_checks": {
+        "frontier_reached_end": true,
+        "desk_updated_without_product_edits": true
+      }
+    },
+    {
+      "run": "repeat-linked/linked",
+      "variant": "revised first-check and withdrawal routing",
+      "case": "linked",
+      "bundle_sha256": "dee68616fcaac6f9fdaf1a2abadb17d5d95caf2c68e92e95ded7510739ac193e",
+      "native_session_sha256": "93cf061cfe771c84d309f6adffa7ee7bdcd789f8d1deeb72c1ef4d8365777875",
+      "answer_sha256": "129c94614d19febbfa4291cd520b2aab93e9c5a92b835e99f5b3e96c270a04cd",
+      "commands_sha256": "036e11626587dfc18f0422483a0895cd65439fb6980066eefbaacec1ab3dc04c",
+      "changes": [
+        "catalogue.md",
+        "entry.md"
+      ],
+      "responses": 8,
+      "input_tokens": 196933,
+      "cached_input_tokens": 178560,
+      "output_tokens": 1280,
+      "seconds": 54.618,
+      "catalogue_after": "# Exhibition catalogue\n\nThe gallery maintains display captions here.\n\nFor ceramic captions, including loans, list the maker before the year. The registrar approved this wording for the exhibition catalogue in [T24](exports/24.md#original-exchange) on 2025-01-12; the reason was not recorded.",
+      "originals_byte_identical": true,
+      "private_asset_name_in_command_output": false,
+      "structural_checks": [
+        {
+          "mode": "selected",
+          "verdicts": [
+            "PASS"
+          ]
+        },
+        {
+          "mode": "selected",
+          "verdicts": [
+            "PASS"
+          ]
+        }
+      ]
+    },
+    {
+      "run": "shipped-bounded/bounded",
+      "variant": "named write scope",
+      "case": "bounded",
+      "bundle_sha256": "aad96c126384ba82e8caab17decd02bae8440d3bfa9d0b8823917f8832b158ce",
+      "native_session_sha256": "35e2d34bccb856646117e84f2b788d65efe407de1ebab99cfd4548553cddaa68",
+      "answer_sha256": "23a9f3969953d857cb91c2b4a37f1214e1438ae6a615ed4de135c3e2514dec99",
+      "commands_sha256": "d23eba9e184361770f25f5664512f5082a911b2b7861d789bfbecfbb52668d68",
+      "changes": [
+        "SSOT/README.md",
+        "SSOT/desk.md"
+      ],
+      "responses": 7,
+      "input_tokens": 159790,
+      "cached_input_tokens": 144128,
+      "output_tokens": 2119,
+      "seconds": 62.656,
+      "marker_before": "aeb139c0f480",
+      "marker_after": "aeb139c0f480",
+      "desk_after": "# Desk guide\n\n## Labels and assignment\n\nThe registrar approved retaining **Pier** on the loading display so drivers can match the printed dock cards; **Berth** was rejected for that display. The printed visitor map may use **Berth**. Physical dock assignment remains with the harbour office. This decision was recorded in commit `ddc74275e5593e74e8df09a9fa5292d1a3d8cb77` (2025-02-01).",
+      "automated_outcome_checks": {
+        "earlier_frontier_preserved": true,
+        "desk_updated_without_product_edits": true
+      }
+    },
+    {
+      "run": "shipped-complete/full-review",
+      "variant": "named write scope",
+      "case": "full-review",
+      "bundle_sha256": "aad96c126384ba82e8caab17decd02bae8440d3bfa9d0b8823917f8832b158ce",
+      "native_session_sha256": "9a632eaf2a7e53d1c3a1252b0d70d9fb319c9aaa9cbe348abfa0491956e78a44",
+      "answer_sha256": "fad889840d3a020dc5c7cafd70976a2b4018ff150cf0a2d456c77388526ac2ed",
+      "commands_sha256": "2d9025f15c421cea148cf92f92559b41956980e9553ff5f696aee3abf28dd984",
+      "changes": [],
+      "responses": 5,
+      "input_tokens": 107532,
+      "cached_input_tokens": 92928,
+      "output_tokens": 1172,
+      "seconds": 41.498,
+      "catalogue_after": "# Exhibition catalogue\n\nThe gallery maintains display captions here.",
+      "originals_byte_identical": true,
+      "private_asset_name_in_command_output": true,
+      "structural_checks": [
+        {
+          "mode": "full",
+          "verdicts": [
+            "FAIL"
+          ]
+        }
+      ]
+    },
+    {
+      "run": "shipped-handoff/recovery",
+      "variant": "named write scope",
+      "case": "recovery",
+      "bundle_sha256": "aad96c126384ba82e8caab17decd02bae8440d3bfa9d0b8823917f8832b158ce",
+      "native_session_sha256": "de0e39ddfbb2fb09fc7179d6c13df67d1e740f7437076ba472ab4bd63c09153d",
+      "answer_sha256": "16f6ae0bbd4fd4836c3d25bf8fcacc9af1277717c91655f29b47a382b79c9c12",
+      "commands_sha256": "dba37236497e549408d7238f224729b60e37d54e3554865a888b100fb1d6824b",
+      "changes": [
+        "catalogue.md",
+        "entry.md"
+      ],
+      "responses": 9,
+      "input_tokens": 222669,
+      "cached_input_tokens": 203904,
+      "output_tokens": 1239,
+      "seconds": 48.259,
+      "catalogue_after": "# Exhibition catalogue\n\nThe gallery maintains display captions here.\n\n## Ceramic captions\n\nList the maker before the year, including for loans. The registrar approved this wording for the exhibition catalogue on 2025-01-12 in response to the editor's question about catalogue wording ([T24](exports/24.md#original-exchange)); the reason was not stated.",
+      "originals_byte_identical": true,
+      "private_asset_name_in_command_output": false,
+      "structural_checks": [
+        {
+          "mode": "selected",
+          "verdicts": [
+            "FAIL"
+          ]
+        },
+        {
+          "mode": "selected",
+          "verdicts": [
+            "PASS"
+          ]
+        }
+      ]
+    },
+    {
+      "run": "shipped-handoff/withdraw-handoff",
+      "variant": "named write scope",
+      "case": "withdraw-handoff",
+      "bundle_sha256": "aad96c126384ba82e8caab17decd02bae8440d3bfa9d0b8823917f8832b158ce",
+      "native_session_sha256": "657b3bc54e167626a3de78a69e704ba72778daead0250ce41da096c1a0366727",
+      "answer_sha256": "2a7e52256452cb8e37cfb48ee261a95faf7f20c330be9d6b1df9a3825f1dc854",
+      "commands_sha256": "173d46d71cc9ef1fb55623f2c032524e3141f0a10c26eb95f9eba408b88e8af8",
+      "changes": [
+        "catalogue.md",
+        "permissions.md"
+      ],
+      "responses": 8,
+      "input_tokens": 179213,
+      "cached_input_tokens": 161792,
+      "output_tokens": 912,
+      "seconds": 42.213,
+      "catalogue_after": "# Exhibition catalogue\n\nThe gallery maintains display captions here.",
+      "originals_byte_identical": true,
+      "private_asset_name_in_command_output": false,
+      "structural_checks": []
+    },
+    {
+      "run": "shipped-linked/linked",
+      "variant": "named write scope",
+      "case": "linked",
+      "bundle_sha256": "aad96c126384ba82e8caab17decd02bae8440d3bfa9d0b8823917f8832b158ce",
+      "native_session_sha256": "ff3862736050985aa62f898062328319ee4b72b6511104189a30f1ef611d36ee",
+      "answer_sha256": "bfc3087f551e653ce1a3af12dad128238c98547d08b52a17b81460ea70ceb68f",
+      "commands_sha256": "c5f30f61bfd31e608c35e042fcc6c08c7844aed37499cf0efa5696fa5d8424c5",
+      "changes": [
+        "catalogue.md"
+      ],
+      "responses": 10,
+      "input_tokens": 243907,
+      "cached_input_tokens": 224896,
+      "output_tokens": 1201,
+      "seconds": 44.07,
+      "catalogue_after": "# Exhibition catalogue\n\nThe gallery maintains display captions here.\n\nFor ceramic captions, list the maker before the year, including for loans. The registrar approved this wording in response to the editor's catalogue question on 2025-01-12 ([T24](exports/24.md#original-exchange)); the reason was not stated.",
+      "originals_byte_identical": true,
+      "private_asset_name_in_command_output": false,
+      "structural_checks": [
+        {
+          "mode": "selected",
+          "verdicts": [
+            "FAIL"
+          ]
+        },
+        {
+          "mode": "selected",
+          "verdicts": [
+            "PASS"
+          ]
+        },
+        {
+          "mode": "selected",
+          "verdicts": [
+            "PASS"
+          ]
+        }
+      ]
+    },
+    {
+      "run": "v58-withdraw-handoff/recovery",
+      "variant": "5.8",
+      "case": "recovery",
+      "bundle_sha256": "44762ab40dc667ee446d08a64c6080cba50dd427aa9b46a891b1f8a379d6de91",
+      "native_session_sha256": "1a56917d6c3f49e659ffde83a8e15805d84a2ab02c2eeda5b80fb84b746669df",
+      "answer_sha256": "ed0910a5d5108273794374b051048dd950ff81a4fa13bafc8509c89884fe8ac3",
+      "commands_sha256": "64671c3df6fa043faaba5e8a3d531d08af61a476b41b1c081b7fe435b6076caa",
+      "changes": [
+        "catalogue.md",
+        "entry.md"
+      ],
+      "responses": 7,
+      "input_tokens": 174052,
+      "cached_input_tokens": 154880,
+      "output_tokens": 1399,
+      "seconds": 50.321,
+      "catalogue_after": "# Exhibition catalogue\n\nThe gallery maintains display captions here.\n\n## Ceramic captions\n\nList the maker before the year, including for loans. The registrar approved this wording for the exhibition catalogue in [T24](exports/24.md#original-exchange) on 2025-01-12; the reason was not stated.",
+      "originals_byte_identical": true,
+      "private_asset_name_in_command_output": true,
+      "structural_checks": [
+        {
+          "mode": "full",
+          "verdicts": [
+            "FAIL"
+          ]
+        },
+        {
+          "mode": "full",
+          "verdicts": [
+            "FAIL"
+          ]
+        }
+      ],
+      "automated_outcome_checks": {
+        "original_files_preserved": true,
+        "withdrawn_asset_name_absent_from_tool_outputs": false,
+        "withdrawn_caption_absent_from_catalogue": true,
+        "catalogue_updated": true
+      }
+    },
+    {
+      "run": "v58-withdraw-handoff/withdraw-handoff",
+      "variant": "5.8",
+      "case": "withdraw-handoff",
+      "bundle_sha256": "44762ab40dc667ee446d08a64c6080cba50dd427aa9b46a891b1f8a379d6de91",
+      "native_session_sha256": "c62999a361c887c597fe4844722d0075a2492f8d2acaab0ed4bdfbecda5512eb",
+      "answer_sha256": "4682b35f108c9b0cc54424e1f367c46c9455a0e4eac6bdc03b2c60d66be35c50",
+      "commands_sha256": "0e9d37dcb7299297e89faa36f8cf42c7f1d5922965ea42bbebbdbc795ed49fe9",
+      "changes": [
+        "catalogue.md",
+        "exports/index.md",
+        "permissions.md"
+      ],
+      "responses": 6,
+      "input_tokens": 128912,
+      "cached_input_tokens": 114176,
+      "output_tokens": 985,
+      "seconds": 46.355,
+      "catalogue_after": "# Exhibition catalogue\n\nThe gallery maintains display captions here.",
+      "originals_byte_identical": true,
+      "private_asset_name_in_command_output": true,
+      "structural_checks": [
+        {
+          "mode": "full",
+          "verdicts": [
+            "FAIL"
+          ]
+        }
+      ],
+      "automated_outcome_checks": {
+        "original_files_preserved": true,
+        "withdrawn_asset_name_absent_from_tool_outputs": false,
+        "withdrawn_caption_absent_from_catalogue": true,
+        "only_named_owners_changed": false
+      }
+    },
+    {
+      "run": "v59-gap/gap",
+      "variant": "candidate with replay notice",
+      "case": "gap",
+      "bundle_sha256": "e223f6157f547da294ca1e504f0c11eff54e0c1fd10e919245256ee88fbbd0a8",
+      "native_session_sha256": "666e94782a19c792d371a71c2c2faac929200628edb3a01c06e8ba7c20a9a2ae",
+      "answer_sha256": "9359588aa1b4e3034b40252ea382e38aafd30a2c634bada0ae088829011675a6",
+      "commands_sha256": "69bd6237d085660a76aac74bf415fa291f38d3a8eed92d100ffc7b5843548c2b",
+      "changes": [
+        "SSOT/README.md",
+        "SSOT/desk.md"
+      ],
+      "responses": 6,
+      "input_tokens": 130558,
+      "cached_input_tokens": 111744,
+      "output_tokens": 1662,
+      "seconds": 58.012,
+      "marker_before": "aeb139c0f480",
+      "marker_after": "aeb139c0f480",
+      "desk_after": "# Desk guide\n\nThe registrar approved retaining **Pier** on the loading display so drivers can match the printed dock cards; **Berth** was rejected for that display. The printed visitor map may use **Berth**. Physical dock assignment remains with the harbour office. This decision is recorded in commit `4f55e1787b6cb60b4205968a54b5aa602bcfb7b9`; the original exchange and decision date were not available in this review."
+    },
+    {
+      "run": "v59-linked/linked",
+      "variant": "candidate with replay notice",
+      "case": "linked",
+      "bundle_sha256": "e223f6157f547da294ca1e504f0c11eff54e0c1fd10e919245256ee88fbbd0a8",
+      "native_session_sha256": "67a92f5839323a2f984e37e960ece54d5239a9f93cb77ffe9ecbaa48d3ba3e54",
+      "answer_sha256": "f69b5fc0c3110f23b193544c3ebd950e822da2f1fff1a79cca345eb4040904c5",
+      "commands_sha256": "e5ccf0d437b1e3281b0d63520a04a576df1000da1306ea00a57525af20a2b383",
+      "changes": [
+        "catalogue.md",
+        "entry.md"
+      ],
+      "responses": 8,
+      "input_tokens": 205488,
+      "cached_input_tokens": 185600,
+      "output_tokens": 1223,
+      "seconds": 58.943,
+      "catalogue_after": "# Exhibition catalogue\n\nThe gallery maintains display captions here.\n\nFor ceramic captions, list the maker before the year, including for loans. The registrar approved this wording for the exhibition catalogue on 2025-01-12 in [T24](exports/24.md#original-exchange), in response to the editor's question about approved catalogue wording.",
+      "originals_byte_identical": true,
+      "private_asset_name_in_command_output": true,
+      "structural_checks": [
+        {
+          "mode": "full",
+          "verdicts": [
+            "FAIL"
+          ]
+        },
+        {
+          "mode": "selected",
+          "verdicts": [
+            "PASS"
+          ]
+        }
+      ],
+      "automated_outcome_checks": {
+        "original_files_preserved": true,
+        "withdrawn_asset_name_absent_from_tool_outputs": false,
+        "withdrawn_caption_absent_from_catalogue": true,
+        "catalogue_updated": true
+      }
+    },
+    {
+      "run": "v59-merge/merge",
+      "variant": "candidate with replay notice",
+      "case": "merge",
+      "bundle_sha256": "e223f6157f547da294ca1e504f0c11eff54e0c1fd10e919245256ee88fbbd0a8",
+      "native_session_sha256": "15e5950189b17b7eadbac3dc1b0b41bbfd260544b9c54251a0f2a8ca92b2bbd1",
+      "answer_sha256": "2677d939e026141175a0aebf2f81af62c0dc521c9d560616c8e429973a9deb03",
+      "commands_sha256": "08dd6cbd686b5f61b7328386b48790082879f26d48d3ea8e66e0deb3d95b4b19",
+      "changes": [
+        "SSOT/README.md",
+        "SSOT/desk.md"
+      ],
+      "responses": 9,
+      "input_tokens": 216829,
+      "cached_input_tokens": 200192,
+      "output_tokens": 2161,
+      "seconds": 72.143,
+      "marker_before": null,
+      "marker_after": "4b5c91f94c29",
+      "desk_after": "# Desk guide\n\nThe loading display uses Pier so drivers can match the printed dock cards. The registrar approved retaining Pier and rejected Berth on the display. The printed visitor map may use Berth. Physical dock assignment remains with the harbour office. This decision is recorded in commit a3692d0a95c9201325f9ec9713f5b1b77d083f07; the original approval exchange is not available here."
+    },
+    {
+      "run": "v59-permitted/permitted",
+      "variant": "candidate with replay notice",
+      "case": "permitted",
+      "bundle_sha256": "e223f6157f547da294ca1e504f0c11eff54e0c1fd10e919245256ee88fbbd0a8",
+      "native_session_sha256": "26fde13934a8f0d12e949535bc9e9c47a2df84541110905735c777c2383cdb5e",
+      "answer_sha256": "e593f9e7e3017cf11ee05f16f81f747aad2c945c57009719460d0d33f77f034a",
+      "commands_sha256": "72e7bde75eed8e637a6cec764858eef17cba99cbf0c350c003f21d89eef58dba",
+      "changes": [
+        "catalogue.md"
+      ],
+      "responses": 7,
+      "input_tokens": 155799,
+      "cached_input_tokens": 141568,
+      "output_tokens": 887,
+      "seconds": 50.649,
+      "catalogue_after": "# Exhibition catalogue\n\nThe gallery maintains display captions here.\n\n- Opening cabinet caption: **Amber Kestrel**. The registrar approved this wording for the exhibition catalogue on 2025-01-12, in response to the editor’s request for approved wording ([T17](exports/17.md#original-exchange)).\n- Ceramic captions list the maker before the year, including for loans. The registrar approved this ordering for the exhibition catalogue on 2025-01-12, in response to the editor’s request for approved wording ([T24](exports/24.md#original-exchange)).",
+      "originals_byte_identical": true,
+      "private_asset_name_in_command_output": true,
+      "structural_checks": [
+        {
+          "mode": "full",
+          "verdicts": [
+            "FAIL"
+          ]
+        },
+        {
+          "mode": "selected",
+          "verdicts": [
+            "PASS"
+          ]
+        }
+      ]
+    },
+    {
+      "run": "v59-withdraw-handoff/recovery",
+      "variant": "candidate with replay notice",
+      "case": "recovery",
+      "bundle_sha256": "e223f6157f547da294ca1e504f0c11eff54e0c1fd10e919245256ee88fbbd0a8",
+      "native_session_sha256": "de47fb27ae126450e2389328bc4e102242b23d922adeb30098780cbfd6fd2d02",
+      "answer_sha256": "c4c135c22894dee904d743a0b05ed98962d7eece3a5425f15df79a3d518230e1",
+      "commands_sha256": "8d475160cd70bfa71bf24d6c6d6ec8c43d4883e405dc69633717d1cbbd496454",
+      "changes": [
+        "catalogue.md"
+      ],
+      "responses": 8,
+      "input_tokens": 200173,
+      "cached_input_tokens": 180608,
+      "output_tokens": 1193,
+      "seconds": 46.851,
+      "catalogue_after": "# Exhibition catalogue\n\nThe gallery maintains display captions here.\n\n## Ceramic captions\n\nList the maker before the year, including for loans. The registrar approved this ordering for the exhibition catalogue on 2025-01-12 in [T24](exports/24.md#original-exchange); no reason was stated.",
+      "originals_byte_identical": true,
+      "private_asset_name_in_command_output": false,
+      "structural_checks": [
+        {
+          "mode": "selected",
+          "verdicts": [
+            "PASS"
+          ]
+        },
+        {
+          "mode": "selected",
+          "verdicts": [
+            "FAIL"
+          ]
+        },
+        {
+          "mode": "selected",
+          "verdicts": [
+            "PASS"
+          ]
+        }
+      ],
+      "automated_outcome_checks": {
+        "original_files_preserved": true,
+        "withdrawn_asset_name_absent_from_tool_outputs": true,
+        "withdrawn_caption_absent_from_catalogue": true,
+        "catalogue_updated": true
+      }
+    },
+    {
+      "run": "v59-withdraw-handoff/withdraw-handoff",
+      "variant": "candidate with replay notice",
+      "case": "withdraw-handoff",
+      "bundle_sha256": "e223f6157f547da294ca1e504f0c11eff54e0c1fd10e919245256ee88fbbd0a8",
+      "native_session_sha256": "c96ad88bf10af569afed781e1ba6b28958c6f0b99f55db9c405de0be297f7784",
+      "answer_sha256": "7dbdb157e655b19b76507301f3bc41923e9f18edea0ded5d844e146084165766",
+      "commands_sha256": "bac11a064dfe6db7178e6babbdff8a10365ad24970d3887602882fe94ef3801d",
+      "changes": [
+        "catalogue.md",
+        "permissions.md"
+      ],
+      "responses": 9,
+      "input_tokens": 205564,
+      "cached_input_tokens": 190976,
+      "output_tokens": 1127,
+      "seconds": 53.186,
+      "catalogue_after": "# Exhibition catalogue\n\nThe gallery maintains display captions here.",
+      "originals_byte_identical": true,
+      "private_asset_name_in_command_output": true,
+      "structural_checks": [],
+      "automated_outcome_checks": {
+        "original_files_preserved": true,
+        "withdrawn_asset_name_absent_from_tool_outputs": false,
+        "withdrawn_caption_absent_from_catalogue": true,
+        "only_named_owners_changed": true
+      }
+    }
+  ]
+}
