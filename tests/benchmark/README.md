@@ -8,6 +8,8 @@ Use it to compare a protocol change or to test whether better task routes help. 
 
 For the cost and quality of **creating** repository memory, use the [bootstrap comparison](../../docs/bootstrap-5.7.md). Its isolated writer and document-only reader exercise a recorded policy and a real file-operation tool. The measurements include the writer’s helpers.
 
+For general spaces in a shared directory, the [setup and recovery trial](space_setup.py) prepares ordinary reading, review, continuation and disputed-checkpoint cases. The [5.8 report](../../docs/context-maintenance-5.8.md) includes the prompts' outcomes, a cold handoff and source withdrawal checks.
+
 ## What it runs
 
 The synthetic Parcel desk repository has a quotation module, compatibility tests, accepted delivery and eligibility owners, a superseded proposal, product/architecture entries and 24 adjacent operational documents by default. Arbitrary contract values vary deterministically by repetition and stay identical between paired arms. The agent implements express delivery while preserving standard quotes and the cross-service digital-goods exception. Policy files and supplied tests must remain unchanged. This explicit write scope keeps the experiment about reading and implementation; decision capture and documentation upkeep need separate trials.

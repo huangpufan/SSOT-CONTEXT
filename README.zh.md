@@ -94,11 +94,13 @@ curl -fsSL https://raw.githubusercontent.com/huangpufan/SSOT-CONTEXT/main/instal
  └── research/        结论仍在指导决定的调查
 ```
 
-已有且持续维护的文档可以继续当 owner，由入口链接。通用空间没有固定目录：入口说明目的、范围和受保护的规则，并链接已经负责各个主题的文档。详见[记忆模型](./skills/ssot-preflight/references/memory-model.md)和[空间模型](./skills/ssot-preflight/references/context-spaces.md)。
+已有且持续维护的文档可以继续当 owner，由入口链接。通用空间没有固定目录：入口说明目的、范围和受保护的规则，并链接已经负责各个主题的文档。同目录可以有多个空间。搭建尚未完成时，每个入口链接自己的进度记录。详见[记忆模型](./skills/ssot-preflight/references/memory-model.md)和[空间模型](./skills/ssot-preflight/references/context-spaces.md)。
 
 ## 限度
 
 Skill 只在 Agent 加载它们时生效。它们不会在后台采集材料，也删不掉触及不到的副本，例如备份或服务商日志。[5.1 试验](./tests/context/trials-5.1.md)覆盖冷会话接续、来源准入和大型保护规则表。这些小型合成证据不证明普遍可靠；[5.0 报告](./tests/context/trials-5.0.md)中，开发热任务的 token 用量增加约 5–13%。
+
+对于可重复接入的导出来源，撤回许可时先保存撤回决定，再盘点受影响文档。遇到中断，可以用 `status` 查询撤回是否生效，以及哪些文档仍需处理。[来源接入说明](./skills/ssot-doctor/references/source-integration.md)
 
 更正决定后，复核保存结果时既对照新交流，也在当前保留授权范围内核对必要的早期来源摘录。[5.3 试验](./tests/context/trials-5.3.md)记录了原话丢失的失败，以及对这条复核规则的有限验证。
 
@@ -130,6 +132,7 @@ curl -fsSL https://raw.githubusercontent.com/huangpufan/SSOT-CONTEXT/main/instal
 - [安装指南](./INSTALL.md)：安装、接线、升级、卸载和恢复。
 - [设计说明](./DESIGN.md)：Skill 包为什么是现在这个形态。
 - [持续修改的研究和创作项目](./docs/evolving-research-and-creative-projects.md)：沿用现有 owner，处理局部修订、来源缺口、旧素材与暂缓同步的具体例子。
+- [5.8 维护审视与试验](./docs/context-maintenance-5.8.md)记录了同目录空间的接续、撤回中断恢复，以及尚待验证的设计。
 - [演进审视](./docs/evolution-review-2026-11-12.md)：本轮改进、真实接续试验与证据边界。
 - [评测指南](./tests/benchmark/README.md)：任务结果、冷接续、普通文档对照和证据边界。
 - [更新日志](./CHANGELOG.md)：每个版本改了什么。

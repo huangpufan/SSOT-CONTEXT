@@ -3,20 +3,17 @@
 
 Usage: ssot-check.py [SSOT_DIR|FORMAT5_ENTRY] [--since COMMIT] (default: ./SSOT)
 
-A directory selects its README.md. Pass the file for any other format-5 entry.
+A directory selects README.md. Pass the file for another format-5 entry.
 
 --since COMMIT lists only mentions of files removed after COMMIT or in
 uncommitted changes, and counts the older ones in one line; it also compares
 confirmed invariants with COMMIT instead of HEAD. Closeout uses it to see what
 its own batch changed.
 
-Checks only what a program can decide: the entry file and its format marker,
-local links and heading anchors, the invariants register shape, confirmed
-invariants whose kind, rule, or status changed (or that were removed) without a
-newly dated source, the reviewed_through commit, size warnings, and file paths in inline code that git
-history says were removed or moved (outside decisions/ and research/). It never proves that a document is
-true, complete, or readable; that is the job of the agent review in
-ssot-doctor.
+Checks the entry and format, local links and anchors, register shape, unexplained
+changes to confirmed rules, reviewed_through, document sizes and mentions of
+removed paths outside decisions/ and research/. Doctor reviews truth, coverage
+and readability.
 
 Supported Markdown: ATX and Setext headings, fenced code blocks (``` and ~~~,
 any length), HTML comments (also across lines), inline links and images with
@@ -86,6 +83,18 @@ class Report:
             self.errors += 1
         elif level == "WARN":
             self.warnings += 1
+
+    def finish(self, target):
+        for line in self.lines:
+            print(line)
+        for item in self.unchecked:
+            print(f"UNCHECKED {item}")
+        verdict = "INCOMPLETE" if self.unchecked else "FAIL" if self.errors else "PASS"
+        counts = f"{self.errors} error(s), {self.warnings} warning(s)"
+        if self.unchecked:
+            counts += f", {len(self.unchecked)} part(s) not checked"
+        print(f"ssot-check: {verdict} - {counts} in {target}")
+        return {"INCOMPLETE": 3, "FAIL": 1, "PASS": 0}[verdict]
 
 
 UNDECODABLE = set()
@@ -982,6 +991,13 @@ def markdown_files(ssot_dir, report):
                 yield os.path.join(directory, name)
 
 
+def ledgers(directory):
+    for name in V2_LEDGERS:
+        path = os.path.join(directory, name)
+        if os.path.exists(path):
+            yield path
+
+
 def main(argv):
     args, since = list(argv[1:]), None
     if args in (["-h"], ["--help"]):
@@ -1005,12 +1021,13 @@ def main(argv):
     readme = selected if named_entry else os.path.join(ssot_dir, "README.md")
     GENERAL[0] = False
 
-    is_v2 = any(os.path.exists(os.path.join(ssot_dir, name)) for name in V2_LEDGERS)
     legacy = False
     if not os.path.isfile(readme):
         report.add("ERROR", readme, None, "missing SSOT/README.md (the entry every task starts from)")
     elif not repository_local(readme):
         report.add("ERROR", readme, None, "README must belong to the same repository")
+        if named_entry:
+            return report.finish(readme)
     else:
         text = read_text(readme)
         meta = front_matter(text)
@@ -1019,18 +1036,19 @@ def main(argv):
             REPO_ROOT[0] = os.path.realpath(ssot_dir)
             report.add("INFO", readme, None, "format 5: selected entry and direct local owners; external routes are not read")
         if named_entry and not GENERAL[0]:
-            report.add("ERROR", readme, 1, "a named entry file requires ssot_format: 5; use a directory for older formats")
+            report.add("ERROR", readme, 1, "a named entry file requires ssot_format: 5; verify its writer and format")
+            return report.finish(readme)
         if meta.get("ssot_format") in {FORMAT, "5"}:
             if not meta.get("language"):
                 report.add("ERROR", readme, 1, "front matter needs `language:` (for example en or zh-CN)")
             check_invariants(report, readme, text, ssot_dir)
             check_confirmed(report, readme, text, since)
             check_reviewed_through(report, readme, meta.get("reviewed_through"))
-            for name in V2_LEDGERS:
-                if os.path.exists(os.path.join(ssot_dir, name)):
-                    report.add("WARN", os.path.join(ssot_dir, name), None,
+            if not GENERAL[0]:
+                for path in ledgers(ssot_dir):
+                    report.add("WARN", path, None,
                                "v2 ledger left after migration; extract anything still valid, then remove it")
-        elif meta.get("ssot_format") in {"2", "3"} or ("ssot_format" not in meta and is_v2):
+        elif meta.get("ssot_format") in {"2", "3"} or ("ssot_format" not in meta and any(ledgers(ssot_dir))):
             legacy = True
             version = meta.get("ssot_format", "2")
             report.add("INFO", readme, None, f"v{version} layout; use ssot-bootstrap to migrate to format 4")
@@ -1039,9 +1057,9 @@ def main(argv):
             report.add("ERROR", readme, 1, "front matter needs supported `ssot_format: 4` or `ssot_format: 5`; "
                        "for an unknown format, identify/upgrade its writer without downgrading the data")
 
-    if os.path.isfile(os.path.join(ssot_dir, "BOOTSTRAP.md")):
-        report.add("INFO", os.path.join(ssot_dir, "BOOTSTRAP.md"), None,
-                   "bootstrap is unfinished; continue it with ssot-bootstrap")
+    checkpoint = os.path.join(ssot_dir, "BOOTSTRAP.md")
+    if not GENERAL[0] and os.path.isfile(checkpoint):
+        report.add("INFO", checkpoint, None, "bootstrap is unfinished; continue it with ssot-bootstrap")
 
     mentions = []
     for doc in checked_documents(ssot_dir, readme, report):
@@ -1072,16 +1090,7 @@ def main(argv):
     for path in sorted(UNDECODABLE):
         report.add("WARN", path, None, "not valid UTF-8; undecodable bytes were replaced while checking")
 
-    for line in report.lines:
-        print(line)
-    for item in report.unchecked:
-        print(f"UNCHECKED {item}")
-    verdict = "INCOMPLETE" if report.unchecked else "FAIL" if report.errors else "PASS"
-    counts = f"{report.errors} error(s), {report.warnings} warning(s)"
-    if report.unchecked:
-        counts += f", {len(report.unchecked)} part(s) not checked"
-    print(f"ssot-check: {verdict} - {counts} in {readme if GENERAL[0] or named_entry else ssot_dir}")
-    return {"INCOMPLETE": 3, "FAIL": 1, "PASS": 0}[verdict]
+    return report.finish(readme if GENERAL[0] else ssot_dir)
 
 
 if __name__ == "__main__":

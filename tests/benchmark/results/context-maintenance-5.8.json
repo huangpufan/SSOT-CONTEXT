@@ -1,0 +1,484 @@
+{
+  "baseline": "58f6134",
+  "consumer_formats": [
+    4,
+    5
+  ],
+  "native_model": "gpt-6.1-terra",
+  "reasoning": "medium",
+  "host": "Codex CLI 0.170.0 on Linux",
+  "native_runs": [
+    {
+      "group": "before",
+      "case": "resume",
+      "bundle": "5.7",
+      "responses": 8,
+      "input_tokens": 175502,
+      "cached_input_tokens": 148480,
+      "output_tokens": 1267,
+      "seconds": 61.666,
+      "modified_files": [
+        "field-guide.md",
+        "field-notes.md",
+        "field-progress.md"
+      ],
+      "native_session_sha256": "c554b15e8f78764c9128d0be9e4bf153b03fe658d485a797daa2c37fb3157ad4",
+      "answer_sha256": "cb3421a39d3d320a84fa40681bb3da8d2cc0e699c81e33a755b5728114ca2f57"
+    },
+    {
+      "group": "before",
+      "case": "review",
+      "bundle": "5.7",
+      "responses": 4,
+      "input_tokens": 78054,
+      "cached_input_tokens": 65536,
+      "output_tokens": 975,
+      "seconds": 51.816,
+      "modified_files": [],
+      "native_session_sha256": "ab2c047b2974670d4f3be8d558c45dbe55a95ca6e689c43f8a686aa30a56e4fd",
+      "answer_sha256": "84d4102221c8ce29183aa42e1355f6c47680404d20d571b84596e5a38bf063b3"
+    },
+    {
+      "group": "after",
+      "case": "legacy",
+      "bundle": "first candidate",
+      "responses": 9,
+      "input_tokens": 201565,
+      "cached_input_tokens": 174848,
+      "output_tokens": 1055,
+      "seconds": 69.438,
+      "modified_files": [
+        "BOOTSTRAP.md",
+        "field-guide.md",
+        "field-notes.md"
+      ],
+      "native_session_sha256": "8b855c847981b55475a8c2e874ad382bd2b3f0a5d4022da3b522e3c116049bc2",
+      "answer_sha256": "b9df8d51ed73ca16a25ae621826859b60d666ff6cf6a4c12dd55df2333652d85"
+    },
+    {
+      "group": "after",
+      "case": "mismatch",
+      "bundle": "first candidate",
+      "responses": 8,
+      "input_tokens": 176494,
+      "cached_input_tokens": 153088,
+      "output_tokens": 1329,
+      "seconds": 67.463,
+      "modified_files": [
+        "field-guide.md",
+        "field-notes.md",
+        "field-setup.md"
+      ],
+      "native_session_sha256": "5cef77ec30184aa5600d2bbef7a7d8c7e962d7a4eb5d07417cf72d316a9f6e42",
+      "answer_sha256": "8c4c149697a87a6934209429dbbb62f002ecb704fa56dc3071f1e2da5899a998"
+    },
+    {
+      "group": "after",
+      "case": "resume",
+      "bundle": "first candidate",
+      "responses": 8,
+      "input_tokens": 178399,
+      "cached_input_tokens": 164224,
+      "output_tokens": 1081,
+      "seconds": 63.656,
+      "modified_files": [
+        "field-guide.md",
+        "field-notes.md",
+        "field-progress.md"
+      ],
+      "native_session_sha256": "3aa5b270a73bd3bc55594b3f4178e2aff19c6c1a5469a0f4210385e821ff2f2c",
+      "answer_sha256": "29bc2b5bfa8cfedca915d754326a9abbfb38f8a36030cb8a8391607c93630213"
+    },
+    {
+      "group": "after",
+      "case": "review",
+      "bundle": "first candidate",
+      "responses": 5,
+      "input_tokens": 103786,
+      "cached_input_tokens": 84864,
+      "output_tokens": 1095,
+      "seconds": 56.631,
+      "modified_files": [],
+      "native_session_sha256": "7f0be0798189ffb3e78b7a9511f6a5a2641f3a2d7295d4c8035d49d49a73b201",
+      "answer_sha256": "02388898b0945a75a0f0989346667b31097056608d0fabf26abe4b39a24e152c"
+    },
+    {
+      "group": "after",
+      "case": "unlinked",
+      "bundle": "first candidate",
+      "responses": 7,
+      "input_tokens": 160992,
+      "cached_input_tokens": 142080,
+      "output_tokens": 1288,
+      "seconds": 62.573,
+      "modified_files": [
+        "field-notes.md"
+      ],
+      "native_session_sha256": "5e8820005ccae6595fa7914b34969fc72c7083f3eb30823acfcffd88707c6f8d",
+      "answer_sha256": "5fbae9403f3c0ed3644e682aa2717163b498e91c8b21c23fd56fec80a8699ddf"
+    },
+    {
+      "group": "final",
+      "case": "legacy",
+      "bundle": "revised protocol",
+      "responses": 8,
+      "input_tokens": 182312,
+      "cached_input_tokens": 163968,
+      "output_tokens": 1089,
+      "seconds": 44.874,
+      "modified_files": [
+        "BOOTSTRAP.md",
+        "field-guide.md",
+        "field-notes.md"
+      ],
+      "native_session_sha256": "35c5921390abc763455841cfeb9f3933d908a8c45aa7790070d09dee57bd7d2c",
+      "answer_sha256": "7dd0e08d574760354c20abd56b16ec98482c772b506a49a5a046b8b993d355a6"
+    },
+    {
+      "group": "final",
+      "case": "mismatch",
+      "bundle": "revised protocol",
+      "responses": 4,
+      "input_tokens": 73072,
+      "cached_input_tokens": 64768,
+      "output_tokens": 610,
+      "seconds": 28.978,
+      "modified_files": [],
+      "native_session_sha256": "4e607ab46bf7ea726671f7dd86b0b0d99fe43693cee16722446eb79a34103297",
+      "answer_sha256": "19d6f4c741da6a0579818d027050769b66382a427901d60299ec6626b4e0788a"
+    },
+    {
+      "group": "final",
+      "case": "resume",
+      "bundle": "revised protocol",
+      "responses": 8,
+      "input_tokens": 178156,
+      "cached_input_tokens": 158848,
+      "output_tokens": 1073,
+      "seconds": 46.422,
+      "modified_files": [
+        "field-guide.md",
+        "field-notes.md",
+        "field-progress.md"
+      ],
+      "native_session_sha256": "d04ec41cb189a3007895e56ecd43954cd296e5b77d99b5c821dc00b6d95b60e1",
+      "answer_sha256": "7a48ec0ba8bda84c0979e58c9704465c3a1b93ac3292d1144d937dca87f0ba70"
+    },
+    {
+      "group": "final",
+      "case": "review",
+      "bundle": "revised protocol",
+      "responses": 5,
+      "input_tokens": 104833,
+      "cached_input_tokens": 90496,
+      "output_tokens": 826,
+      "seconds": 36.467,
+      "modified_files": [],
+      "native_session_sha256": "245bf62dbde47dcbd92f256a460ab51b38c45b4b97b7b7e62a79255f758432bc",
+      "answer_sha256": "dc6d524c4cb0523465d34c6280565e7db5ce668a8e10a1cd5ca092bcca5f3993"
+    },
+    {
+      "group": "final",
+      "case": "unlinked",
+      "bundle": "revised protocol",
+      "responses": 5,
+      "input_tokens": 101808,
+      "cached_input_tokens": 89984,
+      "output_tokens": 730,
+      "seconds": 37.079,
+      "modified_files": [],
+      "native_session_sha256": "5cae3e56c7e17b0f68ee2c5aac4c990c76ff05bff0ba2850789da92470264b7b",
+      "answer_sha256": "28f022c4383339d194cecde2f035f70790b2a82e4cdfa0585382e10074c0e7f2"
+    },
+    {
+      "group": "packaged-shipping",
+      "case": "review",
+      "bundle": "compatibility checks",
+      "responses": 4,
+      "input_tokens": 81971,
+      "cached_input_tokens": 69888,
+      "output_tokens": 741,
+      "seconds": 33.942,
+      "modified_files": [],
+      "native_session_sha256": "c67842f1d0ea5a763b549fdf03ddd499edfd44623ed4437afda8c6119ac03611",
+      "answer_sha256": "7066aa343910031dd5b7bfa7a464f35e68ed915e2ed9c7acc2d34dd774d13d54"
+    },
+    {
+      "group": "packaged-agreed-legacy",
+      "case": "agreed-legacy",
+      "bundle": "compatibility checks",
+      "responses": 9,
+      "input_tokens": 197995,
+      "cached_input_tokens": 183808,
+      "output_tokens": 936,
+      "seconds": 38.847,
+      "modified_files": [
+        "BOOTSTRAP.md",
+        "field-guide.md",
+        "field-notes.md"
+      ],
+      "native_session_sha256": "e0db22cd21f4fa65befa417e4e7eff67ec5f67d46e906af4c3f165f25c86e173",
+      "answer_sha256": "0cb1076087e109b6985ae028c97530e38e2a4d1ea9e0ea3186c5c88f08376200"
+    },
+    {
+      "group": "packaged-shared",
+      "case": "shared",
+      "bundle": "compatibility checks",
+      "responses": 10,
+      "input_tokens": 226997,
+      "cached_input_tokens": 212992,
+      "output_tokens": 1513,
+      "seconds": 52.072,
+      "modified_files": [
+        "BOOTSTRAP.md",
+        "field-guide.md",
+        "field-notes.md"
+      ],
+      "native_session_sha256": "af9758dd53d48473fa8e89f28a426c251ceb18d84fe2b4fd13088b4892f3832b",
+      "answer_sha256": "f4efee290e22f7c77a3694eb9139acb427479beca6dd9089d45f7c0a95fc7506"
+    },
+    {
+      "group": "history",
+      "case": "merge",
+      "bundle": "5.7",
+      "responses": 6,
+      "input_tokens": 132281,
+      "cached_input_tokens": 111104,
+      "output_tokens": 1747,
+      "seconds": 51.448,
+      "modified_files": [
+        "SSOT/README.md",
+        "SSOT/labels.md"
+      ],
+      "native_session_sha256": "b7380a684188f59e035fe0357ba70c1375d7465077754f0e0162adfa71d54f4b",
+      "answer_sha256": "d3592f9409c3121a9f9889869bb8f2877b63bc34bef0ad6bb13a92ecbbb227e4"
+    },
+    {
+      "group": "premise",
+      "case": "correction",
+      "bundle": "5.7",
+      "responses": 9,
+      "input_tokens": 202278,
+      "cached_input_tokens": 187648,
+      "output_tokens": 1505,
+      "seconds": 73.385,
+      "modified_files": [
+        "receiving.md",
+        "venue.md"
+      ],
+      "native_session_sha256": "2575996a68b56568b5dd700e0ce08dbbac4745ef0477ceac58b9010af60285b0",
+      "answer_sha256": "f65b8e90e507401cad0eedacea274fa1f142eccc29fbe6eb107bb840634de3b4"
+    },
+    {
+      "group": "premise",
+      "case": "correction-reader",
+      "bundle": "5.7",
+      "responses": 4,
+      "input_tokens": 59449,
+      "cached_input_tokens": 55936,
+      "output_tokens": 395,
+      "seconds": 43.262,
+      "modified_files": [],
+      "native_session_sha256": "8e589835556e77c532391fd6aedf6610e403c2f2a1db8f6d9c259948d4fe35f3",
+      "answer_sha256": "f733ef2de0ea281999d3c8a8dc4836b3a2ebb84fab0616a18e9f380e16845896"
+    },
+    {
+      "group": "new",
+      "case": "finish",
+      "bundle": "compatibility checks",
+      "responses": 8,
+      "input_tokens": 177234,
+      "cached_input_tokens": 149760,
+      "output_tokens": 1172,
+      "seconds": 71.012,
+      "modified_files": [
+        "field-guide.md",
+        "field-notes.md",
+        "shoreline-setup.md"
+      ],
+      "native_session_sha256": "96cfce9f8f6aa1481f2570be2e922e2ca940d55d7f8ad4305ab2c7d3f5dbe84b",
+      "answer_sha256": "b17cb5eb31d880c6fd287b877797d0345d12c8fcacccd266b31c4724a98a3a06"
+    },
+    {
+      "group": "new",
+      "case": "start",
+      "bundle": "compatibility checks",
+      "responses": 6,
+      "input_tokens": 136704,
+      "cached_input_tokens": 108544,
+      "output_tokens": 1355,
+      "seconds": 40.352,
+      "modified_files": [
+        "field-notes.md",
+        "shoreline-setup.md"
+      ],
+      "native_session_sha256": "26ee9bd91ded097dfa70ccdf994e2c2f67115576238a0567d0106dc3623aa3f5",
+      "answer_sha256": "b06e167f660651119da04e77a3fa32834c8496d3d97861689f602648379180fa"
+    },
+    {
+      "group": "release-review",
+      "case": "review",
+      "bundle": "5.8 final",
+      "responses": 4,
+      "input_tokens": 81765,
+      "cached_input_tokens": 69760,
+      "output_tokens": 807,
+      "seconds": 34.135,
+      "modified_files": [],
+      "native_session_sha256": "1758c7fedb774b0ba6cfcfb68d4a1eeec3c546fc41eaaca91461e4d53c9a0e87",
+      "answer_sha256": "ee4177257cce06706c5e2966a58ec7e7d05dc7b086f8bc80b1b988758230b261"
+    },
+    {
+      "group": "release-fieldwork",
+      "case": "fieldwork",
+      "bundle": "5.8 final",
+      "responses": 4,
+      "input_tokens": 76377,
+      "cached_input_tokens": 66048,
+      "output_tokens": 404,
+      "seconds": 27.486,
+      "modified_files": [],
+      "native_session_sha256": "135e2239d15a30bca8b65e035fcf978d86c9c3ffa641a51484e93b33b95e28a0",
+      "answer_sha256": "c94d8cee2caf71901cb96aa984199ca956d5f4634032cc4a508044878d3f5d46"
+    },
+    {
+      "group": "release-mismatch",
+      "case": "mismatch",
+      "bundle": "5.8 final",
+      "responses": 5,
+      "input_tokens": 102324,
+      "cached_input_tokens": 89472,
+      "output_tokens": 903,
+      "seconds": 37.73,
+      "modified_files": [],
+      "native_session_sha256": "f72562d322ab0c4c519119080931e2ca026cb194d193d40f7e477ba5367c070e",
+      "answer_sha256": "3a5cbc30b2623676df0ab76bdff0d0a5ed153a1d13ea6a49b49cbdf6e75fa965"
+    },
+    {
+      "group": "release-resume",
+      "case": "resume",
+      "bundle": "5.8 final",
+      "responses": 9,
+      "input_tokens": 203413,
+      "cached_input_tokens": 183680,
+      "output_tokens": 1053,
+      "seconds": 46.74,
+      "modified_files": [
+        "field-guide.md",
+        "field-notes.md",
+        "field-progress.md"
+      ],
+      "native_session_sha256": "3f7fcf241196ce2fba698fe4d3623383bd901dd956dae17c7b7e51a9554ed11f",
+      "answer_sha256": "f13faec1fb5c0a567d03fe02b6e2a2b0d600a99b3aeb977cc2b4e9ce54b5d78d"
+    }
+  ],
+  "native_totals": {
+    "responses": 157,
+    "input_tokens": 3393761,
+    "cached_input_tokens": 2989824,
+    "output_tokens": 24949
+  },
+  "source_report_same_fixture": [
+    {
+      "operation": "status",
+      "fields_equal": true,
+      "items": 128,
+      "aliases": 4,
+      "opens": 516,
+      "seconds": 0.3159,
+      "bundle": "5.7"
+    },
+    {
+      "operation": "withdraw-source",
+      "fields_equal": true,
+      "items": 128,
+      "aliases": 4,
+      "opens": 516,
+      "seconds": 0.3215,
+      "bundle": "5.7"
+    },
+    {
+      "operation": "status",
+      "fields_equal": true,
+      "items": 128,
+      "aliases": 4,
+      "opens": 4,
+      "seconds": 0.0241,
+      "bundle": "5.8"
+    },
+    {
+      "operation": "withdraw-source",
+      "fields_equal": true,
+      "items": 128,
+      "aliases": 4,
+      "opens": 4,
+      "seconds": 0.0304,
+      "bundle": "5.8"
+    }
+  ],
+  "discovery_probe": [
+    {
+      "launch": "root",
+      "selected_skills": 6,
+      "wired": true
+    },
+    {
+      "launch": "nested",
+      "selected_skills": 6,
+      "wired": true
+    },
+    {
+      "launch": "child",
+      "selected_skills": 0,
+      "wired": false
+    },
+    {
+      "launch": "child-wired",
+      "selected_skills": 6,
+      "wired": true
+    }
+  ],
+  "design_discussion": [
+    {
+      "client": "Claude Code",
+      "turn": 1,
+      "session": "c206c026-2743-45ed-ad35-6eec81c60118",
+      "reported_models": [
+        "claude-opus-5-5"
+      ],
+      "reported_cost_usd": 0.524412,
+      "reply_sha256": "16f59a2e51b8de3f0337bc7f4ff7f06cd4d2d345dcca6dac80a2f6bb4f4993ed"
+    },
+    {
+      "client": "Claude Code",
+      "turn": 2,
+      "session": "c206c026-2743-45ed-ad35-6eec81c60118",
+      "reported_models": [
+        "claude-opus-5-5"
+      ],
+      "reported_cost_usd": 0.7075552,
+      "reply_sha256": "3641f04ab5bc4b390356786cce795dec722b92633cc4275d2e862df1f9db1163"
+    },
+    {
+      "client": "Antigravity",
+      "turn": 1,
+      "session": "a226fca3-95d4-48f6-a3fa-8bb5125f3d23",
+      "requested": "gemini-4-neon-xhigh",
+      "reported_models": [
+        "gemini-4-neon"
+      ],
+      "reply_sha256": "db1ed77e96c6bc54f5883169f60e3dd2be4a232f6853f0298348861fc31ea527"
+    },
+    {
+      "client": "Antigravity",
+      "turn": 2,
+      "session": "a226fca3-95d4-48f6-a3fa-8bb5125f3d23",
+      "requested": "gemini-4-neon-xhigh",
+      "reported_models": [
+        "gemini-4-neon"
+      ],
+      "reply_sha256": "b5671413572a2cb799b2b4ef0fe0ee257f20352b39d14077f1e59dd19c21ab58"
+    }
+  ],
+  "limits": "One run per listed condition, disposable fixtures. Discovery is a zero-model catalog and wiring check. CC costs are same-session snapshots. Coordinator and Neon usage unavailable."
+}

@@ -155,6 +155,94 @@ class ConnectorContract(unittest.TestCase):
         self.assertTrue(repeated["unavailable_owners"][0]["missing"])
         self.assertEqual(self.cli("status")["withdrawal_reason"], first["reason"])
 
+    def withdraw_with_fault(self, event, path, fault):
+        # A fresh CLI runs the normal transaction up to the selected filesystem event.
+        inject = """
+import os, runpy, sys
+event_name, path, fault = sys.argv[1:4]
+del sys.argv[1:4]
+sys.argv = sys.argv[1:]
+def inject(event, args):
+    if event != event_name or path not in args[:2]:
+        return
+    if fault == "exit":
+        os._exit(75)
+    raise ValueError("injected filesystem failure")
+sys.addaudithook(inject)
+runpy.run_path(sys.argv[0], run_name="__main__")
+"""
+        return subprocess.run([sys.executable, "-c", inject, event, str(path), fault, str(SCRIPT),
+                               "withdraw-source", "--state", str(self.state), "--reason", "Owner withdrew use"],
+                              capture_output=True, text=True, timeout=10)
+
+    def test_withdrawal_survives_interruption_during_owner_inventory(self):
+        self.inspected()
+        result = self.withdraw_with_fault("open", self.a, "exit")
+        self.assertEqual(result.returncode, 75, result.stderr)
+        status = self.cli("status")
+        self.assertEqual(status["source_status"], "withdrawn")
+        self.assertEqual(status["withdrawal_reason"], "Owner withdrew use")
+        self.cli("inspect", "--item", "method", "--revision", "r1", expected=2)
+        self.b.unlink()
+        repeated = self.cli("withdraw-source", "--reason", "Recover impact report")
+        self.assertEqual(repeated["reason"], "Owner withdrew use")
+        self.assertEqual([gap["owner"] for gap in repeated["unavailable_owners"]], ["b"])
+        self.assertEqual({ref["owner"] for ref in repeated["known_references"]}, {"a", "b"})
+
+    def test_withdrawal_errors_distinguish_failed_save_and_failed_report(self):
+        self.imported()
+        before = self.state.read_bytes()
+        unsaved = self.withdraw_with_fault("os.rename", self.state, "error")
+        self.assertEqual(unsaved.returncode, 2, unsaved.stderr)
+        self.assertEqual(self.state.read_bytes(), before)
+        report = self.withdraw_with_fault("open", self.a, "error")
+        self.assertEqual(report.returncode, 2, report.stderr)
+        self.assertIn("impact report incomplete", report.stderr)
+        self.assertEqual(self.cli("status")["source_status"], "withdrawn")
+
+    def test_inventory_reads_each_binding_once_and_preserves_aliases_and_receipts(self):
+        receipts = self.receipts()
+        self.complete(receipts)
+        note = self.cli("inspect", "--item", "method", "--revision", "r1")
+        with self.a.open("a") as handle:
+            handle.write(note["marker"] + "<!-- ssot-source:incomplete -->")
+        moved = self.root / "new-creative.md"
+        self.b.rename(moved)
+        self.cli("bind", "--owner", f"b={moved}", "--reason", "Creative owner moved")
+        gap = self.root / "missing.md"
+        self.cli("bind", "--owner", f"alias={self.a}", "--owner", f"gap={gap}")
+        bulk = self.root / "additional.json"
+        bulk.write_text(source_cases.export([{**source_cases.METHOD, "item_id": f"other-{n}"} for n in range(127)]))
+        self.cli("import", bulk, "--source-id", source_cases.SOURCE_ID, "--scope", source_cases.SCOPE)
+        count_opens = """
+import json, runpy, sys
+counts = dict.fromkeys(json.loads(sys.argv.pop(1)), 0)
+sys.argv = sys.argv[1:]
+def count(event, args):
+    if event == "open" and args[0] in counts:
+        counts[args[0]] += 1
+sys.addaudithook(count)
+try:
+    runpy.run_path(sys.argv[0], run_name="__main__")
+finally:
+    print(json.dumps(counts), file=sys.stderr)
+"""
+        observed = []
+        expected = {str(self.a): 2, str(moved): 1, str(gap): 1}
+        for args, field in ((["status"], "known_impacts"), (["withdraw-source", "--reason", "Stop"], "known_references")):
+            result = subprocess.run([sys.executable, "-c", count_opens, json.dumps(list(expected)),
+                                     str(SCRIPT), *args, "--state", str(self.state)], capture_output=True, text=True)
+            self.assertEqual(result.returncode, 0, result.stderr)
+            self.assertEqual(json.loads(result.stderr), expected)
+            report = json.loads(result.stdout)
+            self.assertEqual([item["owner"] for item in report["unavailable_owners"]], ["gap"])
+            observed.append(report[field])
+        self.assertEqual(*observed)
+        captures = {item["owner"]: item["marker_count"] for item in observed[0] if "located-capture" in item["evidence"]}
+        self.assertEqual(captures, {"a": 2, "alias": 2, "b": 1})
+        saved = {item["receipt_id"] for item in observed[0] if "readback" in item["evidence"]}
+        self.assertEqual(saved, set(receipts))
+
     def test_missing_unused_target_does_not_prevent_no_update(self):
         self.imported()
         self.a.unlink()

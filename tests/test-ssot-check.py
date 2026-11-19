@@ -193,6 +193,38 @@ class CheckerTest(unittest.TestCase):
         os.remove(os.path.join(self.repo, "external.md"))
         self.assert_error("missing external-space target")
 
+    def test_general_space_uses_its_routes_for_setup_and_history(self):
+        entry = README.replace("ssot_format: 4", "ssot_format: 5")
+        self.valid()
+        self.write("README.md", entry)
+        named = self.write("field-notes.md", entry + "\n[Setup progress](field-progress.md)\n")
+        self.write("BOOTSTRAP.md", "# Museum setup\n")
+        self.write("HISTORY.md", "# Oral history\n")
+        self.write("STATUS.md", "# Boat status\n")
+        for path, expected in ((self.ssot, 0), (named, 1)):
+            code, out = self.run_checker(path)
+            self.assertEqual(code, expected, out)
+            for unrelated in ("BOOTSTRAP.md", "HISTORY.md", "STATUS.md"):
+                self.assertNotIn(unrelated, out)
+        self.assertIn("broken link: field-progress.md", out)
+        self.write("field-progress.md", "# Field setup\n\n[Source](missing-field-log.md)\n")
+        code, out = self.run_checker(named)
+        self.assertEqual(code, 1, out)
+        self.assertIn("broken link: missing-field-log.md", out)
+
+    def test_unrecognized_named_entry_does_not_select_the_enclosing_directory(self):
+        self.valid()
+        self.write("other-space.md", "[Broken](unrelated-missing.md)\n")
+        self.write("BOOTSTRAP.md", "# Other project\n")
+        for marker in ("", "ssot_format: 4", "ssot_format: 99"):
+            named = self.write("field-notes.md", f"---\n{marker}\nlanguage: en\n---\n# Notes\n")
+            code, out = self.run_checker(named)
+            self.assertEqual(code, 1, out)
+            self.assertIn("a named entry file requires", out)
+            self.assertNotIn("unrelated-missing", out)
+            self.assertNotIn("BOOTSTRAP", out)
+            self.assertIn(named, out.splitlines()[-1])
+
     def test_format5_named_entry_retains_confirmed_history_guard(self):
         self.valid()
         self.write("context.md", README.replace("ssot_format: 4", "ssot_format: 5"))

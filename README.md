@@ -94,11 +94,13 @@ In a development repository only `SSOT/README.md` is required; the other files a
  └── research/        Investigations whose conclusions still guide decisions
 ```
 
-Existing maintained documents can stay the owners and are linked from the entry. A general space has no fixed layout: its entry states purpose, scope and protected rules, and links the documents that already own each topic. Details are in the [memory model](./skills/ssot-preflight/references/memory-model.md) and the [space model](./skills/ssot-preflight/references/context-spaces.md).
+Existing maintained documents can stay the owners and are linked from the entry. A general space has no fixed layout: its entry states purpose, scope and protected rules, and links the documents that already own each topic. An unfinished general space links its own setup record. Several spaces can share a directory. Details are in the [memory model](./skills/ssot-preflight/references/memory-model.md) and the [space model](./skills/ssot-preflight/references/context-spaces.md).
 
 ## Limits
 
 The skills act only when the agent loads them. They do not collect material in the background, and they cannot delete copies they cannot reach, such as backups or provider logs. The [5.1 trials](./tests/context/trials-5.1.md) cover cold-session continuation, source admission and a large protection register. This is small synthetic evidence, not proof of universal reliability; in the [5.0 report](./tests/context/trials-5.0.md), token use on warm development tasks rose about 5–13%.
+
+For repeatable exports, withdrawing a source records the stop before inspecting affected documents. After an interruption, `status` shows whether withdrawal took effect and which owners still need attention. [Source integration](./skills/ssot-doctor/references/source-integration.md)
 
 Corrections compare the saved result with necessary earlier source excerpts as well as the new exchange, within current retention authority. The [5.3 trials](./tests/context/trials-5.3.md) record source-preservation failures and bounded checks of this readback rule.
 
@@ -130,6 +132,7 @@ After updating the skill files, refresh the repository’s managed instruction b
 - [Install guide](./INSTALL.md): setup, wiring, upgrade, removal and recovery.
 - [Design](./DESIGN.md): why the bundle is shaped this way.
 - [Evolving research and creative projects](./docs/evolving-research-and-creative-projects.md) (Chinese guide): practical examples using existing owners, scoped revisions, uncertain sources and deferred synchronization.
+- [5.8 maintenance review and trials](./docs/context-maintenance-5.8.md) cover shared-directory setup, interrupted source withdrawal and the remaining design questions.
 - [Evolution review](./docs/evolution-review-2026-11-12.md): current improvements, real continuation trials and evidence limits.
 - [Evaluation](./tests/benchmark/README.md): task outcomes, cold handoff, plain-docs controls and evidence limits.
 - [Changelog](./CHANGELOG.md): what changed in each version.

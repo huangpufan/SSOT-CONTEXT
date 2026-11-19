@@ -226,6 +226,8 @@ Before replacing an older bundle, note its installed version and any repository 
 | Explicit new general space or agreed generalization to format 5 | Preserve owners/content, use the general adapter with the actual entry, require known writers to upgrade or remain discoverably read-only, and validate source/record semantics. Do not downgrade to satisfy an older checker. |
 | 4.3 reader → 4.4 or later | If local integration calls `ssot-preflight/assets/scripts/read-context.py`, replace that call with ordinary Markdown reads under preflight's current reading rules. `ssot-check.py` is a checker, not a reader replacement. No data-format migration is needed. |
 
+For unfinished general spaces sharing a directory, use 5.8+ for participating writers. Older 5.x writers may attribute a neighboring `BOOTSTRAP.md` to the wrong entry. An existing, clearly identified single-space checkpoint can be resumed in place.
+
 The installer prints the current block but does not edit project instructions or callers. A marked block can be replaced in place; inspect unmarked legacy directives and shared instruction owners too. Preserve unrelated project rules and show proposed edits outside the block before applying them, within existing authorization. If the user requested only a bundle update, leave old-format memory unchanged and report migration as a separate step. An interrupted agreed migration resumes from `SSOT/BOOTSTRAP.md`, checking that record against the actual tree before continuing.
 
 ### Upgrading from 2.x or 3.x to 4.0

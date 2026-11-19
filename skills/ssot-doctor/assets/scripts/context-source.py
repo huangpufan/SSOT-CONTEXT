@@ -5,12 +5,14 @@ See ../../references/source-integration.md for authority and evidence limits.
 State belongs to one connector task/source, not the maintained context index.
 """
 
+from collections import Counter
 import argparse
 import contextlib
 import fcntl
 import hashlib
 import json
 import os
+import re
 from pathlib import Path
 import sys
 import tempfile
@@ -142,23 +144,36 @@ def refresh_relationships(state):
             record["status"] = record.pop("before_conflict", "pending")
 
 
-def owner_observations(state, record=None):
-    """Report unavailable bindings and, for a version, located capture markers."""
-    captures = []
+MARKERS = re.compile(rb"<!-- ssot-source:([0-9a-f]{64}) -->")
+
+
+def scan_owners(state):
+    """Read each binding once per report; aliases keep their own identity."""
+    snapshots = []
     for alias, filename in state["owners"].items():
+        owner = {"owner": alias, "path": filename}
         try:
             data = Path(filename).read_bytes()
-            count = data.count(marker(record).encode()) if record else 0
-            if count:
-                captures.append({"owner": alias, "path": filename, "marker_count": count,
-                                 "file_digest": digest(data)})
         except OSError as error:
-            captures.append({"owner": alias, "path": filename, "unavailable": str(error),
-                             "missing": isinstance(error, FileNotFoundError)})
-    return captures
+            owner.update(unavailable=str(error), missing=isinstance(error, FileNotFoundError))
+            snapshots.append((owner, {}, None))
+            continue
+        counts = Counter(match[1].decode("ascii") for match in MARKERS.finditer(data))
+        snapshots.append((owner, counts, digest(data) if counts else None))
+    return snapshots
 
 
-def impacts(state, record):
+def owner_observations(snapshots, record=None):
+    observations = []
+    for owner, counts, checksum in snapshots:
+        if "unavailable" in owner:
+            observations.append(owner)
+        elif record and record["key"] in counts:
+            observations.append({**owner, "marker_count": counts[record["key"]], "file_digest": checksum})
+    return observations
+
+
+def impacts(state, record, snapshots):
     """Locate registered and in-flight effects without opening source material."""
     found = {}
     def add(alias, path, evidence, **extra):
@@ -175,7 +190,7 @@ def impacts(state, record):
     for receipt_id in record.get("receipts", []):
         ref = state["receipts"][receipt_id]
         add(ref["owner"], ref["path"], "readback", receipt_id=receipt_id)
-    for capture in owner_observations(state, record):
+    for capture in owner_observations(snapshots, record):
         if capture.get("marker_count"):
             add(capture["owner"], capture["path"], "located-capture", marker_count=capture["marker_count"])
         elif capture["owner"] in record.get("targets", []) and not capture.get("missing"):
@@ -302,22 +317,33 @@ def bind_owners(state, bindings, reason=None):
         state["owners"][alias] = path
 
 
-def process(args, state):
-    if args.command == "status":
-        return {"source_id": state["source_id"], "scope": state["scope"], "owners": state["owners"],
-                "source_status": state.get("source_status", "active"),
-                "withdrawal_reason": state.get("withdrawal_reason"),
-                "last_error": state.get("last_error"),
-                "unavailable_owners": owner_observations(state),
-                "known_impacts": [impact for record in state["items"].values() for impact in impacts(state, record)],
-                "items": [item_view(state, record) for record in state["items"].values()]}
-    if args.command == "withdraw-source":
-        if state.get("source_status") != "withdrawn":
-            state["source_status"], state["withdrawal_reason"] = "withdrawn", args.reason
-        return {"source_status": "withdrawn", "reason": state["withdrawal_reason"],
-                "unavailable_owners": owner_observations(state),
-                "known_references": [impact for record in state["items"].values() for impact in impacts(state, record)],
+OPERATION_ERRORS = (OSError, ValueError, KeyError, TypeError, IndexError)
+
+
+def source_report(args, state):
+    withdrawing = args.command == "withdraw-source"
+    if withdrawing and state.get("source_status") != "withdrawn":
+        state["source_status"], state["withdrawal_reason"] = "withdrawn", args.reason
+        write_state(args.state, state)
+    try:
+        snapshots = scan_owners(state)
+        gaps = owner_observations(snapshots)
+        known = [impact for record in state["items"].values() for impact in impacts(state, record, snapshots)]
+    except OPERATION_ERRORS as error:
+        if state.get("source_status") == "withdrawn":
+            raise ValueError(f"source use is withdrawn; impact report incomplete: {error}. Retry status") from error
+        raise
+    if withdrawing:
+        return {"source_status": "withdrawn", "reason": state["withdrawal_reason"], "unavailable_owners": gaps,
+                "known_references": known,
                 "evidence_limit": "source processing stopped; reconcile listed owners separately; originals retained"}
+    return {"source_id": state["source_id"], "scope": state["scope"], "owners": state["owners"],
+            "source_status": state.get("source_status", "active"), "withdrawal_reason": state.get("withdrawal_reason"),
+            "last_error": state.get("last_error"), "unavailable_owners": gaps, "known_impacts": known,
+            "items": [item_view(state, record) for record in state["items"].values()]}
+
+
+def process(args, state):
     if state.get("source_status") == "withdrawn":
         raise ValueError("source use was withdrawn; processing disabled, use status for known impacts")
     if args.command == "bind":
@@ -348,12 +374,13 @@ def process(args, state):
         if record["status"] == "pending":
             record["status"] = "inspected"
         record["inspected_digest"] = record["digest"]
+        snapshots = scan_owners(state)
         return {**item_view(state, record), "source_id": state["source_id"], "scope": state["scope"],
                 "untrusted_source": source_item, "marker": marker(record),
-                "ancestor_impacts": [impact for old in history(state, record) for impact in impacts(state, old)],
+                "ancestor_impacts": [impact for old in history(state, record) for impact in impacts(state, old, snapshots)],
                 "history_versions": [old["item"] for old in history(state, record)],
                 "artifact_verification": "export item/locator only; artifact bytes are not opened or hashed",
-                "existing_captures": owner_observations(state, record)}
+                "existing_captures": owner_observations(snapshots, record)}
     if record.get("conflicts"):
         raise ValueError("source version has unresolved conflicts; inspect/status retain their details")
     for old in ancestors(state, record):
@@ -372,7 +399,8 @@ def process(args, state):
     if record["status"] in {"failed", "needs-decision"}:
         raise ValueError("resolve the blocker, then inspect --retry before continuing")
     if args.command == "no-update":
-        effects = [effect for r in [record, *history(state, record)] for effect in impacts(state, r)
+        snapshots = scan_owners(state)
+        effects = [effect for r in [record, *history(state, record)] for effect in impacts(state, r, snapshots)
                    if any(e != "declared-target" for e in effect["evidence"])]
         if effects:
             raise ValueError("existing derived references require reconciliation and saved-owner readback")
@@ -424,8 +452,9 @@ def process(args, state):
         if digest(data) != receipt["file_digest"] or data.count(marker(record).encode()) != 1:
             raise ValueError("owner changed after readback; read back again")
         references.append(receipt)
+    snapshots = scan_owners(state)
     affected = set(record["targets"]) | {impact["owner"] for old in [record, *history(state, record)]
-        for impact in impacts(state, old) if any(e != "declared-target" for e in impact["evidence"])}
+        for impact in impacts(state, old, snapshots) if any(e != "declared-target" for e in impact["evidence"])}
     if not affected.issubset({r["owner"] for r in references}):
         raise ValueError("read back every known affected owner before completing this revision")
     if record["status"] == "completed":
@@ -435,6 +464,26 @@ def process(args, state):
     record["references"] = references
     record["status"], record["outcome"] = "completed", "recorded"
     return item_view(state, record)
+
+
+def update(args, state):
+    original = json.loads(json.dumps(state))
+    try:
+        if args.command == "import":
+            state, result = import_source(args, state)
+        else:
+            result = process(args, state)
+    except OPERATION_ERRORS as error:
+        if original is not None:
+            original["last_error"] = {"operation": args.command, "reason": str(error)}
+            if args.command not in {"import", "bind"}:
+                record = original["items"].get(identity(original["source_id"], args.item, args.revision))
+                if record and record["status"] not in {"completed", "conflict", "needs-decision"}:
+                    record["status"], record["reason"] = "failed", str(error)
+            write_state(args.state, original)
+        raise
+    write_state(args.state, state)
+    return result
 
 
 def main():
@@ -469,33 +518,20 @@ def main():
     try:
         with locked(args.state):
             state = json.loads(args.state.read_text()) if args.state.exists() else None
-            original = json.loads(json.dumps(state))
-            try:
-                if state is not None and (not isinstance(state, dict) or state.get("schema") != 1):
-                    raise ValueError("unsupported or damaged connector state")
-                if args.command == "import":
-                    state, result = import_source(args, state)
-                elif state is None:
-                    raise ValueError("state not found; import an explicitly scoped source first")
-                else:
-                    result = process(args, state)
-            except (OSError, ValueError, KeyError, TypeError, IndexError) as error:
-                if isinstance(original, dict) and original.get("schema") == 1 and args.command != "status":
-                    original["last_error"] = {"operation": args.command, "reason": str(error)}
-                    if args.command not in global_commands:
-                        record = original["items"].get(identity(original["source_id"], args.item, args.revision))
-                        if record and record["status"] not in {"completed", "conflict", "needs-decision"}:
-                            record["status"], record["reason"] = "failed", str(error)
-                    write_state(args.state, original)
-                raise
-            if args.command != "status":
-                write_state(args.state, state)
+            if state is not None and (not isinstance(state, dict) or state.get("schema") != 1):
+                raise ValueError("unsupported or damaged connector state")
+            if state is None and args.command != "import":
+                raise ValueError("state not found; import an explicitly scoped source first")
+            if args.command in {"status", "withdraw-source"}:
+                result = source_report(args, state)
+            else:
+                result = update(args, state)
             print(json.dumps(result, ensure_ascii=False, indent=2))
             if (args.command == "import" and result["conflicting_imports"]) or (
                     args.command == "inspect" and result["status"] == "conflict"):
                 return 1
         return 0
-    except (OSError, ValueError, KeyError, TypeError, IndexError) as error:
+    except OPERATION_ERRORS as error:
         print(json.dumps({"error": str(error)}, ensure_ascii=False), file=sys.stderr)
         return 2
 

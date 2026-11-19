@@ -23,6 +23,15 @@ Entries up to 2.86 were derived from the v2 protocol-upgrade ledger, which is pr
 ### Changed
 - Cold-handoff trials now default to an explicit persistence goal shared by plain/protocol writers, retain automatic capture as a separate estimand, and add an independently authored museum confirmation. The [deepening record](docs/benchmark-deepening-2026-11-12.md) distinguishes measurement repairs, actual subject outcomes and evidence limits; the SSOT protocol remains 5.3.
 
+## [5.8] - 2026-11-19
+
+### Fixed
+- General spaces recover unfinished setup from their own entry link or previously agreed record. Doctor no longer proposes cleanup or continuation from unrelated filenames, and an invalid named entry fails within its requested scope. Existing development checkpoints and general-space records remain usable.
+- Source withdrawal persists its original reason before reading bound owners. After an interrupted report, a fresh process can check withdrawal and recover known impacts. An old interrupted attempt that left the state active needs a retry.
+
+### Changed
+- Source impact inventories read each bound owner once per scan and retain per-alias captures, missing owners and historical receipts. The [maintenance review and trials](docs/context-maintenance-5.8.md) cover scope, recovery, measured read counts and remaining limits.
+
 ## [5.7] - 2026-11-19
 
 ### Changed
