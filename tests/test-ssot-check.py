@@ -263,8 +263,48 @@ class CheckerTest(unittest.TestCase):
             code, out = self.run_checker(*args)
             self.assertEqual(code, 2, out)
         code, out = self.run_checker(os.path.join(self.ssot, "README.md"), "--owners")
-        self.assertEqual(code, 1, out)
-        self.assertIn("requires ssot_format: 5", out)
+        self.assertEqual(code, 0, out)
+        self.assertIn("Git history excluded", out)
+
+    def test_selected_development_owners_skip_withdrawn_and_unrouted_bodies(self):
+        self.valid()
+        allowed = os.path.join(self.repo, "guide.md")
+        original = self.write("original.md", "# Source\n\n[Old reference](private-missing.png)\n")
+        other = self.write("another.md", "# Other\n\n[Another reference](other-missing.png)\n")
+        entry = self.write("README.md", README +
+                           "\n[Retained source](original.md#source) and [Guide](../guide.md).\n")
+        with open(allowed, "w", encoding="utf-8") as handle:
+            handle.write("# Guide\n\n[Source locator](SSOT/original.md#L1) and [broken](#missing-heading).\n")
+        observer = textwrap.dedent("""
+            import runpy, sys
+            source, other, checker, *args = sys.argv[1:]
+            def audit(event, arguments):
+                if event == "open" and arguments[0] in (source, other):
+                    print("OPENED EXCLUDED BODY", file=sys.stderr)
+            sys.addaudithook(audit)
+            sys.argv = [checker, *args]
+            runpy.run_path(checker, run_name="__main__")
+        """)
+        def observe(*args):
+            return subprocess.run([sys.executable, "-c", observer, original, other, CHECKER, *args],
+                                  cwd=self.repo, text=True, capture_output=True)
+        full = observe(self.ssot)
+        self.assertEqual(full.returncode, 1, full.stdout)
+        self.assertIn("OPENED EXCLUDED BODY", full.stderr)
+        self.assertIn("private-missing.png", full.stdout)
+        self.assertIn("other-missing.png", full.stdout)
+        scoped = observe(entry, "--owners", "../guide.md")
+        self.assertEqual(scoped.returncode, 1, scoped.stdout)
+        self.assertNotIn("OPENED EXCLUDED BODY", scoped.stderr)
+        self.assertIn("missing heading anchor: #missing-heading", scoped.stdout)
+        self.assertNotIn("private-missing.png", scoped.stdout)
+        self.assertNotIn("other-missing.png", scoped.stdout)
+        self.assertIn("Git history excluded", scoped.stdout)
+        self.assertIn("selected files only", scoped.stdout.splitlines()[-1])
+        rejected = observe(entry, "--owners", "another.md")
+        self.assertEqual(rejected.returncode, 1, rejected.stdout)
+        self.assertNotIn("OPENED EXCLUDED BODY", rejected.stderr)
+        self.assertIn("selected owner must be an existing directly linked", rejected.stdout)
 
     def test_unrecognized_named_entry_does_not_select_the_enclosing_directory(self):
         self.valid()

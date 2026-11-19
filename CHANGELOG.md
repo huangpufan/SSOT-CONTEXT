@@ -23,6 +23,18 @@ Entries up to 2.86 were derived from the v2 protocol-upgrade ledger, which is pr
 ### Changed
 - Cold-handoff trials now default to an explicit persistence goal shared by plain/protocol writers, retain automatic capture as a separate estimand, and add an independently authored museum confirmation. The [deepening record](docs/benchmark-deepening-2026-11-12.md) distinguishes measurement repairs, actual subject outcomes and evidence limits; the SSOT protocol remains 5.3.
 
+## [5.10] - 2026-11-20
+
+### Changed
+
+- Both formats share goal, method and preference guidance. A scoped preference stays in its authorized owner and allows a task-specific override. Binding rules retain their existing protection.
+- Requested handoffs preserve task identity, current success conditions, method and evidence in the authorized task record. Resume verifies actual progress and uncertain effects before taking the next step. Format markers and existing owners remain compatible.
+
+### Fixed
+
+- Development repositories can check an explicit selection with `ssot-check.py SSOT/README.md --owners FILE ...`. Both formats route restricted reads to selected checks, including after discussion-only decision captures that change context structure. Conversation catch-up requires independent protection evidence for candidate invariants.
+- Runtime protocol, checker and bundle ceilings increase to 18,500 words, 53 KiB and 227 KiB. See the [design and trials](docs/context-lifecycle-5.10.md).
+
 ## [5.9] - 2026-11-20
 
 ### Fixed

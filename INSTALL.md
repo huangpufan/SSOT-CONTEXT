@@ -228,7 +228,7 @@ Before replacing an older bundle, note its installed version and any repository 
 
 For unfinished general spaces sharing a directory, use 5.8+ for participating writers. Older 5.x writers may attribute a neighboring `BOOTSTRAP.md` to the wrong entry. An existing, clearly identified single-space checkpoint can be resumed in place.
 
-A general space that keeps links to restricted originals needs the 5.9+ checker for [selected-file checks](./skills/ssot-preflight/references/context-spaces.md#mechanical-check). Earlier versions reject `--owners`. With an older installation, check the permitted files manually or upgrade before running Doctor over those routes.
+[Selected-file checks](./skills/ssot-preflight/references/source-retention.md#selected-mechanical-checks) require the 5.9+ checker for format-5 spaces or 5.10+ for format-4 repositories. With an older installation, check the permitted files manually or upgrade before running Doctor over restricted routes.
 
 The installer prints the current block but does not edit project instructions or callers. A marked block can be replaced in place; inspect unmarked legacy directives and shared instruction owners too. Preserve unrelated project rules and show proposed edits outside the block before applying them, within existing authorization. If the user requested only a bundle update, leave old-format memory unchanged and report migration as a separate step. An interrupted agreed migration resumes from `SSOT/BOOTSTRAP.md`, checking that record against the actual tree before continuing.
 

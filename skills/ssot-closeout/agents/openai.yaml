@@ -1,4 +1,4 @@
 interface:
   display_name: "SSOT Closeout"
-  short_description: "Capture decisions now; close out durable changes"
-  default_prompt: "Use $ssot-closeout immediately for durable user confirmations, corrections, rejections or scope limits, including discussion-only work, and before finishing a substantive batch."
+  short_description: "Capture choices, record handoffs and reconcile changes"
+  default_prompt: "Use $ssot-closeout for settled durable goals, preferences and decisions, requested task handoffs, and before finishing a substantive batch."

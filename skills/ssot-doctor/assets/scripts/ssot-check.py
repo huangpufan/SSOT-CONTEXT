@@ -2,12 +2,12 @@
 """Mechanical checks for development format 4 and general context format 5.
 
 Usage: ssot-check.py [SSOT_DIR|FORMAT5_ENTRY] [--since COMMIT] (default: ./SSOT)
-       ssot-check.py FORMAT5_ENTRY --owners [FILE ...]
+       ssot-check.py ENTRY_FILE --owners [FILE ...]
 
 A directory selects README.md. Pass the file for another format-5 entry.
---owners checks the entry and only the named directly linked Markdown owners,
-relative to the entry directory. Omit names for an entry-only check. Links to
-other paths and Git history are outside this selection.
+--owners checks the format-4 README or format-5 entry and directly linked
+Markdown owners selected relative to the entry directory. Omit names for an
+entry-only check. Links to other paths and Git history are outside this selection.
 
 --since COMMIT lists only mentions of files removed after COMMIT or in
 uncommitted changes, and counts the older ones in one line; it also compares
@@ -977,7 +977,8 @@ def repository_local(path):
 
 def checked_documents(ssot_dir, readme, report):
     """SSOT plus direct README Markdown owners; their links are checked, not crawled."""
-    documents = {readme} if GENERAL[0] else set(markdown_files(ssot_dir, report))
+    documents = ({readme} if GENERAL[0] or report.documents is not None
+                 else set(markdown_files(ssot_dir, report)))
     if os.path.isfile(readme) and repository_local(readme):
         for _, target in link_targets(read_text(readme)):
             if SCHEME_RE.match(target) or (unquote(target).startswith("/") and not GENERAL[0]):
@@ -1029,7 +1030,7 @@ def main(argv):
     named_entry = os.path.isfile(selected)
     scoped = args.owners is not None
     if scoped and not named_entry:
-        parser.error("--owners requires a format-5 entry file")
+        parser.error("--owners requires an explicit entry file")
     ssot_dir = os.path.dirname(selected) if named_entry else selected
     if not os.path.isdir(ssot_dir):
         print(f"ERROR no SSOT directory at {ssot_dir}")
@@ -1038,12 +1039,9 @@ def main(argv):
     if scoped:
         documents = {os.path.abspath(os.path.join(ssot_dir, name)) for name in args.owners}
         documents.add(selected)
-        # A selected spelling must still identify that file within the space.
-        root = os.path.realpath(ssot_dir)
-        for path in sorted(documents):
-            relative = os.path.relpath(path, ssot_dir)
-            if not inside(path, root) or os.path.realpath(path) != os.path.normpath(os.path.join(root, relative)):
-                parser.error(f"select a file inside the space by its actual path: {relative}")
+        entry_dir = os.path.realpath(ssot_dir)
+        if os.path.realpath(selected) != os.path.join(entry_dir, os.path.basename(selected)):
+            parser.error("select the entry file by its actual path")
     report = Report(ssot_dir, documents)
     REPO_ROOT[0] = repository_root(ssot_dir)
     readme = selected if named_entry else os.path.join(ssot_dir, "README.md")
@@ -1062,14 +1060,20 @@ def main(argv):
         GENERAL[0] = meta.get("ssot_format") == "5"
         if GENERAL[0]:
             REPO_ROOT[0] = os.path.realpath(ssot_dir)
-            if scoped:
-                names = ", ".join(os.path.relpath(p, ssot_dir) for p in sorted(documents))
-                report.add("INFO", readme, None, f"selected files: {names}. Other link targets and Git history excluded")
-            else:
+            if not scoped:
                 report.add("INFO", readme, None, "format 5: selected entry and direct local owners; external routes are not read")
-        if named_entry and not GENERAL[0]:
-            report.add("ERROR", readme, 1, "a named entry file requires ssot_format: 5; verify its writer and format")
+        selected_repo_readme = scoped and meta.get("ssot_format") == FORMAT and os.path.basename(readme) == "README.md"
+        if named_entry and not (GENERAL[0] or selected_repo_readme):
+            report.add("ERROR", readme, 1, "a named entry file requires ssot_format: 5 or a format-4 README with --owners")
             return report.finish(readme)
+        if scoped:
+            names = []
+            for path in sorted(documents):
+                relative = os.path.relpath(path, ssot_dir)
+                if not inside(path, REPO_ROOT[0]) or os.path.realpath(path) != os.path.normpath(os.path.join(entry_dir, relative)):
+                    parser.error(f"select a file inside the repository or space by its actual path: {relative}")
+                names.append(relative)
+            report.add("INFO", readme, None, f"selected files: {', '.join(names)}. Other link targets and Git history excluded")
         if meta.get("ssot_format") in {FORMAT, "5"}:
             if not meta.get("language"):
                 report.add("ERROR", readme, 1, "front matter needs `language:` (for example en or zh-CN)")
@@ -1077,7 +1081,7 @@ def main(argv):
             if not scoped:
                 check_confirmed(report, readme, text, since)
                 check_reviewed_through(report, readme, meta.get("reviewed_through"))
-            if not GENERAL[0]:
+            if not GENERAL[0] and not scoped:
                 for path in ledgers(ssot_dir):
                     report.add("WARN", path, None,
                                "v2 ledger left after migration; extract anything still valid, then remove it")
@@ -1091,7 +1095,7 @@ def main(argv):
                        "for an unknown format, identify/upgrade its writer without downgrading the data")
 
     checkpoint = os.path.join(ssot_dir, "BOOTSTRAP.md")
-    if not GENERAL[0] and os.path.isfile(checkpoint):
+    if not GENERAL[0] and not scoped and os.path.isfile(checkpoint):
         report.add("INFO", checkpoint, None, "bootstrap is unfinished; continue it with ssot-bootstrap")
 
     mentions = []

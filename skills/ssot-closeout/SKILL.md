@@ -1,11 +1,11 @@
 ---
 name: ssot-closeout
-description: Capture durable user decisions immediately, including discussion-only confirmations, corrections, rejections and scope limits. Reconcile lasting decisions, behavior, traps, commands and workarounds in their single owner before a substantive batch's final response or commit. Write nothing when no durable fact changed; skip typo and formatting edits without durable decisions.
+description: Capture user-established durable goals, preferences and decisions immediately. Record requested task handoffs. Reconcile lasting choices, behavior, traps, methods and workarounds in their owner before a substantive batch's final response or commit. Skip typo and formatting edits without a durable change or handoff.
 ---
 
 # SSOT Closeout
 
-Inspect the explicit entry or default `SSOT/README.md`. For format 5, follow [general context spaces](../ssot-preflight/references/context-spaces.md#use-and-maintain-a-space), especially Closeout/lifecycle and its linked shared references, then return from this skill. The development gates and batch recipe below are a separate route for format 4 and legacy repositories. Known v2/v3 stays read-only pending agreed migration. Unknown/future formats stay read-only without downgrade. Independently authorized owner workflows retain their own rules. Ordinary undeclared non-repository chat/research/creation skips this skill unless a record is explicitly requested.
+For a withdrawal or restricted source, establish [permitted use](../ssot-preflight/references/source-retention.md#permitted-use) before gathering evidence. Inspect the explicit entry or default `SSOT/README.md`. For format 5, follow [general context spaces](../ssot-preflight/references/context-spaces.md#use-and-maintain-a-space), especially Closeout/lifecycle and its linked shared references, then return from this skill. The development gates and batch recipe below are a separate route for format 4 and legacy repositories. Known v2/v3 stays read-only pending agreed migration. Unknown/future formats stay read-only without downgrade. Independently authorized owner workflows retain their own rules. Ordinary undeclared non-repository chat/research/creation skips this skill unless a record is explicitly requested.
 
 Reconcile durable changes in their single owner. Read only needed [model](../ssot-preflight/references/memory-model.md) sections; reuse current context.
 
@@ -20,7 +20,8 @@ The batch is the work done in this task. If other people's changes are in the tr
 
 ## Choose the route
 
-- **Decision just settled:** follow [immediate decision capture](references/decision-capture.md) now. Batch reconciliation waits until the batch ends.
+- **Durable choice just settled:** follow [immediate decision capture](references/decision-capture.md) now. Batch reconciliation waits until the batch ends.
+- **Pause, checkpoint or handoff requested:** follow [task continuation](../ssot-preflight/references/memory-layout.md#existing-task-and-evidence-owners) in the authorized task owner.
 - **Batch end:** compare this task's diff, conversation and observations with the relevant owners. Include decisions and rejected alternatives, changed contracts or behavior, traps and causes, commands, workarounds and removal conditions, lasting directives, lasting findings, wrong SSOT statements and missing protected rules. Use [what to store](../ssot-preflight/references/memory-model.md#2-what-to-store-and-what-to-leave-out) if durability is unclear.
 
 Before deciding nothing changed, open the owners for the touched areas and problems preflight surfaced. Reuse unchanged passages only under [preflight's reuse rule](../ssot-preflight/SKILL.md#2-read-what-this-task-needs). Fix or remove statements now wrong even when code could tell the fact; recoverability decides what to add, not what to leave wrong. Updates already made count. If the owners still hold and nothing durable is missing, write nothing: no logs, timestamps or checked markers. Report the owners compared and why no update was needed. Stop here only for content-only changes outside `SSOT/` and its routed owners, with no added, moved, renamed or deleted files or headings; otherwise follow batch step 5 even if updates are complete.

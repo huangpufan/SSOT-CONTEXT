@@ -28,7 +28,7 @@ Typical durable knowledge:
 - **System understanding.** The parts of the system and what each owns, which part holds which state, how a request flows, how failures are contained and recovered, and which boundaries must not be crossed. A reader only gets this by studying many files, so writing it down saves real work.
 - **Rules and decisions.** Invariants set by people, decisions with their reasons, and the alternatives that were rejected and why. A rejected path is worth recording so nobody revives it by accident.
 - **Traps.** Problems that cost real time, with their cause and the right approach.
-- **How to work here.** The commands and checks for building, testing, releasing, and deploying, and the environment quirks they depend on.
+- **How to work here.** Reusable methods, commands and checks. Explain when a method applies, how to tell it worked, and any reason or limitation a successor would need to reconsider it.
 
 Leave out:
 
@@ -36,6 +36,12 @@ Leave out:
 - **Proof of one task.** Test output, exit codes, hashes, screenshots, and "verified on <date>" diaries. Keep a one-line pointer only when a long-term conclusion depends on that evidence. For example: "Rejected polling after the 2026-03 load test showed 40% CPU idle burn (see PR #812)."
 - **History of edits.** Git already records who changed what and when.
 - **Status about the documentation itself.** No coverage labels, review ledgers, or "last checked" stamps. A note on where a fact came from ("seen on the production server, 2026-09") is different: that is the fact's source, and it may stay.
+
+### Goals and preferences
+
+Keep an enduring goal with the outcome it serves, its scope and any agreed success or stopping condition. A task-specific goal belongs with the task. Distinguish proposed goals and methods from accepted ones. For an authorized trial, keep its bounds and what would justify revisiting it.
+
+A preference is an attributed default within a stated scope, including exceptions. A specific authorized choice for this task takes precedence without rewriting the default. Save an established preference in the authorized owner for that audience and scope. The invariant register is for binding rules. A one-off request or observed pattern alone establishes no enduring preference. When preferences change, update only the applicable scope. Existing confirmed rules keep their standing until an authorized correction. Past experiences still describe what happened.
 
 ## 3. Current, planned, and unknown
 
@@ -52,7 +58,7 @@ A claim about verification must say how far the verification went. "Unit tests p
 
 ### Human-decision evidence
 
-A visible user exchange or supplied export establishes acceptance through the person's words together with the question or proposal they answer; a bare “yes” without that context establishes no scope. An existing formal decision in a canonical owner can also establish that a choice was recorded as human-established or accepted under that owner's recording protocol. Preserve that recorded standing, including `confirmed` for a lasting rule. Cite it as “recorded as accepted in <owner/section>”; distinguish this from original words checked in this task. If the original exchange is unavailable or unchecked, say so without downgrading or reopening the decision solely for that reason.
+Use the person's own words and the question or proposal they answer. A self-contained statement can establish its own scope. A bare “yes” requires the question. An existing formal decision in a canonical owner can also establish that a choice was recorded as human-established or accepted under that owner's recording protocol. Preserve that recorded standing, including `confirmed` for a lasting rule. Cite it as “recorded as accepted in <owner/section>”; distinguish this from original words checked in this task. If the original exchange is unavailable or unchecked, say so without downgrading or reopening the decision solely for that reason.
 
 Judge the record by the owner's role and surrounding acceptance context. Missing dates or per-item signatures leave those fields unknown; they do not by themselves undo recorded acceptance. A filename such as `AGENTS.md`, a role label, an arbitrary AI summary, a behavior description, or a pending proposal alone establishes no accepted decision. An agent-written formal record may carry an established decision, but agent authorship cannot manufacture acceptance. If evidence conflicts about acceptance or replacement, keep the existing protection and report the conflict rather than settling it from current code.
 
@@ -81,7 +87,7 @@ A rule belongs here when it is a lasting constraint on future work, set by a per
 - **candidate.** An agent inferred the rule from evidence that people protect it. Follow it by default. When a task needs to depart from it, or its meaning is unclear in a way that matters, ask the user to confirm or drop it and record the answer; silence confirms nothing. That the code already behaves this way does not make it confirmed, and candidates are not put to the user one by one: each is settled when a task needs to depart from it.
 - **retired.** It no longer applies. Keep the row so the history stays readable, and link the decision that retired it.
 
-When a user states a lasting rule ("never X", "always Y", "from now on"), record it as a confirmed invariant with the user and date as its source. The explanation lives in the owner the row links to, inside the repository, including existing owners outside `SSOT/`.
+When a user sets a lasting requirement ("never X", "always Y"), record it as a confirmed invariant with the user and date as its source. The explanation lives in the owner the row links to, inside the repository, including existing owners outside `SSOT/`.
 
 **Recovering a rule from the code.** Many protected rules were never written down. Admit one as a candidate only when you can name the outcome it protects, the conditions under which it holds, and evidence that people protect it on purpose: a test that asserts the outcome for its own sake, a fix or revert commit that restored it, a guard whose comment or history says why, a promise in the user documentation, or a compatibility shim or migration that exists to keep it. A test's existence alone is not enough; it may pin an incidental detail, which a change may update. State the supported exceptions, if any. Exceptions and exclusions mark where this rule does not apply; their behavior is protected only with independent evidence meeting this section's admission rules. Give one concrete change that would violate the rule and one nearby change it permits. Search for evidence that contradicts its scope, and tell a legitimate exception from an existing violation. "No known exception" is acceptable, but it does not prove the rule holds everywhere. A rule people stated stays protected even where the code violates it; report the violation instead of rewriting the rule.
 

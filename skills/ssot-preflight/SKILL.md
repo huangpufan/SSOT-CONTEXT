@@ -2,13 +2,13 @@
 name: ssot-preflight
 description: Load before opening a project context entry for substantive work. Start with its format and headings, then read the relevant sections and owners. Find protected rules, owners and blocking questions for code, configuration, documentation, review, debugging or planning. Use for an explicit request to maintain non-repository context; ordinary chat, research answers or creative writing without a declared space do not trigger setup. Skip pure commands and meaning-preserving typo or formatting edits.
 metadata:
-  protocol_version: "5.9"
+  protocol_version: "5.10"
   bundle: "SSOT-CONTEXT"
 ---
 
 # SSOT Preflight
 
-Find the entry point before loading the [memory model](references/memory-model.md).
+Find the entry point before loading the [memory model](references/memory-model.md). For a withdrawal or restricted source, establish [permitted use](references/source-retention.md#permitted-use) before opening related owners or evidence.
 
 Start with the header and section locations of the explicit entry or default `SSOT/README.md`. For example, use `sed -n '1,12p' SSOT/README.md` and `rg -n '^#{1,6} ' SSOT/README.md`. These reads identify the format and where to look next. Format 5 uses [general context spaces](references/context-spaces.md); format 4 uses the repository steps below. Known v2/v3 uses the legacy read-only route. Unknown/future markers stay read-only: identify/upgrade the writer, never downgrade the data. Explicit new general-space setup also uses the general branch. Ordinary undeclared non-repository chat, research or creation skips this skill.
 
@@ -42,7 +42,9 @@ Before implementation details, state each affected rule, registered or newly adm
 
 ## 4. Before your first change, and while you work
 
-When the user confirms, corrects, rejects, or limits a durable decision, invoke `$ssot-closeout` immediately, including during discussion-only work. Its [decision capture route](../ssot-closeout/references/decision-capture.md) records and rereads the decision before dependent work continues; do not wait for the batch to end.
+When resuming paused or interrupted work, follow [task continuation](references/memory-layout.md#existing-task-and-evidence-owners) before planning from its saved state.
+
+When the user settles, corrects, rejects, or limits a durable goal, preference or decision, invoke `$ssot-closeout` immediately, including during discussion-only work. Its [decision capture route](../ssot-closeout/references/decision-capture.md) records and rereads the decision before dependent work continues; do not wait for the batch to end.
 
 Watch for the other facts that will outlive the task: decisions, changed contracts or behavior that users rely on, traps you hit, changed commands, and temporary workarounds. Note them as they come up; `$ssot-closeout` records them before you finish, and you may update an obvious owner right away.
 

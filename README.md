@@ -10,7 +10,7 @@
 
 </div>
 
-A new agent session starts without the history of the work: what the subject is for, which choices people already made and why, and where the traps are. SSOT-CONTEXT gives that history a maintained home. A small entry document routes each task to the few documents that own the relevant facts, and the agent keeps those documents current as the work changes them.
+A new agent session needs to recover what people are trying to achieve, how they agreed to work, and which choices still guide the next step. SSOT-CONTEXT gives that knowledge a maintained home. A small entry document routes each task to the documents that own it. When you ask to pause or hand off work, the agent uses the authorized task record so a fresh session can check what happened and continue safely.
 
 It works in two kinds of place:
 
@@ -26,6 +26,7 @@ The project was previously named SSOT-SKILL; old skill names still work ([detail
 - **Evolve from long-term context needs.** Needs anywhere within a development project, or beyond software and our own projects, can guide improvements. Start with what people need to understand, do or preserve over time; the [design direction](./DESIGN.md#accepted-direction-evolve-from-context-needs) explains how needs become tested changes.
 - **One fact, one owner.** SSOT means Single Source of Truth: each fact has one document responsible for keeping it correct, and other documents link to it.
 - **People's rules stay people's decisions.** Rules you confirm are listed in the entry. The agent works within them, never changes them, and stops to ask when a task conflicts with one.
+- **Preferences apply in context.** An established preference guides work for its stated audience and situation. A specific authorized choice for one task can override the default. [Goals and preferences](./skills/ssot-preflight/references/memory-model.md#goals-and-preferences)
 - **Extract knowledge selectively; preserve records you authorize.** Keep intent, how the parts fit together, decisions and their reasons, rejected options and traps. Field lists, version numbers and logs stay in their originals; link to original documents and private conversations. In a general space, experiences and exact words you ask to preserve can stay with their authorized owner even without future decision value; see the [space model](./skills/ssot-preflight/references/context-spaces.md#what-the-material-means).
 - **Keep kinds of material apart.** Facts, hypotheses, decisions, preferences and changing state are kept distinct. A research hypothesis or a guess about a person never becomes a protected rule.
 - **Write for someone new.** Plain words and the situation before the mechanism, so the next agent, or a person who delegates work without reading code, can follow it. See the [writing guide](./skills/ssot-preflight/references/writing-memory.md).
@@ -63,7 +64,7 @@ Describe tasks normally. Four skills handle the workflow automatically:
 
 - [`ssot-preflight`](./skills/ssot-preflight/SKILL.md) reads the routes, applicable constraints and relevant owners before substantive work. Long development entries are read by section.
 - [`ssot-bootstrap`](./skills/ssot-bootstrap/SKILL.md) creates or migrates the context with your agreement. During repository setup, a writer and an independent reviewer can cover a bounded area with a usable existing guide, followed by a fresh reader. Areas that require reconstructing a guide across sources, and large or disputed areas, use distributed mining.
-- [`ssot-closeout`](./skills/ssot-closeout/SKILL.md) saves accepted decisions as they happen and records durable changes when a batch finishes. When nothing durable changed, it writes nothing.
+- [`ssot-closeout`](./skills/ssot-closeout/SKILL.md) saves settled goals, preferences and decisions as they happen. It uses the task record for requested handoffs and updates durable knowledge at batch end when something changed.
 - [`ssot-doctor`](./skills/ssot-doctor/SKILL.md) checks health and catches the context up with work done outside this workflow.
 
 You can also ask directly, for example "Check the health of this repository's SSOT" or "Catch SSOT up with the recent commits."
@@ -102,7 +103,7 @@ The skills act only when the agent loads them. They do not collect material in t
 
 For repeatable exports, withdrawing a source records the stop before inspecting affected documents. After an interruption, `status` shows whether withdrawal took effect and which owners still need attention. [Source integration](./skills/ssot-doctor/references/source-integration.md)
 
-When a general space retains links to restricted originals, Doctor can check the entry and selected permitted documents. The report names the files covered. Git catch-up includes decisions on merged branches and advances the saved commit only across fully reviewed history. [5.9 examples and limits](./docs/catchup-5.9.md)
+Doctor can check the entry and selected permitted documents in either format when links to restricted originals are retained. The report names the files covered. Git catch-up includes decisions on merged branches and advances the saved commit only across fully reviewed history. [Selected checks](./skills/ssot-preflight/references/source-retention.md#selected-mechanical-checks), [5.9 catch-up examples](./docs/catchup-5.9.md)
 
 Corrections compare the saved result with necessary earlier source excerpts as well as the new exchange, within current retention authority. The [5.3 trials](./tests/context/trials-5.3.md) record source-preservation failures and bounded checks of this readback rule.
 

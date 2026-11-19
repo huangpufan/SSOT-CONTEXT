@@ -7,7 +7,7 @@ description: Check, review or catch up maintained repository or general-space co
 
 For a review, report proposed corrections. For an authorized repair or catch-up, follow the requested scope. A request to fix one finding covers that finding; report other issues even when they share the same file.
 
-Inspect the explicit entry or default `SSOT/README.md`: 5 uses [general context spaces](../ssot-preflight/references/context-spaces.md), especially Doctor/catch-up. For restricted or uncertain reads, select permitted files with `--owners` on every checker invocation, starting with the first. The bare command opens linked originals and anchor targets. Format 4 uses the repository route below; known v2/v3 stays read-only pending agreed migration. Unknown/future formats stay read-only without downgrade. Explicit source processing uses the conditional [source contract](references/source-integration.md). Ordinary undeclared chat/research/creation skips this skill; non-Git context is not failed repository setup.
+For a withdrawal or restricted source, establish [permitted use](../ssot-preflight/references/source-retention.md#permitted-use) before reading related content. Inspect the explicit entry or default `SSOT/README.md`: 5 uses [general context spaces](../ssot-preflight/references/context-spaces.md), especially Doctor/catch-up. Format 4 uses the repository route below; known v2/v3 stays read-only pending agreed migration. Unknown/future formats stay read-only without downgrade. Explicit source processing uses the conditional [source contract](references/source-integration.md). Ordinary undeclared chat/research/creation skips this skill.
 
 Find where `SSOT/` is wrong, missing, contradictory, or hard to use, and say exactly how far your check went. The model you check against is [`memory-model.md`](../ssot-preflight/references/memory-model.md).
 
@@ -19,7 +19,7 @@ The scope includes named supplied decision sources (conversation excerpts, accep
 
 ## 2. Run the mechanical check
 
-From the repository root, run `python3 <this skill's directory>/assets/scripts/ssot-check.py SSOT`. It reports errors (a missing entry point, broken links or heading anchors, a malformed invariants register, a confirmed invariant changed without a new dated source) and warnings (oversized files, v2 leftovers, and mentioned files that git says were removed or moved). It cannot tell whether a statement is true or readable. That part is your review; the removal warnings are a good place to start. Exit code 3 means the run was incomplete: the checker crashed or could not examine part of the tree. That is never a pass, and any errors it did list are still real. Errors in files outside your scope do not stop the review of your scope. Report them separately.
+Use [selected checks](../ssot-preflight/references/source-retention.md#selected-mechanical-checks) for restricted or uncertain reads, including the first invocation. Otherwise run `python3 <this skill's directory>/assets/scripts/ssot-check.py SSOT` from the repository root. It reports errors (a missing entry point, broken links or heading anchors, a malformed invariants register, a confirmed invariant changed without a new dated source) and warnings (oversized files, v2 leftovers, and mentioned files that git says were removed or moved). It cannot tell whether a statement is true or readable. Exit code 3 means incomplete coverage or a crash; retain any findings. Errors outside your scope do not stop the review of your scope. Report them separately.
 
 ## 3. Review the scope
 

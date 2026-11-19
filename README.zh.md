@@ -10,7 +10,7 @@
 
 </div>
 
-新开的 Agent 会话不知道工作的来龙去脉：这件事为了什么，人已经做过哪些决定、为什么这样定，哪里有坑。SSOT-CONTEXT 给这些历史一个持续维护的位置。一份小的入口文档把每项任务引向少数几篇负责相关事实的文档，Agent 在工作改变这些事实时同步更新它们。
+新开的 Agent 会话需要知道工作的目标、大家同意怎样做，以及哪些决定仍然影响下一步。SSOT-CONTEXT 让这些信息有地方持续维护。一份简短的入口指向负责相关内容的文档。你要求暂停或交接时，Agent 使用获准写入的任务记录，让新会话能够核对已经发生的事，再继续推进。
 
 它用在两类地方：
 
@@ -26,6 +26,7 @@
 - **从长期 context 需求出发演进。** 开发项目内的任何事情，以及软件之外、自有项目之外的需求，都可以推动完善。先看人们长期需要理解、完成或保留什么；[演进方向](./DESIGN.md#accepted-direction-evolve-from-context-needs)说明怎样把需求变成经过验证的改进。
 - **一条事实，一个 owner。** SSOT 即 Single Source of Truth（单一事实源）：每条事实有一篇负责维护它的文档，其他文档通过链接引用。
 - **人定的规则始终由人决定。** 你确认过的规则登记在入口里。Agent 在规则内工作，不会改规则；任务和规则冲突时，它会停下来问你。
+- **偏好有适用范围。** 长期偏好在指定的对象和场合下指导工作。你可以为单次任务明确指定不同做法，长期偏好仍然有效。[目标与偏好](./skills/ssot-preflight/references/memory-model.md#goals-and-preferences)
 - **选择性提炼知识，保留你授权的记录。** 保存意图、各部分怎样配合、决定及其理由、被否决的方案和陷阱；字段清单、版本号和日志留在原件里，原始文档和私密对话通过链接引用。在通用空间里，你要求保留的经历和原话可以留在获授权的 owner 中，不必证明它能影响未来决定；见[空间模型](./skills/ssot-preflight/references/context-spaces.md#what-the-material-means)。
 - **不同性质的材料分开。** 事实、假设、决定、偏好和变化中的状态分开保存。研究假设或对某人的猜测，不会变成受保护的规则。
 - **写给新来的人看。** 用平实的话，先讲情境再讲机制，让下一个 Agent、或不读代码只负责委托工作的人都能看懂。见[写作规则](./skills/ssot-preflight/references/writing-memory.md)。
@@ -63,7 +64,7 @@ curl -fsSL https://raw.githubusercontent.com/huangpufan/SSOT-CONTEXT/main/instal
 
 - [`ssot-preflight`](./skills/ssot-preflight/SKILL.md) 在实质性工作开始前读取任务路由、适用约束及相关权威来源。开发仓库的长入口按章节读取。
 - [`ssot-bootstrap`](./skills/ssot-bootstrap/SKILL.md)：经你同意后建立或迁移 context。建库时，已有权威文档足以指导操作、范围也能逐项查清时，由一人起草、另一人独立核对，再请新读者试用。需要跨来源重建指南、范围过大或权威来源有争议的部分单独分工。
-- [`ssot-closeout`](./skills/ssot-closeout/SKILL.md)：决定被接受时立即保存，一批工作收尾时记录长期变化；没有长期变化就什么都不写。
+- [`ssot-closeout`](./skills/ssot-closeout/SKILL.md) 在目标、偏好和决定确定时保存它们。用户要求交接时使用任务记录，批次收尾时按实际变化更新长期知识。
 - [`ssot-doctor`](./skills/ssot-doctor/SKILL.md)：检查健康，并补上在这个流程之外完成的工作。
 
 也可以直接提出，例如“检查这个项目的 SSOT 是否健康”或“让 SSOT 追上最近的提交”。
@@ -102,7 +103,7 @@ Skill 只在 Agent 加载它们时生效。它们不会在后台采集材料，�
 
 对于可重复接入的导出来源，撤回许可时先保存撤回决定，再盘点受影响文档。遇到中断，可以用 `status` 查询撤回是否生效，以及哪些文档仍需处理。[来源接入说明](./skills/ssot-doctor/references/source-integration.md)
 
-通用空间可以保留指向受限原件的链接。Doctor 能只检查入口和本次获准读取的文档，报告会列出范围。补录 Git 历史时会读合并分支中的决定，只有连续区间核对完才推进已检查到的提交。[5.9 示例与边界](./docs/catchup-5.9.md)
+开发仓库和通用空间都可以保留指向受限原件的链接。Doctor 能只检查入口和本次获准读取的文档，报告会列出范围。补录 Git 历史时会读合并分支中的决定，只有连续区间核对完才推进已检查到的提交。[受限检查](./skills/ssot-preflight/references/source-retention.md#selected-mechanical-checks)、[5.9 追补示例](./docs/catchup-5.9.md)
 
 更正决定后，复核保存结果时既对照新交流，也在当前保留授权范围内核对必要的早期来源摘录。[5.3 试验](./tests/context/trials-5.3.md)记录了原话丢失的失败，以及对这条复核规则的有限验证。
 

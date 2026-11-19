@@ -43,6 +43,12 @@ The cause was in how the protocol changed, not in any one rule. Each observed ag
 
 On 2026-11-06 the user confirmed this project's design direction: “承认模糊，承认不确定，模糊的正确比坚决的错误要好得多。” Keep what is known, inferred, undecided, and unverified distinct, and state how far the evidence reaches. Do not invent confirmation or rationale to make a record look complete. Uncertainty blocks only the work that depends on resolving it; independent work continues. This accepted direction preserves honest limits and does not lower verification requirements.
 
+## Long-term work and recovery
+
+A successor needs the current outcome and its success conditions, the methods still applicable, and enough evidence to choose the next safe action. Enduring goals and methods belong to their topic owners. Active progress, including uncertain external effects, belongs to the task. A changed goal can warrant checking a pending action and the evidence it relies on. Earlier observations retain their original conditions, and protected rules change through their own approval path.
+
+An established preference guides choices within its stated scope and can yield to an authorized instruction for one task. Binding rules and consequential accepted decisions keep their standing. The [5.10 design and trials](./docs/context-lifecycle-5.10.md) trace these boundaries through both formats, including a pause and fresh-session handoff, and explain the shared route for restricted sources.
+
 ## Why v4 changes the format
 
 Repositories already have maintained design documents, machine-checked contracts, research, and follow-up systems. Moving all their durable facts into `SSOT/` can create duplicate authorities or discard the context that explains a decision. Format 4 makes `SSOT/README.md` the entry point and records the owner routes; a maintained document elsewhere in the same repository can remain the authority. Raw conversations, task artifacts, and runtime state keep their appropriate owners rather than becoming a second SSOT archive.

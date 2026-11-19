@@ -22,7 +22,7 @@ Before moving, compressing or removing content, use the [preservation check](mem
 
 ## Reconcile changed guidance
 
-When a durable change replaces existing guidance, follow its affected uses within authorised scope. Search routed owners, context entries, agent instructions and relevant maintained summaries, templates or examples for the old names, values and behaviour. Check meaning: renamed mechanisms can still repeat a rejected choice. Search broadly enough to account for affected uses, rather than scanning every source for every task.
+When a durable change replaces existing guidance, follow its affected uses within authorised scope. Search routed owners, context entries, agent instructions and relevant maintained summaries, templates or examples for the old names, values and behaviour. Renamed mechanisms can still repeat a rejected choice. For a changed goal or method, recheck pending steps and conclusions that relied on the changed part. Preserve earlier observations and check whether their conditions still support the new goal. Protected rules retain their standing. For a possible conflict, follow [departure review](protection-departure.md). Search broadly enough to account for affected uses.
 
 Update the current owner in place and reconcile its affected live uses. Fix moved-file and heading links. In historical decisions, retain what was said and why; mark the specific replaced clauses with their successor, keeping unaffected acceptance and exceptions. A later record alone is insufficient when the old entry still appears operative.
 

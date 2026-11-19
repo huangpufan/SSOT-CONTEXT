@@ -8,8 +8,8 @@ Add the block below to the repository's agent instruction file (`AGENTS.md`, `CL
 Use the SSOT skills automatically for this repository. Users describe tasks normally.
 
 - **Start:** for substantive work (code, configuration, documentation, review, debugging, or planning), load `$ssot-preflight` before opening `SSOT/README.md`. Start the entry with its header and headings.
-- **Decision now:** when the user confirms, corrects, rejects, or limits a durable choice, use `$ssot-closeout` immediately, including discussion-only work; save and reread the decision before dependent work.
-- **Finish:** before the final response or commit of a substantive change batch, use `$ssot-closeout`. It writes nothing when no durable fact changed.
+- **Decision now:** when the user settles or revises a durable goal, preference, or decision, use `$ssot-closeout` immediately, including discussion-only work; save and reread the decision before dependent work.
+- **Finish or hand off:** use `$ssot-closeout` for an authorized task handoff or before the final response or commit of a substantive change batch. Routine no-change closeouts write nothing.
 - **Create or migrate:** use `$ssot-bootstrap`, only with the user's agreement.
 - **Check or catch up:** use `$ssot-doctor` when asked, or when another SSOT skill routes there.
 
