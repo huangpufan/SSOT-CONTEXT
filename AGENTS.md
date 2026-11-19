@@ -81,7 +81,7 @@ KISS is the permanent SSOT design principle: choose the shortest **reliable path
 | `skills/ssot-preflight/references/memory-model.md` | What consumer memory holds, its owners, and how it is written |
 | `skills/ssot-preflight/references/context-spaces.md` | General-space format 5, ownership, authorized records and lifecycle |
 | `skills/ssot-doctor/references/source-integration.md` | Conditional source contract and reference CLI |
-| `skills/ssot-bootstrap/references/bootstrap.md` | Creating an SSOT and preserving v2/v3 knowledge during migration |
+| `skills/ssot-bootstrap/references/bootstrap.md` | Repository setup and routes to the v2/v3 migration guide |
 | `skills/*/agents/openai.yaml` | Agent metadata for each skill |
 | `skills/ssot-bootstrap/assets/templates/{en,zh}/` | Bootstrap templates |
 | `tests/benchmark/README.md` | Reproducible reading benchmark and its limits |

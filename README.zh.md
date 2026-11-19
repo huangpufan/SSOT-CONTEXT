@@ -62,7 +62,7 @@ curl -fsSL https://raw.githubusercontent.com/huangpufan/SSOT-CONTEXT/main/instal
 照常描述任务即可，四个 Skill 会自动处理工作流程：
 
 - [`ssot-preflight`](./skills/ssot-preflight/SKILL.md) 在实质性工作开始前读取任务路由、适用约束及相关权威来源。开发仓库的长入口按章节读取。
-- [`ssot-bootstrap`](./skills/ssot-bootstrap/SKILL.md)：建立或迁移 context，必须经你同意。
+- [`ssot-bootstrap`](./skills/ssot-bootstrap/SKILL.md)：经你同意后建立或迁移 context。建库时，已有权威文档足以指导操作、范围也能逐项查清时，由一人起草、另一人独立核对，再请新读者试用。需要跨来源重建指南、范围过大或权威来源有争议的部分单独分工。
 - [`ssot-closeout`](./skills/ssot-closeout/SKILL.md)：决定被接受时立即保存，一批工作收尾时记录长期变化；没有长期变化就什么都不写。
 - [`ssot-doctor`](./skills/ssot-doctor/SKILL.md)：检查健康，并补上在这个流程之外完成的工作。
 

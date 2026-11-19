@@ -23,6 +23,12 @@ Entries up to 2.86 were derived from the v2 protocol-upgrade ledger, which is pr
 ### Changed
 - Cold-handoff trials now default to an explicit persistence goal shared by plain/protocol writers, retain automatic capture as a separate estimand, and add an independently authored museum confirmation. The [deepening record](docs/benchmark-deepening-2026-11-12.md) distinguishes measurement repairs, actual subject outcomes and evidence limits; the SSOT protocol remains 5.3.
 
+## [5.7] - 2026-11-19
+
+### Changed
+- Repository bootstrap reuses the first source inventory for units a writer and an independent reviewer can each cover in full. The reviewer records findings before seeing the draft, then challenges the exact owner text and rows. Repairs receive independent rechecks. A fresh reader exercises the saved routes and receives the source sample after recording its answers. Units without a usable owner that require reconstructing a guide across sources use distributed mining, as do larger or disputed units. The reconstructed guide is tested with a worked example.
+- Setup and legacy migration now load separate guides. A finished repository entry identifies the scope handed over and distinguishes remaining product questions from unfinished setup. See the [setup trials and their limits](docs/bootstrap-5.7.md).
+
 ## [5.6] - 2026-11-19
 
 ### Fixed

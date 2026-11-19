@@ -11,17 +11,14 @@ Build the repository’s memory from domain evidence, existing canonical documen
 
 Setup writes a documentation tree and may edit existing documents, so it needs the user's agreement first. Tell them what you will create and which existing files you expect to change.
 
-Follow [`references/bootstrap.md`](references/bootstrap.md), and [`references/mining.md`](references/mining.md) for the protected rules:
+For new or unfinished repository setup, follow the [setup guide](references/bootstrap.md), starting from any saved `BOOTSTRAP.md`. Its [mining plan and dispatch gate](references/mining.md#1-declare-the-scope-before-mining) use compact review for bounded units with an existing usable owner. Use distributed mining when a usable guide must be reconstructed across sources, the scope is larger or authority is disputed.
 
-- Sections 1–6 cover a new SSOT, or continuing an unfinished one.
-- Section 7 covers migrating a v2 layout; section 8 covers v3 without v2 ledger removal, including resuming a migration that `SSOT/BOOTSTRAP.md` says is under way.
-
-Before mining in new or resumed setup, follow [mining's setup dispatch gate](references/mining.md#1-declare-the-scope-before-mining). Continue unfinished work from `BOOTSTRAP.md`.
+For an agreed [v2 or v3 migration](references/migration.md), follow the matching section, including when the progress file identifies an unfinished migration.
 
 You are done when all of these hold:
 
-- the README routes the repository's main kinds of task;
-- protected rules were mined in rounds by separate agents as `references/mining.md` describes, and its report (areas and sources read, how each proposal was decided, what remains for Doctor) has been given to the user;
+- the saved README identifies the completed setup scope and routes the repository's main tasks to usable owners;
+- the mining report accounts for the sources, independently checked rules, cold handoff and remaining scope;
 - every document you wrote matches its domain evidence (memory-model §3);
 - durable facts have one maintained owner, reachable from `SSOT/`, with existing canonical owners retained;
 - the candidate invariants, the open questions, and the planned changes outside `SSOT/` have been put to the user;

@@ -47,7 +47,9 @@ for reference in memory-layout writing-memory protection-departure; do
     fail "scenario1: $reference reference missing or changed"
   fi
 done
-assert_file "scenario1: bootstrap reference installed" "$CLAUDE_BASE/ssot-bootstrap/references/bootstrap.md"
+for reference in bootstrap mining area-mining migration; do
+  assert_file "scenario1: $reference reference installed" "$CLAUDE_BASE/ssot-bootstrap/references/$reference.md"
+done
 # English-content check: should NOT contain CJK characters (python3 — macOS grep lacks -P)
 if python3 -c "import sys,re; sys.exit(0 if re.search(r'[一-龥]', open(sys.argv[1], encoding='utf-8').read()) else 1)" "$CLAUDE_BASE/ssot-bootstrap/assets/templates/architecture.md" 2>/dev/null; then
   fail "scenario1: en templates should not contain Chinese"

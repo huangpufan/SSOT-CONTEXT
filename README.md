@@ -62,7 +62,7 @@ The script installs the skills and prints an instruction block, but does not edi
 Describe tasks normally. Four skills handle the workflow automatically:
 
 - [`ssot-preflight`](./skills/ssot-preflight/SKILL.md) reads the routes, applicable constraints and relevant owners before substantive work. Long development entries are read by section.
-- [`ssot-bootstrap`](./skills/ssot-bootstrap/SKILL.md) creates or migrates the context, only with your agreement.
+- [`ssot-bootstrap`](./skills/ssot-bootstrap/SKILL.md) creates or migrates the context with your agreement. During repository setup, a writer and an independent reviewer can cover a bounded area with a usable existing guide, followed by a fresh reader. Areas that require reconstructing a guide across sources, and large or disputed areas, use distributed mining.
 - [`ssot-closeout`](./skills/ssot-closeout/SKILL.md) saves accepted decisions as they happen and records durable changes when a batch finishes. When nothing durable changed, it writes nothing.
 - [`ssot-doctor`](./skills/ssot-doctor/SKILL.md) checks health and catches the context up with work done outside this workflow.
 
