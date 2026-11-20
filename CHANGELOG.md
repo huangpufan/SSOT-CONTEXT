@@ -25,6 +25,12 @@ Entries up to 2.86 were derived from the v2 protocol-upgrade ledger, which is pr
 ### Changed
 - Cold-handoff trials now default to an explicit persistence goal shared by plain/protocol writers, retain automatic capture as a separate estimand, and add an independently authored museum confirmation. The [deepening record](docs/benchmark-deepening-2026-11-12.md) distinguishes measurement repairs, actual subject outcomes and evidence limits; the SSOT protocol remains 5.3.
 
+## [5.14] - 2026-11-20
+
+### Changed
+
+- Preflight can answer a bounded lookup from the current authorized owner. Closeout can finish an approved change to existing prose in one owner with in-place capture and readback. It retains the previous decision’s sole recorded attribution and rationale within retention permissions. Missing approvals keep the current rule in force. Cross-owner changes and protected departures follow the full route. [Installed-consumer trials](docs/scoped-owner-5.14.md)
+
 ## [5.13] - 2026-11-20
 
 ### Changed

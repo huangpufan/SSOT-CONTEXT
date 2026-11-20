@@ -195,7 +195,7 @@ After removal, verify the bundle files are absent. Preserve generated `SSOT/` do
 
 After an update, check the worktree where the agent will start. Read back the resolved preflight file and its protocol version, the entry named by the project's instructions, and the marked block in the actual instruction owner. A linked skill can advance while that block still uses older wording. Compare it with the installed template for the same language and space, substituting the declared entry for a general space. Preserve custom instructions with equivalent behavior. [Reconcile an outdated block](#4-wire-the-skills-into-the-repos-agent-instructions-file) within the requested installation scope.
 
-Restart and verify discovery. When checking reading behavior, use an ordinary task in that worktree and inspect its first entry read and its answer. In a large development repository the current block calls for loading preflight first and locating the entry's header and headings. A catalog listing alone cannot show that order.
+Restart and verify discovery. When checking reading behavior, use an ordinary task in that worktree and inspect its first entry read and its answer. For substantive work outside the bounded route, preflight starts from the entry's header and headings. A bounded lookup checks the current entry's ownership and permissions before reading its owner. A single approved prose change goes directly to closeout after those checks. A catalog listing alone cannot show that order.
 
 ### Failed or interrupted replacement
 

@@ -2,7 +2,7 @@
 name: ssot-preflight
 description: Load before opening a project context entry for substantive work. Start with its format and headings, then read the relevant sections and owners. Find protected rules, owners and blocking questions for code, configuration, documentation, review, debugging or planning. Use for an explicit request to maintain non-repository context; ordinary chat, research answers or creative writing without a declared space do not trigger setup. Skip pure commands and meaning-preserving typo or formatting edits.
 metadata:
-  protocol_version: "5.13"
+  protocol_version: "5.14"
   bundle: "SSOT-CONTEXT"
 ---
 
@@ -12,9 +12,11 @@ Find the entry point before loading the [memory model](references/memory-model.m
 
 When the workflow says placing content in a destination can trigger delivery, publication or execution, check who may cause that effect before writing or moving anything there. If only the choice is delegated, leave the live destination untouched and use an authorized draft or handoff. If release is delegated, use the designated destination.
 
-Start with the header and section locations of the explicit entry or default `SSOT/README.md`. For example, use `sed -n '1,12p' SSOT/README.md` and `rg -n '^#{1,6} ' SSOT/README.md`. These reads identify the format and where to look next. Format 5 uses [general context spaces](references/context-spaces.md); format 4 uses the repository steps below. Known v2/v3 uses the legacy read-only route. Unknown/future markers stay read-only: identify/upgrade the writer, never downgrade the data. Explicit new general-space setup also uses the general branch. Ordinary undeclared non-repository chat, research or creation skips this skill.
+Read the explicit entry or default `SSOT/README.md` by header and headings first. Check its applicable ownership, permissions and protections before following a route. Explicit SSOT checks, reviews and catch-up use `$ssot-doctor` even alongside implementation; ordinary code reviews do not.
 
-Explicit SSOT checks, reviews or catch-up require `$ssot-doctor` for that scope, including alongside implementation; preflight cannot replace it. Ordinary code reviews do not trigger Doctor.
+In formats 4 and 5, answer a lookup from its current authorized owner when that owner settles the question. For one settled prose change confined to that owner, use `$ssot-closeout` directly. Follow owner-specific requirements. If the answer depends on other evidence or decisions, follow their authorized routes. Restricted sources require the permission result before any dependent read, including a search.
+
+Otherwise format 5 and agreed general-space setup use [general context spaces](references/context-spaces.md); format 4 uses the steps below. Known v2/v3 stays read-only pending agreed migration. Unknown formats stay read-only pending a compatible writer. Undeclared non-repository chat, research or creation skips this skill.
 
 ## 1. Find the entry point
 
@@ -46,9 +48,7 @@ Before implementation details, state each affected rule, registered or newly adm
 
 When resuming paused or interrupted work, follow [task continuation](references/memory-layout.md#existing-task-and-evidence-owners) before planning from its saved state.
 
-When the user settles, corrects, rejects, or limits a durable goal, preference or decision, invoke `$ssot-closeout` immediately, including during discussion-only work. Its [decision capture route](../ssot-closeout/references/decision-capture.md) records and rereads the decision before dependent work continues; do not wait for the batch to end.
-
-Watch for the other facts that will outlive the task: decisions, changed contracts or behavior that users rely on, traps you hit, changed commands, and temporary workarounds. Note them as they come up; `$ssot-closeout` records them before you finish, and you may update an obvious owner right away.
+Invoke `$ssot-closeout` as soon as the user settles or revises a durable choice, even during discussion. Capture it before dependent work. Track other lasting facts for batch closeout, or update an obvious owner as you work.
 
 ## Where to go next
 

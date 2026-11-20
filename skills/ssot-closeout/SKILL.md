@@ -7,18 +7,17 @@ description: Capture user-established durable goals, preferences and decisions i
 
 A task used as a source stays under its executor. Report discrepancies in the requested output. Changing the source task’s state needs separate authority.
 
-For a withdrawal or restricted source, establish [permitted use](../ssot-preflight/references/source-retention.md#permitted-use) before gathering evidence. Inspect the explicit entry or default `SSOT/README.md`. For format 5, follow [general context spaces](../ssot-preflight/references/context-spaces.md#use-and-maintain-a-space), especially Closeout/lifecycle and its linked shared references, then return from this skill. The development gates and batch recipe below are a separate route for format 4 and legacy repositories. Known v2/v3 stays read-only pending agreed migration. Unknown/future formats stay read-only without downgrade. Independently authorized owner workflows retain their own rules. Ordinary undeclared non-repository chat/research/creation skips this skill unless a record is explicitly requested.
+For withdrawals or restricted sources, establish [permitted use](../ssot-preflight/references/source-retention.md#permitted-use) before reading related evidence. Check the explicit entry or default `SSOT/README.md`, its format, setup state, applicable protections and owner rules. Reuse current passages.
 
-Reconcile durable changes in their single owner. Read only needed [model](../ssot-preflight/references/memory-model.md) sections; reuse current context.
+**One settled edit (formats 4 and 5).** When setup is complete, verify that one accepted decision changes only existing prose in its authorized owner. Check the approvers, effective scope and dependencies. Changes to protections, document structure, routes or another live use take the full route. With all approvals present, update the passage in place. Record the accepted words and their source, scope, stated reason and effective point as the owner requires. Keep unaffected terms and the only retained account of who chose the previous rule and why, within retention permissions. Reopen the saved passage; check the new terms, source, scope and history. A proposal or missing approval leaves the current rule in force. For an authorized prose-only edit, readback finishes closeout; run additional checks only when the project requires them. For broader changes check each affected owner.
 
-## Before you start
+For a bounded handoff, name the writable owners and supply only authorized evidence. Restrict actual access through the host when needed. Format 5 continues with [general context spaces](../ssot-preflight/references/context-spaces.md#use-and-maintain-a-space), including lifecycle and handoff.
 
-- **No `SSOT/` directory.** Do not create one without agreement (`$ssot-bootstrap`). Existing project-authorized owner recording can still use the immediate route.
-- **Known v2/v3.** Do not write or migrate it. List this batch's durable facts, disclose the recording gap and offer an agreed `$ssot-bootstrap` migration. Unknown/future formats receive no downgrade offer.
-- **Existing project workflow.** The gates above restrict SSOT protocol writes, not an existing recording process with explicit prior write authorization or the current user’s direct request to record in that owner. Follow that owner’s rules; this exception does not authorize changing an older SSOT format, reorganizing it, or inferring wider permission. A user’s read-only restriction still forbids writing; report an uncaptured decision without claiming persistence.
-- **Setup unfinished** (`SSOT/BOOTSTRAP.md` exists). Update documents that already exist. Note anything else in `BOOTSTRAP.md` so setup picks it up.
+## Development repositories
 
-The batch is the work done in this task. If other people's changes are in the tree, or `HEAD` moved underneath you, do not record facts from them that you have not verified. Tell the user, and leave them to a `$ssot-doctor` catch-up.
+- Without `SSOT/`, creation needs agreement (`$ssot-bootstrap`). While `SSOT/BOOTSTRAP.md` exists, update existing documents and leave remaining setup there.
+- Known v2/v3 stays read-only pending agreed migration. List uncaptured durable facts and offer agreed migration. Unknown/future formats stay read-only without downgrade. Separate project workflows retain their explicit write authority, subject to the user's limits; they cannot rewrite an older SSOT or grant wider permission.
+- Ordinary undeclared non-repository work skips closeout unless a record is requested. For format 4, reconcile this batch's verified changes in their single owner. Leave unverified concurrent changes for `$ssot-doctor` catch-up and tell the user. Read only needed [model](../ssot-preflight/references/memory-model.md) sections.
 
 ## Choose the route
 

@@ -5,13 +5,11 @@ Add the block below to the repository's agent instruction file (`AGENTS.md`, `CL
 <!-- SSOT-CONTEXT:BEGIN -->
 ## SSOT workflow
 
-Use the SSOT skills automatically for this repository. Users describe tasks normally.
+Use the skills automatically. For a bounded lookup or edit, check the current `SSOT/README.md` header and relevant owner, access and protection terms first. In format 4, answer directly from a single authorized owner if it settles the question. For one approved prose change there, use only `$ssot-closeout` and finish on verified readback.
 
-- **Start:** for substantive work (code, configuration, documentation, review, debugging, or planning), load `$ssot-preflight` before opening `SSOT/README.md`. Start the entry with its header and headings.
-- **Decision now:** when the user settles or revises a durable goal, preference, or decision, use `$ssot-closeout` immediately, including discussion-only work; save and reread the decision before dependent work.
-- **Finish or hand off:** use `$ssot-closeout` for an authorized task handoff or before the final response or commit of a substantive change batch. Routine no-change closeouts write nothing.
-- **Create or migrate:** use `$ssot-bootstrap`, only with the user's agreement.
-- **Check or catch up:** use `$ssot-doctor` when asked, or when another SSOT skill routes there.
+- Other substantive work starts with `$ssot-preflight` before opening the entry; read its header and headings first. Before planning or changing behavior, identify protected outcomes and preserve registered and evidence-backed protections unless the user approves the specific departure.
+- Capture settled durable choices immediately with `$ssot-closeout`, including in discussion. Save and reread before dependent work. Use it for authorized handoffs and substantive batch completion before replying or committing. An unchanged owner needs no log.
+- Use `$ssot-bootstrap` for agreed setup or migration and `$ssot-doctor` for requested or routed checks and catch-up.
 
-Skip these for non-repository chat, pure command runs, and typo or formatting edits. Before planning or changing behavior or architecture, use `$ssot-preflight` to identify protected outcomes, and preserve active registered invariants and protections admitted from evidence unless the user explicitly approves the identified departure. Use domain evidence: code and runtime for software behavior, canon and text for creative work, original sources for research, and the user’s words for decisions. Automatic upkeep depends on loaded skills and visible input; it cannot guarantee lossless capture. Commits and pushes follow this repository's existing rules. If an SSOT skill cannot be loaded, say so instead of guessing its steps.
+Skip unrelated chat, pure commands and typo or formatting fixes. Verify claims against domain evidence and decisions against the user's words. Report unavailable skills or missing evidence. Upkeep depends on visible input and loaded skills. Follow project commit and push rules.
 <!-- SSOT-CONTEXT:END -->
