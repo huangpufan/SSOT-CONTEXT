@@ -1414,5 +1414,282 @@
     "seconds": 4772.61,
     "title_requests": 34,
     "native_retry_events": 6
+  },
+  "coordinator_full_field_window": {
+    "through": "2026-11-20T11:33:35.510Z",
+    "whole": {
+      "steps": 77,
+      "input_tokens": 15586477,
+      "cached_input_tokens": 15499264,
+      "output_tokens": 47191
+    },
+    "by_action": {
+      "pilot_startup_and_rehearsal": {
+        "steps": 7,
+        "input_tokens": 1340984,
+        "cached_input_tokens": 1332096,
+        "output_tokens": 3129
+      },
+      "field_delivery_and_return": {
+        "steps": 12,
+        "input_tokens": 2624277,
+        "cached_input_tokens": 2614784,
+        "output_tokens": 5944
+      },
+      "field_and_research_not_separable": {
+        "steps": 21,
+        "input_tokens": 4392497,
+        "cached_input_tokens": 4365056,
+        "output_tokens": 11497
+      },
+      "research_and_measurement": {
+        "steps": 37,
+        "input_tokens": 7228719,
+        "cached_input_tokens": 7187328,
+        "output_tokens": 26621
+      }
+    },
+    "input_left_to_cover_additional_overhead": 947421,
+    "interpretation": "All 77 native deltas reconciled to cumulative counters. Retrospective mutually exclusive operation groups, not counterfactual billing. Includes research and shadow work. Ordinary delivery and mixed-cost differences remain unknown."
+  },
+  "historical_message_mix": {
+    "sample": "Same original 16 top-level conversations, 15 with actual messages in the period. Human chat messages only, excluding environment, instructions, host wrappers and automated continuations. First and follow-up messages form one sequence within each conversation. Mixed messages classified by primary explicit request. These are messages, not jobs or staff time.",
+    "messages": 48,
+    "counts": {
+      "investigate_design_implement_or_deploy": 21,
+      "direction_scope_causal_or_status_question": 6,
+      "coordination_approval_continuation_or_correction": 17,
+      "unrelated_model_lookup": 4,
+      "sole_request_an_edit_to_a_named_public_document": 0
+    },
+    "distinct_conversations_per_category": {
+      "investigate_design_implement_or_deploy": 13,
+      "direction_scope_causal_or_status_question": 4,
+      "coordination_approval_continuation_or_correction": 6,
+      "unrelated_model_lookup": 1
+    }
+  },
+  "normal_public_use": {
+    "records": [
+      {
+        "native_id": "session-203c8143-90a2-4a6d-80ce-cfd7d2238f91",
+        "response_model": [
+          "deepseek-v4-1-flash-261017"
+        ],
+        "status": "complete",
+        "input": 677732,
+        "cached": 602240,
+        "output": 20391,
+        "seconds": 212.81,
+        "tools": 29,
+        "title_requests": 1,
+        "changed": [],
+        "session_sha256": "28c892a04616a8351fd9e4001b91ee3b5c44fcac1b0f69e48b0910133b4e61da",
+        "final_sha256": "8e385c4f9e16d9a759ce20624d76b2dd3fb86ffedcb3c39bdec1719df22c9fce",
+        "id": "normal-use/baseline/run",
+        "native_retry_events": 0,
+        "opens": [
+          "docs/context-evolution-route.md",
+          "docs/scoped-maintenance-pilot.md",
+          "docs/context-evolution-route.md",
+          "docs/scoped-maintenance-pilot.md",
+          "docs/context-evolution-route.md",
+          "docs/scoped-maintenance-pilot.md",
+          "docs/context-evolution-route.md",
+          "tests/benchmark/results/scoped-maintenance-pilot.json"
+        ],
+        "events_sha256": "0aa5091cdfa41206563ce3717b664ee7863865d9816f0f5f35ee660e08901044",
+        "receipt_sha256": "d3814747b0c1de93c7dba8ebf70748dcdbedf0831d2c983ad0aa278991240d9c",
+        "prompt_sha256": "dc7693a863b761eeab2cd12cdc29a34d7219aa3e60bed1b224a76d3c3dd0384a",
+        "answer_characters": 2697
+      },
+      {
+        "native_id": "session-bbd3e905-6ba8-498a-a6cd-c4e4a885164a",
+        "response_model": [
+          "deepseek-v4-1-flash-261017"
+        ],
+        "status": "complete",
+        "input": 197745,
+        "cached": 160512,
+        "output": 13581,
+        "seconds": 140.03,
+        "tools": 16,
+        "title_requests": 1,
+        "changed": [],
+        "session_sha256": "140073fc13315193be3b2938b2a2b75dbfe5f2f2741c0bc7e94e2bb2dc0a9430",
+        "final_sha256": "72b4a19950a2db633a301a5bbb49ae026b370a8c9eb4757384ebfa129b10eb9e",
+        "id": "normal-use/pilot/run",
+        "native_retry_events": 0,
+        "opens": [
+          "docs/context-evolution-route.md",
+          "docs/scoped-maintenance-pilot.md",
+          "docs/context-evolution-route.md",
+          "docs/scoped-maintenance-pilot.md",
+          "docs/context-evolution-route.md",
+          "docs/scoped-maintenance-pilot.md"
+        ],
+        "events_sha256": "ff3d55d1085a81227a6f826b3282bbb0d5c3b85c0a959aaac8b64366d137465d",
+        "receipt_sha256": "7e3916ffb7104d11a399a4da520f956257cab9fbb766e41dc7afaddf16d2733f",
+        "prompt_sha256": "dc7693a863b761eeab2cd12cdc29a34d7219aa3e60bed1b224a76d3c3dd0384a",
+        "answer_characters": 2814
+      }
+    ],
+    "contract": "Provide the project's real requested status explanation to the integrating maintainer. This is ordinary use of the three already-published maintenance outcomes, not a fourth independent change. The original conversation and a week of local top-level message records show repeated asks for outcome, remaining scope and causal explanation. Freeze before observing the next actor. Two fresh Flash/medium sessions receive exactly the same Chinese request, complete public tracked checkout at 99e5537, normal native instruction loading, and same cap. Only the pilot project instruction differs. No preselected file list or routing hint in either request and no new rule. Candidate designated deliverer in advance. Check answer for current 4/5, scoped worker saving versus unknown total, correct origin of the saving, concrete observation still needed and accessible explanation; optional figures must be correct and contextualized. No file changes. Return its usable explanation, integrate or reject visibly and count rework. One pair in a known public repository cannot establish long-term economics, access control or savings for every broad audit. Record both including failed/incomplete answers, user intervention and the whole dispatcher cycle, separate common and comparison work.",
+    "source": "99e5537",
+    "freeze": [
+      "c42d734c91c4e9e9964cbffa2404060bad28a21d28f78cb0dc40ecb83a411d8b  daily_use.py",
+      "e1dadda37ff82942f2b4bcfd5374905c3095463b8758c38587501f9c04f55068  daily-use-contract.md"
+    ]
+  },
+  "status_route_replay": {
+    "records": [
+      {
+        "native_id": "session-f40255e8-456b-4a7f-a685-a5bc634c90af",
+        "response_model": [
+          "deepseek-v4-1-flash-261017"
+        ],
+        "status": "complete",
+        "input": 169762,
+        "cached": 142208,
+        "output": 11852,
+        "seconds": 131.74,
+        "tools": 13,
+        "title_requests": 1,
+        "changed": [],
+        "session_sha256": "1d8b34d2f3dd8d36d5eed2cd7236e4e7c5fbb15bf36e3cbd17e6eb60472cd79e",
+        "final_sha256": "c1ac3fc53381e18f0abcb8f45103572e084aae6590c47dbbe547c57b8194675c",
+        "id": "direct-status/status/run",
+        "native_retry_events": 0,
+        "opens": [
+          "docs/context-evolution-route.md",
+          "docs/scoped-maintenance-pilot.md",
+          "docs/context-evolution-route.md",
+          "tests/benchmark/results/scoped-maintenance-pilot.json"
+        ],
+        "events_sha256": "b595ab0fac9baf339d29c2bebaea91ceb06ebdc5176ef259a7cf3afa553070d9",
+        "receipt_sha256": "973e9ce24e09360fbd7848a1ea02f76774ecd3d78b14f28892fc0d1417dd2edb",
+        "prompt_sha256": "dc7693a863b761eeab2cd12cdc29a34d7219aa3e60bed1b224a76d3c3dd0384a",
+        "answer_characters": 1715
+      },
+      {
+        "native_id": "session-28d81960-352a-4de4-9da2-5b71fb34a5eb",
+        "response_model": [
+          "deepseek-v4-1-flash-261017"
+        ],
+        "status": "complete",
+        "input": 140450,
+        "cached": 119936,
+        "output": 5403,
+        "seconds": 53.28,
+        "tools": 12,
+        "title_requests": 1,
+        "changed": [],
+        "session_sha256": "0b3e58d28c3b29524d56f78b00700185f4ed84632a46322d7ecc3ed95fc0b371",
+        "final_sha256": "4b540a178e065b8de3a0208019bd0b87acd886f807a52ae02e0254dff8f55bb5",
+        "id": "direct-status/detail/run",
+        "native_retry_events": 0,
+        "opens": [
+          "docs/context-evolution-route.md",
+          "docs/scoped-maintenance-pilot.md",
+          "tests/benchmark/results/scoped-maintenance-pilot.json",
+          "docs/scoped-maintenance-pilot.md",
+          "tests/benchmark/results/scoped-maintenance-pilot.json"
+        ],
+        "events_sha256": "79f93db061c7f1815c61f25d98d32d4087f1d55d4f5e67da9e151db9cc9a1a4e",
+        "receipt_sha256": "c1ef6be942d3d8de99fb87639bd65bf829b827c25422aa369b65d723f9e0fe7c",
+        "prompt_sha256": "0a25e46e584392bc3ff33326a89ee6192d993fc1a6642506bba42eeb9a7ac3b9",
+        "answer_characters": 1624
+      }
+    ],
+    "contract": "Reduce friction on the observed real progress question, with zero preselection by the caller in a complete public checkout. The question is identical to the recorded normal use. Compare the response after giving the maintained route a direct pointer in project instructions and replacing its superseded next steps with the current decision. The detail counterexample asks about 16 cache files in the ordinary benchmark-guide checkout, absent from the short route; the correct outcome follows evidence, answers none were published, changes no files. For the same status request require correct stage and denominator, concrete scope/benefit, unresolved overhead and next observation, with a directly usable shorter answer. Record characters and native usage even if long, erroneous or incomplete. This is a diagnostic replay plus counterexample after actual delivery, never two new real user requests.",
+    "source": "99e5537",
+    "freeze": [
+      "b7c0bf995c213279cda068b0c6e9c565eee6039c9feb500d70c896d979646d53  direct_status.py",
+      "63d70075c42d715e1b2d90b0c4f80a228dbe099eeacc7e2e6f8fa1388e839585  direct-contract.md",
+      "55c47b9c3801d8fb79ed746835b5c938d5346b6cc853dcf84cf97f0962e85939  direct-source/AGENTS.md",
+      "94e3c279ac584cb21425715fa18b375ccd251a542fa4164b84b863b448d25b0a  direct-source/docs/context-evolution-route.md",
+      "3f6ff283793bc1a71e4fb2a94ad288da0fa1a95446cfeaede628d253a739ec4f  direct-source/docs/scoped-maintenance-pilot.md"
+    ]
+  },
+  "opening_answer_replay": {
+    "records": [
+      {
+        "native_id": "session-cd95165a-6826-4e23-ac4a-27f4ee653718",
+        "response_model": [
+          "deepseek-v4-1-flash-261017"
+        ],
+        "status": "complete",
+        "input": 262187,
+        "cached": 217472,
+        "output": 20603,
+        "seconds": 209.15,
+        "tools": 16,
+        "title_requests": 1,
+        "changed": [],
+        "session_sha256": "583259cc8038c57909a10ce8df7aef9d8a9c04bd90549a9302f2555256487753",
+        "final_sha256": "198bfe6deca7e4844aa8c93ebbe14851df028c3f1b0fb2c4205e7752dc588763",
+        "id": "opening-status/run",
+        "native_retry_events": 0,
+        "opens": [
+          "docs/context-evolution-route.md",
+          "docs/scoped-maintenance-pilot.md",
+          "docs/context-evolution-route.md",
+          "docs/scoped-maintenance-pilot.md",
+          "docs/context-evolution-route.md",
+          "docs/scoped-maintenance-pilot.md",
+          "docs/context-evolution-route.md",
+          "docs/scoped-maintenance-pilot.md"
+        ],
+        "events_sha256": "ebe09e33af1ca3c051d8512ad59a2016612e9c1ded456972bc957f4d7383d5f7",
+        "receipt_sha256": "1c82bd638a066d43cb3968c281b0e8548c40a310d2eb59beb7ebe687211704ab",
+        "prompt_sha256": "dc7693a863b761eeab2cd12cdc29a34d7219aa3e60bed1b224a76d3c3dd0384a",
+        "answer_characters": 2372
+      }
+    ],
+    "source": "99e5537",
+    "contract": "Same real status request and complete public checkout, diagnostic replay only. The earlier answer remained 1,715 characters and opened raw receipts. The current route now opens with a self-contained short reply covering the four required points. General status asks get that paragraph; specific details, conflicts and later changes still follow sources. One confirmation run. Check all four facts, quality of the actual answer, character count, protected absence of writes, read events and native cost. End the tuning loop after this run; retain any residual verbosity or evidence cost. Subsequent natural workload is separately required for whole-system economics.",
+    "freeze": [
+      "1107349cfeb6e907a9dfa2ff62d9ea8da62be8fb53833790b8618f5a741fa1ad  opening-contract.md",
+      "a2452eb2b1b868b356db7c9330f56dbbe0d0039193fb25b5f7f3ff81a7fba935  opening_status.py",
+      "311f9ef3919cccae94abeeea5aba3a86f4bd92ade8b5c876c5515fc6af4ec43d  opening-source/AGENTS.md",
+      "f16f949e49ff6a61ce690c5e7ceb88b3825831914062c0053c027eddc4773add  opening-source/docs/context-evolution-route.md",
+      "3f6ff283793bc1a71e4fb2a94ad288da0fa1a95446cfeaede628d253a739ec4f  opening-source/docs/scoped-maintenance-pilot.md"
+    ]
+  },
+  "status_route_decision": "Both prospective always-loaded instructions were declined: the actual general answers remained long, and the second asked for one paragraph but used more input and text than the first. Retain only the short human-facing route in the project documents. The detail answer found the correct count and disposition but linked a private temporary checkout.",
+  "all_observed_participants": {
+    "sessions": 41,
+    "complete": 38,
+    "input": 9360576,
+    "cached": 8327168,
+    "output": 536667,
+    "tools": 692,
+    "seconds": 5519.62,
+    "native_retry_events": 6,
+    "title_requests": 39
+  },
+  "private_evidence_archive": {
+    "filename": "scoped-maintenance-99e5537.tar.gz",
+    "sha256": "7ee16faf7d1d888378288f73ca1f5c377865ba0289488dce0d5f4a6d69f054f9",
+    "members": 2666,
+    "native_sessions": 41,
+    "checked": "All frozen inputs, native transcripts, final texts, observed event streams, before/after manifests and final files were checked. Only the digest and summary are published. The private archive excludes session homes and coordinator messages."
+  },
+  "gate_recovery": {
+    "source": "99e55370cf127bad6ef484005bed0861920219ca",
+    "public_doc": "docs/scoped-maintenance-pilot.md",
+    "restored_full_commit_url_line": 17,
+    "before": [
+      "FAIL : hygiene leakage in: docs/scoped-maintenance-pilot.md"
+    ],
+    "after": [
+      "FAIL : hygiene leakage in: docs/scoped-maintenance-pilot.md:17 (full commit ID; abbreviate public commit links)"
+    ],
+    "other_categories": [
+      "FAIL : hygiene leakage in: docs/probe-path.md:2 (local machine path) docs/probe-project.md:3 (consumer project name)"
+    ],
+    "clean_exit": 0,
+    "script_sha256": "e5879b7dc8164250a757a63198260d1441ef422602adced707371105a25d64db",
+    "interpretation": "The same rule rejects the restored public full commit link. The repaired diagnostic identifies the location and class without the suspect value. Short links, clean repository and the existing 64-hex controls pass. This measures actionable output, not token savings of a later human or agent."
   }
 }

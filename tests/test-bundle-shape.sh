@@ -181,11 +181,23 @@ for sample in "$COMMIT_SHA_64" "sha256=$COMMIT_SHA_64."; do
   fi
 done
 [[ "$COMMIT_SHA_TEST_ERRORS" -eq 0 ]] && pass "hygiene rejects complete 40-hex tokens and permits SHA-256, bare or in text" || fail "commit SHA hygiene calibration"
-HYGIENE_FILES=()
+HYGIENE_ERRORS=()
 while IFS= read -r -d '' f; do
-  grep -qE "$HYGIENE_PATTERN" "$PROJECT_ROOT/$f" && HYGIENE_FILES+=("$f")
+  if grep -qE "$HYGIENE_PATTERN" "$PROJECT_ROOT/$f"; then
+    # Report the location and reason without echoing private content.
+    hit="$(grep -anEm1 "$HYGIENE_PATTERN" "$PROJECT_ROOT/$f")"
+    content="${hit#*:}"
+    if [[ "$content" =~ $COMMIT_SHA_PATTERN ]]; then
+      reason="full commit ID; abbreviate public commit links"
+    elif [[ "$content" == *"$ORIGIN_NAME"* ]]; then
+      reason="consumer project name"
+    else
+      reason="local machine path"
+    fi
+    HYGIENE_ERRORS+=("$f:${hit%%:*} ($reason)")
+  fi
 done < <(git -C "$PROJECT_ROOT" ls-files -co --exclude-standard -z -- '*.md' '*.sh' '*.py' '*.yaml' '*.yml' '*.mjs' ':!:CHANGELOG.md')
-[[ ${#HYGIENE_FILES[@]} -eq 0 ]] && pass "no local or consumer-project leakage" || fail "hygiene leakage in: ${HYGIENE_FILES[*]}"
+[[ ${#HYGIENE_ERRORS[@]} -eq 0 ]] && pass "no local or consumer-project leakage" || fail "hygiene leakage in: ${HYGIENE_ERRORS[*]}"
 
 # 8b. Paragraphs are one line each. Editors wrap text; a paragraph broken
 # across short lines reads as ragged text, and agents copy the shape of the
