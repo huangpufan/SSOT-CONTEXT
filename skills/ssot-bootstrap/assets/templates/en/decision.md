@@ -13,6 +13,8 @@
 
 ## Decision
 
+<!-- If the choice starts, ends or comes up for review on a condition, explain what applies before and after in the affected scope. -->
+
 ## Alternatives considered
 
 <!-- Each option and the stated reason it lost; say unknown if no reason was given. Preserve unaffected parts of any earlier decision. -->

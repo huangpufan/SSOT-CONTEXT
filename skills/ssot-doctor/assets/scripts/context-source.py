@@ -322,24 +322,35 @@ OPERATION_ERRORS = (OSError, ValueError, KeyError, TypeError, IndexError)
 
 def source_report(args, state):
     withdrawing = args.command == "withdraw-source"
-    if withdrawing and state.get("source_status") != "withdrawn":
-        state["source_status"], state["withdrawal_reason"] = "withdrawn", args.reason
-        write_state(args.state, state)
+    metadata_only = args.metadata_only or state["schema"] == 2
+    if withdrawing:
+        first = state.get("source_status") != "withdrawn"
+        restrict_reads = metadata_only and state["schema"] == 1
+        if first:
+            state["source_status"], state["withdrawal_reason"] = "withdrawn", args.reason
+        if restrict_reads:
+            # Older clients reject schema 2 before opening a bound owner.
+            state["schema"] = 2
+        if first or restrict_reads:
+            write_state(args.state, state)
     try:
-        snapshots = scan_owners(state)
+        snapshots = [] if metadata_only else scan_owners(state)
         gaps = owner_observations(snapshots)
         known = [impact for record in state["items"].values() for impact in impacts(state, record, snapshots)]
     except OPERATION_ERRORS as error:
         if state.get("source_status") == "withdrawn":
             raise ValueError(f"source use is withdrawn; impact report incomplete: {error}. Retry status") from error
         raise
+    coverage = {"unavailable_owners": gaps, "unscanned_owners": state["owners"] if metadata_only else {}}
+    if metadata_only:
+        coverage["owner_scan"] = "Metadata only. Owner bodies were not opened. Unregistered captures are unknown."
     if withdrawing:
-        return {"source_status": "withdrawn", "reason": state["withdrawal_reason"], "unavailable_owners": gaps,
+        return {**coverage, "source_status": "withdrawn", "reason": state["withdrawal_reason"],
                 "known_references": known,
-                "evidence_limit": "source processing stopped; reconcile listed owners separately; originals retained"}
-    return {"source_id": state["source_id"], "scope": state["scope"], "owners": state["owners"],
+                "evidence_limit": "source processing stopped; reconcile listed owners separately; originals were not deleted by this operation"}
+    return {**coverage, "source_id": state["source_id"], "scope": state["scope"], "owners": state["owners"],
             "source_status": state.get("source_status", "active"), "withdrawal_reason": state.get("withdrawal_reason"),
-            "last_error": state.get("last_error"), "unavailable_owners": gaps, "known_impacts": known,
+            "last_error": state.get("last_error"), "known_impacts": known,
             "items": [item_view(state, record) for record in state["items"].values()]}
 
 
@@ -509,6 +520,9 @@ def main():
         if command in {"bind", "targets"}:
             sub.add_argument("--owner", action="append", required=True)
             sub.add_argument("--reason")
+        if command in {"status", "withdraw-source"}:
+            sub.add_argument("--metadata-only", action="store_true",
+                             help="report saved metadata without opening owners; withdrawal retains this limit")
         if command == "readback":
             sub.add_argument("--owner", required=True)
         if command == "complete":
@@ -518,7 +532,8 @@ def main():
     try:
         with locked(args.state):
             state = json.loads(args.state.read_text()) if args.state.exists() else None
-            if state is not None and (not isinstance(state, dict) or state.get("schema") != 1):
+            if state is not None and (not isinstance(state, dict) or state.get("schema") not in (1, 2)
+                                      or (state["schema"] == 2 and state.get("source_status") != "withdrawn")):
                 raise ValueError("unsupported or damaged connector state")
             if state is None and args.command != "import":
                 raise ValueError("state not found; import an explicitly scoped source first")

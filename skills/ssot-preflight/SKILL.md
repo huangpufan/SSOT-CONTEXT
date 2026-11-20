@@ -2,13 +2,15 @@
 name: ssot-preflight
 description: Load before opening a project context entry for substantive work. Start with its format and headings, then read the relevant sections and owners. Find protected rules, owners and blocking questions for code, configuration, documentation, review, debugging or planning. Use for an explicit request to maintain non-repository context; ordinary chat, research answers or creative writing without a declared space do not trigger setup. Skip pure commands and meaning-preserving typo or formatting edits.
 metadata:
-  protocol_version: "5.11"
+  protocol_version: "5.12"
   bundle: "SSOT-CONTEXT"
 ---
 
 # SSOT Preflight
 
 Find the entry point before loading the [memory model](references/memory-model.md). For a withdrawal or restricted source, establish [permitted use](references/source-retention.md#permitted-use) before opening related owners or evidence.
+
+When the workflow says placing content in a destination can trigger delivery, publication or execution, check who may cause that effect before writing or moving anything there. If only the choice is delegated, leave the live destination untouched and use an authorized draft or handoff. If release is delegated, use the designated destination.
 
 Start with the header and section locations of the explicit entry or default `SSOT/README.md`. For example, use `sed -n '1,12p' SSOT/README.md` and `rg -n '^#{1,6} ' SSOT/README.md`. These reads identify the format and where to look next. Format 5 uses [general context spaces](references/context-spaces.md); format 4 uses the repository steps below. Known v2/v3 uses the legacy read-only route. Unknown/future markers stay read-only: identify/upgrade the writer, never downgrade the data. Explicit new general-space setup also uses the general branch. Ordinary undeclared non-repository chat, research or creation skips this skill.
 

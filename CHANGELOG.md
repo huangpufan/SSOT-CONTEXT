@@ -23,6 +23,18 @@ Entries up to 2.86 were derived from the v2 protocol-upgrade ledger, which is pr
 ### Changed
 - Cold-handoff trials now default to an explicit persistence goal shared by plain/protocol writers, retain automatic capture as a separate estimand, and add an independently authored museum confirmation. The [deepening record](docs/benchmark-deepening-2026-11-12.md) distinguishes measurement repairs, actual subject outcomes and evidence limits; the SSOT protocol remains 5.3.
 
+## [5.12] - 2026-11-20
+
+### Changed
+
+- Record the interim rule for conditional decisions where a new task will act on it. A partial rollout can change what earlier evidence establishes for one part of the work. The [release study](docs/conditional-context-5.12.md) compares whole tasks against 5.11.
+- Overlapping preferences keep their owners and agreed priority. A delegated content choice may be saved to a draft while release through an active destination remains with its operator.
+- Runtime protocol and bundle ceilings are now 18,700 words and 232 KiB to accommodate these conditional routes and restricted withdrawal recovery.
+
+### Fixed
+
+- The source connector can withdraw and report registered impacts without opening bound owner bodies. A metadata-only withdrawal saves that limit across retries and status queries. Older clients reject the restricted connector state. Development and general context entries keep their existing formats.
+
 ## [5.11] - 2026-11-20
 
 ### Changed

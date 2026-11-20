@@ -155,7 +155,7 @@ class ConnectorContract(unittest.TestCase):
         self.assertTrue(repeated["unavailable_owners"][0]["missing"])
         self.assertEqual(self.cli("status")["withdrawal_reason"], first["reason"])
 
-    def withdraw_with_fault(self, event, path, fault):
+    def withdraw_with_fault(self, event, path, fault, *options):
         # A fresh CLI runs the normal transaction up to the selected filesystem event.
         inject = """
 import os, runpy, sys
@@ -172,7 +172,7 @@ sys.addaudithook(inject)
 runpy.run_path(sys.argv[0], run_name="__main__")
 """
         return subprocess.run([sys.executable, "-c", inject, event, str(path), fault, str(SCRIPT),
-                               "withdraw-source", "--state", str(self.state), "--reason", "Owner withdrew use"],
+                               "withdraw-source", "--state", str(self.state), "--reason", "Owner withdrew use", *options],
                               capture_output=True, text=True, timeout=10)
 
     def test_withdrawal_survives_interruption_during_owner_inventory(self):
@@ -200,6 +200,91 @@ runpy.run_path(sys.argv[0], run_name="__main__")
         self.assertIn("impact report incomplete", report.stderr)
         self.assertEqual(self.cli("status")["source_status"], "withdrawn")
 
+    def report_counting_opens(self, args, expected):
+        count_opens = """
+import json, runpy, sys
+counts = dict.fromkeys(json.loads(sys.argv.pop(1)), 0)
+sys.argv = sys.argv[1:]
+def count(event, args):
+    if event == "open" and args[0] in counts:
+        counts[args[0]] += 1
+sys.addaudithook(count)
+try:
+    runpy.run_path(sys.argv[0], run_name="__main__")
+finally:
+    print(json.dumps(counts), file=sys.stderr)
+"""
+        result = subprocess.run([sys.executable, "-c", count_opens, json.dumps(list(expected)),
+                                 str(SCRIPT), *args, "--state", str(self.state)], capture_output=True, text=True)
+        self.assertEqual(result.returncode, 0, result.stderr)
+        self.assertEqual(json.loads(result.stderr), expected)
+        return json.loads(result.stdout)
+
+    def test_metadata_only_status_and_durable_withdrawal(self):
+        receipts = self.receipts()
+        self.complete(receipts)
+        unregistered = self.root / "unconfirmed.md"
+        unregistered.write_bytes(self.a.read_bytes())
+        self.cli("bind", "--owner", f"other={unregistered}")
+        closed = {str(path): 0 for path in (self.source, self.a, self.b, unregistered)}
+        active = self.report_counting_opens(["status", "--metadata-only"], closed)
+        self.assertEqual(active["source_status"], "active")
+        # A one-time metadata report does not withdraw the source or change future reads.
+        full = self.report_counting_opens(["status"], {**closed, str(self.a): 1, str(self.b): 1, str(unregistered): 1})
+        self.assertIn("other", {impact["owner"] for impact in full["known_impacts"]})
+
+        for args, field in ((["withdraw-source", "--metadata-only", "--reason", "Bodies are closed"], "known_references"),
+                            (["status"], "known_impacts"),
+                            (["withdraw-source", "--reason", "Retry"], "known_references")):
+            report = self.report_counting_opens(args, closed)
+            self.assertEqual(report["source_status"], "withdrawn")
+            self.assertEqual(set(report["unscanned_owners"]), {"a", "b", "other"})
+            self.assertEqual(report["unavailable_owners"], [])
+            self.assertEqual({impact["owner"] for impact in report[field]}, {"a", "b"})
+            evidence = {label for impact in report[field] for label in impact["evidence"]}
+            self.assertEqual(evidence, {"declared-target", "completed-reference", "readback"})
+        self.assertEqual(report["reason"], "Bodies are closed")
+        self.cli("inspect", "--item", "method", "--revision", "r1", expected=2)
+
+    def test_metadata_only_can_narrow_existing_withdrawal(self):
+        self.imported()
+        self.cli("withdraw-source", "--reason", "Initial withdrawal")
+        closed = {str(self.a): 0, str(self.source): 0}
+        result = self.report_counting_opens(["withdraw-source", "--metadata-only", "--reason", "Owner now closed"], closed)
+        self.assertEqual(result["reason"], "Initial withdrawal")
+        self.assertEqual(self.report_counting_opens(["status"], closed)["unscanned_owners"], {"a": str(self.a)})
+
+    def test_metadata_only_recovery_before_save_and_after_lost_reply(self):
+        self.imported()
+        closed = {str(self.a): 0, str(self.source): 0}
+        before = self.state.read_bytes()
+        failed = self.withdraw_with_fault("os.rename", self.state, "exit", "--metadata-only")
+        self.assertEqual(failed.returncode, 75)
+        self.assertEqual(self.state.read_bytes(), before)
+        self.assertEqual(self.report_counting_opens(["status", "--metadata-only"], closed)["source_status"], "active")
+
+        # The state transaction has finished by the time the CLI prints its reply.
+        lost_reply = """
+import os, runpy, sys
+sys.argv = sys.argv[1:]
+class BrokenOutput:
+    def write(self, text):
+        os._exit(75)
+sys.stdout = BrokenOutput()
+runpy.run_path(sys.argv[0], run_name="__main__")
+"""
+        result = subprocess.run([sys.executable, "-c", lost_reply, str(SCRIPT), "withdraw-source",
+                                 "--state", str(self.state), "--metadata-only", "--reason", "Body reads withdrawn"])
+        self.assertEqual(result.returncode, 75)
+        report = self.report_counting_opens(["status"], closed)
+        self.assertEqual(report["source_status"], "withdrawn")
+        self.assertEqual(report["unscanned_owners"], {"a": str(self.a)})
+        saved = json.loads(self.state.read_bytes())
+        self.assertEqual(saved["schema"], 2)  # Schema-1 implementations must reject this state.
+        saved["source_status"] = "active"
+        self.state.write_text(json.dumps(saved))
+        self.assertIn("damaged", self.cli("inspect", "--item", "method", "--revision", "r1", expected=2)["stderr"])
+
     def test_inventory_reads_each_binding_once_and_preserves_aliases_and_receipts(self):
         receipts = self.receipts()
         self.complete(receipts)
@@ -214,27 +299,10 @@ runpy.run_path(sys.argv[0], run_name="__main__")
         bulk = self.root / "additional.json"
         bulk.write_text(source_cases.export([{**source_cases.METHOD, "item_id": f"other-{n}"} for n in range(127)]))
         self.cli("import", bulk, "--source-id", source_cases.SOURCE_ID, "--scope", source_cases.SCOPE)
-        count_opens = """
-import json, runpy, sys
-counts = dict.fromkeys(json.loads(sys.argv.pop(1)), 0)
-sys.argv = sys.argv[1:]
-def count(event, args):
-    if event == "open" and args[0] in counts:
-        counts[args[0]] += 1
-sys.addaudithook(count)
-try:
-    runpy.run_path(sys.argv[0], run_name="__main__")
-finally:
-    print(json.dumps(counts), file=sys.stderr)
-"""
         observed = []
         expected = {str(self.a): 2, str(moved): 1, str(gap): 1}
         for args, field in ((["status"], "known_impacts"), (["withdraw-source", "--reason", "Stop"], "known_references")):
-            result = subprocess.run([sys.executable, "-c", count_opens, json.dumps(list(expected)),
-                                     str(SCRIPT), *args, "--state", str(self.state)], capture_output=True, text=True)
-            self.assertEqual(result.returncode, 0, result.stderr)
-            self.assertEqual(json.loads(result.stderr), expected)
-            report = json.loads(result.stdout)
+            report = self.report_counting_opens(args, expected)
             self.assertEqual([item["owner"] for item in report["unavailable_owners"]], ["gap"])
             observed.append(report[field])
         self.assertEqual(*observed)

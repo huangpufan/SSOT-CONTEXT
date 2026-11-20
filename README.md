@@ -10,7 +10,7 @@
 
 </div>
 
-A new agent session needs to recover what people are trying to achieve, how they agreed to work, and which choices still guide the next step. SSOT-CONTEXT gives that knowledge a maintained home. A small entry document routes each task to the documents that own it. When you ask to pause or hand off work, the agent uses the authorized task record so a fresh session can check what happened and whether the next step still serves the current goal. A trial can reach its limit while the goal remains open.
+A new agent session needs to recover what people are trying to achieve, how they agreed to work, and which choices still guide the next step. SSOT-CONTEXT gives that knowledge a maintained home. A small entry document routes each task to the documents that own it. When you ask to pause or hand off work, the agent uses the authorized task record so a fresh session can check what happened and whether the next step still serves the current goal. A trial can reach its limit while the goal remains open. For a choice that starts after sign-off or comes up for review, the working guide records what to do on either side of the event. A later task checks the evidence for its own scope. If writing a handoff would release it, the agent checks who may issue it.
 
 It works in two kinds of place:
 
@@ -101,7 +101,7 @@ Existing maintained documents can stay the owners and are linked from the entry.
 
 The skills act only when the agent loads them. They do not collect material in the background, and they cannot delete copies they cannot reach, such as backups or provider logs. The [5.1 trials](./tests/context/trials-5.1.md) cover cold-session continuation, source admission and a large protection register. This is small synthetic evidence, not proof of universal reliability; in the [5.0 report](./tests/context/trials-5.0.md), token use on warm development tasks rose about 5–13%.
 
-For repeatable exports, withdrawing a source records the stop before inspecting affected documents. After an interruption, `status` shows whether withdrawal took effect and which owners still need attention. [Source integration](./skills/ssot-doctor/references/source-integration.md)
+For a registered source, withdrawal records the stop before collecting impacts. If its working documents must stay closed, use `withdraw-source --metadata-only`. Later status queries can then report targets and earlier receipts without reopening those documents. [Source withdrawal and recovery](./skills/ssot-doctor/references/source-integration.md#correction-and-withdrawal)
 
 Doctor can check the entry and selected permitted documents in either format when links to restricted originals are retained. The report names the files covered. Git catch-up includes decisions on merged branches and advances the saved commit only across fully reviewed history. [Selected checks](./skills/ssot-preflight/references/source-retention.md#selected-mechanical-checks), [5.9 catch-up examples](./docs/catchup-5.9.md)
 
@@ -135,6 +135,7 @@ After updating the skill files, refresh the repository’s managed instruction b
 - [Install guide](./INSTALL.md): setup, wiring, upgrade, removal and recovery.
 - [Design](./DESIGN.md): why the bundle is shaped this way.
 - [Evolving research and creative projects](./docs/evolving-research-and-creative-projects.md) (Chinese guide): practical examples using existing owners, scoped revisions, uncertain sources and deferred synchronization.
+- [Conditional decisions and handoffs in 5.12](./docs/conditional-context-5.12.md) follows a decision through sign-off, partial rollout, delivery and withdrawal, with paired trials.
 - [5.8 maintenance review and trials](./docs/context-maintenance-5.8.md) cover shared-directory setup, interrupted source withdrawal and the remaining design questions.
 - [Evolution review](./docs/evolution-review-2026-11-12.md): current improvements, real continuation trials and evidence limits.
 - [Evaluation](./tests/benchmark/README.md): task outcomes, cold handoff, plain-docs controls and evidence limits.

@@ -6,7 +6,7 @@ This file owns what a repository's `SSOT/` contains, where each kind of knowledg
 
 ## 1. What SSOT is for
 
-`SSOT/` is the repository's long-term memory. A new agent, or a person who delegates work to agents, should be able to read it and know what the project is for, how it works, which rules must not be broken, why things are the way they are, and where the traps are. With that, they can plan a change without first reconstructing the whole codebase. Its most important job is the rules: the architecture boundaries and product behaviors that only a person may change. Other changes still follow the repository’s authorization and ownership rules, including human-approved canon or domain facts maintained outside the invariant register and decision records.
+`SSOT/` is the repository's long-term memory. A newcomer should be able to find the project's goal, understand how the parts work, and decide what to do next from the relevant method, progress, preferences and decisions. The task owner keeps execution progress. Topic owners explain what still applies, why choices were made and where earlier attempts went wrong. Human-protected architecture boundaries and product behaviors bind every change in their scope. Other changes still follow the repository’s authorization and ownership rules, including human-approved canon or domain facts maintained outside the invariant register and decision records.
 
 SSOT is memory, not a verification system. Domain evidence (section 3) remains authoritative for factual claims. Proof that one task works belongs in that task's commit, pull request, or test run, not in SSOT.
 
@@ -41,16 +41,18 @@ Leave out:
 
 Keep an enduring goal with the outcome it serves, its scope and any agreed success or stopping condition. A task-specific goal belongs with the task. Distinguish proposed goals and methods from accepted ones. For an authorized trial, keep its bounds and what would justify revisiting it.
 
-A preference is an attributed default within a stated scope, including exceptions. A specific authorized choice for this task takes precedence without rewriting the default. Save an established preference in the authorized owner for that audience and scope. The invariant register is for binding rules. A one-off request or account of usual behaviour establishes no enduring preference by itself. Look for whose future choice the person actually settled. When preferences change, update only the applicable scope. Existing confirmed rules keep their standing until an authorized correction. Past experiences still describe what happened.
+A preference is an attributed default within a stated scope, including exceptions. A specific authorized choice for this task takes precedence without rewriting the default. Save an established preference in the authorized owner for that audience and scope. The invariant register is for binding rules. A one-off request or account of usual behaviour establishes no enduring preference by itself. Look for whose future choice the person actually settled. When defaults overlap, follow the agreed priority or exercise delegated judgment within scope. Preserve each holder's preference. A choice reserved to the holders remains open until they settle it. When preferences change, update only the applicable scope. Existing confirmed rules keep their standing until an authorized correction. Past experiences still describe what happened.
 
 ## 3. Current, planned, and unknown
 
 Readers act on what you write, so never present something planned as if it exists. Use plain labels near the claim:
 
-- Describe current behavior in the present tense.
+- Describe observed behavior in its actual scope. During a partial rollout, say which parts have changed when that affects the task.
 - Mark anything decided but not built, for example: "Planned, not built yet:… (see decision 0012)". Remove the label when it ships, or rewrite the text if the plan changes.
 - Mark an agent's inferred follow-up, revisit or removal condition "Proposed, not decided", separate from the accepted choice. A reason for a decision does not establish a later action.
 - Say what is unknown. "We have not verified this on macOS" is useful. Silence is not.
+
+When a choice takes effect or ends on a condition, put the condition and its agreed consequence where people choose the method or act on the preference. Record what governs in the meantime. At use, check the evidence for the affected scope. If the same receipt identifies incompatible subjects or outcomes, resolve its identity before relying on it. A review date opens a review; continuation follows the agreement. Deployment alone settles no policy. If the trigger or interim authority is uncertain, proceed with work valid in either case and leave the dependent choice open.
 
 Use evidence appropriate to the claim: code, tests and runtime for software behavior; canonical material and the actual text for creative continuity; original sources, data and methods for research; human-decision evidence below for accepted choices. Code describes current implementation, not authorization to replace a person's rule. When a document and the code disagree, distinguish a stale description, a violation of an intended rule, and intent not yet implemented. Correct the stale description or report the implementation gap; preserve the rule unless human-decision evidence establishes its replacement, and then replace only the authorized part.
 
