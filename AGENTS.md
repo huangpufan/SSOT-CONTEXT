@@ -39,6 +39,7 @@ The consumer instruction block lives in the bootstrap adapter template ([English
 
 ## Repo Boundaries
 
+- For this repository's public documentation, start with the named document and the evidence that can change the answer. When handing off a bounded edit, provide the authorized files and name the writable owners. Read an accepted rule back after updating it and retain its unique reason when replacing it. For changes across owners, check each affected decision and its scope. Ask for a missing source when it matters.
 - When evaluating improvements, follow [needs-driven evolution](./DESIGN.md#accepted-direction-evolve-from-context-needs): begin with a long-term context need, then assess current support and the responsible owner.
 - `install.sh` is the installer entrypoint; change it only for the skill list, the agent registry, or how sources are fetched (`--ref`).
 - `skills/*/SKILL.md` is the protocol authority; `memory-model.md` owns development format 4, and conditional `context-spaces.md` owns general format 5, under `skills/ssot-preflight/references/`.
