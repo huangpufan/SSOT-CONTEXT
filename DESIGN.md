@@ -18,6 +18,12 @@ Keep investigating as real use exposes new needs. For each proposed improvement,
 
 The [2026-11-16 needs review](./docs/context-needs-review-2026-11-16.md) applies this direction to the current bundle; its proposed investigations are not shipped capabilities.
 
+## Accepted direction: reduce the cost and friction of using and maintaining context
+
+On 2026-11-20, after comparing ordinary project documents with the installed skills, the maintainer set a continuing goal for SSOT-CONTEXT: “不光是维护，还有使用过程中的消耗，也要尽量降低，降低一切摩擦”. A person who asks for a price, changes a settled rule or takes over a project should spend as little time and model input as the correct outcome allows. This applies from setup through everyday use, updates, handoff and recovery. Waiting, needless confirmations, repeated reading and making the user repair a poor handoff also count.
+
+Use the same task with ordinary, well-kept documents as a reference. When that reader succeeds cheaply, investigate the extra work the skills caused. When extra work preserves a permission boundary or a decision the next person needs, verify that benefit and look for a cheaper way to keep it. Compare the cost to the person recording a change and to the people using it afterwards, including failed attempts and rework. Account for the cost of developing and testing the bundle separately. The [evaluation method](./tests/benchmark/METHOD.md) describes the measurements.
+
 ## What happened in v2
 
 Version 2 grew from 0.8 MB of skills (2.50, June 2026) to 1.9 MB (2.86, October 2026), and its lint script grew from 50 KB to 400 KB of Bash. There were 36 protocol versions in four months. Most later commits reconciled clauses that earlier fixes had made inconsistent.

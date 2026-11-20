@@ -138,6 +138,7 @@ After updating the skill files, refresh the repository’s managed instruction b
 - [Design](./DESIGN.md): why the bundle is shaped this way.
 - [Evolving research and creative projects](./docs/evolving-research-and-creative-projects.md) (Chinese guide): practical examples using existing owners, scoped revisions, uncertain sources and deferred synchronization.
 - [Cross-domain context audit and release experiment](./docs/context-paths-study.md) compares plain documents, the installed protocol and a replayable architecture candidate across software, research and creative handoffs. The [reading and handoff follow-up](./docs/read-trigger-study.md) measures when direct lookups save input and what survives in documents passed to new readers.
+- [Everyday use and maintenance costs](./docs/ordered-lookup-cost.md) compares a price lookup and a single rule change with ordinary documents, including what a new reader could recover and which files the agent actually opened.
 - [Long-term context review and six-shift handoff in 5.13](./docs/context-stewardship-5.13.md) examines decision succession, competing goals, evidence reuse and owner checks.
 - [Conditional decisions and handoffs in 5.12](./docs/conditional-context-5.12.md) follows a decision through sign-off, partial rollout, delivery and withdrawal, with paired trials.
 - [5.8 maintenance review and trials](./docs/context-maintenance-5.8.md) cover shared-directory setup, interrupted source withdrawal and the remaining design questions.
