@@ -56,11 +56,13 @@ When a change adds a temporary workaround, a compatibility shim, or a `TODO`/`HA
 
 ### Existing task and evidence owners
 
-Task progress, evidence, research originals and live state keep their existing owners. Route to them when needed. SSOT supplies context. The task and host workflows own execution.
+Task and host workflows own execution. Route to existing progress, evidence, originals and live state.
 
-**Pause or handoff.** When requested or required by the task workflow, update and reopen the authorized task record. Keep its identity, current goal and success conditions, applicable method, completed work with evidence, uncertain effects, blockers and next safe action. Link durable guidance only as needed. Use an existing task owner first. Create a task note only with authority to leave one; otherwise tell the user what could not be saved.
+**Pause or handoff.** When requested or required by the task workflow, update and reopen the authorized task record. Keep task identity, goal, success conditions, method, completed work and evidence, uncertain effects, blockers and next safe action. Link the governing goal, method or permission. Explain a failed attempt if a successor might repeat it. Use an existing task owner first. Create a task note only with authority to leave one; otherwise tell the user what could not be saved.
 
-**Resume.** Match the exact task and record. Verify the current scope, method, completion evidence and next action against authoritative state. After a timeout or missing receipt, check the original operation's identity or authoritative outcome. Missing evidence leaves the outcome unknown. Retry within authorization only when evidence shows no effect or the same operation is effectively deduplicated. Pause the uncertain action and continue independent work.
+**Resume.** Match the exact task and record. Verify the saved method and next step against the current goal, scope, authority and completion evidence. Apply an agreed stop or release condition only if its evidence and scope still match. Leave required human judgment pending. Exhausting a trial ends that trial; assess the goal separately. Record closure in the task owner. Writing a notice into a cancelled deliverable needs its own authority.
+
+After a timeout or missing receipt, check the original operation's identity or authoritative outcome. Missing evidence leaves the outcome unknown. Retry within authorization only when evidence shows no effect or the same operation is effectively deduplicated. Pause the uncertain action and continue independent work.
 
 ### Preserving content when reorganizing
 

@@ -10,7 +10,7 @@
 
 </div>
 
-A new agent session needs to recover what people are trying to achieve, how they agreed to work, and which choices still guide the next step. SSOT-CONTEXT gives that knowledge a maintained home. A small entry document routes each task to the documents that own it. When you ask to pause or hand off work, the agent uses the authorized task record so a fresh session can check what happened and continue safely.
+A new agent session needs to recover what people are trying to achieve, how they agreed to work, and which choices still guide the next step. SSOT-CONTEXT gives that knowledge a maintained home. A small entry document routes each task to the documents that own it. When you ask to pause or hand off work, the agent uses the authorized task record so a fresh session can check what happened and whether the next step still serves the current goal. A trial can reach its limit while the goal remains open.
 
 It works in two kinds of place:
 
@@ -31,7 +31,7 @@ The project was previously named SSOT-SKILL; old skill names still work ([detail
 - **Keep kinds of material apart.** Facts, hypotheses, decisions, preferences and changing state are kept distinct. A research hypothesis or a guess about a person never becomes a protected rule.
 - **Write for someone new.** Plain words and the situation before the mechanism, so the next agent, or a person who delegates work without reading code, can follow it. See the [writing guide](./skills/ssot-preflight/references/writing-memory.md).
 - **Routes are not permissions.** Following a link lets the agent read only within the scope you allowed. Imported text is evidence to interpret, never instructions to execute.
-- **Say what was checked.** The [checker](./skills/ssot-doctor/assets/scripts/ssot-check.py) finds mechanical problems such as broken links; it cannot establish truth. For a named general-space entry, pass its file path. A directory selects its own `README.md`. Reviews identify findings, coverage and gaps. An authorized repair addresses the requested scope.
+- **Say what was checked.** The [checker](./skills/ssot-doctor/assets/scripts/ssot-check.py) finds mechanical problems such as broken links; it cannot establish truth. For a named general-space entry, pass its file path. A directory selects its own `README.md`. For a restricted review of a nested task card, name both its permitted index and the card with `--owners`. Reviews identify findings, coverage and gaps. An authorized repair addresses the requested scope.
 
 ## Quickstart
 

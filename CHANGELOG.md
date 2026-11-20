@@ -23,6 +23,17 @@ Entries up to 2.86 were derived from the v2 protocol-upgrade ledger, which is pr
 ### Changed
 - Cold-handoff trials now default to an explicit persistence goal shared by plain/protocol writers, retain automatic capture as a separate estimand, and add an independently authored museum confirmation. The [deepening record](docs/benchmark-deepening-2026-11-12.md) distinguishes measurement repairs, actual subject outcomes and evidence limits; the SSOT protocol remains 5.3.
 
+## [5.11] - 2026-11-20
+
+### Changed
+
+- Goal changes apply to known dependent tasks during decision capture. A fresh executor checks the current goal, authorization and evidence before resuming. A trial can end with the goal unresolved. Another executor retains responsibility for a dispatched action.
+- Preparing a report from a task record keeps that task under its existing owner. A one-time format choice applies to the requested output. An account of usual behaviour becomes a standing preference only when someone establishes it for future choices.
+
+### Fixed
+
+- Restricted structural checks can follow a route through explicitly selected Markdown indexes to a nested task card in either format. See the [design, comparisons and limitations](docs/goal-changes-5.11.md).
+
 ## [5.10] - 2026-11-20
 
 ### Changed

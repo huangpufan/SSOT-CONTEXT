@@ -49,6 +49,8 @@ A successor needs the current outcome and its success conditions, the methods st
 
 An established preference guides choices within its stated scope and can yield to an authorized instruction for one task. Binding rules and consequential accepted decisions keep their standing. The [5.10 design and trials](./docs/context-lifecycle-5.10.md) trace these boundaries through both formats, including a pause and fresh-session handoff, and explain the shared route for restricted sources.
 
+A saved next action can outlive the goal that justified it. On resumption the executor needs the governing decision and the latest relevant receipt. A new decision can end future work while an earlier request is still in flight. Keeping the decision with its owner lets the original executor reconcile that request. A person preparing a report from the same record has a different responsibility and may have no authority to close the underlying task. The [5.11 review and trials](./docs/goal-changes-5.11.md) follow these cases to the next actual deliverable.
+
 ## Why v4 changes the format
 
 Repositories already have maintained design documents, machine-checked contracts, research, and follow-up systems. Moving all their durable facts into `SSOT/` can create duplicate authorities or discard the context that explains a decision. Format 4 makes `SSOT/README.md` the entry point and records the owner routes; a maintained document elsewhere in the same repository can remain the authority. Raw conversations, task artifacts, and runtime state keep their appropriate owners rather than becoming a second SSOT archive.

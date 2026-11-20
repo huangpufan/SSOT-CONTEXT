@@ -5,9 +5,9 @@ Usage: ssot-check.py [SSOT_DIR|FORMAT5_ENTRY] [--since COMMIT] (default: ./SSOT)
        ssot-check.py ENTRY_FILE --owners [FILE ...]
 
 A directory selects README.md. Pass the file for another format-5 entry.
---owners checks the format-4 README or format-5 entry and directly linked
-Markdown owners selected relative to the entry directory. Omit names for an
-entry-only check. Links to other paths and Git history are outside this selection.
+--owners checks the entry and named Markdown files reachable through that
+selection. Include each intervening index, with paths relative to the entry.
+Omit names for an entry-only check. Other targets and Git history are excluded.
 
 --since COMMIT lists only mentions of files removed after COMMIT or in
 uncommitted changes, and counts the older ones in one line; it also compares
@@ -976,21 +976,26 @@ def repository_local(path):
 
 
 def checked_documents(ssot_dir, readme, report):
-    """SSOT plus direct README Markdown owners; their links are checked, not crawled."""
-    documents = ({readme} if GENERAL[0] or report.documents is not None
+    """Follow intermediate links only inside an explicit selection."""
+    selection = report.documents
+    documents = ({readme} if GENERAL[0] or selection is not None
                  else set(markdown_files(ssot_dir, report)))
-    if os.path.isfile(readme) and repository_local(readme):
-        for _, target in link_targets(read_text(readme)):
+    pending = [readme] if os.path.isfile(readme) and repository_local(readme) else []
+    while pending and documents != selection:
+        doc = pending.pop()
+        for _, target in link_targets(read_text(doc)):
             if SCHEME_RE.match(target) or (unquote(target).startswith("/") and not GENERAL[0]):
                 continue
-            path, _ = resolve(readme, target)
-            if report.documents is not None and path not in report.documents:
+            path, _ = resolve(doc, target)
+            if path in documents or (selection is not None and path not in selection):
                 continue
             if path.lower().endswith(".md") and repository_local(path) and os.path.isfile(path):
                 documents.add(path)
-    if report.documents is not None:
-        for path in sorted(report.documents - documents):
-            report.add("ERROR", path, None, "selected owner must be an existing directly linked local Markdown file")
+                if selection is not None:
+                    pending.append(path)
+    if selection is not None:
+        for path in sorted(selection - documents):
+            report.add("ERROR", path, None, "selected owner must be an existing local Markdown file reachable through the selection")
         report.documents = documents
     yield from sorted(documents)
 

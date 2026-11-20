@@ -248,7 +248,42 @@ class CheckerTest(unittest.TestCase):
         self.assertNotIn("OPENED ORIGINAL", entry_only.stderr)
         self.assertIn("Git history excluded", entry_only.stdout)
 
-    def test_selected_owners_require_direct_local_files_and_explicit_entry(self):
+    def test_selected_task_reached_through_a_permitted_index(self):
+        for version, name in (("4", "README.md"), ("5", "space.md")):
+            with self.subTest(version=version):
+                entry = self.write(name, f"---\nssot_format: {version}\nlanguage: en\n---\n"
+                                   "# Study\n[Board](board.md)\n\n## Invariants\nNone registered.\n")
+                board = self.write("board.md", "# Board\n[Pilot](work/pilot.md) and [minutes](original.md#L1).\n")
+                pilot = self.write("work/pilot.md", "# Pilot\n[Board](../board.md) and [result](#old-result).\n")
+                original = self.write("original.md", "# Minutes\n")
+                observer = textwrap.dedent("""
+                    import runpy, sys
+                    watched = set(sys.argv[1:4])
+                    def audit(event, args):
+                        if event == "open" and args[0] in watched:
+                            print("READ", args[0], file=sys.stderr)
+                    sys.addaudithook(audit)
+                    sys.argv = sys.argv[4:]
+                    runpy.run_path(sys.argv[0], run_name="__main__")
+                """)
+                def observe(*selection):
+                    return subprocess.run([sys.executable, "-c", observer, board, pilot, original, CHECKER,
+                                           entry, "--owners", *selection], cwd=self.repo,
+                                          capture_output=True, text=True)
+
+                checked = observe("work/pilot.md", "board.md")
+                self.assertEqual(checked.returncode, 1, checked.stdout)
+                self.assertIn("missing heading anchor: #old-result", checked.stdout)
+                self.assertIn("READ " + board, checked.stderr)
+                self.assertIn("READ " + pilot, checked.stderr)
+                self.assertNotIn("READ " + original, checked.stderr)
+                missing_index = observe("work/pilot.md")
+                self.assertEqual(missing_index.returncode, 1, missing_index.stdout)
+                self.assertNotIn("READ ", missing_index.stderr)
+                self.write("work/pilot.md", "# Pilot\n[Board](../board.md)\n")
+                self.assertEqual(observe("board.md", "work/pilot.md").returncode, 0)
+
+    def test_selected_owners_require_local_files_and_explicit_entry(self):
         self.valid()
         entry = self.write("entry.md", README.replace("ssot_format: 4", "ssot_format: 5"))
         self.write("unrouted.md", "# Other\n\n[Private plate](missing-plate.png)\n")
@@ -304,7 +339,7 @@ class CheckerTest(unittest.TestCase):
         rejected = observe(entry, "--owners", "another.md")
         self.assertEqual(rejected.returncode, 1, rejected.stdout)
         self.assertNotIn("OPENED EXCLUDED BODY", rejected.stderr)
-        self.assertIn("selected owner must be an existing directly linked", rejected.stdout)
+        self.assertIn("reachable through the selection", rejected.stdout)
 
     def test_unrecognized_named_entry_does_not_select_the_enclosing_directory(self):
         self.valid()

@@ -41,7 +41,7 @@ Leave out:
 
 Keep an enduring goal with the outcome it serves, its scope and any agreed success or stopping condition. A task-specific goal belongs with the task. Distinguish proposed goals and methods from accepted ones. For an authorized trial, keep its bounds and what would justify revisiting it.
 
-A preference is an attributed default within a stated scope, including exceptions. A specific authorized choice for this task takes precedence without rewriting the default. Save an established preference in the authorized owner for that audience and scope. The invariant register is for binding rules. A one-off request or observed pattern alone establishes no enduring preference. When preferences change, update only the applicable scope. Existing confirmed rules keep their standing until an authorized correction. Past experiences still describe what happened.
+A preference is an attributed default within a stated scope, including exceptions. A specific authorized choice for this task takes precedence without rewriting the default. Save an established preference in the authorized owner for that audience and scope. The invariant register is for binding rules. A one-off request or account of usual behaviour establishes no enduring preference by itself. Look for whose future choice the person actually settled. When preferences change, update only the applicable scope. Existing confirmed rules keep their standing until an authorized correction. Past experiences still describe what happened.
 
 ## 3. Current, planned, and unknown
 
