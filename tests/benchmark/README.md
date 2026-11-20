@@ -14,6 +14,10 @@ For general spaces in a shared directory, the [setup and recovery trial](space_s
 
 The [six-shift trial](six_shifts.py) follows an editorial and research project across independent sessions, then asks a fresh reader to recover the reason for a superseded preference. The [5.13 study](../../docs/context-stewardship-5.13.md) includes the plain-documents control, original evidence loss and reproduction commands.
 
+For routine software, research and creative queries, the [direct-lookup study](../../docs/read-trigger-study.md) compares input costs and follows a five-shift handoff. Its [receipts](results/read-trigger-study.json) record both correct answers and unwanted reads or writes.
+
+For a single rule change, the [ordered-lookup study](../../docs/ordered-lookup-cost.md) measures what a fresh reader recovered. Its [file-open records](results/ordered-lookup-cost.json) show when the agent requested a source before learning its permissions. These small trials leave broader savings and access reliability open.
+
 ## What it runs
 
 The synthetic Parcel desk repository has a quotation module, compatibility tests, accepted delivery and eligibility owners, a superseded proposal, product/architecture entries and 24 adjacent operational documents by default. Arbitrary contract values vary deterministically by repetition and stay identical between paired arms. The agent implements express delivery while preserving standard quotes and the cross-service digital-goods exception. Policy files and supplied tests must remain unchanged. This explicit write scope keeps the experiment about reading and implementation; decision capture and documentation upkeep need separate trials.
