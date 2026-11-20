@@ -137,7 +137,7 @@ curl -fsSL https://raw.githubusercontent.com/huangpufan/SSOT-CONTEXT/main/instal
 - [安装指南](./INSTALL.md)：安装、接线、升级、卸载和恢复。
 - [设计说明](./DESIGN.md)：Skill 包为什么是现在这个形态。
 - [持续修改的研究和创作项目](./docs/evolving-research-and-creative-projects.md)：沿用现有 owner，处理局部修订、来源缺口、旧素材与暂缓同步的具体例子。
-- [跨领域 context 审计与发布试验](./docs/context-paths-study.md)比较纯文档、已安装协议与可复跑的架构候选，覆盖软件、研究与创作交接。
+- [跨领域 context 审计与发布试验](./docs/context-paths-study.md)比较纯文档、已安装协议与可复跑的架构候选，覆盖软件、研究与创作交接。[读取与交接验证](./docs/read-trigger-study.md)记录了直接查询省下多少输入，以及新接手者能从项目文档中找回哪些决定。
 - [5.13 的长期 context 审视与六班交接](./docs/context-stewardship-5.13.md)检验负责人交接、目标争用、证据重复和文档核对。
 - [5.12 的决定生效与交接试验](./docs/conditional-context-5.12.md)比较签字前后、部分部署、送印权限和受限撤回时的实际产物。
 - [5.8 维护审视与试验](./docs/context-maintenance-5.8.md)记录了同目录空间的接续、撤回中断恢复，以及尚待验证的设计。
