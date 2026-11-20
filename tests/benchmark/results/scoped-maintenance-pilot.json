@@ -1467,6 +1467,84 @@
       "direction_scope_causal_or_status_question": 4,
       "coordination_approval_continuation_or_correction": 6,
       "unrelated_model_lookup": 1
+    },
+    "status_question_receipts": {
+      "records": [
+        {
+          "request_index": 21,
+          "outcome": "completed",
+          "tool_calls": 2,
+          "responses": 3,
+          "usage_reconciled": true,
+          "native": {
+            "input_tokens": 1102094,
+            "cached_input_tokens": 1091968,
+            "output_tokens": 1839
+          }
+        },
+        {
+          "request_index": 23,
+          "outcome": "completed",
+          "tool_calls": 2,
+          "responses": 3,
+          "usage_reconciled": true,
+          "native": {
+            "input_tokens": 1276293,
+            "cached_input_tokens": 1272960,
+            "output_tokens": 1123
+          }
+        },
+        {
+          "request_index": 38,
+          "outcome": "completed",
+          "tool_calls": 1,
+          "responses": 2,
+          "usage_reconciled": true,
+          "native": {
+            "input_tokens": 209091,
+            "cached_input_tokens": 202368,
+            "output_tokens": 953
+          }
+        },
+        {
+          "request_index": 41,
+          "outcome": "completed",
+          "tool_calls": 2,
+          "responses": 3,
+          "usage_reconciled": true,
+          "native": {
+            "input_tokens": 635534,
+            "cached_input_tokens": 635264,
+            "output_tokens": 1750
+          }
+        },
+        {
+          "request_index": 42,
+          "outcome": "completed",
+          "tool_calls": 3,
+          "responses": 4,
+          "usage_reconciled": true,
+          "native": {
+            "input_tokens": 876043,
+            "cached_input_tokens": 870400,
+            "output_tokens": 2427
+          }
+        },
+        {
+          "request_index": 47,
+          "outcome": "aborted",
+          "tool_calls": 0,
+          "responses": 0,
+          "usage_reconciled": false,
+          "native": null
+        }
+      ],
+      "known_totals": {
+        "input_tokens": 4099055,
+        "cached_input_tokens": 4072960,
+        "output_tokens": 8092
+      },
+      "limits": "Pre-adoption, in-context native coordinating turns. Five completed with the response usage sum equal to the native turn total. The sixth aborted without returned usage or an answer. These are earlier real questions in different contexts, not paired trials against the later fresh Flash reader. They do not include any external tool provider usage."
     }
   },
   "normal_public_use": {
