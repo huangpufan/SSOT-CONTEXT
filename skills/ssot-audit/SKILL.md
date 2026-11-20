@@ -1,6 +1,6 @@
 ---
 name: ssot-audit
-description: Compatibility name for catching a repository's SSOT up on past commits. Use only when a prompt or an instruction file explicitly asks for $ssot-audit; it hands the work to $ssot-doctor's catch-up.
+description: Explicit legacy $ssot-audit requests only. Use Doctor for catch-up.
 ---
 
 # SSOT Audit (compatibility name)

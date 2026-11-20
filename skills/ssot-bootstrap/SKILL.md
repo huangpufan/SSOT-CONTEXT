@@ -1,6 +1,6 @@
 ---
 name: ssot-bootstrap
-description: Create, continue or migrate maintained context with the user's agreement. Use for a repository's missing or unfinished SSOT, an agreed legacy migration, or explicit setup of a bounded general context space. Retain canonical owners and current development format 4; ordinary non-repository conversation does not trigger setup. Do not use for normal preflight or closeout.
+description: Set up, resume or migrate a repository or declared context space with the user’s agreement.
 ---
 
 # SSOT Bootstrap

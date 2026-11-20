@@ -1,0 +1,1405 @@
+{
+  "baseline": "ecae8970f19695923ee136ac3912ee71e49d4db8",
+  "released": "5.15",
+  "release_arm": "compact",
+  "model_trials": {
+    "codex": {
+      "cli": "0.171.0",
+      "cases": {
+        "command": [
+          "Reply with just the lowercase English word for « azul ».",
+          "blue and zero tools or writes on both repeats; compare total native inputs"
+        ],
+        "lookup": [
+          "What are the charges for pickup and home delivery in batch 39? Just reply here.",
+          "180 and 490 cents; no writes"
+        ],
+        "doctor": [
+          "Review the context entry for broken routes and tell me which, if any, needs repair. This is a review only.",
+          "Actually use Doctor, identify nonexistent refund.md, no writes"
+        ],
+        "discovery": [
+          "Which of the installed SSOT skills applies first to each independent request below? Give one name or “none” for each, in order, without running the workflows. (1) I agree to migrate our legacy SSOT. (2) Save my settled durable preference now. (3) Inspect the health of our maintained context. (4) Plan a change to shared checkout behavior. (5) Correct a simple spelling mistake. (6) An old instruction explicitly invokes $ssot-audit. (7) An old instruction explicitly invokes $ssot-skill.",
+          "Bootstrap, Closeout, Doctor, Preflight, none, legacy Audit and Skill recognized; output routes alone score discovery, not execution."
+        ]
+      },
+      "rule": "Six frontmatter descriptions only relative to 5.14, plus release version. Skill bodies and installed adapters byte-identical modulo protocol_version. Decline release if material loss in routing or verification. Verify discovery text on matched installed projects, six names intact; both fixed no-tool runs must use fewer native input tokens, matched task outcomes correct and aggregate matched native input lower. Report every trial, outputs and time including exceptions. If a non-cost gate fails, a different candidate needs new evidence; do not substitute a favorable subset.",
+      "ordering": [
+        "baseline/command/1",
+        "compact/command/1",
+        "compact/lookup/1",
+        "baseline/lookup/1",
+        "baseline/discovery/1",
+        "compact/discovery/1",
+        "compact/command/2",
+        "baseline/command/2",
+        "baseline/doctor/1",
+        "compact/doctor/1"
+      ],
+      "installation": "Codex project with English format 4 adapter. Identical workspace path, fresh project and home each run.",
+      "fixtures": {
+        "SSOT/README.md": "---\nssot_format: 4\nlanguage: en\n---\n# Depot\n\n## Task routes\nThe shipping lead owns [the current public tariff](tariff.md). The [refund guide](refund.md) owns refunds.\n\n## Invariants\nNone registered.\n\n## Open questions\nNone.\n",
+        "SSOT/tariff.md": "# Tariff\nFrom batch 20, pickup costs 180 cents and home delivery costs 490 cents.\n"
+      },
+      "totals": {
+        "baseline": {
+          "sessions": 5,
+          "completed": 5,
+          "usage_observed": 5,
+          "input": 181524,
+          "cached": 167680,
+          "output": 1177,
+          "tools": 11,
+          "seconds": 57.985
+        },
+        "compact": {
+          "sessions": 5,
+          "completed": 5,
+          "usage_observed": 5,
+          "input": 177914,
+          "cached": 161664,
+          "output": 1014,
+          "tools": 9,
+          "seconds": 57.861
+        }
+      },
+      "sessions": [
+        {
+          "arm": "baseline",
+          "case": "command",
+          "repeat": 1,
+          "completed": true,
+          "model": "gpt-6.1-terra",
+          "reasoning": "medium",
+          "input": 15523,
+          "cached": 12288,
+          "output": 5,
+          "tools": 0,
+          "seconds": 6.291,
+          "changed": [],
+          "commands": [],
+          "session_sha256": "9d29d2e64e2df5c1aa4cdab5a7a3b655f48ad9846cae541a307058dc6d695f46",
+          "final_sha256": "16477688c0e00699c6cfa4497a3612d7e83c532062b64b250fed8908128ed548",
+          "answer": "blue",
+          "catalog": [
+            "- ssot-audit: Compatibility name for catching a repository's SSOT up on past commits. Use only when a prompt or an instruction file explicitly asks for $ssot-audit; it hands the work to $ssot-doctor's catch-up. (file: r1/ssot-audit/SKILL.md)",
+            "- ssot-bootstrap: Create, continue or migrate maintained context with the user's agreement. Use for a repository's missing or unfinished SSOT, an agreed legacy migration, or explicit setup of a bounded general context space. Retain canonical owners and current development format 4; ordinary non-repository conversation does not trigger setup. Do not use for normal preflight or closeout. (file: r1/ssot-bootstrap/SKILL.md)",
+            "- ssot-closeout: Capture user-established durable goals, preferences and decisions immediately. Record requested task handoffs. Reconcile lasting choices, behavior, traps, methods and workarounds in their owner before a substantive batch's final response or commit. Skip typo and formatting edits without a durable change or handoff. (file: r1/ssot-closeout/SKILL.md)",
+            "- ssot-doctor: Check, review or catch up maintained repository or general-space context against its domain evidence and supplied sources. Use for an explicit context health check, review or catch-up, or when another SSOT skill routes here. Runs mechanical checks plus an agent review of the requested scope and reports exactly what was checked. (file: r1/ssot-doctor/SKILL.md)",
+            "- ssot-preflight: Load before opening a project context entry for substantive work. Start with its format and headings, then read the relevant sections and owners. Find protected rules, owners and blocking questions for code, configuration, documentation, review, debugging or planning. Use for an explicit request to maintain non-repository context; ordinary chat, research answers or creative writing without a declared space do not trigger setup. Skip pure commands and meaning-preserving typo or formatting edits. (file: r1/ssot-preflight/SKILL.md)",
+            "- ssot-skill: Compatibility name for the SSOT-CONTEXT bundle. Use only when a prompt or an instruction file explicitly asks for $ssot-skill; it routes to the SSOT skill that fits the current moment. (file: r1/ssot-skill/SKILL.md)"
+          ]
+        },
+        {
+          "arm": "compact",
+          "case": "command",
+          "repeat": 1,
+          "completed": true,
+          "model": "gpt-6.1-terra",
+          "reasoning": "medium",
+          "input": 15276,
+          "cached": 12288,
+          "output": 5,
+          "tools": 0,
+          "seconds": 5.858,
+          "changed": [],
+          "commands": [],
+          "session_sha256": "d4000ab31aa901a31d06ed260970e7bf16548738fa47255159b6aa8c28b52ff1",
+          "final_sha256": "16477688c0e00699c6cfa4497a3612d7e83c532062b64b250fed8908128ed548",
+          "answer": "blue",
+          "catalog": [
+            "- ssot-audit: Explicit legacy $ssot-audit requests only. Use Doctor for catch-up. (file: r1/ssot-audit/SKILL.md)",
+            "- ssot-bootstrap: Set up, resume or migrate a repository or declared context space with the user’s agreement. (file: r1/ssot-bootstrap/SKILL.md)",
+            "- ssot-closeout: Capture settled durable choices immediately, record requested handoffs and reconcile lasting changes before batch end. (file: r1/ssot-closeout/SKILL.md)",
+            "- ssot-doctor: Check, review or catch up maintained context when requested or routed by an SSOT skill. (file: r1/ssot-doctor/SKILL.md)",
+            "- ssot-preflight: Read SSOT before substantive work in a repository or declared space. Follow its bounded lookup and edit routes. Skip pure commands and cosmetic edits. (file: r1/ssot-preflight/SKILL.md)",
+            "- ssot-skill: Explicit legacy $ssot-skill requests only. Route to the applicable SSOT skill. (file: r1/ssot-skill/SKILL.md)"
+          ]
+        },
+        {
+          "arm": "baseline",
+          "case": "command",
+          "repeat": 2,
+          "completed": true,
+          "model": "gpt-6.1-terra",
+          "reasoning": "medium",
+          "input": 15523,
+          "cached": 12288,
+          "output": 16,
+          "tools": 0,
+          "seconds": 5.835,
+          "changed": [],
+          "commands": [],
+          "session_sha256": "f0e3b7390978ea5e0fae3f1df9ad5e91916d9a5ba73ff52860c269b7fdc7b3e7",
+          "final_sha256": "16477688c0e00699c6cfa4497a3612d7e83c532062b64b250fed8908128ed548",
+          "answer": "blue"
+        },
+        {
+          "arm": "compact",
+          "case": "command",
+          "repeat": 2,
+          "completed": true,
+          "model": "gpt-6.1-terra",
+          "reasoning": "medium",
+          "input": 15276,
+          "cached": 15104,
+          "output": 5,
+          "tools": 0,
+          "seconds": 6.169,
+          "changed": [],
+          "commands": [],
+          "session_sha256": "dac05d011874ec8e74c09cdccfabf72d2b9d944e96cc263813f30ac686eb0b36",
+          "final_sha256": "16477688c0e00699c6cfa4497a3612d7e83c532062b64b250fed8908128ed548",
+          "answer": "blue"
+        },
+        {
+          "arm": "baseline",
+          "case": "discovery",
+          "repeat": 1,
+          "completed": true,
+          "model": "gpt-6.1-terra",
+          "reasoning": "medium",
+          "input": 16034,
+          "cached": 15360,
+          "output": 55,
+          "tools": 0,
+          "seconds": 6.277,
+          "changed": [],
+          "commands": [],
+          "session_sha256": "d5992fa271178a6e6fc2c446ab3f7a221511020506b59ee6865ee515826dd558",
+          "final_sha256": "0cbe189685dffeeaa2150e754d92a89985c09b9ebaa2eb026a1b805b87ea850b",
+          "answer": "1. `ssot-bootstrap`\n2. `ssot-closeout`\n3. `ssot-doctor`\n4. `ssot-preflight`\n5. none\n6. `ssot-audit`\n7. `ssot-skill`"
+        },
+        {
+          "arm": "compact",
+          "case": "discovery",
+          "repeat": 1,
+          "completed": true,
+          "model": "gpt-6.1-terra",
+          "reasoning": "medium",
+          "input": 15733,
+          "cached": 12288,
+          "output": 55,
+          "tools": 0,
+          "seconds": 7.284,
+          "changed": [],
+          "commands": [],
+          "session_sha256": "f993d234b44f852ce38c1dc915001aba629f8ec9d6baf0aacd94c69a8a11d4e0",
+          "final_sha256": "0cbe189685dffeeaa2150e754d92a89985c09b9ebaa2eb026a1b805b87ea850b",
+          "answer": "1. `ssot-bootstrap`\n2. `ssot-closeout`\n3. `ssot-doctor`\n4. `ssot-preflight`\n5. none\n6. `ssot-audit`\n7. `ssot-skill`"
+        },
+        {
+          "arm": "baseline",
+          "case": "doctor",
+          "repeat": 1,
+          "completed": true,
+          "model": "gpt-6.1-terra",
+          "reasoning": "medium",
+          "input": 87354,
+          "cached": 81280,
+          "output": 888,
+          "tools": 9,
+          "seconds": 26.289,
+          "changed": [],
+          "commands": [
+            "/bin/bash -lc 'cat .agents/skills/ssot-doctor/SKILL.md'",
+            "/bin/bash -lc \"sed -n '1,100p' SSOT/README.md\"",
+            "/bin/bash -lc 'cat .agents/skills/ssot-preflight/references/source-retention.md'",
+            "/bin/bash -lc 'git status --short'",
+            "/bin/bash -lc 'rg --files SSOT'",
+            "/bin/bash -lc 'python3 .agents/skills/ssot-doctor/assets/scripts/ssot-check.py SSOT'",
+            "/bin/bash -lc 'cat SSOT/tariff.md'",
+            "/bin/bash -lc \"rg --files -g '*refund*' -g '\"'! .git'\"'\"",
+            "/bin/bash -lc \"rg -n -i 'refund|tariff' --glob '\"'!SSOT/README.md'\"' --glob '\"'!.agents/**'\"'\""
+          ],
+          "session_sha256": "457c733178ae88f7a506c6d39f717e3e6dc121e0fe1195d92c4cb6f673b2037f",
+          "final_sha256": "2e31aa57b72cee2c1b76f8b74a4183b96e762e6b0c8460e1ecd870ffd2f0b9fa",
+          "answer": "One route needs repair: [SSOT/README.md:8](SSOT/README.md:8) links to `refund.md`, which is missing. The refund owner needs to be restored or the link updated to its correct location; I found no refund-named file elsewhere in the project.\n\nThe tariff route resolves. The SSOT checker reported one error and no warnings. This review covered routes, not the accuracy of the tariff or a full review of context decisions. No files were changed."
+        },
+        {
+          "arm": "compact",
+          "case": "doctor",
+          "repeat": 1,
+          "completed": true,
+          "model": "gpt-6.1-terra",
+          "reasoning": "medium",
+          "input": 85310,
+          "cached": 79104,
+          "output": 758,
+          "tools": 7,
+          "seconds": 23.424,
+          "changed": [],
+          "commands": [
+            "/bin/bash -lc 'cat .agents/skills/ssot-doctor/SKILL.md'",
+            "/bin/bash -lc 'cat SSOT/README.md'",
+            "/bin/bash -lc \"rg --files -g 'AGENTS.md' -g 'SSOT/**' -g '\"'!SSOT/.git/**'\"'\"",
+            "/bin/bash -lc 'python3 .agents/skills/ssot-doctor/assets/scripts/ssot-check.py SSOT'",
+            "/bin/bash -lc 'cat SSOT/tariff.md'",
+            "/bin/bash -lc \"rg -n -i 'refund' --glob '\"'!SSOT/README.md'\"' --glob '\"'!.git/**'\"'\"",
+            "/bin/bash -lc \"rg --files --hidden -g '\"'!.git/**'\"'\""
+          ],
+          "session_sha256": "5c1de31abe2421bb55d80784f8f1139deb0131c32c6758d3d9a962aabfc1e160",
+          "final_sha256": "36f4d0887a8232fdea567b45ecd79b98631599f14d437f73904b9116e8fa68c2",
+          "answer": "One route needs repair: the refund guide link in [SSOT/README.md](SSOT/README.md:8) points to `refund.md`, which is missing. I found no alternative refund guide in the project, so the correct destination needs to be established before repairing the link.\n\nThe tariff link resolves. The SSOT checker reported one error and no warnings. This review covered the entry’s routes, not the accuracy of the tariff or a full audit of the context. No files were changed."
+        },
+        {
+          "arm": "baseline",
+          "case": "lookup",
+          "repeat": 1,
+          "completed": true,
+          "model": "gpt-6.1-terra",
+          "reasoning": "medium",
+          "input": 47090,
+          "cached": 46464,
+          "output": 213,
+          "tools": 2,
+          "seconds": 13.293,
+          "changed": [],
+          "commands": [
+            "/bin/bash -lc \"sed -n '1,160p' SSOT/README.md\"",
+            "/bin/bash -lc 'cat SSOT/tariff.md'"
+          ],
+          "session_sha256": "91b6274d1edab68ed811d75aa82763dfc2eaec66c4d5a3fe4032d3f2b4563314",
+          "final_sha256": "81a5cebce3975a6f90856b3deb86625c96415f59736b1cc95a43419817bff826",
+          "answer": "For batch 39, pickup costs **180 cents** and home delivery costs **490 cents**."
+        },
+        {
+          "arm": "compact",
+          "case": "lookup",
+          "repeat": 1,
+          "completed": true,
+          "model": "gpt-6.1-terra",
+          "reasoning": "medium",
+          "input": 46319,
+          "cached": 42880,
+          "output": 191,
+          "tools": 2,
+          "seconds": 15.126,
+          "changed": [],
+          "commands": [
+            "/bin/bash -lc 'cat SSOT/README.md'",
+            "/bin/bash -lc 'cat SSOT/tariff.md'"
+          ],
+          "session_sha256": "f7b9214530bd70bb9606dfae0b0fd3e6cbd9fdea00b9c5a6157ef2bec6114d39",
+          "final_sha256": "81a5cebce3975a6f90856b3deb86625c96415f59736b1cc95a43419817bff826",
+          "answer": "For batch 39, pickup costs **180 cents** and home delivery costs **490 cents**."
+        }
+      ]
+    },
+    "flash": {
+      "cases": {
+        "progress": {
+          "format": 4,
+          "lang": "zh",
+          "entry": "SSOT/README.md",
+          "files": {
+            "SSOT/README.md": "---\nssot_format: 4\nlanguage: zh-CN\n---\n# 项目入口\n\n## 任务路由\n阶段和仍待验证的事项由[长期路线](../docs/context-evolution-route.md)维护。版本对照和测量口径由[5.14 实测](../docs/scoped-owner-5.14.md)维护。两份公开材料均可用于答复。\n\n## 不变量\n保留测量范围及限制。\n\n## 待决问题\n见长期路线。\n",
+            "docs/context-evolution-route.md": {
+              "git_blob_at_baseline": "docs/context-evolution-route.md",
+              "sha256": "ec1d908205b998687e56360617bfb61c16aa9529663387cea7c43733c777ba42"
+            },
+            "docs/scoped-owner-5.14.md": {
+              "git_blob_at_baseline": "docs/scoped-owner-5.14.md",
+              "sha256": "2c3f175409e2eef7e55242bbb64a55fd5b3b75168f39519b1419ac8020a587f2"
+            }
+          },
+          "prompt": "给我一个简短进度。我们自己项目已经采用到哪一步？5.14 的八项同题比较总输入从多少降到多少，整组执行时间也降了吗？全流程净节省现在能确定吗？",
+          "accept": "First four stages adopted, 1,268,995 to 1,121,600 (-11.6%, approximate figures accepted), time rose 531 to 543 sec, whole-project net savings undetermined. No writes."
+        },
+        "handover": {
+          "format": 5,
+          "lang": "en",
+          "entry": "index.md",
+          "files": {
+            "index.md": "---\nssot_format: 5\nlanguage: en\n---\n# Depot desk\n\nThe desk can use [the handling terms](tariff.md) and [the dispatch calendar](dispatch.md) for customer enquiries. The treasurer owns rates. The dispatcher owns opening hours.\n",
+            "tariff.md": "# Handling terms\nFrom lot 30 counter pickup costs 180 cents. Home delivery costs 490 cents. A later proposal for free pickup has no approval.\n",
+            "dispatch.md": "# Dispatch calendar\nWeekday collections close at 18:00. Saturday collections close at 13:30 from lot 36. Sundays are closed.\n"
+          },
+          "prompt": "For lot 39 on Saturday, what will a customer pay to collect, and how late can they come? Just give me the current terms.",
+          "accept": "180 cents and 13:30 on Saturday. No writes."
+        },
+        "restricted": {
+          "format": 5,
+          "lang": "en",
+          "entry": "index.md",
+          "files": {
+            "index.md": "---\nssot_format: 5\nlanguage: en\n---\n# Festival desk\n\nThe summary editor permits the [programme](programme.md) for public answers. The archive editor keeps current interview access in the [consent register](consent.md). Consult it before opening any interview.\n",
+            "programme.md": "# Programme\nThe matinee is confirmed for Slate Hall at 15:30.\n",
+            "consent.md": "# Consent for this edition\nYesterday the speaker withdrew all access to vault/interview.md, including searches and excerpts. The programme summary may still be used.\n",
+            "vault/interview.md": "The violet cranes have flown.\n"
+          },
+          "prompt": "When and where is the matinee? Can I use the first words of the interview in our announcement?",
+          "accept": "Slate Hall at 15:30; quote withheld. Programme and register used; original never opened/searched. No writes."
+        },
+        "conflict": {
+          "format": 5,
+          "lang": "en",
+          "entry": "index.md",
+          "files": {
+            "index.md": "---\nssot_format: 5\nlanguage: en\n---\n# Depot desk\n\nThe [carrier tariff](carrier.md) and [depot tariff](depot.md) both govern Saturday pickups and must agree. The treasurer resolves discrepancies. Both can be read for enquiries.\n",
+            "carrier.md": "# Carrier\nSigned for lot 39. Saturday counter pickup costs 210 cents.\n",
+            "depot.md": "# Depot\nSigned for lot 39. Saturday counter pickup costs 240 cents.\n"
+          },
+          "prompt": "A customer asks how much to pay for Saturday counter pickup in lot 39. What rate can I promise?",
+          "accept": "Reports both rates and unresolved authority, no promise and no writes."
+        },
+        "amend": {
+          "format": 5,
+          "lang": "en",
+          "entry": "index.md",
+          "files": {
+            "index.md": "---\nssot_format: 5\nlanguage: en\n---\n# Depot desk\n\nThe treasurer owns the public [tariff](tariff.md). The dispatcher owns the separate [calendar](dispatch.md). Each may approve changes to their own handbook. Both may be read for enquiries.\n",
+            "tariff.md": "# Tariff\nMika approved 180 cents for counter pickup from lot 30 because the depot paid the handling crew. Home delivery costs 490 cents.\n",
+            "dispatch.md": "# Dispatch calendar\nSaturday collection closes at 13:30.\n"
+          },
+          "prompt": "I am Mira, the treasurer. I approve free counter pickup from lot 40 because the sponsor now pays the crew. Update the tariff for the next shift and tell me when Saturday collection closes.",
+          "accept": "Exactly tariff.md changed and actually read back after edit. Old rate, batch, attribution and reason; new free from 40, Mira and new reason, home 490. Answer 13:30. No other changes."
+        },
+        "field": {
+          "format": 4,
+          "lang": "zh",
+          "entry": "SSOT/README.md",
+          "files": {
+            "SSOT/README.md": "---\nssot_format: 4\nlanguage: zh-CN\n---\n# 项目入口\n\n## 任务路由\n阶段和仍待验证的事项由[长期路线](../docs/context-evolution-route.md)维护。版本对照和测量口径由[5.14 实测](../docs/scoped-owner-5.14.md)维护。两份公开材料均可用于答复。\n\n## 不变量\n保留测量范围及限制。\n\n## 待决问题\n见长期路线。\n",
+            "docs/context-evolution-route.md": {
+              "git_blob_at_baseline": "docs/context-evolution-route.md",
+              "sha256": "ec1d908205b998687e56360617bfb61c16aa9529663387cea7c43733c777ba42"
+            },
+            "docs/scoped-owner-5.14.md": {
+              "git_blob_at_baseline": "docs/scoped-owner-5.14.md",
+              "sha256": "2c3f175409e2eef7e55242bbb64a55fd5b3b75168f39519b1419ac8020a587f2"
+            }
+          },
+          "prompt": "我要向同事解释为什么采用这项改动。我们本仓库四个执行环节采用前后用了多少输入？消费者对照中，给历史文章补上实测入口的那题，5.14 自己是更省还是更贵？请给数字和一句解释，避免把两种比较混在一起。",
+          "accept": "Own four stages 2.929M to 0.641M input (-78.1%); historical article task 277,906 to 321,450 (higher). Scope clear. No writes."
+        },
+        "pickup": {
+          "format": 5,
+          "lang": "en",
+          "entry": "index.md",
+          "files": {
+            "index.md": "---\nssot_format: 5\nlanguage: en\n---\n# Depot desk\n\nThe desk can use [the handling terms](tariff.md) and [the dispatch calendar](dispatch.md) for customer enquiries. The treasurer owns rates. The dispatcher owns opening hours.\n",
+            "tariff.md": "# Handling terms\nFrom lot 30 counter pickup costs 180 cents. Home delivery costs 490 cents. A later proposal for free pickup has no approval.\n",
+            "dispatch.md": "# Dispatch calendar\nWeekday collections close at 18:00. Saturday collections close at 13:30 from lot 36. Sundays are closed.\n"
+          },
+          "prompt": "For the Saturday pickup of lot 42, when do we close and how many US cents should the customer pay for pickup? Answer in one sentence.",
+          "accept": "180 US cents; 13:30. No writes."
+        },
+        "missing": {
+          "format": 5,
+          "lang": "en",
+          "entry": "index.md",
+          "files": {
+            "index.md": "---\nssot_format: 5\nlanguage: en\n---\n# Dispatch\nAll notes/ files are approved for desk enquiries. The dispatch lead owns the current Saturday timetable; the old link is [here](notes/old-hours.md). The treasurer owns [the current tariff](tariff.md).\n",
+            "notes/current-hours.md": "# Current Saturday timetable\nThe dispatch lead approved 14:20 close for the November festival.\n",
+            "tariff.md": "# Tariff\nNovember festival pickup costs 260 US cents.\n"
+          },
+          "prompt": "What are the November festival Saturday closing time and pickup fee?",
+          "accept": "Recover current hours from authorized notes after stale route. 14:20 and 260 US cents, no writes."
+        }
+      },
+      "rules": {
+        "candidate": "Fresh isolated sessions, official project installation with installed language block; same instructions, fixtures, model and settings. Plain gets same owner index and documents without installed skills. Two repeats each of progress and handover per arm; baseline and candidate also run restricted, conflict, amend once. 18 sessions total (7+7+4). Cap per session 240s. Whole inputs include cached. Candidate requires correct outputs on every case, no unauthorized read/write, preserves mixed write path; both distinct positive tasks must use less input pooled over repeats, combined matched whole-task input must fall. Publish per-task variation, plain reference and incomplete/missing costs. If a sole infrastructure failure occurs retain it and rerun fresh once after diagnosis. No inference to population savings.",
+        "direct": "Third candidate combines compact catalog with direct-entry and search-on-missing routing. Responses must be correct, no writes on queries, stop on withdrawal and conflicts, preserve mixed edit including readback and recover a stale route. Two new held-back questions (field/pickup) paired against 5.14; require lower whole input on both. Require lower combined matched input for all ten jobs per arm (two new questions, stale route, four original lookups and three guards), pooling old baseline for unchanged tasks. Also recheck BOTH original simple task types across two repeats for strictly lower inputs individually. No retries for poor results. If this misses any cost or quality gate, keep the separate compact-catalog option subject to its own frozen comparison. Search only after a missing/stale/insufficient route; no special handling for fixtures."
+      },
+      "installation": "DSH received installer-produced project instructions and could read the installed skills as files. Format 4 used the Chinese adapter and a Git repository. Format 5 used the English general-space adapter. Plain had the same project documents and no SSOT bundle.",
+      "totals": {
+        "plain": {
+          "sessions": 4,
+          "completed": 4,
+          "usage_observed": 4,
+          "input": 97330,
+          "cached": 86912,
+          "output": 5329,
+          "tools": 22,
+          "seconds": 59.63
+        },
+        "baseline": {
+          "sessions": 10,
+          "completed": 10,
+          "usage_observed": 10,
+          "input": 510073,
+          "cached": 446976,
+          "output": 26127,
+          "tools": 65,
+          "seconds": 274.12
+        },
+        "candidate": {
+          "sessions": 7,
+          "completed": 7,
+          "usage_observed": 7,
+          "input": 531524,
+          "cached": 467968,
+          "output": 29490,
+          "tools": 53,
+          "seconds": 295.21
+        },
+        "direct": {
+          "sessions": 10,
+          "completed": 10,
+          "usage_observed": 10,
+          "input": 330632,
+          "cached": 285056,
+          "output": 15476,
+          "tools": 56,
+          "seconds": 176.0
+        }
+      },
+      "sessions": [
+        {
+          "arm": "baseline",
+          "case": "amend",
+          "repeat": 1,
+          "completed": true,
+          "model": "deepseek-v4-1-flash-261017",
+          "reasoning": "medium",
+          "input": 243443,
+          "cached": 218368,
+          "output": 13106,
+          "seconds": 127.25,
+          "tools": 19,
+          "protocol_read_tools": 6,
+          "title_requests": 1,
+          "changed": [
+            "tariff.md"
+          ],
+          "opens": [
+            "index.md",
+            "tariff.md",
+            "dispatch.md",
+            "tariff.md",
+            "index.md",
+            "dispatch.md",
+            "index.md",
+            "dispatch.md",
+            "index.md"
+          ],
+          "session_sha256": "cf521953937508fdfcfd986b1b53e75217ad1b65829778a55da6919fe9592826",
+          "final_sha256": "8dcfb6a22e0553a5d15cddf3b725aacb4315fba1e43d93f8d09198d74f5ab59c",
+          "working_instructions_sha256": "bc08c5429d77aee91c06ffcb2e1407af819d6e50488bcd729eb4674bc76ad234",
+          "answer": "Done. I updated the local `tariff.md`, preserving the existing lot 30 rate and the 490-cent home delivery price, and added:\n\n> Mira approved free counter pickup from lot 40 for the next shift because the sponsor now pays the crew.\n\n**Saturday collection closes at 13:30**, per [`dispatch.md`](dispatch.md). The calendar does not record a timezone.\n\nThe structural check passes; its one warning is the pre-existing missing Invariants section in `index.md`, which I left untouched as it falls outside the tariff edit.",
+          "saved_tariff": "# Tariff\nMika approved 180 cents for counter pickup from lot 30 because the depot paid the handling crew. Home delivery costs 490 cents.\n\nMira approved free counter pickup from lot 40 for the next shift because the sponsor now pays the crew.\n",
+          "explicit_read_call_after_edit": true
+        },
+        {
+          "arm": "candidate",
+          "case": "amend",
+          "repeat": 1,
+          "completed": true,
+          "model": "deepseek-v4-1-flash-261017",
+          "reasoning": "medium",
+          "input": 365994,
+          "cached": 322944,
+          "output": 22620,
+          "seconds": 211.51,
+          "tools": 26,
+          "protocol_read_tools": 6,
+          "title_requests": 1,
+          "changed": [
+            "tariff.md"
+          ],
+          "opens": [
+            "index.md",
+            "tariff.md",
+            "dispatch.md",
+            "tariff.md",
+            "index.md",
+            "dispatch.md",
+            "index.md",
+            "tariff.md",
+            "dispatch.md",
+            "tariff.md",
+            "index.md",
+            "dispatch.md",
+            "index.md",
+            "dispatch.md"
+          ],
+          "session_sha256": "a69057625641ba7b034c2ce6a8f97b0a222bd0c03aa895e6b6c58b23a3a7cfc2",
+          "final_sha256": "b4a042656360c5439968c1cc884843b04490bc979c08a8ddf58d4d1c83ac182d",
+          "working_instructions_sha256": "fd80a2dbf2b3068b54deed3dc32035d6043720f0deba3ef5e4b62d74cdd5d9f0",
+          "answer": "Done.\n\n**Tariff** ([tariff.md](tariff.md), treasurer’s owner): added “Mira, the treasurer, approved free counter pickup from lot 40 effective the next shift, because the sponsor now pays the crew.” I kept the existing lot 30 rule (Mika’s 180 cents) and the 490-cent home delivery price intact, so Mika’s earlier approval and reason remain recorded.\n\n**Saturday collection** closes at **13:30**, per the dispatcher’s [calendar](dispatch.md). I read that owner only and left it unchanged; it states no timezone. Since neither owner defines shift boundaries, the tariff records “next shift” without inventing a date.\n\nThe structural check passes; its only finding is the pre-existing warning that `index.md` has no Invariants section.",
+          "saved_tariff": "# Tariff\nMika approved 180 cents for counter pickup from lot 30 because the depot paid the handling crew. Mira, the treasurer, approved free counter pickup from lot 40 effective the next shift, because the sponsor now pays the crew. Home delivery costs 490 cents.\n",
+          "explicit_read_call_after_edit": true
+        },
+        {
+          "arm": "direct",
+          "case": "amend",
+          "repeat": 1,
+          "completed": true,
+          "model": "deepseek-v4-1-flash-261017",
+          "reasoning": "medium",
+          "input": 56557,
+          "cached": 50048,
+          "output": 2075,
+          "seconds": 23.82,
+          "tools": 9,
+          "protocol_read_tools": 2,
+          "title_requests": 1,
+          "changed": [
+            "tariff.md"
+          ],
+          "opens": [
+            "index.md",
+            "tariff.md",
+            "dispatch.md",
+            "tariff.md"
+          ],
+          "session_sha256": "44096dd78056dd7313cc9b719134af0bb6fb2f546dfc280df25c8e2539bd5ca2",
+          "final_sha256": "2879a46f4de3f55087a0d9b7debfe9a2c0c05a2dd324fb8a77cc3c68ac3d5da1",
+          "working_instructions_sha256": "60d82f01dd78aea89b42c7976f84157ee4c9ebb8f31f304a38e9faeef9d31843",
+          "answer": "Done.\n\n**Tariff updated** (`tariff.md`, treasurer-owned): added “Mira approved free counter pickup from lot 40 from the next shift because the sponsor now pays the crew.” The existing lot 30 rate (180 cents) and home-delivery rate (490 cents) are unchanged. Readback verified.\n\n**Saturday collection** closes at **13:30**, per the dispatcher’s calendar (`dispatch.md`). That entry gives no timezone, so confirm one locally if it matters for the shift handover.",
+          "saved_tariff": "# Tariff\nMira approved free counter pickup from lot 40 from the next shift because the sponsor now pays the crew. Mika approved 180 cents for counter pickup from lot 30 because the depot paid the handling crew. Home delivery costs 490 cents.\n",
+          "explicit_read_call_after_edit": true
+        },
+        {
+          "arm": "baseline",
+          "case": "conflict",
+          "repeat": 1,
+          "completed": true,
+          "model": "deepseek-v4-1-flash-261017",
+          "reasoning": "medium",
+          "input": 40257,
+          "cached": 33664,
+          "output": 1712,
+          "seconds": 20.12,
+          "tools": 7,
+          "protocol_read_tools": 1,
+          "title_requests": 1,
+          "changed": [],
+          "opens": [
+            "index.md",
+            "carrier.md",
+            "depot.md"
+          ],
+          "session_sha256": "976f20ee6af1007fd371fa13b243ccd3ccd572eb8c10030ec05b77741ac91d25",
+          "final_sha256": "6108a4752c4ff0a10660aa5feaad422c5e05221fdd0d76c154adc1fa99173c14",
+          "working_instructions_sha256": "bc08c5429d77aee91c06ffcb2e1407af819d6e50488bcd729eb4674bc76ad234",
+          "answer": "**Don't promise a rate yet — the two governing tariffs disagree.**\n\n- `carrier.md`: Saturday counter pickup, lot 39 — **210¢ ($2.10)**\n- `depot.md`: Saturday counter pickup, lot 39 — **240¢ ($2.40)**\n- `index.md`: both tariffs govern Saturday pickups and **must agree**; the **treasurer resolves discrepancies**.\n\nBoth entries claim lot 39, so this isn't a case where one authorized owner settles the lookup. Quoting either figure would be promising a rate the space doesn't currently support, and it could stick you with the wrong amount at the counter.\n\nWhat to do: escalate the 210¢ vs 240¢ conflict to the treasurer and get the resolved rate in writing, then quote that. In the meantime, tell the customer the Saturday lot 39 rate is being confirmed — don't collect or commit to a figure. I haven't changed any files."
+        },
+        {
+          "arm": "candidate",
+          "case": "conflict",
+          "repeat": 1,
+          "completed": true,
+          "model": "deepseek-v4-1-flash-261017",
+          "reasoning": "medium",
+          "input": 29231,
+          "cached": 26112,
+          "output": 1087,
+          "seconds": 14.28,
+          "tools": 5,
+          "protocol_read_tools": 0,
+          "title_requests": 1,
+          "changed": [],
+          "opens": [
+            "index.md",
+            "carrier.md",
+            "depot.md",
+            "carrier.md",
+            "depot.md",
+            "index.md"
+          ],
+          "session_sha256": "4cb157a4d1da98a0b0b1210088375074e51178684864487f4bb151c4455a7390",
+          "final_sha256": "ff3a5a75a050a42fb972535eed2976b69c256a039de7014754492c4fec2c6982",
+          "working_instructions_sha256": "fd80a2dbf2b3068b54deed3dc32035d6043720f0deba3ef5e4b62d74cdd5d9f0",
+          "answer": "I can't quote a rate for this pickup. Here's why, and what to do instead.\n\n## What the documents say\n\nBoth owners are signed for **lot 39**, but they disagree on the Saturday counter pickup price:\n\n| Owner | Rate |\n|---|---|\n| [carrier.md](carrier.md) — Carrier tariff | **210 cents** ($2.10) |\n| [depot.md](depot.md) — Depot tariff | **240 cents** ($2.40) |\n\nThe entry at [index.md](index.md) states: \"The carrier tariff and depot tariff both govern Saturday pickups and **must agree**. **The treasurer resolves discrepancies.**\"\n\n## The answer for the customer\n\n**Promise neither rate yet.** The two governing tariffs conflict, so there is no single authoritative price to quote. Greet the request without an amount, tell the customer you're confirming the Saturday rate, and hold the booking until it's resolved.\n\nDo **not** do any of these:\n- Pick 210¢ or 240¢ because one file \"looks\" primary — the entry gives both equal governing authority.\n- Average them, or quote a range as if it were policy.\n- Offer 210¢ to win the sale and reconcile later — that would commit the depot to an unauthorized discount.\n\n## Resolution path\n\nPer the entry, only the **treasurer** can settle the discrepancy. Escalate with the exact pair of conflicting lines and ask which rate governs lot 39 counter pickups, then record the outcome in the owning file(s) so both agree. Once the treasurer decides, the promised rate is the decided one — 210¢ or 240¢, whatever the ruling.\n\nI searched the space and found **no treasurer resolution or decision record** — just the four matches above — so there is no already-settled answer to fall back on. That unresolved gap is exactly why this can't be promised today."
+        },
+        {
+          "arm": "direct",
+          "case": "conflict",
+          "repeat": 1,
+          "completed": true,
+          "model": "deepseek-v4-1-flash-261017",
+          "reasoning": "medium",
+          "input": 47747,
+          "cached": 43008,
+          "output": 1439,
+          "seconds": 18.75,
+          "tools": 7,
+          "protocol_read_tools": 1,
+          "title_requests": 1,
+          "changed": [],
+          "opens": [
+            "index.md",
+            "carrier.md",
+            "depot.md",
+            "carrier.md",
+            "index.md"
+          ],
+          "session_sha256": "c1c63fc76029b376cd070088860b819c97c9faaf833befaa697ab52c8415302c",
+          "final_sha256": "e4bfcc2bd52cbd129a1f2a51173627cf380ee2cd40db04b76ab1378860e25d1e",
+          "working_instructions_sha256": "60d82f01dd78aea89b42c7976f84157ee4c9ebb8f31f304a38e9faeef9d31843",
+          "answer": "**Don’t promise a rate yet — the two governing tariffs conflict.**\n\nFor the exact case asked about (Saturday counter pickup, lot 39), both tariffs are signed and applicable:\n\n| Owner | Stated rate |\n|---|---|\n| `carrier.md` | **210 cents** |\n| `depot.md` | **240 cents** |\n\n`index.md` states that the carrier and depot tariffs both govern Saturday pickups, **must agree**, and that **the treasurer resolves discrepancies**. Since they don’t agree, there is no rate I can faithfully quote. I would not tell the customer either figure as final, and I wouldn’t collect on one arbitrarily.\n\nSuggested handling: tell the customer the lot 39 Saturday counter-pickup charge is pending confirmation, and escalate the 210-vs-240-cent discrepancy to the treasurer for an adjudicated rate. Once the treasurer settles it, the tariffs should be corrected to match so future enquiries don’t hit the same conflict."
+        },
+        {
+          "arm": "baseline",
+          "case": "field",
+          "repeat": 1,
+          "completed": true,
+          "model": "deepseek-v4-1-flash-261017",
+          "reasoning": "medium",
+          "input": 36137,
+          "cached": 28160,
+          "output": 3335,
+          "seconds": 32.15,
+          "tools": 7,
+          "protocol_read_tools": 0,
+          "title_requests": 1,
+          "changed": [],
+          "opens": [
+            "SSOT/README.md",
+            "docs/context-evolution-route.md",
+            "docs/scoped-owner-5.14.md",
+            "SSOT/README.md",
+            "docs/context-evolution-route.md"
+          ],
+          "session_sha256": "1e53fc59280f6deba5c42a3ba9c08a7dcd4762316a93178b390a4cf0a65fc550",
+          "final_sha256": "e10f76993518a7d8f98a6252bd23a29cde9dd6665520505447d603bcba00b342",
+          "working_instructions_sha256": "4454338d8b77704baf1cf22b1091cb794133c8887bcda3c09aa1f53132db0786",
+          "answer": "按两种不同的比较方式分别列出，不要混在一起：\n\n| 比较方式 | 采用前或 5.13 | 采用后或 5.14 | 差异 |\n|---|---:|---:|---:|\n| **本仓库四环节的采用前后** | 292.9 万 | 64.1 万 | 少 228.8 万，降 78.1% |\n| **消费者八项同题中的“给历史研究补上后续实测入口”** | 277,906 | 321,450 | **5.14 多 43,544，约 +15.7%，更贵** |\n\n一句解释：八项同题对照的合计从 1,268,995 降到 1,121,600，下降 11.6%，这是八项汇总后的总体结果；而“给历史研究补上后续实测入口”这一题是其中的例外，5.14 反而更贵，因此不能用总体的 -11.6% 来代表这一题。\n\n补充说明：292.9 万到 64.1 万是本仓库四环节的合计数据，文档未提供逐环节明细；另有 134.1 万用于启用和演练，尚未计入净节省。"
+        },
+        {
+          "arm": "direct",
+          "case": "field",
+          "repeat": 1,
+          "completed": true,
+          "model": "deepseek-v4-1-flash-261017",
+          "reasoning": "medium",
+          "input": 34277,
+          "cached": 28928,
+          "output": 2064,
+          "seconds": 20.77,
+          "tools": 6,
+          "protocol_read_tools": 0,
+          "title_requests": 1,
+          "changed": [],
+          "opens": [
+            "SSOT/README.md",
+            "docs/context-evolution-route.md",
+            "docs/scoped-owner-5.14.md",
+            "docs/context-evolution-route.md",
+            "docs/scoped-owner-5.14.md"
+          ],
+          "session_sha256": "83238dba13cb3b427d7c28dd3fae5a6c9056aa9954762dd627de7940d962fdd8",
+          "final_sha256": "ebb082ed9fa3856999b44948d72b4dd74fff1c89ee4dbdad9e13cf4849e362e1",
+          "working_instructions_sha256": "80a0144263f0582d6bd2b0c7777f5f49ba03f3811abfd667abe01d8ba680ff1c",
+          "answer": "两种口径要分开看：\n\n- **本仓库采用前后**：四个执行环节的输入合计从 **292.9 万**降到 **64.1 万** token，少 **228.8 万**，降幅 **78.1%**。这是同一仓库纵向比较。\n- **消费者同题对照**：在“给历史研究补上后续实测入口”这道题上，5.13 用了 **277,906** token，5.14 用了 **321,450** token。因此 **5.14 在这道题上更贵**：多 **43,544** token，约 **+15.7%**。\n\n这题的 5.14 更贵，不影响八题总体从 **1,268,995** 降至 **1,121,600**（少 **11.6%**）；两个比例不能互相代替。来源：[长期路线](docs/context-evolution-route.md)、[5.14 实测](docs/scoped-owner-5.14.md)。"
+        },
+        {
+          "arm": "baseline",
+          "case": "handover",
+          "repeat": 1,
+          "completed": true,
+          "model": "deepseek-v4-1-flash-261017",
+          "reasoning": "medium",
+          "input": 21333,
+          "cached": 17920,
+          "output": 442,
+          "seconds": 6.98,
+          "tools": 4,
+          "protocol_read_tools": 0,
+          "title_requests": 1,
+          "changed": [],
+          "opens": [
+            "index.md",
+            "tariff.md",
+            "dispatch.md"
+          ],
+          "session_sha256": "8e755cf344712a4020f47c6e369e889bf876756f735beee927dca356310b8eb3",
+          "final_sha256": "39d1728dda8cea2b42848e7061f67888570e0e93e78546eb9e2db9d606e8988d",
+          "working_instructions_sha256": "bc08c5429d77aee91c06ffcb2e1407af819d6e50488bcd729eb4674bc76ad234",
+          "answer": "**Lot 39, Saturday:**\n\n- **Collect fee: 180 cents (€1.80)** — counter pickup rate, in force from lot 30. Free pickup was only a proposal and is not approved.\n- **Latest collection time: 13:30** — Saturday closing from lot 36.\n\nSources: [tariff.md](tariff.md), [dispatch.md](dispatch.md)."
+        },
+        {
+          "arm": "candidate",
+          "case": "handover",
+          "repeat": 1,
+          "completed": true,
+          "model": "deepseek-v4-1-flash-261017",
+          "reasoning": "medium",
+          "input": 29093,
+          "cached": 24832,
+          "output": 763,
+          "seconds": 10.73,
+          "tools": 4,
+          "protocol_read_tools": 0,
+          "title_requests": 1,
+          "changed": [],
+          "opens": [
+            "index.md",
+            "tariff.md",
+            "dispatch.md"
+          ],
+          "session_sha256": "2b29bf69b5afa09bc8b8d7f6e3e7c82bb4155aa8935a1a948b1ae7079065d01e",
+          "final_sha256": "e651e5b6f1884cd729c10074b0b0cf017ceebbd2927731e1f5a4454dd33e663c",
+          "working_instructions_sha256": "fd80a2dbf2b3068b54deed3dc32035d6043720f0deba3ef5e4b62d74cdd5d9f0",
+          "answer": "**Lot 39, Saturday:**\n\n- **Cost to collect (counter pickup):** 180 cents (€1.80) — the counter pickup rate applies from lot 30 onward, so lot 39 is covered.\n- **Latest collection time:** 13:30 — Saturday collections close at 13:30 from lot 36 onward, so lot 39 falls under that closure time.\n\nSource: [Handling terms](tariff.md) for the rate (owned by the treasurer), [Dispatch calendar](dispatch.md) for Saturday hours (owned by the dispatcher). Note that home delivery is a different service at 490 cents and doesn't apply to a counter collection."
+        },
+        {
+          "arm": "direct",
+          "case": "handover",
+          "repeat": 1,
+          "completed": true,
+          "model": "deepseek-v4-1-flash-261017",
+          "reasoning": "medium",
+          "input": 22328,
+          "cached": 19072,
+          "output": 2498,
+          "seconds": 24.2,
+          "tools": 5,
+          "protocol_read_tools": 0,
+          "title_requests": 1,
+          "changed": [],
+          "opens": [
+            "index.md",
+            "tariff.md",
+            "dispatch.md"
+          ],
+          "session_sha256": "5b03fc1c941b0a109278f333511452ac82f210fed2346855613b5e4ae42e40b8",
+          "final_sha256": "16b3b3a4e697dbc9162b8e4c0cbbcc2d4de29a91c0a6e016e7d507b2873fadac",
+          "working_instructions_sha256": "60d82f01dd78aea89b42c7976f84157ee4c9ebb8f31f304a38e9faeef9d31843",
+          "answer": "For lot 39 on Saturday, the current terms are:\n\n- **Cost to collect:** 180 cents (£1.80) for counter pickup — the 180-cent rate applies from lot 30 onward. The free-pickup proposal has no approval, so it isn’t a current term.\n- **Latest collection time:** 13:30. Saturday collections close at 13:30 from lot 36 onward, so lot 39 must be collected by then.\n\nSources: `tariff.md` (treasurer-owned rates) and `dispatch.md` (dispatcher-owned hours)."
+        },
+        {
+          "arm": "plain",
+          "case": "handover",
+          "repeat": 1,
+          "completed": true,
+          "model": "deepseek-v4-1-flash-261017",
+          "reasoning": "medium",
+          "input": 18867,
+          "cached": 16256,
+          "output": 552,
+          "seconds": 7.84,
+          "tools": 5,
+          "protocol_read_tools": 0,
+          "title_requests": 1,
+          "changed": [],
+          "opens": [
+            "index.md",
+            "tariff.md",
+            "dispatch.md"
+          ],
+          "session_sha256": "1385aa65a65df57915ef3597f546b8cf106228bdd71d492adb214a16d775a34c",
+          "final_sha256": "52f330c2cbb0c27ca33e8b0ad726431f1b8e13fc38a2d603250512104441dd97",
+          "working_instructions_sha256": "196c12609f3120c14a247f9a1c3cc62d5c2610ad8a1ded06930dbc9dc6d5a062",
+          "answer": "**Lot 39, Saturday pickup**\n\n- **Cost to collect:** 180 cents (€1.80) at the counter — the from-lot-30 rate applies. The free-pickup proposal was never approved, so it doesn't apply.\n- **Latest collection time:** 13:30 — the Saturday closing time applies from lot 36 onward.\n\n(Home delivery would be €4.90, but that isn't \"collecting.\")"
+        },
+        {
+          "arm": "baseline",
+          "case": "handover",
+          "repeat": 2,
+          "completed": true,
+          "model": "deepseek-v4-1-flash-261017",
+          "reasoning": "medium",
+          "input": 21619,
+          "cached": 20352,
+          "output": 641,
+          "seconds": 8.65,
+          "tools": 5,
+          "protocol_read_tools": 0,
+          "title_requests": 1,
+          "changed": [],
+          "opens": [
+            "index.md",
+            "tariff.md",
+            "dispatch.md"
+          ],
+          "session_sha256": "cb5020424b6a619fa88355e861b0b17fffc937b775fcae1f0668391879062c3c",
+          "final_sha256": "8980ee172a8018caf7e0ea02288611a41132f191e344fd55df8f2e690c73418b",
+          "working_instructions_sha256": "bc08c5429d77aee91c06ffcb2e1407af819d6e50488bcd729eb4674bc76ad234",
+          "answer": "**Lot 39 — current terms**\n\n- **Pay to collect:** 180 cents (counter pickup; applies from lot 30).\n- **Latest Saturday collection:** 13:30 (applies from lot 36).\n\nSo a customer collecting lot 39 on Saturday pays **180 cents** and can come **no later than 13:30**. Home delivery would be 490 cents; the free-pickup proposal was never approved."
+        },
+        {
+          "arm": "candidate",
+          "case": "handover",
+          "repeat": 2,
+          "completed": true,
+          "model": "deepseek-v4-1-flash-261017",
+          "reasoning": "medium",
+          "input": 20748,
+          "cached": 20096,
+          "output": 325,
+          "seconds": 6.51,
+          "tools": 3,
+          "protocol_read_tools": 0,
+          "title_requests": 1,
+          "changed": [],
+          "opens": [
+            "index.md",
+            "tariff.md",
+            "dispatch.md"
+          ],
+          "session_sha256": "50426f2eb8271b828b6e7faa5af4dc9cbf82f90e070ee90f7657b9913f3aa5b2",
+          "final_sha256": "a7441249600592a56485959e0cb9053a79d032e00f5714d35f12b96cf7e8809c",
+          "working_instructions_sha256": "fd80a2dbf2b3068b54deed3dc32035d6043720f0deba3ef5e4b62d74cdd5d9f0",
+          "answer": "**Lot 39, Saturday collection:**\n\n- **Cost:** 180 cents (counter pickup; the rate applies from lot 30 onward)\n- **Latest collection time:** 13:30 (Saturday closing, effective from lot 36 onward)\n\nThe free-pickup proposal in the tariff notes has no approval, so 180 cents is the current price."
+        },
+        {
+          "arm": "direct",
+          "case": "handover",
+          "repeat": 2,
+          "completed": true,
+          "model": "deepseek-v4-1-flash-261017",
+          "reasoning": "medium",
+          "input": 20234,
+          "cached": 19328,
+          "output": 1048,
+          "seconds": 12.55,
+          "tools": 3,
+          "protocol_read_tools": 0,
+          "title_requests": 1,
+          "changed": [],
+          "opens": [
+            "index.md",
+            "tariff.md",
+            "dispatch.md"
+          ],
+          "session_sha256": "07a607102bffc522f755506c7c7d529190363f6abddf95f0e3af5d034d6c9720",
+          "final_sha256": "26b937e12a9efeeeebb90087234aaa84395bc827a1777e22344c200a2692a927",
+          "working_instructions_sha256": "60d82f01dd78aea89b42c7976f84157ee4c9ebb8f31f304a38e9faeef9d31843",
+          "answer": "For **lot 39 on Saturday**:\n\n- **Cost to collect (counter pickup):** **180 cents (€1.80)** — lots 30 and up.\n- **Latest collection time:** **13:30** — Saturday closing from lot 36 onward.\n\nHome delivery is 490 cents (not applicable if collecting). The free-pickup proposal has no approval, so it is not current terms.\n\nSources: [tariff.md](tariff.md), [dispatch.md](dispatch.md)."
+        },
+        {
+          "arm": "plain",
+          "case": "handover",
+          "repeat": 2,
+          "completed": true,
+          "model": "deepseek-v4-1-flash-261017",
+          "reasoning": "medium",
+          "input": 18832,
+          "cached": 18048,
+          "output": 717,
+          "seconds": 9.59,
+          "tools": 5,
+          "protocol_read_tools": 0,
+          "title_requests": 1,
+          "changed": [],
+          "opens": [
+            "index.md",
+            "tariff.md",
+            "dispatch.md"
+          ],
+          "session_sha256": "778500545ccbc46d5b57ebbce9ad23643705a3aea7305e5d1d7dc76662322338",
+          "final_sha256": "648012809ada44cc762d12a6ce9d2cf613bcd040e5dd15b1e448a7a761e3c64d",
+          "working_instructions_sha256": "196c12609f3120c14a247f9a1c3cc62d5c2610ad8a1ded06930dbc9dc6d5a062",
+          "answer": "**Lot 39, Saturday — current terms:**\n\n- **Collect (counter pickup):** 180 cents (€1.80). Lot 39 is above the lot-30 threshold, so that rate applies. (Home delivery is 490 cents, and the free-pickup proposal is unapproved.)\n- **Latest collection time:** 13:30. Lot 39 is above the lot-36 threshold, so the Saturday close applies."
+        },
+        {
+          "arm": "baseline",
+          "case": "missing",
+          "repeat": 1,
+          "completed": true,
+          "model": "deepseek-v4-1-flash-261017",
+          "reasoning": "medium",
+          "input": 21223,
+          "cached": 19200,
+          "output": 711,
+          "seconds": 9.53,
+          "tools": 3,
+          "protocol_read_tools": 0,
+          "title_requests": 1,
+          "changed": [],
+          "opens": [
+            "index.md",
+            "notes/current-hours.md",
+            "tariff.md"
+          ],
+          "session_sha256": "e0e19dc985726d63fdfa6884df9e03b7b625de90ec5ee999821550f05f122636",
+          "final_sha256": "968310eb387e5bb47d18d411396d8baf8aaf6fb29efb3451261110a140a23abb",
+          "working_instructions_sha256": "bc08c5429d77aee91c06ffcb2e1407af819d6e50488bcd729eb4674bc76ad234",
+          "answer": "Both figures come from the two named owners:\n\n- **Saturday closing time: 14:20 (2:20 PM)** — approved by the dispatch lead in [notes/current-hours.md](notes/current-hours.md). (The `old-hours.md` link in `index.md` points to a file that is no longer present, so the current timetable is the authority.)\n- **Pickup fee: 260 US cents ($2.60)** — from the treasurer's [tariff.md](tariff.md).\n\nSo the November festival Saturday closes at 14:20, with a pickup fee of 260 US cents."
+        },
+        {
+          "arm": "direct",
+          "case": "missing",
+          "repeat": 1,
+          "completed": true,
+          "model": "deepseek-v4-1-flash-261017",
+          "reasoning": "medium",
+          "input": 28637,
+          "cached": 24704,
+          "output": 1028,
+          "seconds": 13.64,
+          "tools": 6,
+          "protocol_read_tools": 0,
+          "title_requests": 1,
+          "changed": [],
+          "opens": [
+            "index.md",
+            "notes/current-hours.md",
+            "tariff.md"
+          ],
+          "session_sha256": "b63fab70264fdadf00863d4b32e04f0e70ccddebdcf2ef0f08218b4e65aa9444",
+          "final_sha256": "555236388e208672927e0936cb3e6eba1ba0c707f5f713e826b8a44d1b00647b",
+          "working_instructions_sha256": "60d82f01dd78aea89b42c7976f84157ee4c9ebb8f31f304a38e9faeef9d31843",
+          "answer": "- **Saturday closing time:** 14:20 (2:20 PM)\n- **Pickup fee:** 260 US cents ($2.60)\n\nSources: `notes/current-hours.md` (dispatch lead) and `tariff.md` (treasurer). The index’s legacy `notes/old-hours.md` link is missing, but the current timetable was available."
+        },
+        {
+          "arm": "baseline",
+          "case": "pickup",
+          "repeat": 1,
+          "completed": true,
+          "model": "deepseek-v4-1-flash-261017",
+          "reasoning": "medium",
+          "input": 28238,
+          "cached": 25984,
+          "output": 515,
+          "seconds": 8.79,
+          "tools": 4,
+          "protocol_read_tools": 0,
+          "title_requests": 1,
+          "changed": [],
+          "opens": [
+            "index.md",
+            "tariff.md",
+            "dispatch.md"
+          ],
+          "session_sha256": "634496ebec2b7e83252bb3cc9c32054281c5a38358fc9a158eec475362637efd",
+          "final_sha256": "bd0642a59d19758824941b629a2b93158f42a3296d9b2cd3f854d468dbefc9ca",
+          "working_instructions_sha256": "bc08c5429d77aee91c06ffcb2e1407af819d6e50488bcd729eb4674bc76ad234",
+          "answer": "For the Saturday pickup of lot 42, the desk closes at 13:30 and the customer pays 180 US cents, since counter pickup from lot 30 is 180 cents and Saturday collections close at 13:30 from lot 36."
+        },
+        {
+          "arm": "direct",
+          "case": "pickup",
+          "repeat": 1,
+          "completed": true,
+          "model": "deepseek-v4-1-flash-261017",
+          "reasoning": "medium",
+          "input": 28367,
+          "cached": 24064,
+          "output": 935,
+          "seconds": 12.32,
+          "tools": 4,
+          "protocol_read_tools": 0,
+          "title_requests": 1,
+          "changed": [],
+          "opens": [
+            "index.md",
+            "tariff.md",
+            "dispatch.md"
+          ],
+          "session_sha256": "bad0e0b5515495382678242e26fee2c4fa3e54030f06932c0d7f3da3803e1473",
+          "final_sha256": "d18334dde0492b13bce7969546e5b3a5c08b2ca709ed97133b563b17f9b2bcac",
+          "working_instructions_sha256": "60d82f01dd78aea89b42c7976f84157ee4c9ebb8f31f304a38e9faeef9d31843",
+          "answer": "The Saturday pickup for lot 42 closes at **13:30** (Saturday close applies from lot 36), and the customer should pay **180 US cents** for counter pickup (the rate applying from lot 30; the free-pickup proposal was never approved)."
+        },
+        {
+          "arm": "baseline",
+          "case": "progress",
+          "repeat": 1,
+          "completed": true,
+          "model": "deepseek-v4-1-flash-261017",
+          "reasoning": "medium",
+          "input": 34315,
+          "cached": 27776,
+          "output": 2277,
+          "seconds": 23.83,
+          "tools": 5,
+          "protocol_read_tools": 0,
+          "title_requests": 1,
+          "changed": [],
+          "opens": [
+            "SSOT/README.md",
+            "docs/context-evolution-route.md",
+            "docs/scoped-owner-5.14.md"
+          ],
+          "session_sha256": "d0e9d76e86059b30981238b176dc92caa3ff320ebc70954ad7ef8efe2220be82",
+          "final_sha256": "418c615f1dbc168925527bc1cabf5484065642ac67ad0c99c96b94bdd1769f69",
+          "working_instructions_sha256": "4454338d8b77704baf1cf22b1091cb794133c8887bcda3c09aa1f53132db0786",
+          "answer": "**进度摘要**（依据 [长期路线](docs/context-evolution-route.md) 和 [5.14 实测](docs/scoped-owner-5.14.md)）\n\n**1. 我们自己项目的采用进度：第 4 阶段已完成，第 5 阶段仍在验证。**\n- 第 4 阶段“在真实项目采用并能回退”已完成：修正了双语 README、指南和历史报告，并验证了试点撤下与恢复的流程，已发表的修订予以保留。\n- 第 5 阶段“在后续真实工作中验证总收益”：后续维护者已成功接班，负责人依据前四阶段证据决定采用，现在等待新需求以合并，**全流程净收益仍待验证**。\n\n**2. 5.14 八项同题比较：同一组题的总输入从 1,268,995 降到 1,121,600，降幅 11.6%。**\n- 这是“八题各跑一次、每版 9 个会话”的原生输入（含缓存）合计；工具调用从 107 次减至 87 次。\n- 注意不要和另一个数字混淆：本项目自身四个执行环节为 292.9 万→64.1 万（−78.1%），那是本仓库采用前后的执行者数据，不是 5.14 八题比较。\n- 逐题并非一致下降：三项（补历史入口、双人批准、中文提议题）5.14 用量反而更高或接近；降幅主要来自“直接查费率”和“更新一条费率并交接”两题。\n\n**3. 整组执行时间没有降，反而略升。**\n- 运行时间之和从 531 秒增至 543 秒（+12 秒，约 +2.3%）；输出 token 从 48,713 增至 49,432。\n- 采集到的是与执行过程相关的计时，人的等待不在其中。\n\n**4. 全流程净节省目前还不能确定。**\n- 启用和演练投入 134.1 万 token，计入**选材、审稿、返工**后的净节省“仍未测定”。\n- 5.14 报告的边界写明：本次没有测量其他项目上线后的长期净收益；未取得独立用量的标题请求、协调者研发时间和真实用户等待也不在表内。\n- 因此现阶段只能说“单题输入显著下降”，不能下“全流程更省”的结论；第 5 阶段正是为此设置的。\n\n一句话：采用到“真实项目已落地、可回退”为止；八题总输入 −11.6%，但整组时间 +2.3%，全流程净账（含返工与等待）仍无法确定。"
+        },
+        {
+          "arm": "candidate",
+          "case": "progress",
+          "repeat": 1,
+          "completed": true,
+          "model": "deepseek-v4-1-flash-261017",
+          "reasoning": "medium",
+          "input": 32135,
+          "cached": 25984,
+          "output": 1621,
+          "seconds": 18.79,
+          "tools": 5,
+          "protocol_read_tools": 0,
+          "title_requests": 1,
+          "changed": [],
+          "opens": [
+            "SSOT/README.md",
+            "docs/context-evolution-route.md",
+            "docs/scoped-owner-5.14.md"
+          ],
+          "session_sha256": "abe4701b20ace6e615171b5b10d972322a0fe159d0b12548cc41188cc830c12a",
+          "final_sha256": "fb74c1b58c7b7213dfe4b6b7e9a402695bd305cf70e9d79256ab466187cb66bd",
+          "working_instructions_sha256": "146e3d49f65cfb2b840c46417b41ec00192cf5445b67e6df65ecba9c339daf72",
+          "answer": "已核对入口指向的两份现行公开文档，简要进度如下（均为只读查询，未改动任何文件）：\n\n**1. 采用到了哪一步**\n本仓库的单文档查询/修改做法已进入技能包 5.14，开发仓库和通用空间均可使用。五个阶段中，**第 4 阶段（在真实项目采用并能回退）已完成**：双语 README、指南、历史报告均已修正，独立检出撤下并恢复了试点，已发表修订保留。现在处于**第 5 阶段（在后续真实工作中验证总收益）**：维护者已成功接班，但全流程净收益仍待验证；负责人已按前四阶段证据决定采用，并结束为合并而等待新需求。\n\n**2. 5.14 八项同题比较的总输入**\n按八题各跑一次计，两版各 9 个会话，输入从 **1,268,995 → 1,121,600 token，下降 11.6%**；工具调用 107 → 87 次。注意这组数是消费者安装 5.13/5.14 的同题回放，含缓存，且是按试验设计出的分布，不等于你方真实频率下的收益。\n\n**3. 整组执行时间降了吗**\n**没有，反而略增**：运行时间之和 **531 秒 → 543 秒（+12 秒）**；输出也从 48,713 增至 49,432 token。八项里有三项 5.14 用量更高（如“历史研究补入口”277,906 → 321,450）。\n\n**4. 全流程净节省现在能确定吗**\n**不能确定。** 目前只测了输入/输出/耗时等代理指标；选材、审稿、返工、协调者研发时间和真实用户等待未计入表内（每项每版仅跑一次，也未测其他项目上线后的长期净收益）。路线文档明确写着启用和演练另用 134.1 万 token，计入这些后的净节省“仍未测定”。另外，本仓库自身四个环节的输入从 292.9 万降到 64.1 万（降 78.1%），那是另一组“采用前后执行者数据”，同样不能直接当作全流程净节省。\n\n依据：[5.14 实测](docs/scoped-owner-5.14.md)、[长期路线](docs/context-evolution-route.md)。"
+        },
+        {
+          "arm": "direct",
+          "case": "progress",
+          "repeat": 1,
+          "completed": true,
+          "model": "deepseek-v4-1-flash-261017",
+          "reasoning": "medium",
+          "input": 36022,
+          "cached": 28544,
+          "output": 1651,
+          "seconds": 18.76,
+          "tools": 6,
+          "protocol_read_tools": 1,
+          "title_requests": 1,
+          "changed": [],
+          "opens": [
+            "SSOT/README.md",
+            "docs/context-evolution-route.md",
+            "docs/scoped-owner-5.14.md"
+          ],
+          "session_sha256": "211cfabf204305e011b66ce36b1e86610dd8370813c7a5427a085ed4fe345cae",
+          "final_sha256": "a9f195e32a8897ecffe387ce5666460528ccfffe4bf703c9623daa40f3f0a692",
+          "working_instructions_sha256": "80a0144263f0582d6bd2b0c7777f5f49ba03f3811abfd667abe01d8ba680ff1c",
+          "answer": "**进度（截至 2026-11-20，依据 `SSOT/README.md` 指向的两份文档）**\n\n**1. 采用阶段状态**\n- 本仓库采用的“单文档查询和修改”方式已进入技能包 **5.14**，开发仓库和通用空间均可使用；格式 4 消费者的安装、升级和会话发现均已演练过。\n- 阶段表里第 4 阶段（在真实项目采用并能回退）已完成；已进入第 5 阶段：后续维护者已成功接班，但**全流程净收益仍待验证**。负责人决定按前四阶段的证据采用，因此已结束为合并而等待新需求。\n\n**2. 5.14 八项同题比较（每项、每版各运行一次）**\n- 总输入从 **1,268,995 降到 1,121,600**，下降 **147,395（11.6%）**。\n- 工具调用从 **107 次降到 87 次**。\n- **整组执行时间没有降**：从 **531 秒增至 543 秒**（增加 12 秒，约 2.3%）；输出从 48,713 **增至** 49,432 token。\n- 需要注意分布：八项中有四项 5.14 更省，其中“查费率”和“改费率再交接”降幅最大；另外四项反而更高，例如“历史研究补入口”从 277,906 升到 321,450。总量下降主要受任务组合权重影响。\n\n**3. 全流程净节省能否确定**\n- **目前不能确定。** 只能确定采用前后执行环节的改变：四个环节输入从 **292.9 万降到 64.1 万（-78.1%）**，三项真实维护少用 **228.8 万**输入 token。\n- 但启用和演练花了 **134.1 万**，选材、审稿、返工后也未结算；上述两份文档都明确写着**没有测量其他项目上线后的长期净收益**，并且每次试验只运行一次，也没有把协调者研发时间和真实用户等待计入表中。\n\n一句话：**已经用起来了，执行环节显著减少读取量，但 5.14 的八题总账只差 11.6%，且耗时小幅上升；全流程净节省仍是未决问题。**"
+        },
+        {
+          "arm": "plain",
+          "case": "progress",
+          "repeat": 1,
+          "completed": true,
+          "model": "deepseek-v4-1-flash-261017",
+          "reasoning": "medium",
+          "input": 28993,
+          "cached": 25600,
+          "output": 2325,
+          "seconds": 23.2,
+          "tools": 5,
+          "protocol_read_tools": 0,
+          "title_requests": 1,
+          "changed": [],
+          "opens": [
+            "SSOT/README.md",
+            "docs/context-evolution-route.md",
+            "docs/scoped-owner-5.14.md"
+          ],
+          "session_sha256": "a8737ebd05f60b58c8d3bf1f751d048bdfde8a2b5139d4258fd61dc550e95f9c",
+          "final_sha256": "23030a1daf4c1bb8ba52d6911e6df9c558c377bc843b8b21d35bf36082843282",
+          "working_instructions_sha256": "81aad62099d6c0251c0d32698b578eb64e7556c038457e38b64b37484799ad81",
+          "answer": "**结论：项目已真实采用并跑通回退（阶段 4 完成），阶段 5 的全流程总收益仍在验证；5.14 八题输入下降 11.6%，但整组耗时没有下降；全流程净节省目前还不能确定。**\n\n**采用进度**（[长期路线](docs/context-evolution-route.md)）\n- 本仓库已用上 5.14 的单文档查询、修改方式，开发仓库和通用空间都可用；已交付三项真实维护，并曾在独立检出中撤下试点再恢复，修订保留。\n- 尚未完成的是阶段 5：后续维护者能接班，但“真实工作中的全流程净收益”未验证。负责人已按前四阶段证据决定采用。\n\n**5.14 八项同题**（[5.14 实测](docs/scoped-owner-5.14.md)）\n- 总输入 **1,268,995 → 1,121,600**（126.9 万 → 112.2 万），降 **11.6%**；工具调用 107 → 87 次。\n- 执行时间之和 **531 秒 → 543 秒**，反而多 12 秒（约 +2.3%），**没降**；输出也从 48,713 升到 49,432 token。\n- 需要注意分布：八项里有四项 5.14 反而更高（如补历史研究入口 27.8 万→32.1 万、双人批准费用 22.5 万→29.7 万），整体下降主要靠“直接查费率”（10.5 万→2.1 万）和“更新一条费率再交接”（32.1 万→16.4 万）两项。\n\n**净节省**\n- 已确认的只是执行环节：四个环节输入从 292.9 万降到 64.1 万，少用 **228.8 万**。\n- 但启用和演练花了 **134.1 万**，选材、审稿、返工和人的等待都没计入，所以**净节省尚无法确定**。\n- 因此现在只能说“执行环节省了输入”，不能说“全流程净省”；试验频率是设计出来的，也不能直接外推到真实项目。"
+        },
+        {
+          "arm": "baseline",
+          "case": "progress",
+          "repeat": 2,
+          "completed": true,
+          "model": "deepseek-v4-1-flash-261017",
+          "reasoning": "medium",
+          "input": 33080,
+          "cached": 29696,
+          "output": 2061,
+          "seconds": 21.42,
+          "tools": 5,
+          "protocol_read_tools": 0,
+          "title_requests": 1,
+          "changed": [],
+          "opens": [
+            "SSOT/README.md",
+            "docs/context-evolution-route.md",
+            "docs/scoped-owner-5.14.md",
+            "docs/context-evolution-route.md"
+          ],
+          "session_sha256": "bcbeef20c02f21d928275781e2f47dbe9bfdfabb131a0fd55e5ac91533550f69",
+          "final_sha256": "60b815644389ed56dbb136a04adac51652440dc3b45c4a6e5a7fa498e52e2cf6",
+          "working_instructions_sha256": "4454338d8b77704baf1cf22b1091cb794133c8887bcda3c09aa1f53132db0786",
+          "answer": "**简短进度**（据 `SSOT/README.md` 指向的两份现行文档）\n\n**采用到哪一步**\n本仓库的单文档查询和修改方式已进入技能包 **5.14**，开发仓库和通用空间都可使用（2026-11-20）。前四阶段均已有结果：已建立同题比较、已找到可原地修改后读回交接的做法、已划出多查边界、已在真实项目采用并具备回退能力。第 5 阶段“后续真实工作中的总收益”仍待验证；负责人已决定按前四阶段证据采用，不再为等新需求而合并。\n\n**5.14 八项同题总输入**\n两版各运行 9 个会话（费率任务另加一位只拿到成稿的新读者）：\n- 5.13：**1,268,995**\n- 5.14：**1,121,600**\n- 下降 **11.6%**；工具调用 107 → 87 次。\n\n**整组执行时间：没有降**\n运行时间之和从 **531 秒增至 543 秒**，输出 token 也从 48,713 增至 49,432。八题中历史研究补实测入口、双人批准两题反而用量更高，抵消了其他题目的节省。所以不能报成“时间也降了”。\n\n**全流程净节省：现在还确定不了**\n- 本仓库四个环节的执行者输入从 292.9 万降到 64.1 万（降 78.1%），这是采用前后的执行侧数据，不等于全流程。\n- 启用和演练已用 134.1 万输入；把选材、审稿、返工和人的等待算进去后的净节省**仍未测定**。\n- 5.14 试验也没有测其他项目上线后的长期净收益，且成本应按各自项目的查、改、交接频率与返工来评估。\n\n因此目前能确定的是**执行环节显著少读**，以及**5.14 八题总输入降 11.6%**；整组耗时和全流程净收益都还不能下结论。\n\n依据：[长期路线](docs/context-evolution-route.md) · [5.14 实测](docs/scoped-owner-5.14.md)"
+        },
+        {
+          "arm": "candidate",
+          "case": "progress",
+          "repeat": 2,
+          "completed": true,
+          "model": "deepseek-v4-1-flash-261017",
+          "reasoning": "medium",
+          "input": 32230,
+          "cached": 28672,
+          "output": 2080,
+          "seconds": 21.84,
+          "tools": 5,
+          "protocol_read_tools": 0,
+          "title_requests": 1,
+          "changed": [],
+          "opens": [
+            "SSOT/README.md",
+            "docs/context-evolution-route.md",
+            "docs/scoped-owner-5.14.md"
+          ],
+          "session_sha256": "50ba7017bea9fa8d402bcdf73b102b4df3ff8f1d9d05337ada57cdbd017c5bc2",
+          "final_sha256": "b6a370a99c1e34ecce112f9fe83ff9ba2c97f9f3d20b84aca7ac0f15091722f9",
+          "working_instructions_sha256": "146e3d49f65cfb2b840c46417b41ec00192cf5445b67e6df65ecba9c339daf72",
+          "answer": "**进度（据现行两份公开文档：长期路线与 5.14 实测）**\n\n- **当前阶段**：第 1 至第 4 阶段已完成：本仓库的单文档查询与原地修改方式已经进入技能包 5.14，开发仓库和通用空间都能使用；独立检出已撤下并恢复，已发表的修订保留。项目现在停在第 5 阶段——**后续维护者已经成功接班，但“全流程净收益”仍待验证**。负责人是按前四阶段的证据决定采用的；为了合并而等待新需求的工作已经结束。\n\n- **5.14 八项同题比较**：总输入从 **1,268,995** 降到 **1,121,600**，即从约 126.9 万降到 112.2 万，降幅为 **11.6%**；工具调用从 107 次减到 87 次。这八项并非每项都省：有三项下降、四项上升，另有一项基本持平；例如“给历史研究补实测入口”一项就从 277,906 升到 321,450。\n\n- **整组执行时间**：**没有降**。八题运行时间之和从 **531 秒增至 543 秒**（+12 秒），输出也从 48,713 增至 49,432 token。主要节省在输入，时间上略有增加。\n\n- **全流程净节省**：**现在还不能确定**。八题中每项每版各跑一次，这个分布来自试验设计；真实项目还要按自己的查、改、交接频率和返工来评估，本次没有测量其他项目上线后的长期净收益。本仓库自己那三项真实维护虽然少用了 **228.8 万输入 token**，但启用和演练花了 **134.1 万**；在计入选材、审稿和返工之后，净节省同样“仍未测定”。\n\n参考：[长期路线](docs/context-evolution-route.md)、[5.14 实测](docs/scoped-owner-5.14.md)。"
+        },
+        {
+          "arm": "direct",
+          "case": "progress",
+          "repeat": 2,
+          "completed": true,
+          "model": "deepseek-v4-1-flash-261017",
+          "reasoning": "medium",
+          "input": 23239,
+          "cached": 20224,
+          "output": 1589,
+          "seconds": 16.98,
+          "tools": 4,
+          "protocol_read_tools": 0,
+          "title_requests": 1,
+          "changed": [],
+          "opens": [
+            "SSOT/README.md",
+            "docs/context-evolution-route.md",
+            "docs/scoped-owner-5.14.md"
+          ],
+          "session_sha256": "c80afaa1a5163ad477a40793a70d480caac115b3d063b3299ad3ea0095fca208",
+          "final_sha256": "da7df78c6712060701addaa774ac802d8de3e192fd8bcd8bca0f3b3584081482",
+          "working_instructions_sha256": "80a0144263f0582d6bd2b0c7777f5f49ba03f3811abfd667abe01d8ba680ff1c",
+          "answer": "**进度（依据 `SSOT/README.md` 转引的两份材料，2026-11-20）**\n\n**1. 项目采用进度：第 4 阶段已完成，第 5 阶段仍在进行。**\n单文档查询与修改方式已进入技能包 5.14，开发仓库和通用空间均可使用；双语 README、指南和历史报告已修正，独立检出的试点也已撤下并恢复（可回退）。第 5 阶段“在后续真实工作中验证总收益”只完成了一半：后续维护者已成功接班，**全流程净收益仍待验证**。负责人按前四阶段的证据决定采用，不再为合并等待新需求。\n\n**2. 八项同题比较总输入：1,268,995 → 1,121,600，下降 147,395（-11.6%）；工具调用 107 → 87。**\n不过这是“各题发生一次”的实验分布：3 题明显下降，4 题反而更高（历史研究补入口 5.14 多 4.4 万、两人批准多 7.2 万等），单题不宜外推。\n\n**3. 整组执行时间：没有下降，反而微增。**\n531 秒 → 543 秒（+12 秒，约 +2.3%）；输出 token 也从 48,713 增至 49,432。\n\n**4. 全流程净节省：现在不能确定。**\n已知的只有四项真实维护输入从 292.9 万降到 64.1 万（-78.1%），但启用和演练已用掉 134.1 万输入 token，**计入选材、审稿和返工后的净节省尚未测定**；协调者研发时间、真实用户等待也未进表。材料明确说，真实项目要按自己的查、改、交接频率和返工再评估。\n\n一句话：**单次同题输入省了约一成，时间没省，全流程是否净赚还缺最后一笔账。** 详见 `docs/context-evolution-route.md`、`docs/scoped-owner-5.14.md`。"
+        },
+        {
+          "arm": "plain",
+          "case": "progress",
+          "repeat": 2,
+          "completed": true,
+          "model": "deepseek-v4-1-flash-261017",
+          "reasoning": "medium",
+          "input": 30638,
+          "cached": 27008,
+          "output": 1735,
+          "seconds": 19.0,
+          "tools": 7,
+          "protocol_read_tools": 0,
+          "title_requests": 1,
+          "changed": [],
+          "opens": [
+            "SSOT/README.md",
+            "docs/scoped-owner-5.14.md",
+            "docs/context-evolution-route.md",
+            "SSOT/README.md",
+            "docs/context-evolution-route.md",
+            "docs/scoped-owner-5.14.md"
+          ],
+          "session_sha256": "1c65aa98fecbb713908fb8ded53dd137c022af653739617ebe5fae78538a67da",
+          "final_sha256": "f9913222e81d337d071e47224ddb575a578b059e46526bf7d28489151a7cb91d",
+          "working_instructions_sha256": "81aad62099d6c0251c0d32698b578eb64e7556c038457e38b64b37484799ad81",
+          "answer": "**简短进度**\n\n- **采用阶段：** 项目已进入第 4 阶段（在真实仓库中采用、可回退），并停在“第 5 阶段：在后续真实工作中验证全流程总收益”。5.14 已包含单文档查询/原地修改/读回交接这套做法。\n- **5.14 八项同题所用输入：** 从 **1,268,995** token 降到 **1,121,600** token，下降 **11.6%**。这是整组总和，并非每项都下降：其中“给历史研究补入口”“双人批准”“未决定的新做法”这三项反而更高；费率类任务节省最多。\n- **整组执行时间：没有下降，反而略升。** 从 **531 秒**增至 **543 秒**（+12 秒）；输出从 48,713 token 增至 49,432 token，工具调用从 107 次减至 87 次。\n- **全流程净节省：现在还不能确定。** 这八项每项每版只运行一次，试验分布不代表真实业务的查询、修改、交接频率；选材、审稿、返工、人的等待和上线后的长期成本都未计入。本仓库“四个环节输入 292.9 万→64.1 万（-78.1%）”也只是执行者侧的数据，启用和演练另耗 134.1 万，净账仍待验证。\n\n依据：[长期路线](docs/context-evolution-route.md)、[5.14 实测](docs/scoped-owner-5.14.md)。"
+        },
+        {
+          "arm": "baseline",
+          "case": "restricted",
+          "repeat": 1,
+          "completed": true,
+          "model": "deepseek-v4-1-flash-261017",
+          "reasoning": "medium",
+          "input": 30428,
+          "cached": 25856,
+          "output": 1327,
+          "seconds": 15.4,
+          "tools": 6,
+          "protocol_read_tools": 0,
+          "title_requests": 1,
+          "changed": [],
+          "opens": [
+            "index.md",
+            "consent.md",
+            "programme.md"
+          ],
+          "session_sha256": "a8bf17cb5cb9ea3b892ac7a26407e5508fc9437450fb027c7da9e01e8bdb8e69",
+          "final_sha256": "20766f81b707503e1eae2936ee5748c73b64d407faa15f84be70d4103d67ff3c",
+          "working_instructions_sha256": "bc08c5429d77aee91c06ffcb2e1407af819d6e50488bcd729eb4674bc76ad234",
+          "answer": "The matinee is **at Slate Hall, 15:30** ([programme.md](programme.md)).\n\n**No — you can’t use the interview’s opening words in the announcement.** The speaker withdrew all access to `vault/interview.md` yesterday, expressly including searches and excerpts ([consent.md](consent.md)). Opening words are still an excerpt, so I did not open the interview. The programme summary remains usable for public answers."
+        },
+        {
+          "arm": "candidate",
+          "case": "restricted",
+          "repeat": 1,
+          "completed": true,
+          "model": "deepseek-v4-1-flash-261017",
+          "reasoning": "medium",
+          "input": 22093,
+          "cached": 19328,
+          "output": 994,
+          "seconds": 11.55,
+          "tools": 5,
+          "protocol_read_tools": 0,
+          "title_requests": 1,
+          "changed": [],
+          "opens": [
+            "index.md",
+            "programme.md",
+            "consent.md"
+          ],
+          "session_sha256": "5c783981de3ead90e0d6c2cc0c570f0ea96b86e8ce361e08bb4a5bd40a5d0e92",
+          "final_sha256": "0a5eba64022b3083fbbf78cd0e990a997da32cfcf76fceb1964033d2f871f8ba",
+          "working_instructions_sha256": "fd80a2dbf2b3068b54deed3dc32035d6043720f0deba3ef5e4b62d74cdd5d9f0",
+          "answer": "**When and where:** The matinee is confirmed for **Slate Hall at 15:30** (`programme.md`).\n\n**Using the interview's first words:** **No.** The consent register (`consent.md`) records that the speaker withdrew *all* access to `vault/interview.md` yesterday, expressly including **searches and excerpts**. Quoting the opening words in your announcement would be an excerpt, so it isn't permitted. I have not opened the interview file.\n\nWhat remains usable is the **programme summary** — the register says that may still be used for the announcement."
+        },
+        {
+          "arm": "direct",
+          "case": "restricted",
+          "repeat": 1,
+          "completed": true,
+          "model": "deepseek-v4-1-flash-261017",
+          "reasoning": "medium",
+          "input": 33224,
+          "cached": 27136,
+          "output": 1149,
+          "seconds": 14.21,
+          "tools": 6,
+          "protocol_read_tools": 2,
+          "title_requests": 1,
+          "changed": [],
+          "opens": [
+            "index.md",
+            "programme.md",
+            "consent.md"
+          ],
+          "session_sha256": "ac5c9b417f08adaa308e7c9c0a5d37938d611ddd5cba2eaf3eaba76cea6d3c43",
+          "final_sha256": "016c3f4d2f0966e09c0c35745685bd0dc156ca7bb29009d0a44de279046081a0",
+          "working_instructions_sha256": "60d82f01dd78aea89b42c7976f84157ee4c9ebb8f31f304a38e9faeef9d31843",
+          "answer": "**Matinee:** Slate Hall, 15:30 — marked \"confirmed\" in `programme.md`. The programme doesn't record a date, so only the time and venue are settled.\n\n**Interview opening words:** No. `consent.md` says the speaker withdrew all access to `vault/interview.md` — \"including searches and excerpts\" — so even the first words can't be opened or quoted. I haven't read the interview.\n\nThe programme summary itself may still be used, so I can draft the announcement from that summary alone if you like."
+        }
+      ]
+    }
+  },
+  "bundle_delta": {
+    "compact": {
+      "VERSION": {
+        "old_sha256": "b72893848eed8d13d015934a769416c2525ee144ad972288f4a8fca15f20ccb0",
+        "new_sha256": "43358284da827b3802d300dd388798e723e437b2b6f49f219f07d50aa433789e"
+      },
+      "skills/ssot-audit/SKILL.md": {
+        "old_sha256": "e8c79c725341957df85f3b5b0a0a7e9b1a469e000ac72913edfc71eb3e49e669",
+        "new_sha256": "ea9179f819e6742a4698309423f9c4b165f83b412e4de054eea06327f9b48a32"
+      },
+      "skills/ssot-bootstrap/SKILL.md": {
+        "old_sha256": "27cf7e2c11e70e4eb9d7835432f7df5fe0383cb5f4bdcfa20b617af4ea6cfae7",
+        "new_sha256": "314349fd178a4fed4359df8e623c0478322bd3dc71656dccf021b822cac1c280"
+      },
+      "skills/ssot-closeout/SKILL.md": {
+        "old_sha256": "babe117111ddb5cc6ecfae4483ddd1012cee41608be49472a8195364081d9da4",
+        "new_sha256": "74f6699231d690ca6b0b144de95fdd32fe703555594fe88e9bfa59b7b228bb0d"
+      },
+      "skills/ssot-doctor/SKILL.md": {
+        "old_sha256": "6c0aab9f2d446c451107c6b5ff776ca7b5ac135b6c831a628561a1883ef90334",
+        "new_sha256": "0a4d74ff1b56ef15d9190e7aa85dcef63564788c4b35b4cb8776c6e29a319616"
+      },
+      "skills/ssot-preflight/SKILL.md": {
+        "old_sha256": "794881f520fa2983e9f2c0a4fefca52757294548396da93e1ec9ba91a46da026",
+        "new_sha256": "ae3ff2db2818a2342cd44024e4e7078e1ba9299911bc84798b1b891daa06a462"
+      },
+      "skills/ssot-skill/SKILL.md": {
+        "old_sha256": "dcaa73cc74cb156f9708099b36ce302d7aed5576747f4bf0c7f7079df48a0487",
+        "new_sha256": "03077962cde375f0867c1ff845641e4b76168e0ad743344f336b90edc597b2b1"
+      }
+    },
+    "candidate": {
+      "VERSION": {
+        "old_sha256": "b72893848eed8d13d015934a769416c2525ee144ad972288f4a8fca15f20ccb0",
+        "new_sha256": "43358284da827b3802d300dd388798e723e437b2b6f49f219f07d50aa433789e"
+      },
+      "skills/ssot-bootstrap/assets/templates/en/adapter-thin.md": {
+        "old_sha256": "115c36406bfaa727628a6c6b7d5bd866c22313d39df92b225953dd6f4aadbf02",
+        "new_sha256": "ae30d6b98e07d11381c61527a49a424325e99110282e0d3d8c5f2c8397e74982",
+        "patch": "--- a/skills/ssot-bootstrap/assets/templates/en/adapter-thin.md\n+++ b/skills/ssot-bootstrap/assets/templates/en/adapter-thin.md\n@@ -8 +8 @@\n-Use the skills automatically. For a bounded lookup or edit, check the current `SSOT/README.md` header and relevant owner, access and protection terms first. In format 4, answer directly from a single authorized owner if it settles the question. For one approved prose change there, use only `$ssot-closeout` and finish on verified readback.\n+Use the skills automatically. For a bounded lookup or edit, check the current `SSOT/README.md` header and relevant owner, access and protection terms first. In format 4, answer read-only questions from the relevant passages of the named owners. Once permitted, read independent passages together and stop when answered. Check any prerequisite before dependent reads or searches. Report unresolved parts. For one approved prose change confined to one owner, use only `$ssot-closeout` and finish on verified readback.\n"
+      },
+      "skills/ssot-bootstrap/assets/templates/en/context-adapter.md": {
+        "old_sha256": "de0acdd0d89bda31205fab0107d913c476f4a0a0af4635f4b7855543ba179714",
+        "new_sha256": "ae94bc7c80d3f60d54f8e0f36d9eb3530cb0f1686df98948b659cd9cf245690c",
+        "patch": "--- a/skills/ssot-bootstrap/assets/templates/en/context-adapter.md\n+++ b/skills/ssot-bootstrap/assets/templates/en/context-adapter.md\n@@ -8 +8 @@\n-ENTRY defines this space (`ssot_format: 5`); writing requires SSOT-CONTEXT 5.0+. Older writers stay read-only and upgrade. Verify the current format, owners, permissions and protections at the entry. For format 5, use these bounded routes. Answer a simple lookup from one authorized owner if sufficient. For one approved prose change confined there, use only `$ssot-closeout`; verified readback finishes it.\n+ENTRY defines this space (`ssot_format: 5`); writing requires SSOT-CONTEXT 5.0+. Older writers stay read-only and upgrade. Verify the current format, owners, permissions and protections at the entry. For format 5, use these bounded routes. For a read-only question, read the relevant passages from the named owners together once each is permitted and independent. Answer and stop. Resolve prerequisites before dependent reads or searches. Report unresolved parts. For one approved prose change confined to one owner, use only `$ssot-closeout`; verified readback finishes it.\n"
+      },
+      "skills/ssot-bootstrap/assets/templates/zh/adapter-thin.md": {
+        "old_sha256": "1b28bb149f9aa92e35307fcfec7f2c974385a402efb691d18560566d657cc8de",
+        "new_sha256": "5c0d5b1120b3049aa8ae0007f1ae896cbc7cb03423ae5772bdd18ae5706be4c2",
+        "patch": "--- a/skills/ssot-bootstrap/assets/templates/zh/adapter-thin.md\n+++ b/skills/ssot-bootstrap/assets/templates/zh/adapter-thin.md\n@@ -8 +8 @@\n-按任务自动使用技能。简单查询或局部修改，先看当前 `SSOT/README.md` 的文件头、相关文档归属、访问条件和保护规则。格式 4 中，一份获准读取的现行文档足以回答问题时，直接据此作答。若已批准的单条决定只改这份文档的现有正文，只用 `$ssot-closeout`，回读核实即完成。\n+按任务自动使用技能。简单查询或局部修改，先看当前 `SSOT/README.md` 的文件头、相关文档归属、访问条件和保护规则。格式 4 的只读查询可从入口指向的现行文档直接作答。分别核实许可后，一次读取相互独立的相关段落，答完即止。有前置条件的读取或搜索先核实条件，仍有疑问就说明。若已批准的单条决定只改一份文档的现有正文，只用 `$ssot-closeout`，回读核实即完成。\n"
+      },
+      "skills/ssot-bootstrap/assets/templates/zh/context-adapter.md": {
+        "old_sha256": "cc44a90703097d357abe96de6582ae1025b27ebea7f8a5d92e17b86a83e5ac72",
+        "new_sha256": "45748a600446f7712d5a705e6a4a1a190a96704728640e238726878821d01150",
+        "patch": "--- a/skills/ssot-bootstrap/assets/templates/zh/context-adapter.md\n+++ b/skills/ssot-bootstrap/assets/templates/zh/context-adapter.md\n@@ -8 +8 @@\n-本空间的入口为 ENTRY（`ssot_format: 5`），写入要求 SSOT-CONTEXT 5.0+。旧版只读并升级。先在入口核实当前格式、文档归属、读取许可和保护规则。格式 5 可走以下局部路径。一份获准读取的现行文档足以回答简单查询时，直接作答。若已批准的单条决定只改这份文档的现有正文，只用 `$ssot-closeout`，回读核实即完成。\n+本空间的入口为 ENTRY（`ssot_format: 5`），写入要求 SSOT-CONTEXT 5.0+。旧版只读并升级。先在入口核实当前格式、文档归属、读取许可和保护规则。格式 5 可走以下局部路径。只读查询可从入口指向的现行文档直接作答。分别核实许可后，一次读取相互独立的相关段落，答完即止。有前置条件的读取或搜索先核实条件，仍有疑问就说明。若已批准的单条决定只改一份文档的现有正文，只用 `$ssot-closeout`，回读核实即完成。\n"
+      },
+      "skills/ssot-preflight/SKILL.md": {
+        "old_sha256": "794881f520fa2983e9f2c0a4fefca52757294548396da93e1ec9ba91a46da026",
+        "new_sha256": "e12a66e0b2d7fe0faf5e5e8d135e771b2473fe6c11c794a9acaf4b7db3e230b6",
+        "patch": "--- a/skills/ssot-preflight/SKILL.md\n+++ b/skills/ssot-preflight/SKILL.md\n@@ -3 +3 @@\n-description: Load before opening a project context entry for substantive work. Start with its format and headings, then read the relevant sections and owners. Find protected rules, owners and blocking questions for code, configuration, documentation, review, debugging or planning. Use for an explicit request to maintain non-repository context; ordinary chat, research answers or creative writing without a declared space do not trigger setup. Skip pure commands and meaning-preserving typo or formatting edits.\n+description: Use before substantive work beyond a lookup settled by authorized project documents. Start with the entry format and headings. Find protected rules, owners and blocking questions for code, configuration, documentation, review, debugging or planning. Use for an explicit request to maintain non-repository context; ordinary chat, research answers or creative writing without a declared space do not trigger setup. Skip pure commands and meaning-preserving typo or formatting edits.\n@@ -5 +5 @@\n-  protocol_version: \"5.14\"\n+  protocol_version: \"5.15\"\n@@ -17 +17 @@\n-In formats 4 and 5, answer a lookup from its current authorized owner when that owner settles the question. For one settled prose change confined to that owner, use `$ssot-closeout` directly. Follow owner-specific requirements. If the answer depends on other evidence or decisions, follow their authorized routes. Restricted sources require the permission result before any dependent read, including a search.\n+For a read-only lookup in formats 4 and 5, use the current owners named by the entry. Once access and protections are clear for each, read the relevant passages together when independent. Answer from those passages and stop. Follow any prerequisite before dependent reads or searches. Report conflicting or missing evidence and answer the parts it settles. A request to check SSOT itself goes to Doctor. For one settled prose change confined to one owner, use `$ssot-closeout` directly and follow its owner-specific requirements.\n"
+      }
+    },
+    "direct": {
+      "VERSION": {
+        "old_sha256": "b72893848eed8d13d015934a769416c2525ee144ad972288f4a8fca15f20ccb0",
+        "new_sha256": "43358284da827b3802d300dd388798e723e437b2b6f49f219f07d50aa433789e"
+      },
+      "skills/ssot-audit/SKILL.md": {
+        "old_sha256": "e8c79c725341957df85f3b5b0a0a7e9b1a469e000ac72913edfc71eb3e49e669",
+        "new_sha256": "ea9179f819e6742a4698309423f9c4b165f83b412e4de054eea06327f9b48a32"
+      },
+      "skills/ssot-bootstrap/SKILL.md": {
+        "old_sha256": "27cf7e2c11e70e4eb9d7835432f7df5fe0383cb5f4bdcfa20b617af4ea6cfae7",
+        "new_sha256": "314349fd178a4fed4359df8e623c0478322bd3dc71656dccf021b822cac1c280"
+      },
+      "skills/ssot-bootstrap/assets/templates/en/adapter-thin.md": {
+        "old_sha256": "115c36406bfaa727628a6c6b7d5bd866c22313d39df92b225953dd6f4aadbf02",
+        "new_sha256": "497a5cfe75e84b093bbc03eca21ab2d641d0c63491b36f073360a63f7e619a03",
+        "patch": "--- a/skills/ssot-bootstrap/assets/templates/en/adapter-thin.md\n+++ b/skills/ssot-bootstrap/assets/templates/en/adapter-thin.md\n@@ -8 +8 @@\n-Use the skills automatically. For a bounded lookup or edit, check the current `SSOT/README.md` header and relevant owner, access and protection terms first. In format 4, answer directly from a single authorized owner if it settles the question. For one approved prose change there, use only `$ssot-closeout` and finish on verified readback.\n+For a bounded lookup or edit, open `SSOT/README.md` directly. Check its format, routes, permissions and protections. For a format-4 lookup, read the answering passages from the named, permitted owners together when independent, then reply. Search only if a route is missing, stale or insufficient. Resolve access before dependent reads or searches. Report gaps or disagreements. For one approved prose change confined to one owner, use only `$ssot-closeout` and finish on verified readback.\n"
+      },
+      "skills/ssot-bootstrap/assets/templates/en/context-adapter.md": {
+        "old_sha256": "de0acdd0d89bda31205fab0107d913c476f4a0a0af4635f4b7855543ba179714",
+        "new_sha256": "977dfc32fcbc5ab4ab74f2dc5e7b352430df6340a0f529e1cea063a0741e2111",
+        "patch": "--- a/skills/ssot-bootstrap/assets/templates/en/context-adapter.md\n+++ b/skills/ssot-bootstrap/assets/templates/en/context-adapter.md\n@@ -8 +8 @@\n-ENTRY defines this space (`ssot_format: 5`); writing requires SSOT-CONTEXT 5.0+. Older writers stay read-only and upgrade. Verify the current format, owners, permissions and protections at the entry. For format 5, use these bounded routes. Answer a simple lookup from one authorized owner if sufficient. For one approved prose change confined there, use only `$ssot-closeout`; verified readback finishes it.\n+ENTRY defines this space (`ssot_format: 5`); writing requires SSOT-CONTEXT 5.0+. Older writers stay read-only and upgrade. Open ENTRY directly to check the format, routes, permissions and protections. For a format-5 lookup, read the answering passages from the named, permitted owners together when independent, then reply. Search only if a route is missing, stale or insufficient. Resolve access before dependent reads or searches. Report gaps or disagreements. For one approved prose change confined to one owner, use only `$ssot-closeout`; verified readback finishes it.\n"
+      },
+      "skills/ssot-bootstrap/assets/templates/zh/adapter-thin.md": {
+        "old_sha256": "1b28bb149f9aa92e35307fcfec7f2c974385a402efb691d18560566d657cc8de",
+        "new_sha256": "d9f05f7368d58b7ec70cec204b93d843a0e7904367c073a0c57fd4b8729f2323",
+        "patch": "--- a/skills/ssot-bootstrap/assets/templates/zh/adapter-thin.md\n+++ b/skills/ssot-bootstrap/assets/templates/zh/adapter-thin.md\n@@ -8 +8 @@\n-按任务自动使用技能。简单查询或局部修改，先看当前 `SSOT/README.md` 的文件头、相关文档归属、访问条件和保护规则。格式 4 中，一份获准读取的现行文档足以回答问题时，直接据此作答。若已批准的单条决定只改这份文档的现有正文，只用 `$ssot-closeout`，回读核实即完成。\n+简单查询或局部修改，直接打开 `SSOT/README.md`，核实格式、文档归属、访问条件和保护规则。格式 4 查询可一次读取入口指向、获准且相互独立的相关段落，随后作答。仅在路径缺失、失效或依据不足时查找；读取或搜索前先核实所需许可。有缺口或冲突就说明。若已批准的单条决定只改一份文档的现有正文，只用 `$ssot-closeout`，回读核实即完成。\n"
+      },
+      "skills/ssot-bootstrap/assets/templates/zh/context-adapter.md": {
+        "old_sha256": "cc44a90703097d357abe96de6582ae1025b27ebea7f8a5d92e17b86a83e5ac72",
+        "new_sha256": "d1e562452a80a5f7caaaa6919c907de0e0552ac3b0b285a2a8e4e0a950bc2851",
+        "patch": "--- a/skills/ssot-bootstrap/assets/templates/zh/context-adapter.md\n+++ b/skills/ssot-bootstrap/assets/templates/zh/context-adapter.md\n@@ -8 +8 @@\n-本空间的入口为 ENTRY（`ssot_format: 5`），写入要求 SSOT-CONTEXT 5.0+。旧版只读并升级。先在入口核实当前格式、文档归属、读取许可和保护规则。格式 5 可走以下局部路径。一份获准读取的现行文档足以回答简单查询时，直接作答。若已批准的单条决定只改这份文档的现有正文，只用 `$ssot-closeout`，回读核实即完成。\n+本空间的入口为 ENTRY（`ssot_format: 5`），写入要求 SSOT-CONTEXT 5.0+。旧版只读并升级。直接打开 ENTRY，核实格式、文档归属、访问条件和保护规则。格式 5 查询可一次读取入口指向、获准且相互独立的相关段落，随后作答。仅在路径缺失、失效或依据不足时查找；读取或搜索前先核实所需许可。有缺口或冲突就说明。若已批准的单条决定只改一份文档的现有正文，只用 `$ssot-closeout`，回读核实即完成。\n"
+      },
+      "skills/ssot-closeout/SKILL.md": {
+        "old_sha256": "babe117111ddb5cc6ecfae4483ddd1012cee41608be49472a8195364081d9da4",
+        "new_sha256": "74f6699231d690ca6b0b144de95fdd32fe703555594fe88e9bfa59b7b228bb0d"
+      },
+      "skills/ssot-doctor/SKILL.md": {
+        "old_sha256": "6c0aab9f2d446c451107c6b5ff776ca7b5ac135b6c831a628561a1883ef90334",
+        "new_sha256": "0a4d74ff1b56ef15d9190e7aa85dcef63564788c4b35b4cb8776c6e29a319616"
+      },
+      "skills/ssot-preflight/SKILL.md": {
+        "old_sha256": "794881f520fa2983e9f2c0a4fefca52757294548396da93e1ec9ba91a46da026",
+        "new_sha256": "f02a2df40aed211b8926ec22dc50f2edf63231a3c79f0709286c96801d588604",
+        "patch": "--- a/skills/ssot-preflight/SKILL.md\n+++ b/skills/ssot-preflight/SKILL.md\n@@ -3 +3 @@\n-description: Load before opening a project context entry for substantive work. Start with its format and headings, then read the relevant sections and owners. Find protected rules, owners and blocking questions for code, configuration, documentation, review, debugging or planning. Use for an explicit request to maintain non-repository context; ordinary chat, research answers or creative writing without a declared space do not trigger setup. Skip pure commands and meaning-preserving typo or formatting edits.\n+description: Read SSOT before substantive work in a repository or declared space. Follow its bounded lookup and edit routes. Skip pure commands and cosmetic edits.\n@@ -5 +5 @@\n-  protocol_version: \"5.14\"\n+  protocol_version: \"5.15\"\n@@ -17 +17 @@\n-In formats 4 and 5, answer a lookup from its current authorized owner when that owner settles the question. For one settled prose change confined to that owner, use `$ssot-closeout` directly. Follow owner-specific requirements. If the answer depends on other evidence or decisions, follow their authorized routes. Restricted sources require the permission result before any dependent read, including a search.\n+For a read-only lookup in formats 4 and 5, open the named entry directly. Once its access and protection terms permit each relevant owner, read their answering passages together if independent, then reply. Search for an owner only if the route is missing, stale or insufficient. Resolve access before any dependent read or search. Report disagreements or gaps. For one settled prose change confined to one owner, use `$ssot-closeout` directly and follow its owner-specific requirements.\n"
+      },
+      "skills/ssot-skill/SKILL.md": {
+        "old_sha256": "dcaa73cc74cb156f9708099b36ce302d7aed5576747f4bf0c7f7079df48a0487",
+        "new_sha256": "03077962cde375f0867c1ff845641e4b76168e0ad743344f336b90edc597b2b1"
+      }
+    }
+  },
+  "all_native": {
+    "sessions": 41,
+    "completed": 41,
+    "usage_observed": 41,
+    "input": 1828997,
+    "cached": 1616256,
+    "output": 78613,
+    "tools": 216,
+    "seconds": 920.806
+  },
+  "plan_sha256": {
+    "plan.json": "55f891a85757340687510474b6392b87ff4508a3ad5c7edf033435946f0ee5d1",
+    "direct-plan.json": "03a99005f55a33d13f26905f182e5078081803d71ea920c7dcada8331235f9d3",
+    "compact-plan.json": "2d6fcfb6ebb4aaac7927d084dbe97b977e369a0dafd21b7bdd9511e086b53ff9"
+  },
+  "limits": "Whole-turn input includes cached input. Unique sessions counted once across comparisons. Candidate-specific gates and failures are not pooled for adoption. The shipping choice reduces Codex catalog overhead. Other hosts, real project frequency, human time, actual billing and other model or title request costs are unknown. Coordinator reviewed the actual texts, traces and saved files. No separate model judge.",
+  "archive": {
+    "file": "selected-evidence.tar.gz",
+    "sha256": "facdcaebb128370970f5b63db42290b04240fa5f5e5ad9daaba396117e90db42",
+    "visibility": "Private raw receipts. The public account retains only public task data and results. No subject session homes are archived."
+  }
+}

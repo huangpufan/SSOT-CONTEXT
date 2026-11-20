@@ -1,6 +1,6 @@
 ---
 name: ssot-closeout
-description: Capture user-established durable goals, preferences and decisions immediately. Record requested task handoffs. Reconcile lasting choices, behavior, traps, methods and workarounds in their owner before a substantive batch's final response or commit. Skip typo and formatting edits without a durable change or handoff.
+description: Capture settled durable choices immediately, record requested handoffs and reconcile lasting changes before batch end.
 ---
 
 # SSOT Closeout

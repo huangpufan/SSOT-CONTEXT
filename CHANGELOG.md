@@ -25,6 +25,12 @@ Entries up to 2.86 were derived from the v2 protocol-upgrade ledger, which is pr
 ### Changed
 - Cold-handoff trials now default to an explicit persistence goal shared by plain/protocol writers, retain automatic capture as a separate estimand, and add an independently authored museum confirmation. The [deepening record](docs/benchmark-deepening-2026-11-12.md) distinguishes measurement repairs, actual subject outcomes and evidence limits; the SSOT protocol remains 5.3.
 
+## [5.15] - 2026-11-21
+
+### Changed
+
+- Shortened the six descriptions that hosts show when listing available skills. Two matched Codex requests that used no tools each saved 247 input tokens. Installed lookup and review trials also checked the selected work and the resulting answers. [Measurements and routing experiments](docs/skill-discovery-cost-5.15.md)
+
 ## [5.14] - 2026-11-20
 
 ### Changed

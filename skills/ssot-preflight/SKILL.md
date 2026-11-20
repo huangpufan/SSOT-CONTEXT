@@ -1,8 +1,8 @@
 ---
 name: ssot-preflight
-description: Load before opening a project context entry for substantive work. Start with its format and headings, then read the relevant sections and owners. Find protected rules, owners and blocking questions for code, configuration, documentation, review, debugging or planning. Use for an explicit request to maintain non-repository context; ordinary chat, research answers or creative writing without a declared space do not trigger setup. Skip pure commands and meaning-preserving typo or formatting edits.
+description: Read SSOT before substantive work in a repository or declared space. Follow its bounded lookup and edit routes. Skip pure commands and cosmetic edits.
 metadata:
-  protocol_version: "5.14"
+  protocol_version: "5.15"
   bundle: "SSOT-CONTEXT"
 ---
 

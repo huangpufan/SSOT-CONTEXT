@@ -97,7 +97,9 @@ In a development repository only `SSOT/README.md` is required; the other files a
 
 Existing maintained documents can stay the owners and are linked from the entry. A general space has no fixed layout: its entry states purpose, scope and protected rules, and links the documents that already own each topic. An unfinished general space links its own setup record. Several spaces can share a directory. Details are in the [memory model](./skills/ssot-preflight/references/memory-model.md) and the [space model](./skills/ssot-preflight/references/context-spaces.md).
 
-In protocol 5.14, a reader can answer a lookup from the current authorized document that owns the answer. When an approved change affects only existing prose in that document, the agent updates it in place, preserves the earlier decision and its reason where required, then reads the result back. Changes involving other owners, approvals or protections follow the full workflow.
+A reader can answer a lookup from the current authorized document that owns the answer. When an approved change affects only existing prose in that document, the agent updates it in place, preserves the earlier decision and its reason where required, then reads the result back. Changes involving other owners, approvals or protections follow the full workflow.
+
+Version 5.15 shortens the descriptions Codex includes when it lists available skills. In two fresh sessions, an ordinary request that used no skills cost 247 fewer input tokens each time. [Installed comparison and whole-task costs](./docs/skill-discovery-cost-5.15.md)
 
 ## Limits
 

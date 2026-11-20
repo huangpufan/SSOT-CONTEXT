@@ -1,6 +1,6 @@
 ---
 name: ssot-doctor
-description: Check, review or catch up maintained repository or general-space context against its domain evidence and supplied sources. Use for an explicit context health check, review or catch-up, or when another SSOT skill routes here. Runs mechanical checks plus an agent review of the requested scope and reports exactly what was checked.
+description: Check, review or catch up maintained context when requested or routed by an SSOT skill.
 ---
 
 # SSOT Doctor
