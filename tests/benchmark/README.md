@@ -89,3 +89,13 @@ python3 -m unittest discover -s tests/benchmark -p 'test_*.py'
 ```
 
 CI checks deterministic fixture parity, mechanical documentation validity (except the deliberate broken route), positive and negative oracle cases, warm-state freshness, per-turn usage attribution and reports that retain failures. It never runs billable models. Preserve original evidence if the oracle is wrong; a changed oracle or harness is a new version, not permission to replace old results silently.
+
+## Replay the cross-domain maintenance tasks
+
+Use `stewardship_paths.py` for software, research, creative work, compatible and conflicting editorial decisions, format-specific lookups, protected changes and unrelated copyedits. A fresh directory is required for each arm and lane. Preparation makes no model calls. The opt-in runner installs the requested bundle into the test project, verifies native discovery and records one fresh Terra session per phase. The seven-stage history question uses the existing six-shift runner. Run both for the full 22-phase workload. The [architecture study](../../docs/context-paths-study.md) also records a separate DSH host comparison. Apply [the archived runtime patch](fixtures/context-paths-candidate.patch.gz) to a disposable checkout of the study baseline to reproduce the candidate.
+
+```sh
+python3 tests/benchmark/stewardship_paths.py --plain --lane research --output /tmp/ssot-plain-research
+python3 tests/benchmark/stewardship_paths.py --bundle . --lane research --output /tmp/ssot-new-research --run-models
+python3 tests/benchmark/six_shifts.py --bundle . --output /tmp/ssot-new-history --run-models
+```

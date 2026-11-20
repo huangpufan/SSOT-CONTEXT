@@ -90,12 +90,13 @@ jobs:
       - name: Install bash 4+ (macOS)
         if: runner.os == 'macOS'
         run: brew install bash
-      - name: Run bundle shape tests
+      - name: Run bundle shape tests from outside the checkout
         run: |
+          cd "$RUNNER_TEMP"
           if [[ "${{ runner.os }}" == "macOS" ]]; then
-            /opt/homebrew/bin/bash tests/test-bundle-shape.sh
+            /opt/homebrew/bin/bash "$GITHUB_WORKSPACE/tests/test-bundle-shape.sh"
           else
-            bash tests/test-bundle-shape.sh
+            bash "$GITHUB_WORKSPACE/tests/test-bundle-shape.sh"
           fi
 
   installer-e2e:

@@ -3,6 +3,7 @@
 set -uo pipefail
 
 PROJECT_ROOT="$(cd "$(dirname "$0")/.." && pwd)"
+cd "$PROJECT_ROOT" || exit 1
 SKILLS="$PROJECT_ROOT/skills"
 TEMPLATES="$SKILLS/ssot-bootstrap/assets/templates"
 BUNDLE_SKILLS=(ssot-preflight ssot-bootstrap ssot-closeout ssot-doctor ssot-audit ssot-skill)
@@ -189,22 +190,27 @@ done < <(git -C "$PROJECT_ROOT" ls-files -co --exclude-standard -z -- '*.md' '*.
 # 8b. Paragraphs are one line each. Editors wrap text; a paragraph broken
 # across short lines reads as ragged text, and agents copy the shape of the
 # templates and skills into consumer documents. Uses the checker's own rule.
-WRAPPED="$(python3 - "$PROJECT_ROOT" <<'PY'
+if ! WRAPPED="$(python3 - "$PROJECT_ROOT" <<'PY'
 import importlib.util, subprocess, sys
 root = sys.argv[1]
 spec = importlib.util.spec_from_file_location("check", f"{root}/skills/ssot-doctor/assets/scripts/ssot-check.py")
 check = importlib.util.module_from_spec(spec)
 spec.loader.exec_module(check)
-files = subprocess.run(["git", "-C", root, "ls-files", "-co", "--exclude-standard", "*.md", ":!:research/"],
-                       capture_output=True, text=True, check=True).stdout.split()
-for name in files:
+files = subprocess.run(["git", "-C", root, "ls-files", "-co", "--exclude-standard", "-z", "*.md", ":!:research/"],
+                       capture_output=True, text=True, check=True).stdout.split("\0")
+for name in filter(None, files):
     with open(f"{root}/{name}", encoding="utf-8") as handle:
         lines = list(check.hard_wrapped_paragraphs(handle.read()))
     if lines:
         print(f"{name}:{lines[0]}")
 PY
-)"
-[[ -z "$WRAPPED" ]] && pass "Markdown paragraphs are one line each" || fail "paragraphs broken across short lines: $(echo $WRAPPED)"
+)"; then
+  fail "could not inspect Markdown paragraphs"
+elif [[ -n "$WRAPPED" ]]; then
+  fail "paragraphs broken across short lines: $WRAPPED"
+else
+  pass "Markdown paragraphs are one line each"
+fi
 
 # 9. Budgets. These are hard limits on what agents load and what this
 # repository maintains; see CONTRIBUTING.md "Protocol budgets" before raising
@@ -222,7 +228,11 @@ for lang in en zh; do
   budget "templates/$lang" "$(bytes "$TEMPLATES/$lang"/*)" 16384 bytes
 done
 budget "checker" "$(bytes "$SKILLS/ssot-doctor/assets/scripts/ssot-check.py")" 54272 bytes
-budget "skills/ total" "$(git -C "$PROJECT_ROOT" ls-files -co --exclude-standard -z -- skills | xargs -0 cat | wc -c | tr -d ' ')" 237568 bytes
+if TOTAL_BYTES="$(git ls-files -co --exclude-standard -z -- skills | xargs -0 cat | wc -c)" && (( TOTAL_BYTES > 0 )); then
+  budget "skills/ total" "$TOTAL_BYTES" 237568 bytes
+else
+  fail "could not measure the runtime files in skills/"
+fi
 
 echo
 echo "=== RESULT: pass=$PASS fail=$FAIL ==="
