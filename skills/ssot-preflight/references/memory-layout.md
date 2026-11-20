@@ -44,7 +44,7 @@ Then, in this order:
 
 Write a decision record when a choice is consequential: costly to reverse, affecting more than one part, overturning an earlier decision, or likely to be questioned later. This applies to product and process choices as well as technical ones. Routine edits do not need one, and neither does a choice whose reasons already live in another owner.
 
-Each record says, in prose: the situation, the decision, the alternatives considered and why they lost, the consequences, the date, and who decided (a user directive, a team review, or an agent proposal that the user accepted). Its status is one of `accepted`, `superseded by NNNN`, or `retired`. A retired decision no longer applies and needs no successor. A superseded one names its replacement. Do not delete old decisions, because they explain why the rejected paths stay rejected. An accepted decision that a person made or approved binds like a rule: changing it takes that person's agreement, recorded as a new decision that supersedes it.
+Explain the situation, choice, alternatives and why they lost, consequences, date and who decided. Keep the history so readers can recover rejected paths. Use `accepted`, `superseded by NNNN` (name its replacement), or `retired` (no successor required). An accepted choice binds until a person with authority over it revises or retires it. On handover check the [decision authority](memory-model.md#human-decision-evidence) and preserve the original attribution.
 
 ### Research
 

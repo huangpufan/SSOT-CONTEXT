@@ -2,12 +2,12 @@
 """Mechanical checks for development format 4 and general context format 5.
 
 Usage: ssot-check.py [SSOT_DIR|FORMAT5_ENTRY] [--since COMMIT] (default: ./SSOT)
-       ssot-check.py ENTRY_FILE --owners [FILE ...]
+       ssot-check.py ENTRY_FILE [--space-root DIR] --owners [FILE ...]
 
-A directory selects README.md. Pass the file for another format-5 entry.
---owners checks the entry and named Markdown files reachable through that
-selection. Include each intervening index, with paths relative to the entry.
-Omit names for an entry-only check. Other targets and Git history are excluded.
+Directories select README.md. For a named entry pass its file. --owners checks
+only that entry and selected reachable Markdown files, excluding Git history.
+Include intervening indexes. Paths are entry-relative. --space-root sets the
+agreed containing directory for sibling owners in format 5.
 
 --since COMMIT lists only mentions of files removed after COMMIT or in
 uncommitted changes, and counts the older ones in one line; it also compares
@@ -1027,6 +1027,7 @@ def main(argv):
     mode = parser.add_mutually_exclusive_group()
     mode.add_argument("--since")
     mode.add_argument("--owners", nargs="*")
+    parser.add_argument("--space-root")
     args = parser.parse_args(argv[1:])
     since = args.since
     if since == "" or (since and since.startswith("-")):
@@ -1036,6 +1037,13 @@ def main(argv):
     scoped = args.owners is not None
     if scoped and not named_entry:
         parser.error("--owners requires an explicit entry file")
+    space_root = None
+    if args.space_root is not None:
+        if not scoped:
+            parser.error("--space-root requires --owners")
+        space_root = os.path.realpath(args.space_root)
+        if not args.space_root or not os.path.isdir(space_root) or not inside(selected, space_root):
+            parser.error("--space-root must be a directory containing the entry")
     ssot_dir = os.path.dirname(selected) if named_entry else selected
     if not os.path.isdir(ssot_dir):
         print(f"ERROR no SSOT directory at {ssot_dir}")
@@ -1048,7 +1056,7 @@ def main(argv):
         if os.path.realpath(selected) != os.path.join(entry_dir, os.path.basename(selected)):
             parser.error("select the entry file by its actual path")
     report = Report(ssot_dir, documents)
-    REPO_ROOT[0] = repository_root(ssot_dir)
+    REPO_ROOT[0] = space_root or repository_root(ssot_dir)
     readme = selected if named_entry else os.path.join(ssot_dir, "README.md")
     GENERAL[0] = False
 
@@ -1063,8 +1071,10 @@ def main(argv):
         text = read_text(readme)
         meta = front_matter(text)
         GENERAL[0] = meta.get("ssot_format") == "5"
+        if space_root and not GENERAL[0]:
+            parser.error("--space-root requires a format-5 entry")
         if GENERAL[0]:
-            REPO_ROOT[0] = os.path.realpath(ssot_dir)
+            REPO_ROOT[0] = space_root or os.path.realpath(ssot_dir)
             if not scoped:
                 report.add("INFO", readme, None, "format 5: selected entry and direct local owners; external routes are not read")
         selected_repo_readme = scoped and meta.get("ssot_format") == FORMAT and os.path.basename(readme) == "README.md"

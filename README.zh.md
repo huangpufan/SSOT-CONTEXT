@@ -101,9 +101,11 @@ curl -fsSL https://raw.githubusercontent.com/huangpufan/SSOT-CONTEXT/main/instal
 
 Skill 只在 Agent 加载它们时生效。它们不会在后台采集材料，也删不掉触及不到的副本，例如备份或服务商日志。[5.1 试验](./tests/context/trials-5.1.md)覆盖冷会话接续、来源准入和大型保护规则表。这些小型合成证据不证明普遍可靠；[5.0 报告](./tests/context/trials-5.0.md)中，开发热任务的 token 用量增加约 5–13%。
 
+项目负责人换人后，依项目约定判断继任者能够修改哪项选择，分别保留前后两次决定的归属。若早先采用某个偏好的理由只存在于现行指南，替换该做法时会按保留权限保存这段来由。对已登记的来源，还可以查到文档完成读回后，其内容是否又有改动。[决策权与来源](./skills/ssot-preflight/references/memory-model.md#human-decision-evidence) · [来源进度](./skills/ssot-doctor/references/source-integration.md#readback-progress-and-recovery)
+
 撤回访谈等已登记的来源时，工具先保存撤回决定，再盘点受影响文档。若工作文档必须保持关闭，使用 `withdraw-source --metadata-only`。以后的状态查询可以据已有登记列出目标和早先的回执，正文保持关闭。[来源撤回与恢复](./skills/ssot-doctor/references/source-integration.md#correction-and-withdrawal)
 
-开发仓库和通用空间都可以保留指向受限原件的链接。Doctor 能只检查入口和本次获准读取的文档，报告会列出范围。补录 Git 历史时会读合并分支中的决定，只有连续区间核对完才推进已检查到的提交。[受限检查](./skills/ssot-preflight/references/source-retention.md#selected-mechanical-checks)、[5.9 追补示例](./docs/catchup-5.9.md)
+开发仓库和通用空间都可以保留指向受限原件的链接。Doctor 能只检查入口和本次获准读取的文档，报告会列出范围。通用空间的入口放在子目录时，`--space-root DIR` 配合 `--owners` 可以检查同一约定根目录下、位于平级目录的指定指南。补录 Git 历史时会读合并分支中的决定，只有连续区间核对完才推进已检查到的提交。[受限检查](./skills/ssot-preflight/references/source-retention.md#selected-mechanical-checks)、[5.9 追补示例](./docs/catchup-5.9.md)
 
 更正决定后，复核保存结果时既对照新交流，也在当前保留授权范围内核对必要的早期来源摘录。[5.3 试验](./tests/context/trials-5.3.md)记录了原话丢失的失败，以及对这条复核规则的有限验证。
 
@@ -135,6 +137,7 @@ curl -fsSL https://raw.githubusercontent.com/huangpufan/SSOT-CONTEXT/main/instal
 - [安装指南](./INSTALL.md)：安装、接线、升级、卸载和恢复。
 - [设计说明](./DESIGN.md)：Skill 包为什么是现在这个形态。
 - [持续修改的研究和创作项目](./docs/evolving-research-and-creative-projects.md)：沿用现有 owner，处理局部修订、来源缺口、旧素材与暂缓同步的具体例子。
+- [5.13 的长期 context 审视与六班交接](./docs/context-stewardship-5.13.md)检验负责人交接、目标争用、证据重复和文档核对。
 - [5.12 的决定生效与交接试验](./docs/conditional-context-5.12.md)比较签字前后、部分部署、送印权限和受限撤回时的实际产物。
 - [5.8 维护审视与试验](./docs/context-maintenance-5.8.md)记录了同目录空间的接续、撤回中断恢复，以及尚待验证的设计。
 - [演进审视](./docs/evolution-review-2026-11-12.md)：本轮改进、真实接续试验与证据边界。

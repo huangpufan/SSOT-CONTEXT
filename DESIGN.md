@@ -53,6 +53,8 @@ An established preference guides choices within its stated scope and can yield t
 
 A saved next action can outlive the goal that justified it. On resumption the executor needs the governing decision and the latest relevant receipt. A new decision can end future work while an earlier request is still in flight. Keeping the decision with its owner lets the original executor reconcile that request. A person preparing a report from the same record has a different responsibility and may have no authority to close the underlying task. The [5.11 review and trials](./docs/goal-changes-5.11.md) follow these cases to the next actual deliverable.
 
+A project can hand execution to a new editor while its board retains the right to revise a shared booking. It can also explicitly transfer that decision right. Record who made each choice and use the grant that applied to its subject and time. The [5.13 study](docs/context-stewardship-5.13.md) traces this distinction across cold sessions and tests how a successor can inspect the current owner of a past decision.
+
 ## Why v4 changes the format
 
 Repositories already have maintained design documents, machine-checked contracts, research, and follow-up systems. Moving all their durable facts into `SSOT/` can create duplicate authorities or discard the context that explains a decision. Format 4 makes `SSOT/README.md` the entry point and records the owner routes; a maintained document elsewhere in the same repository can remain the authority. Raw conversations, task artifacts, and runtime state keep their appropriate owners rather than becoming a second SSOT archive.

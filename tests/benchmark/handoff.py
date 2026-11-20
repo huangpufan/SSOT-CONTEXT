@@ -89,6 +89,19 @@ def attach(root, plan, source):
          'manifest': freeze_bundle(source.resolve(), root / 'bundles/candidate')})
 
 
+def installed_adapter(repo, bundle, directory, version, entry):
+    command = ['bash', str(bundle / 'install.sh'), '--quickstart', '--agent', 'codex', '--scope', 'project', '--lang', 'en']
+    installed = subprocess.run(command, cwd=repo, env={**os.environ, 'SOURCE_DIR': str(bundle)}, capture_output=True, text=True, timeout=40)
+    save(directory / 'installation.json', {'command': command, 'returncode': installed.returncode,
+                                         'stdout': installed.stdout, 'stderr': installed.stderr})
+    if installed.returncode:
+        raise ValueError('Official local installation failed')
+    template = 'adapter-thin.md' if version == 4 else 'context-adapter.md'
+    adapter = (repo / '.agents/skills/ssot-bootstrap/assets/templates' / template).read_text()
+    start, end = '<!-- SSOT-CONTEXT:BEGIN -->', '<!-- SSOT-CONTEXT:END -->'
+    return adapter[adapter.index(start):adapter.index(end)+len(end)].replace('ENTRY', entry)
+
+
 def setup(repo, bundle, c, protocol, directory, consumer=False, arm=None):
     instructions = (f'# Workspace rules\n\nMaintained context starts at {c["entry"]}; {c["owner"]} owns the policy and its accepted changes.\n'
         f'Authorized documentation edits: {c["entry"]} and Markdown beneath {str(Path(c["owner"]).parent)}/; preserve the existing policy owner. Other files, including AGENTS.md, stay unchanged.\n'
@@ -103,16 +116,7 @@ def setup(repo, bundle, c, protocol, directory, consumer=False, arm=None):
             + 'The user task and maintained decisions determine which of these edits are currently authorized; a path allowance does not unlock a frozen file.\n'
             + 'Work only here; do not commit, push, install dependencies, access other projects, invoke other models or delegate.\n')
     if protocol:
-        command = ['bash', str(bundle / 'install.sh'), '--quickstart', '--agent', 'codex', '--scope', 'project', '--lang', 'en']
-        installed = subprocess.run(command, cwd=repo, env={**os.environ, 'SOURCE_DIR': str(bundle)}, capture_output=True, text=True, timeout=40)
-        save(directory / 'installation.json', {'command': command, 'returncode': installed.returncode,
-                                             'stdout': installed.stdout, 'stderr': installed.stderr})
-        if installed.returncode:
-            raise ValueError('Official local installation failed')
-        template = 'adapter-thin.md' if c['format'] == 4 else 'context-adapter.md'
-        adapter = (repo / '.agents/skills/ssot-bootstrap/assets/templates' / template).read_text()
-        start, end = '<!-- SSOT-CONTEXT:BEGIN -->', '<!-- SSOT-CONTEXT:END -->'
-        instructions += '\n' + adapter[adapter.index(start):adapter.index(end)+len(end)].replace('ENTRY', c['entry']) + '\n'
+        instructions += '\n' + installed_adapter(repo, bundle, directory, c['format'], c['entry']) + '\n'
     (repo / 'AGENTS.md').write_text(instructions)
 
 

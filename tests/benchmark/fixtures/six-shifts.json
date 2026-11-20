@@ -1,0 +1,51 @@
+{
+  "format": 5,
+  "entry": "context/entry.md",
+  "files": {
+    "context/entry.md": "---\nssot_format: 5\nlanguage: en\n---\n# Harbour exhibits\nThis project studies what readers can do with a museum brief. Its agreed local space is the project directory. Use the [brief guide](../editor/guide.md#desk-editions), [research method](../study/method.md), and [work in progress](../study/task.md). Only the registrar can access the oral original.\n\n## Invariants\nNone registered.\n\n## Open questions\nNone logged.\n",
+    "editor/guide.md": "# Brief guide\n\n## Desk editions\nUse a short paragraph for internal and partner news. Two facts are needed for this issue: east gallery reopens Monday; the upper room stays closed. The [minutes](minutes.md) and [charter](charter.md) govern handovers.\n",
+    "editor/minutes.md": "# Signed minutes\nCora is editor.\n",
+    "editor/charter.md": "# Adopted charter\nCora decides internal display. When Cora hands over by signed appointment, the named successor may change the internal display. Partner policy remains with the partners.\n",
+    "study/method.md": "# Study method\nRecommend a wider trial once two different project cases have passed the normal baseline writer-to-cold-reader sequence. The feeds in this directory are observations, and a reference arm calibrates the method.\n",
+    "study/task.md": "# Work in progress\nAssess the feeds primary.json and desk.json for a wider trial; report the present recommendation for the editor.\n",
+    "study/primary.json": "[\n  {\n    \"project_case\": \"judgment\",\n    \"arm\": \"baseline\",\n    \"outcome\": \"passed\",\n    \"session\": \"01a1d974-3c65-7741-90b1-9f3eba492090\",\n    \"artifact\": \"46623e08b19dd77819aa28544d06c384f7bc1f767d67276fcc922dc96e833530\",\n    \"phases\": [\n      {\n        \"phase\": \"writer-1\",\n        \"session\": \"01a1d972-88ae-7081-9b96-18a7cca796b6\",\n        \"native_sha256\": \"30413dd5a61078f647a8686d9ae7c2c7003af862cb92be2793a89095ba500742\"\n      },\n      {\n        \"phase\": \"writer-2\",\n        \"session\": \"01a1d972-88ae-7081-9b96-18a7cca796b6\",\n        \"native_sha256\": \"edf43627d36671ca78d96d57dd480ac1129a5e39e95568f076ac86d5430977d2\"\n      },\n      {\n        \"phase\": \"consumer-1\",\n        \"session\": \"01a1d974-3c65-7741-90b1-9f3eba492090\",\n        \"native_sha256\": \"2ac1eb787a79a2d95f80e01bafa481e9f1a24a7ef5b20f8884bbebe2edfd7fef\"\n      }\n    ]\n  }\n]",
+    "study/desk.json": "[\n  {\n    \"case_label\": \"observer digest B\",\n    \"record\": {\n      \"project_case\": \"judgment\",\n      \"arm\": \"baseline\",\n      \"outcome\": \"passed\",\n      \"session\": \"01a1d974-3c65-7741-90b1-9f3eba492090\",\n      \"artifact\": \"46623e08b19dd77819aa28544d06c384f7bc1f767d67276fcc922dc96e833530\",\n      \"phases\": [\n        {\n          \"phase\": \"writer-1\",\n          \"session\": \"01a1d972-88ae-7081-9b96-18a7cca796b6\",\n          \"native_sha256\": \"30413dd5a61078f647a8686d9ae7c2c7003af862cb92be2793a89095ba500742\"\n        },\n        {\n          \"phase\": \"writer-2\",\n          \"session\": \"01a1d972-88ae-7081-9b96-18a7cca796b6\",\n          \"native_sha256\": \"edf43627d36671ca78d96d57dd480ac1129a5e39e95568f076ac86d5430977d2\"\n        },\n        {\n          \"phase\": \"consumer-1\",\n          \"session\": \"01a1d974-3c65-7741-90b1-9f3eba492090\",\n          \"native_sha256\": \"2ac1eb787a79a2d95f80e01bafa481e9f1a24a7ef5b20f8884bbebe2edfd7fef\"\n        }\n      ]\n    },\n    \"other_control\": {\n      \"case\": \"judgment\",\n      \"arm\": \"ceiling\",\n      \"outcome\": \"passed\"\n    }\n  }\n]",
+    "editor/internal.md": "# Internal issue\n",
+    "editor/partner.md": "# Partner issue\n",
+    "oral/original.md": "# Registered oral original\nClosed source outside this assignment.\n",
+    "context/check.md": "# Structural check\n"
+  },
+  "prompts": [
+    "I am Cora. For our internal issues I prefer a short bullet list from now on so staff can scan them. Keep our partners on prose. Please save the agreed guidance in the existing guide.",
+    "We are pausing the research shift. Update the existing work-in-progress note for the next editor with your evidence-based recommendation. The two feeds have both arrived.",
+    "Reconcile the editor’s new signed minutes with the desk guide for the next shift. The charter still governs. Keep notices about interim ideas distinct from the current instructions.",
+    "Resume the research shift and reconcile the latest signed minutes. Update the desk guide and work-in-progress note where due. The desk has received a revised feed.",
+    "Check and repair the current route from context/entry.md to the desk editions heading in editor/guide.md. A copy editor renamed the heading to “Issue layouts” without changing the guidance. Only these two Markdown bodies may be opened for the check; no Git history or other project bodies. Edit only the entry.",
+    "Prepare editor/internal.md and editor/partner.md for the next issue, using the settled project guidance. Include the research commissioning recommendation in the internal edition. These two local drafts are the only outputs.",
+    "A catalogue editor asks why the internal desk originally adopted the bullet list, who established it, and what changed later. Answer from the current project records. If they do not establish a reason, say so. Do not change any files."
+  ],
+  "transitions": {
+    "2": {
+      "editor/minutes.md": "# Signed minutes\nJune 2, Ari, assistant editor: I would like the internal issue in a two-column table. Cora has yet to appoint a successor.\n"
+    },
+    "3": {
+      "editor/minutes.md": "# Signed minutes\nJune 2, Ari, assistant editor: I would like the internal issue in a two-column table. Cora has yet to appoint a successor.\nJune 6, Cora: “I appoint Ari as my successor for internal display, effective now.” June 6, Ari: “I adopt the two-column table for the internal issue; the first column names the room and the second gives the update.”\n",
+      "study/desk.json": "[\n  {\n    \"case_label\": \"observer digest B\",\n    \"record\": {\n      \"project_case\": \"judgment-sources\",\n      \"arm\": \"baseline\",\n      \"outcome\": \"passed\",\n      \"session\": \"01a1d97a-b05e-7d80-aeb2-d89b1a6b8b0a\",\n      \"artifact\": \"2ecc30d6cdcc469411cc9ed1d7e14d0fc8e5f8549e38d6e37f98d8c08a974cb8\",\n      \"phases\": [\n        {\n          \"phase\": \"writer-1\",\n          \"session\": \"01a1d979-46cf-7cb1-a198-b12eeb2fc32d\",\n          \"native_sha256\": \"04ff1b9e49cef08976447dc51e57144f982bbf5e85f5e70663876200026fec71\"\n        },\n        {\n          \"phase\": \"writer-2\",\n          \"session\": \"01a1d979-46cf-7cb1-a198-b12eeb2fc32d\",\n          \"native_sha256\": \"dc99b09b6383937f4eada876c1922af6a97daa8d1278edc686f890d30658070b\"\n        },\n        {\n          \"phase\": \"consumer-1\",\n          \"session\": \"01a1d97a-b05e-7d80-aeb2-d89b1a6b8b0a\",\n          \"native_sha256\": \"4589aeac0faca0a12b93bc39dc025ac9484c829211e85d5c2b501b33c904fd27\"\n        }\n      ]\n    },\n    \"other_control\": {\n      \"case\": \"judgment\",\n      \"arm\": \"ceiling\",\n      \"outcome\": \"passed\"\n    }\n  }\n]"
+    },
+    "4": {
+      "editor/guide.md": {
+        "old": "## Desk editions",
+        "new": "## Issue layouts"
+      }
+    }
+  },
+  "criteria": [
+    "Writer records internal standing bullet preference/reason, retains partner prose.",
+    "Handoff counts one case from duplicate and holds wider trial.",
+    "Ari only proposed a table; current instructions still list/prose.",
+    "Signed appointment and decision now support internal two-column table, partner prose. Task recommends wider trial on two distinct qualifying cases.",
+    "Entry link resolves to renamed heading. Only entry editable. No history or other project body is read. Manual repair counts for product result; record separately whether the installed checker covers both files.",
+    "Actual internal draft has table of rooms + both facts and affirmative trial recommendation. Partner draft conveys both facts in prose. Both are local only.",
+    "Cold answer recovers Cora’s actual stated reason for bullets (quick staff scanning), names the attributed evidence and distinguishes it from Ari’s table now in force. An honest unknown is correct behavior if the evidence was lost, and a failed end-to-end preservation outcome. No write."
+  ]
+}

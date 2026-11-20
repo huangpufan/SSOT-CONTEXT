@@ -23,6 +23,18 @@ Entries up to 2.86 were derived from the v2 protocol-upgrade ledger, which is pr
 ### Changed
 - Cold-handoff trials now default to an explicit persistence goal shared by plain/protocol writers, retain automatic capture as a separate estimand, and add an independently authored museum confirmation. The [deepening record](docs/benchmark-deepening-2026-11-12.md) distinguishes measurement repairs, actual subject outcomes and evidence limits; the SSOT protocol remains 5.3.
 
+## [5.13] - 2026-11-20
+
+### Changed
+
+- Decision history preserves who accepted each choice when authority passes to a successor. The [release study](docs/context-stewardship-5.13.md) follows a project across six shifts and compares resource allocations and research handoffs.
+
+### Fixed
+
+- Replacing guidance preserves the earlier choice’s only recorded rationale within its retention permissions. A new reader can follow the retained source or read the attributed history in the existing owner.
+- Source status and withdrawal reports compare a completed reference with the current bound file during permitted scans. They preserve historical completion and disclose unavailable comparisons.
+- A selected format-5 check accepts an explicit space root when a nested entry routes to sibling directories. Only the named, reachable documents are checked.
+
 ## [5.12] - 2026-11-20
 
 ### Changed

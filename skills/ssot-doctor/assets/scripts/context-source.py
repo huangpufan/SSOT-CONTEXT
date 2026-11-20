@@ -173,7 +173,27 @@ def owner_observations(snapshots, record=None):
     return observations
 
 
-def impacts(state, record, snapshots):
+def compare_completion(state, reference, record_key, scans):
+    alias = reference["owner"]
+    if state["owners"].get(alias) != reference["path"]:
+        return {"completion_check": "binding-moved"}
+    if alias not in scans:
+        return {"completion_check": "unscanned"}
+    owner, counts, checksum = scans[alias]
+    if "unavailable" in owner:
+        return {"completion_check": "unavailable"}
+    count = counts[record_key]
+    saved = reference.get("file_digest")
+    if not saved:
+        result = "no-saved-digest"
+    elif count == 1 and checksum == saved:
+        result = "same-bytes"
+    else:
+        result = "different-bytes"
+    return {"completion_check": result, "marker_count": count}
+
+
+def impacts(state, record, snapshots, *, report_scans=None):
     """Locate registered and in-flight effects without opening source material."""
     found = {}
     def add(alias, path, evidence, **extra):
@@ -186,7 +206,13 @@ def impacts(state, record, snapshots):
     for alias in record.get("targets", []):
         add(alias, state["owners"][alias], "declared-target")
     for ref in record.get("references", []):
-        add(ref["owner"], ref["path"], "completed-reference")
+        comparison = {}
+        if report_scans is not None:
+            comparison = compare_completion(state, ref, record["key"], report_scans)
+            receipt_id = digest(encoded(ref))
+            if receipt_id in state["receipts"]:
+                comparison["completion_receipt_id"] = receipt_id
+        add(ref["owner"], ref["path"], "completed-reference", **comparison)
     for receipt_id in record.get("receipts", []):
         ref = state["receipts"][receipt_id]
         add(ref["owner"], ref["path"], "readback", receipt_id=receipt_id)
@@ -336,7 +362,9 @@ def source_report(args, state):
     try:
         snapshots = [] if metadata_only else scan_owners(state)
         gaps = owner_observations(snapshots)
-        known = [impact for record in state["items"].values() for impact in impacts(state, record, snapshots)]
+        scans = {snapshot[0]["owner"]: snapshot for snapshot in snapshots}
+        known = [impact for record in state["items"].values()
+                 for impact in impacts(state, record, snapshots, report_scans=scans)]
     except OPERATION_ERRORS as error:
         if state.get("source_status") == "withdrawn":
             raise ValueError(f"source use is withdrawn; impact report incomplete: {error}. Retry status") from error

@@ -283,6 +283,41 @@ class CheckerTest(unittest.TestCase):
                 self.write("work/pilot.md", "# Pilot\n[Board](../board.md)\n")
                 self.assertEqual(observe("board.md", "work/pilot.md").returncode, 0)
 
+    def test_named_space_with_sibling_owners_uses_only_its_explicit_selection(self):
+        entry = self.write("desk/entry.md", "---\nssot_format: 5\nlanguage: en\n---\n"
+                           "# Estuary\n[Guide](../field/guide.md)\n\n## Invariants\nNone registered.\n")
+        self.write("field/guide.md", "# Guide\n[Decision](notes.md#old) and [source](original.md#voice)\n")
+        self.write("field/notes.md", "# Current\n")
+        original = self.write("field/original.md", "# Voice\n")
+        args = [entry, "--space-root", self.ssot, "--owners", "../field/guide.md", "../field/notes.md"]
+        self.assertEqual(self.run_checker(entry, "--owners", "../field/guide.md")[0], 2)
+        # Fail on any attempt to open the excluded original, including an anchor lookup.
+        observer = textwrap.dedent("""
+            import runpy, sys
+            original = sys.argv.pop(1)
+            def audit(event, args):
+                if event == "open" and args[0] == original:
+                    raise RuntimeError("opened excluded source")
+            sys.addaudithook(audit)
+            sys.argv = sys.argv[1:]
+            runpy.run_path(sys.argv[0], run_name="__main__")
+        """)
+        def observe():
+            return subprocess.run([sys.executable, "-c", observer, original, CHECKER, *args],
+                                  cwd=self.repo, capture_output=True, text=True)
+        broken = observe()
+        self.assertEqual(broken.returncode, 1, broken.stdout + broken.stderr)
+        self.assertIn("missing heading anchor: notes.md#old", broken.stdout)
+        self.write("field/notes.md", "# Old\n")
+        self.assertEqual(observe().returncode, 0)
+        self.assertEqual(self.run_checker(entry, "--space-root", self.ssot, "--owners", "../field/notes.md")[0], 1)
+        os.makedirs(os.path.join(self.ssot, "field", ".git"))
+        self.assertNotEqual(observe().returncode, 0)
+        self.assertEqual(self.run_checker(entry, "--space-root", os.path.dirname(original), "--owners")[0], 2)
+        self.assertEqual(self.run_checker(entry, "--space-root", self.ssot)[0], 2)
+        self.valid()
+        self.assertEqual(self.run_checker(os.path.join(self.ssot, "README.md"), "--space-root", self.repo, "--owners")[0], 2)
+
     def test_selected_owners_require_local_files_and_explicit_entry(self):
         self.valid()
         entry = self.write("entry.md", README.replace("ssot_format: 4", "ssot_format: 5"))

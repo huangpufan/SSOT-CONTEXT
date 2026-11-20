@@ -101,9 +101,11 @@ Existing maintained documents can stay the owners and are linked from the entry.
 
 The skills act only when the agent loads them. They do not collect material in the background, and they cannot delete copies they cannot reach, such as backups or provider logs. The [5.1 trials](./tests/context/trials-5.1.md) cover cold-session continuation, source admission and a large protection register. This is small synthetic evidence, not proof of universal reliability; in the [5.0 report](./tests/context/trials-5.0.md), token use on warm development tasks rose about 5–13%.
 
+When a decision maker changes, the project’s decision process establishes what the successor may revise. Keep the original attribution and the new decision in their respective scopes. When the guide holds the only record of why a preference was adopted, preserve that history within its retention permissions. A source connector report can also distinguish a completed readback from later edits to the same file. [Decision authority](./skills/ssot-preflight/references/memory-model.md#human-decision-evidence) · [Source progress](./skills/ssot-doctor/references/source-integration.md#readback-progress-and-recovery)
+
 For a registered source, withdrawal records the stop before collecting impacts. If its working documents must stay closed, use `withdraw-source --metadata-only`. Later status queries can then report targets and earlier receipts without reopening those documents. [Source withdrawal and recovery](./skills/ssot-doctor/references/source-integration.md#correction-and-withdrawal)
 
-Doctor can check the entry and selected permitted documents in either format when links to restricted originals are retained. The report names the files covered. Git catch-up includes decisions on merged branches and advances the saved commit only across fully reviewed history. [Selected checks](./skills/ssot-preflight/references/source-retention.md#selected-mechanical-checks), [5.9 catch-up examples](./docs/catchup-5.9.md)
+Doctor can check the entry and selected permitted documents in either format when links to restricted originals are retained. The report names the files covered. For a nested general-space entry, `--space-root DIR` with `--owners` can check named guides in sibling directories under the agreed root. Git catch-up includes decisions on merged branches and advances the saved commit only across fully reviewed history. [Selected checks](./skills/ssot-preflight/references/source-retention.md#selected-mechanical-checks), [5.9 catch-up examples](./docs/catchup-5.9.md)
 
 Corrections compare the saved result with necessary earlier source excerpts as well as the new exchange, within current retention authority. The [5.3 trials](./tests/context/trials-5.3.md) record source-preservation failures and bounded checks of this readback rule.
 
@@ -135,6 +137,7 @@ After updating the skill files, refresh the repository’s managed instruction b
 - [Install guide](./INSTALL.md): setup, wiring, upgrade, removal and recovery.
 - [Design](./DESIGN.md): why the bundle is shaped this way.
 - [Evolving research and creative projects](./docs/evolving-research-and-creative-projects.md) (Chinese guide): practical examples using existing owners, scoped revisions, uncertain sources and deferred synchronization.
+- [Long-term context review and six-shift handoff in 5.13](./docs/context-stewardship-5.13.md) examines decision succession, competing goals, evidence reuse and owner checks.
 - [Conditional decisions and handoffs in 5.12](./docs/conditional-context-5.12.md) follows a decision through sign-off, partial rollout, delivery and withdrawal, with paired trials.
 - [5.8 maintenance review and trials](./docs/context-maintenance-5.8.md) cover shared-directory setup, interrupted source withdrawal and the remaining design questions.
 - [Evolution review](./docs/evolution-review-2026-11-12.md): current improvements, real continuation trials and evidence limits.

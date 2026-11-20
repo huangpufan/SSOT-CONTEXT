@@ -76,6 +76,108 @@ class ConnectorContract(unittest.TestCase):
         self.assertFalse(self.state.exists())
         self.assertEqual(self.a.read_text(), "# Research\n")
 
+    def test_status_compares_the_completion_receipt_with_the_current_binding(self):
+        receipts = self.receipts()
+        self.complete(receipts)
+        original = self.a.read_bytes()
+
+        def compare(expected, count, *options):
+            before = self.state.read_bytes()
+            report = self.cli("status", *options)
+            impact = next(row for row in report["known_impacts"] if row["owner"] == "a")
+            self.assertEqual(impact["completion_check"], expected)
+            self.assertEqual(impact["completion_receipt_id"], receipts[0])
+            self.assertEqual(impact.get("marker_count"), count)
+            self.assertEqual(report["items"][0]["status"], "completed")
+            self.assertEqual(self.state.read_bytes(), before)
+
+        compare("same-bytes", 1)
+        self.a.write_bytes(original + b"\nA different method now applies.\n")
+        # A later readback is valid for these bytes but never revises historical completion.
+        self.cli("readback", "--item", "method", "--revision", "r1", "--owner", "a")
+        compare("different-bytes", 1)
+        compare("unscanned", None, "--metadata-only")
+        self.a.write_bytes(original + original)
+        compare("different-bytes", 2)
+        self.a.write_text("# Retyped without the original marker\n")
+        compare("different-bytes", 0)
+        self.a.unlink()
+        compare("unavailable", None)
+        self.a.write_bytes(original)
+        compare("same-bytes", 1)
+        current = self.root / "current.md"
+        self.a.rename(current)
+        self.cli("bind", "--owner", f"a={current}", "--reason", "Agreed move")
+        report = self.report_counting_opens(["status"], {str(self.a): 0, str(current): 1})
+        paths = {row["path"]: row for row in report["known_impacts"] if row["owner"] == "a"}
+        self.assertEqual(paths[str(self.a)]["completion_check"], "binding-moved")
+        self.assertNotIn("completion_check", paths[str(current)])
+        self.assertEqual(paths[str(current)]["marker_count"], 1)
+
+    def test_pending_and_restricted_reports_do_not_invent_a_byte_comparison(self):
+        receipts = self.receipts()
+        self.assertTrue(all("completion_check" not in row for row in self.cli("status")["known_impacts"]))
+        self.complete(receipts)
+        closed = {str(path): 0 for path in (self.a, self.b, self.source)}
+        self.report_counting_opens(["withdraw-source", "--metadata-only", "--reason", "Stop"], closed)
+        report = self.report_counting_opens(["status"], closed)
+        self.assertEqual([r["completion_check"] for r in report["known_impacts"]], ["unscanned"] * 2)
+
+    def test_missing_completion_digest_is_not_reconstructed_from_current_bytes(self):
+        self.complete(self.receipts())
+        saved = json.loads(self.state.read_text())
+        reference = next(ref for item in saved["items"].values() for ref in item["references"] if ref["owner"] == "a")
+        del reference["file_digest"]
+        self.state.write_text(json.dumps(saved))
+        result = next(row for row in self.cli("status")["known_impacts"] if row["owner"] == "a")
+        self.assertEqual(result["completion_check"], "no-saved-digest")
+        self.assertNotIn("completion_receipt_id", result)
+
+    def test_completion_reports_across_binding_content_and_read_scope(self):
+        self.complete(self.receipts())
+        original = self.a.read_bytes()
+        completed = self.state.read_bytes()
+        policies = ("active-full", "active-metadata", "withdrawn-full", "withdrawn-metadata")
+        bodies = {"same": original, "other-topic": original + b"\nOther collection\n",
+                  "edited-method": original.replace(b"Attributed method", b"Revised method"),
+                  "no-marker": b"Rewritten guide\n", "two-markers": original * 2, "missing": None}
+        for moved in (False, True):
+            for policy in policies:
+                # Each policy starts from an independent copy of the completed fixture.
+                self.state = self.root / f"state-{moved}-{policy}.json"
+                self.state.write_bytes(completed)
+                self.a.write_bytes(original)
+                current = self.a
+                if moved:
+                    current = self.root / "moved.md"
+                    self.a.replace(current)
+                    self.cli("bind", "--owner", f"a={current}", "--reason", "Agreed relocation")
+                if policy.startswith("withdrawn"):
+                    options = ["--metadata-only"] if policy == "withdrawn-metadata" else []
+                    self.cli("withdraw-source", "--reason", "End acquisition", *options)
+                scanned = policy.endswith("full")
+                for label, body in bodies.items():
+                    with self.subTest(moved=moved, policy=policy, content=label):
+                        if body is None:
+                            current.unlink()
+                        else:
+                            current.write_bytes(body)
+                        opens = {str(self.source): 0, str(self.b): int(scanned), str(current): int(scanned)}
+                        if moved:
+                            opens[str(self.a)] = 0
+                        options = ["--metadata-only"] if policy == "active-metadata" else []
+                        report = self.report_counting_opens(["status", *options], opens)
+                        rows = {r["path"]: r for r in report["known_impacts"] if r["owner"] == "a"}
+                        expected = {"missing": "unavailable", "same": "same-bytes"}.get(label, "different-bytes")
+                        if moved:
+                            expected = "binding-moved"
+                        elif not scanned:
+                            expected = "unscanned"
+                        self.assertEqual(rows[str(self.a)]["completion_check"], expected)
+                        if moved:
+                            self.assertNotIn("completion_check", rows[str(current)])
+                        self.assertEqual(report["items"][0]["status"], "completed")
+
     def test_conflict_does_not_swallow_an_independent_item(self):
         self.imported()
         export = self.root / "followup.json"
