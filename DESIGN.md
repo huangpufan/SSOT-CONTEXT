@@ -16,6 +16,8 @@ Begin with whose context needs to survive, what they need to understand, do or p
 
 Keep investigating as real use exposes new needs. For each proposed improvement, retain enough of its motivating scenario, current support, remaining uncertainty and observable success to test it; use an existing task or research owner rather than requiring a new ledger in every consumer. Distinguish demonstrated failures from untested needs and deliberate capability boundaries. [Protocol review](./CONTRIBUTING.md#changing-the-protocol) and the [evaluation method](./tests/benchmark/METHOD.md) determine whether a shared change earns its whole-task cost. A request for discussion yields recommendations until implementation is authorized. Broad relevance does not grant access to other projects, collect private material, or change consumer owners.
 
+The maintainer clarified on 2026-11-20 that exploration continues beyond a successful experiment. Use the [current route review](./docs/context-evolution-route.md) when choosing the next investigation. Update it when evidence changes which stage we have reached, which alternative deserves attention or what would justify deployment. Give any progress percentage a named destination and denominator. Routine edits do not need a route review.
+
 The [2026-11-16 needs review](./docs/context-needs-review-2026-11-16.md) applies this direction to the current bundle; its proposed investigations are not shipped capabilities.
 
 ## Accepted direction: reduce the cost and friction of using and maintaining context

@@ -139,6 +139,7 @@ curl -fsSL https://raw.githubusercontent.com/huangpufan/SSOT-CONTEXT/main/instal
 - [持续修改的研究和创作项目](./docs/evolving-research-and-creative-projects.md)：沿用现有 owner，处理局部修订、来源缺口、旧素材与暂缓同步的具体例子。
 - [跨领域 context 审计与发布试验](./docs/context-paths-study.md)比较纯文档、已安装协议与可复跑的架构候选，覆盖软件、研究与创作交接。[读取与交接验证](./docs/read-trigger-study.md)记录了直接查询省下多少输入，以及新接手者能从项目文档中找回哪些决定。
 - [日常使用与维护成本](./docs/ordered-lookup-cost.md)把查价、改一条规则的成本与普通文档做同题比较，也检查了新人能找回什么，以及 AI 实际打开了哪些文件。
+- [长期路线与阶段判断](./docs/context-evolution-route.md)说明现在走到哪、离真实项目持续受益还有多远，以及什么结果会改变下一步的优先级。
 - [5.13 的长期 context 审视与六班交接](./docs/context-stewardship-5.13.md)检验负责人交接、目标争用、证据重复和文档核对。
 - [5.12 的决定生效与交接试验](./docs/conditional-context-5.12.md)比较签字前后、部分部署、送印权限和受限撤回时的实际产物。
 - [5.8 维护审视与试验](./docs/context-maintenance-5.8.md)记录了同目录空间的接续、撤回中断恢复，以及尚待验证的设计。
