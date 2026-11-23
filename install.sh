@@ -119,7 +119,7 @@ trap 'exit 143' TERM
 # Prompt FD setup (handles `curl | bash`)
 # -----------------------------------------------------------------------------
 PROMPT_FD=0
-if [[ ! -t 0 ]]; then
+if [[ ! -t 0 && -t 1 ]]; then
   if { exec 3</dev/tty; } 2>/dev/null; then
     PROMPT_FD=3
   fi
@@ -158,6 +158,7 @@ t() {
       TARGETS) echo "目标:" ;;
       CONFIRM_INSTALL) echo "确认安装？" ;;
       YES_INSTALL) echo "是，安装" ;;
+      YES_UNINSTALL) echo "是，卸载" ;;
       NO_CANCEL) echo "否，取消" ;;
       CANCELLED) echo "已取消" ;;
       FETCHING) echo "正在拉取最新 SSOT-CONTEXT bundle..." ;;
@@ -198,6 +199,7 @@ t() {
       TARGETS) echo "Targets:" ;;
       CONFIRM_INSTALL) echo "Confirm install?" ;;
       YES_INSTALL) echo "Yes, install" ;;
+      YES_UNINSTALL) echo "Yes, uninstall" ;;
       NO_CANCEL) echo "No, cancel" ;;
       CANCELLED) echo "Cancelled" ;;
       FETCHING) echo "Fetching latest SSOT-CONTEXT bundle..." ;;
@@ -264,6 +266,13 @@ warn() { echo -e "  ${YELLOW}!${NC} $*"; }
 err()  { echo -e "  ${RED}✗${NC} $*" >&2; }
 die()  { err "$@"; exit 1; }
 
+require_tty() {
+  local hint="$1"
+  if [[ ! -t 1 || ( "$PROMPT_FD" -eq 0 && ! -t 0 ) ]]; then
+    die "no tty available for interactive picker. $hint"
+  fi
+}
+
 # Print the trigger-directive block agents should merge into the repo's
 # agent-instructions file. Switches on $1 = lang (en|zh).
 print_wire_block() {
@@ -286,8 +295,11 @@ print_wire_block() {
 read_key() {
   local __var="$1"
   local __count="${2:-1}"
-  local __value
-  IFS= read -rsn "$__count" -u "$PROMPT_FD" __value || __value=""
+  local __value=""
+  if ! IFS= read -rsn "$__count" -u "$PROMPT_FD" __value; then
+    printf -v "$__var" '%s' ""
+    return 1
+  fi
   printf -v "$__var" '%s' "$__value"
 }
 
@@ -310,9 +322,12 @@ select_one() {
         echo -e "    ${DIM}  ${options[$i]}${NC}"
       fi
     done
-    read_key key 1
+    if ! read_key key 1; then
+      tput cnorm 2>/dev/null || true
+      die "input closed before selection was confirmed"
+    fi
     if [[ "$key" == $'\x1b' ]]; then
-      read_key key 2
+      read_key key 2 || key=""
       case "$key" in
         '[A') ((cur > 0)) && cur=$((cur - 1)) ;;
         '[B') ((cur < count - 1)) && cur=$((cur + 1)) ;;
@@ -485,7 +500,10 @@ select_agents() {
 
   while true; do
     render
-    read_key key 1
+    if ! read_key key 1; then
+      tput cnorm 2>/dev/null || true
+      die "input closed before selection was confirmed"
+    fi
     if [[ "$key" == $'\x1b' ]]; then
       IFS= read -rsn 1 -u "$PROMPT_FD" -t 0.1 key2 || key2=""
       if [[ -z "$key2" ]]; then
@@ -1297,12 +1315,12 @@ remove_bundle() {
   local skill target companion
   for skill in "${BUNDLE_SKILLS[@]}"; do
     target="$base/$skill"
-    [[ -e "$target" ]] && rm -rf "$target"
+    [[ -e "$target" || -L "$target" ]] && rm -rf "$target"
   done
   for companion in "${BUNDLE_ROOT_FILES[@]}"; do
     if bundle_companion_is_owned "$base/$companion"; then
       rm -f "$base/$companion"
-    elif [[ -e "$base/$companion" ]]; then
+    elif [[ -e "$base/$companion" || -L "$base/$companion" ]]; then
       warn "preserving unowned bundle companion: $base/$companion"
     fi
   done
@@ -1388,7 +1406,8 @@ OPTIONS:
   --agent <list>            Comma-separated agent list, or 'all'.
                             Legacy short keys still work: claude, codeium,
                             copilot, gemini, aider, tabnine, iflow, kimi,
-                            kiro, autohand, hermes, codearts.
+                            kiro, autohand, hermes, codearts, antigravity-c,
+                            agy.
                             Full canonical list: --list-agents
   --scope <global|project>  Install/uninstall scope; optional upgrade filter
   --lang <en|zh>            Template language (default: en)
@@ -1594,9 +1613,7 @@ run_install() {
     if [[ "$ARG_NONINTERACTIVE" -eq 1 ]]; then
       die "--scope required in non-interactive mode"
     fi
-    if [[ "$PROMPT_FD" -eq 0 && ! -t 0 ]]; then
-      die "no tty available for interactive picker. Re-run with --quickstart, or pass --non-interactive --scope <global|project> --agent <key> --yes"
-    fi
+    require_tty "Re-run with --quickstart, or pass --non-interactive --scope <global|project> --agent <key> --yes"
     # Project-first ordering — most users running `curl | bash` want the
     # bundle in the current repo, not their global skills dir.
     local scope_options=("$(t PROJECT_SCOPE)" "$(t GLOBAL_SCOPE)")
@@ -1610,9 +1627,7 @@ run_install() {
     if [[ "$ARG_NONINTERACTIVE" -eq 1 ]]; then
       lang="en"
     else
-      if [[ "$PROMPT_FD" -eq 0 && ! -t 0 ]]; then
-        die "no tty available for interactive picker. Re-run with --quickstart, or pass --non-interactive --scope <global|project> --agent <key> --yes"
-      fi
+      require_tty "Re-run with --quickstart, or pass --non-interactive --scope <global|project> --agent <key> --yes"
       local lang_options=("$(t LANG_EN)" "$(t LANG_ZH)")
       select_one "$(t LANG_PROMPT)" "${lang_options[@]}"
       [[ $SELECTED_INDEX -eq 0 ]] && lang="en" || lang="zh"
@@ -1629,9 +1644,7 @@ run_install() {
       warn "$(t NO_AGENT_DETECTED)"
       info "$(t SHOWING_ALL)"
     fi
-    if [[ "$PROMPT_FD" -eq 0 && ! -t 0 ]]; then
-      die "no tty available for interactive picker. Re-run with --quickstart, or pass --non-interactive --scope <global|project> --agent <key> --yes"
-    fi
+    require_tty "Re-run with --quickstart, or pass --non-interactive --scope <global|project> --agent <key> --yes"
     select_agents "$(t SELECT_AGENTS)" "$scope" "${ALL_AGENTS[@]}"
     [[ ${#SELECTED_AGENT_KEYS[@]} -gt 0 ]] || die "$(t NO_AGENT_SELECTED)"
     RESOLVED_AGENTS=("${SELECTED_AGENT_KEYS[@]}")
@@ -1675,6 +1688,7 @@ run_install() {
     if [[ "$ARG_NONINTERACTIVE" -eq 1 ]]; then
       die "non-interactive without --yes: refusing to proceed"
     fi
+    require_tty "Re-run with --yes (or --quickstart) to confirm non-interactively"
     echo ""
     select_one "$(t CONFIRM_INSTALL)" "$(t YES_INSTALL)" "$(t NO_CANCEL)"
     if [[ $SELECTED_INDEX -eq 1 ]]; then
@@ -1729,7 +1743,7 @@ run_uninstall() {
   local skill b
   for b in "${bases[@]}"; do
     for skill in "${BUNDLE_SKILLS[@]}"; do
-      [[ -e "$b/$skill" ]] && echo -e "      ${DIM}${b}/${skill}${NC}"
+      [[ -e "$b/$skill" || -L "$b/$skill" ]] && echo -e "      ${DIM}${b}/${skill}${NC}"
     done
   done
 
@@ -1737,8 +1751,9 @@ run_uninstall() {
     if [[ "$ARG_NONINTERACTIVE" -eq 1 ]]; then
       die "non-interactive without --yes: refusing to proceed"
     fi
+    require_tty "Re-run with --yes to confirm uninstall non-interactively"
     echo ""
-    select_one "$(t CONFIRM_UNINSTALL)" "$(t YES_INSTALL)" "$(t NO_CANCEL)"
+    select_one "$(t CONFIRM_UNINSTALL)" "$(t YES_UNINSTALL)" "$(t NO_CANCEL)"
     if [[ $SELECTED_INDEX -eq 1 ]]; then
       info "$(t CANCELLED)"
       exit 0

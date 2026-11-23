@@ -500,6 +500,41 @@ runpy.run_path(sys.argv[0], run_name="__main__")
         receipt = self.cli("readback", "--item", "method", "--revision", "r1", "--owner", "b")["receipt_id"]
         self.complete([receipt], expected=2)
 
+    def test_duplicate_receipt_arguments_are_deduplicated(self):
+        self.imported()
+        info = self.cli("inspect", "--item", "method", "--revision", "r1")
+        self.cli("targets", "--item", "method", "--revision", "r1", "--owner", "a")
+        with self.a.open("a", encoding="utf-8") as output:
+            output.write(info["marker"] + "\nCaptured once.\n")
+        receipt = self.cli("readback", "--item", "method", "--revision", "r1", "--owner", "a")["receipt_id"]
+        completed = self.complete([receipt, receipt])
+        self.assertEqual(len(completed["references"]), 1)
+        status = self.cli("status")
+        evidence = [entry["evidence"] for entry in status["known_impacts"] if entry["owner"] == "a"][0]
+        self.assertEqual(evidence.count("completed-reference"), 1)
+
+    def test_utf8_exports_and_state_work_under_ascii_locale(self):
+        export = self.root / "utf8-export.json"
+        export.write_text(source_cases.export([{
+            **source_cases.METHOD,
+            "content": "中文记录：保持原有规则与来源。",
+        }]), encoding="utf-8")
+        env = {**os.environ, "LC_ALL": "C", "LANG": "C", "PYTHONCOERCECLOCALE": "0"}
+        proc = subprocess.run(
+            [sys.executable, str(SCRIPT), "import", str(export), "--state", str(self.state),
+             "--source-id", source_cases.SOURCE_ID, "--scope", source_cases.SCOPE,
+             "--owner", f"a={self.a}"],
+            capture_output=True, text=True, env=env,
+        )
+        self.assertEqual(proc.returncode, 0, proc.stdout + proc.stderr)
+        proc2 = subprocess.run(
+            [sys.executable, str(SCRIPT), "inspect", "--state", str(self.state),
+             "--item", "method", "--revision", "r1"],
+            capture_output=True, text=True, env=env,
+        )
+        self.assertEqual(proc2.returncode, 0, proc2.stdout + proc2.stderr)
+        self.assertIn("中文记录", proc2.stdout)
+
 
 if __name__ == "__main__":
     unittest.main()

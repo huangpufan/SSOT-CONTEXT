@@ -233,7 +233,7 @@ done < <(git -C "$PROJECT_ROOT" ls-files -co --exclude-standard -z -- '*.md' '*.
 # 8b. Paragraphs are one line each. Editors wrap text; a paragraph broken
 # across short lines reads as ragged text, and agents copy the shape of the
 # templates and skills into consumer documents. Uses the checker's own rule.
-if ! WRAPPED="$(python3 - "$PROJECT_ROOT" <<'PY'
+if ! WRAPPED="$(python3 -B - "$PROJECT_ROOT" <<'PY'
 import importlib.util, subprocess, sys
 root = sys.argv[1]
 spec = importlib.util.spec_from_file_location("check", f"{root}/skills/ssot-doctor/assets/scripts/ssot-check.py")

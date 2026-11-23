@@ -1595,6 +1595,82 @@ class CheckerTest(unittest.TestCase):
         self.assertIn("shallow history", result.stdout)
         self.assertNotIn("was removed", result.stdout)
 
+    def test_stray_ancestor_dotgit_directory_does_not_break_system_alias(self):
+        self.valid()
+        self.git("init", "-q")
+        with tempfile.TemporaryDirectory() as outer, tempfile.TemporaryDirectory() as foreign:
+            # A non-repository .git directory above an alias must not mark the path as inside a repo.
+            os.makedirs(os.path.join(outer, ".git"))
+            alias = os.path.join(outer, "sub", "system-root")
+            os.makedirs(os.path.dirname(alias))
+            os.symlink(os.path.dirname(self.repo), alias)
+            requested = os.path.join(alias, os.path.basename(self.repo))
+            code, out = self.run_checker(os.path.join(requested, "SSOT"))
+            self.assertEqual(code, 0, out)
+
+            # Once inside the actual repository, a cross-repo symlink is still rejected.
+            subprocess.run(["git", "init", "-q", foreign], check=True)
+            target = os.path.join(foreign, "SSOT")
+            os.makedirs(target)
+            for name, content in (("README.md", README), ("architecture.md", ARCHITECTURE)):
+                with open(os.path.join(target, name), "w") as handle:
+                    handle.write(content)
+            link = os.path.join(self.repo, "linked")
+            os.symlink(target, link)
+            try:
+                code, out = self.run_checker(os.path.join(requested, "linked"))
+                self.assertEqual(code, 1, out)
+                self.assertIn("README must belong to the same repository", out)
+            finally:
+                os.unlink(link)
+
+    def test_uppercase_markdown_extension_is_walked_and_anchor_checked(self):
+        self.valid()
+        self.write("NOTES.MD", "# Existing Heading\n\nSee [missing](architecture.md#nope).\n")
+        self.write("architecture.md", ARCHITECTURE + "\nSee [notes](NOTES.MD#missing-section).\n")
+        code, out = self.run_checker(self.ssot)
+        self.assertEqual(code, 1, out)
+        self.assertIn("NOTES.MD:3  missing heading anchor: architecture.md#nope", out)
+        self.assertIn("missing heading anchor: NOTES.MD#missing-section", out)
+
+    def test_removals_skips_rev_list_without_matches_and_orders_repeated_removals(self):
+        self.repo_with("src/old.py")
+        first_commit = self.git("rev-parse", "HEAD")
+        # Mention only a runtime path never tracked in Git: rev-list need not run.
+        self.write("architecture.md", ARCHITECTURE + "\nRuntime cache: `var/runtime.tmp`.\n")
+        self.commit("mention runtime path")
+        probe = textwrap.dedent("""
+            import importlib.util, sys
+            spec = importlib.util.spec_from_file_location("checker", sys.argv[1])
+            mod = importlib.util.module_from_spec(spec)
+            spec.loader.exec_module(mod)
+            orig = mod.git_output
+            calls = []
+            def spy(directory, *args):
+                calls.append(args)
+                return orig(directory, *args)
+            mod.git_output = spy
+            code = mod.main([sys.argv[1], sys.argv[2], "--since", sys.argv[3]])
+            assert code == 0, code
+            assert not any(a and a[0] == "rev-list" for a in calls), calls
+        """)
+        result = subprocess.run([sys.executable, "-B", "-c", probe, CHECKER, self.ssot, first_commit],
+                                capture_output=True, text=True)
+        self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
+
+        # Two separate removals of the same path still report the newest commit first.
+        os.remove(os.path.join(self.repo, "src/old.py"))
+        first_drop = self.commit("first drop")
+        self.code_file("src/old.py", "v2\n")
+        self.commit("restore old")
+        os.remove(os.path.join(self.repo, "src/old.py"))
+        second_drop = self.commit("second drop")
+        self.write("architecture.md", ARCHITECTURE + "\nLegacy: `src/old.py`.\n")
+        code, out = self.run_checker(self.ssot)
+        self.assertEqual(code, 0, out)
+        self.assertIn(second_drop[:10], out)
+        self.assertNotIn(first_drop[:10], out)
+
 
 if __name__ == "__main__":
     unittest.main(verbosity=1)

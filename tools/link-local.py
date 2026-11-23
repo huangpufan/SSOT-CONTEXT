@@ -52,7 +52,7 @@ def plan(source, bases):
                 found = True
                 if not (target / 'SKILL.md').is_file():
                     raise ValueError(f'Unrecognised or broken installation: {target}')
-                if f'name: {name}' not in (target / 'SKILL.md').read_text().splitlines():
+                if f'name: {name}' not in (target / 'SKILL.md').read_text(encoding='utf-8').splitlines():
                     raise ValueError(f'Unexpected skill owner: {target}')
             if target.is_symlink() and target.resolve() == skills / name:
                 continue
@@ -87,7 +87,7 @@ def apply(selected, backup_root):
 
     def save():
         temporary = archive / 'manifest.tmp'
-        temporary.write_text(json.dumps(record, indent=2) + '\n')
+        temporary.write_text(json.dumps(record, indent=2) + '\n', encoding='utf-8')
         temporary.replace(manifest)
 
     for i, action in enumerate(record['actions']):

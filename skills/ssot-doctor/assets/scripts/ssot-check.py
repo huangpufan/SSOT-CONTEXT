@@ -373,7 +373,7 @@ def check_link(report, doc, number, target):
             report.add("ERROR", doc, number, f"line anchor past end of file: {target}")
         else:
             report.add("WARN", doc, number, f"line anchors drift when the file changes; link a heading: {target}")
-    elif resolved.endswith(".md") and unquote(fragment) not in anchors(resolved):
+    elif resolved.lower().endswith(".md") and unquote(fragment) not in anchors(resolved):
         report.add("ERROR", doc, number, f"missing heading anchor: {target}")
 
 
@@ -696,8 +696,8 @@ def removals(top, index, shallow):
             expect_lead = False
             if token:
                 record(token, commit, date, None)
-    moves = {}
-    for commit in {event[1] for events in found.values() for event in events} - {None}:
+    moves, commits = {}, {event[1] for events in found.values() for event in events} - {None}
+    for commit in commits:
         try:
             moved = iter(git_output(top, "diff-tree", "-z", "-r", "-M", "--name-status", "--diff-filter=R",
                                     "--root", "-m", "--first-parent", "--no-commit-id", commit).split("\0"))
@@ -711,7 +711,8 @@ def removals(top, index, shallow):
                 moves[(commit, old)] = next(moved)
     # Newest first, by position in the history rather than by clock, which can
     # tie or run backwards; uncommitted removals come before every commit.
-    order = {sha: at for at, sha in enumerate(git_output(top, "rev-list", "--topo-order", "HEAD").split())}
+    order = ({sha: at for at, sha in enumerate(git_output(top, "rev-list", "--topo-order", "HEAD").split())}
+             if len(commits) > 1 else {})
     for key, events in found.items():
         events.sort(key=lambda event: -1 if event[1] is None else order.get(event[1], len(order)))
         found[key] = [(old, c, d, n or moves.get((c, old))) for old, c, d, n in events]
@@ -774,7 +775,7 @@ def check_removed_paths(report, ssot_dir, mentions, since):
             return
         shallow = git_output(top, "rev-parse", "--is-shallow-repository").strip() == "true"
         events = removals(top, PathIndex({key for _, key in pending}), shallow)
-        recent = set(git_output(top, "rev-list", f"{since}..HEAD").split()) if since else None
+        recent = set(git_output(top, "rev-list", f"{since}..HEAD").split()) if since and events else None
     except (GitError, FileNotFoundError) as error:
         report.unchecked.append(f"mentions of removed files: git failed ({error})")
         return
@@ -933,31 +934,39 @@ def check_reviewed_through(report, readme, value):
 
 # --- main ----------------------------------------------------------------------
 
+def is_git_root(path):
+    dot = os.path.join(path, ".git")
+    if not os.path.lexists(dot):
+        return False
+    try:
+        return os.path.realpath(git_output(path, "rev-parse", "--show-toplevel").rstrip("\n")) == os.path.realpath(path)
+    except FileNotFoundError:
+        return os.path.isfile(dot) or os.path.isfile(os.path.join(dot, "HEAD"))
+    except GitError:
+        return False
+
+
 def repository_root(directory):
     """Keep worktree identity across links, allowing aliases above the repository."""
     probe = os.path.abspath(directory)
     prefix = os.path.abspath(os.sep)
-    repository_seen = os.path.lexists(os.path.join(prefix, ".git"))
+    seen = is_git_root(prefix)
     for part in probe.split(os.sep):
         if not part:
             continue
         prefix = os.path.join(prefix, part)
-        if os.path.islink(prefix) and repository_seen:
+        if os.path.islink(prefix) and seen:
             probe = os.path.dirname(prefix)
             break
-        # System aliases can precede the worktree (for example a temp root).
-        # Once inside a repository, a link cannot select a different one.
-        repository_seen |= os.path.lexists(os.path.join(prefix, ".git"))
+        seen |= is_git_root(prefix)
     fallback = probe if probe != directory else os.path.dirname(directory)
     try:
-        result = subprocess.run(["git", *GIT_SAFE, "-C", probe, "rev-parse", "--show-toplevel"],
-                                capture_output=True, text=True, env=GIT_ENV)
+        return os.path.realpath(git_output(probe, "rev-parse", "--show-toplevel").rstrip("\n"))
+    except GitError as error:
+        if "not a git repository" not in str(error):
+            raise
     except FileNotFoundError:
-        return os.path.realpath(fallback)
-    if result.returncode == 0:
-        return os.path.realpath(result.stdout.strip())
-    if "not a git repository" not in result.stderr:
-        raise GitError(result.stderr.strip())
+        pass
     return os.path.realpath(fallback)
 
 
@@ -1007,7 +1016,7 @@ def markdown_files(ssot_dir, report):
     for directory, subdirs, files in os.walk(ssot_dir, onerror=unreadable):
         subdirs[:] = sorted(d for d in subdirs if d != ".git")
         for name in sorted(files):
-            if name.endswith(".md"):
+            if name.lower().endswith(".md"):
                 yield os.path.join(directory, name)
 
 

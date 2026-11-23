@@ -74,6 +74,19 @@ class LocalLinks(unittest.TestCase):
             links.apply(links.plan(self.source, [self.base]), self.backups)
         self.assertEqual({name: links.fingerprint(self.base / name) for name in links.SKILLS}, original)
 
+    def test_utf8_skill_files_work_under_ascii_locale(self):
+        import os, subprocess, sys
+        (self.base / 'ssot-preflight/SKILL.md').write_text('---\nname: ssot-preflight\n---\n中文说明\n', encoding='utf-8')
+        env = {**os.environ, 'LC_ALL': 'C', 'LANG': 'C', 'PYTHONCOERCECLOCALE': '0'}
+        tool = Path(__file__).resolve().parents[1] / 'tools/link-local.py'
+        proc = subprocess.run(
+            [sys.executable, str(tool), '--source', str(self.source), '--base', str(self.base),
+             '--apply', '--backup-root', str(self.backups)],
+            capture_output=True, text=True, env=env,
+        )
+        self.assertEqual(proc.returncode, 0, proc.stdout + proc.stderr)
+        self.assertTrue((self.base / 'ssot-preflight').is_symlink())
+
 
 if __name__ == '__main__':
     unittest.main()

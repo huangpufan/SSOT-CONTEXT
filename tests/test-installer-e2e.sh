@@ -817,5 +817,44 @@ assert_no_file "scenario27: scoped App uninstall removed its bundle" "$SCENARIO2
 assert_file "scenario27: scoped uninstall preserves legacy IDE" "$SCENARIO27/.gemini/antigravity/skills/ssot-preflight/SKILL.md"
 assert_file "scenario27: scoped uninstall preserves legacy CLI" "$SCENARIO27/.gemini/antigravity-cli/skills/ssot-preflight/SKILL.md"
 
+# Scenario 28: no-tty confirmation safety, dangling symlink uninstall, and help aliases
+SCENARIO28="$WORK_ROOT/scenario28"
+mkdir -p "$SCENARIO28/project"
+if echo "$HELP_OUTPUT" | grep -q 'agy'; then
+  pass "scenario28: --help documents agy alias"
+else
+  fail "scenario28: --help missing agy alias"
+fi
+SCEN28_INST="$(HOME="$SCENARIO28" SOURCE_DIR="$PROJECT_ROOT" \
+  bash -c "cd '$SCENARIO28/project' && bash '$INSTALLER' --agent codex --scope project --lang en < /dev/null" 2>&1)"
+SCEN28_INST_RC=$?
+if [[ $SCEN28_INST_RC -ne 0 ]] && [[ ! -d "$SCENARIO28/project/.agents/skills/ssot-preflight" ]]; then
+  pass "scenario28: install without --yes refuses on no-tty and installs nothing"
+else
+  fail "scenario28: install without --yes should refuse on no-tty (rc=$SCEN28_INST_RC, log=$SCEN28_INST)"
+fi
+HOME="$SCENARIO28" SOURCE_DIR="$PROJECT_ROOT" \
+  bash -c "cd '$SCENARIO28/project' && bash '$INSTALLER' --quickstart --agent codex --scope project --lang en" >/dev/null 2>&1 \
+  || fail "scenario28: setup install failed"
+SCEN28_UNINST="$(HOME="$SCENARIO28" SOURCE_DIR="$PROJECT_ROOT" \
+  bash -c "cd '$SCENARIO28/project' && bash '$INSTALLER' --uninstall --agent codex --scope project < /dev/null" 2>&1)"
+SCEN28_UNINST_RC=$?
+if [[ $SCEN28_UNINST_RC -ne 0 ]] && [[ -f "$SCENARIO28/project/.agents/skills/ssot-preflight/SKILL.md" ]]; then
+  pass "scenario28: uninstall without --yes refuses on no-tty and preserves skills"
+else
+  fail "scenario28: uninstall without --yes should refuse on no-tty (rc=$SCEN28_UNINST_RC, log=$SCEN28_UNINST)"
+fi
+# Replace installed skill with a dangling symlink (e.g., moved local checkout) and uninstall.
+rm -rf "$SCENARIO28/project/.agents/skills/ssot-preflight"
+ln -s "$SCENARIO28/missing-checkout/skills/ssot-preflight" "$SCENARIO28/project/.agents/skills/ssot-preflight"
+HOME="$SCENARIO28" SOURCE_DIR="$PROJECT_ROOT" \
+  bash -c "cd '$SCENARIO28/project' && bash '$INSTALLER' --uninstall --agent codex --scope project --yes" >/dev/null 2>&1 \
+  || fail "scenario28: uninstall with dangling symlink failed"
+if [[ ! -L "$SCENARIO28/project/.agents/skills/ssot-preflight" && ! -e "$SCENARIO28/project/.agents/skills/ssot-preflight" ]]; then
+  pass "scenario28: uninstall removes dangling skill symlinks"
+else
+  fail "scenario28: dangling skill symlink survived uninstall"
+fi
+
 echo "=== RESULT: pass=$PASS fail=$FAIL ==="
 [[ $FAIL -eq 0 ]] && exit 0 || exit 1

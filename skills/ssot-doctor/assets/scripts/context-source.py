@@ -239,7 +239,7 @@ def item_view(state, record):
 
 def read_source(state, record):
     """Reopen original export; state carries metadata/digests, not source prose."""
-    source = json.loads(Path(record["locator"]["path"]).read_text())
+    source = json.loads(Path(record["locator"]["path"]).read_text(encoding="utf-8"))
     if not isinstance(source, dict):
         raise ValueError("saved export is no longer an object")
     if source.get("source_id") != state["source_id"] or source.get("scope") != state["scope"]:
@@ -253,7 +253,7 @@ def read_source(state, record):
 def import_source(args, state):
     if state is not None and state.get("source_status") == "withdrawn":
         raise ValueError("source use was withdrawn; further import is disabled")
-    source = json.loads(args.export.read_text())
+    source = json.loads(args.export.read_text(encoding="utf-8"))
     if not isinstance(source, dict):
         raise ValueError("export must be an object")
     source_id = require_text(source.get("source_id"), "source_id")
@@ -481,7 +481,7 @@ def process(args, state):
         return {"receipt_id": receipt_id, "receipt": receipt, "saved_owner_text": data.decode("utf-8"),
                 "evidence_limit": "saved linkage/readback only; semantic correctness and authority require review"}
     references = []
-    for receipt_id in args.receipt:
+    for receipt_id in dict.fromkeys(args.receipt):
         receipt = state["receipts"].get(receipt_id)
         if not receipt or receipt["key"] != record["key"] or receipt["item_digest"] != record["digest"]:
             raise ValueError("receipt does not belong to this inspected source version")
@@ -559,7 +559,7 @@ def main():
     args.state = args.state.resolve()
     try:
         with locked(args.state):
-            state = json.loads(args.state.read_text()) if args.state.exists() else None
+            state = json.loads(args.state.read_text(encoding="utf-8")) if args.state.exists() else None
             if state is not None and (not isinstance(state, dict) or state.get("schema") not in (1, 2)
                                       or (state["schema"] == 2 and state.get("source_status") != "withdrawn")):
                 raise ValueError("unsupported or damaged connector state")

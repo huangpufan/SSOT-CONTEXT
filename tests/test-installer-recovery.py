@@ -132,6 +132,8 @@ os.execv({real_mv!r} if tool == 'mv' else {real_rm!r}, [tool, *args])
         self.assert_new_generation()
 
     def assert_bundle_bytes(self):
+        mask = os.umask(0)
+        os.umask(mask)
         for skill in SKILLS:
             self.assertEqual((self.base / skill / "generation.txt").read_text(), "new")
             expected = digest(self.sources["new"] / "skills" / skill)
@@ -141,9 +143,13 @@ os.execv({real_mv!r} if tool == 'mv' else {real_rm!r}, [tool, *args])
                 expected = {(prefix + name[len(prefix + "zh/"):] if name.startswith(prefix + "zh/") else name): value
                             for name, value in expected.items()
                             if not name.startswith(prefix) or name.startswith(prefix + "zh/")}
-            # Recreated directories follow the caller's umask. New file bytes,
-            # file modes and layout must match; rollback checks directory modes too.
-            layout = lambda tree: {name: (value[:1] if value[0] == "directory" else value) for name, value in tree.items()}
+            # cp -R creates new directories and files under the caller's umask;
+            # rollback checks exact preserved modes separately.
+            layout = lambda tree: {
+                name: (value[:1] if value[0] == "directory"
+                       else (value[0], value[1] & ~mask, value[2]) if value[0] == "file" else value)
+                for name, value in tree.items()
+            }
             self.assertEqual(layout(expected), layout(digest(self.base / skill)), skill + " must contain the complete selected source")
 
     def assert_new_generation(self):
