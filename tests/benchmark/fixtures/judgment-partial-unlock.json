@@ -88,6 +88,6 @@
   },
   "implementation": {
     "scope": "handoff.py setup consumer path allowance and handoff_cases.py consumer_change_checks enforce phase-specific scope and actual file mutation. Protected writer paths remain separate.",
-    "evidence": "See docs/open-judgment-2026-11-14.md for observed baseline and open-adjacent paths; file mutation still needs semantic value/readback review."
+    "evidence": "See docs/2026-11-14-open-judgment.md for observed baseline and open-adjacent paths; file mutation still needs semantic value/readback review."
   }
 }

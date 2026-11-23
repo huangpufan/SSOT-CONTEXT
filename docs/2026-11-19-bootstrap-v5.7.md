@@ -1,6 +1,6 @@
 # How much work does it take to set up useful repository memory?
 
-A repository with a two-line scheduling function previously used six helpers to document one policy. The 5.5 handoff preserved the scheduling decision but left setup open, partly because there was no real example of an approved departure to exercise. Previous mining experiments also found that repeating a whole area added little coverage, while checking exact wording caught lost exceptions and corrections could introduce new errors. [Earlier setup](context-checks-5.6.md#how-early-was-bootstrap-useful) · [Coverage experiments](../tests/trials-3.7.md) · [Correction experiments](../tests/trials-3.10.md)
+A repository with a two-line scheduling function previously used six helpers to document one policy. The 5.5 handoff preserved the scheduling decision but left setup open, partly because there was no real example of an approved departure to exercise. Previous mining experiments also found that repeating a whole area added little coverage, while checking exact wording caught lost exceptions and corrections could introduce new errors. [Earlier setup](2026-11-19-context-checks-v5.6.md#how-early-was-bootstrap-useful) · [Coverage experiments](../tests/trials-3.7.md) · [Correction experiments](../tests/trials-3.10.md)
 
 ## What changed
 

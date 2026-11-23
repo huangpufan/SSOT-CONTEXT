@@ -6,17 +6,17 @@ This opt-in benchmark asks a native agent to finish a small executable task whos
 
 Use it to compare a protocol change or to test whether better task routes help. These are separate experiments: mixing both changes cannot tell you which caused a difference. The benchmark is development tooling; it is not installed in consumer repositories and adds no required reader, cache or index format.
 
-For the cost and quality of **creating** repository memory, use the [bootstrap comparison](../../docs/bootstrap-5.7.md). Its isolated writer and document-only reader exercise a recorded policy and a real file-operation tool. The measurements include the writer’s helpers.
+For the cost and quality of **creating** repository memory, use the [bootstrap comparison](../../docs/2026-11-19-bootstrap-v5.7.md). Its isolated writer and document-only reader exercise a recorded policy and a real file-operation tool. The measurements include the writer’s helpers.
 
-For general spaces in a shared directory, the [setup and recovery trial](space_setup.py) prepares ordinary reading, review, continuation and disputed-checkpoint cases. The [5.8 report](../../docs/context-maintenance-5.8.md) includes the prompts' outcomes, a cold handoff and source withdrawal checks.
+For general spaces in a shared directory, the [setup and recovery trial](space_setup.py) prepares ordinary reading, review, continuation and disputed-checkpoint cases. The [5.8 report](../../docs/2026-11-19-context-maintenance-v5.8.md) includes the prompts' outcomes, a cold handoff and source withdrawal checks.
 
-[Catch-up trials](catchup.py) exercise retained archive links, withdrawal followed by cold recovery, merged Git history and gaps before a requested range. The [5.9 review](../../docs/catchup-5.9.md) records the old and new outcomes and reproduction commands.
+[Catch-up trials](catchup.py) exercise retained archive links, withdrawal followed by cold recovery, merged Git history and gaps before a requested range. The [5.9 review](../../docs/2026-11-20-catchup-v5.9.md) records the old and new outcomes and reproduction commands.
 
-The [six-shift trial](six_shifts.py) follows an editorial and research project across independent sessions, then asks a fresh reader to recover the reason for a superseded preference. The [5.13 study](../../docs/context-stewardship-5.13.md) includes the plain-documents control, original evidence loss and reproduction commands.
+The [six-shift trial](six_shifts.py) follows an editorial and research project across independent sessions, then asks a fresh reader to recover the reason for a superseded preference. The [5.13 study](../../docs/2026-11-20-context-stewardship-v5.13.md) includes the plain-documents control, original evidence loss and reproduction commands.
 
-For routine software, research and creative queries, the [direct-lookup study](../../docs/read-trigger-study.md) compares input costs and follows a five-shift handoff. Its [receipts](results/read-trigger-study.json) record both correct answers and unwanted reads or writes.
+For routine software, research and creative queries, the [direct-lookup study](../../docs/2026-11-20-read-trigger-study.md) compares input costs and follows a five-shift handoff. Its [receipts](results/read-trigger-study.json) record both correct answers and unwanted reads or writes.
 
-For a single rule change, the [ordered-lookup study](../../docs/ordered-lookup-cost.md) measures what a fresh reader recovered. Its [file-open records](results/ordered-lookup-cost.json) show when the agent requested a source before learning its permissions. These small trials leave broader savings and access reliability open.
+For a single rule change, the [ordered-lookup study](../../docs/2026-11-20-ordered-lookup-cost.md) measures what a fresh reader recovered. Its [file-open records](results/ordered-lookup-cost.json) show when the agent requested a source before learning its permissions. These small trials leave broader savings and access reliability open.
 
 ## What it runs
 
@@ -96,7 +96,7 @@ CI checks deterministic fixture parity, mechanical documentation validity (excep
 
 ## Replay the cross-domain maintenance tasks
 
-Use `stewardship_paths.py` for software, research, creative work, compatible and conflicting editorial decisions, format-specific lookups, protected changes and unrelated copyedits. A fresh directory is required for each arm and lane. Preparation makes no model calls. The opt-in runner installs the requested bundle into the test project, verifies native discovery and records one fresh Terra session per phase. The seven-stage history question uses the existing six-shift runner. Run both for the full 22-phase workload. The [architecture study](../../docs/context-paths-study.md) also records a separate DSH host comparison. Apply [the archived runtime patch](fixtures/context-paths-candidate.patch.gz) to a disposable checkout of the study baseline to reproduce the candidate.
+Use `stewardship_paths.py` for software, research, creative work, compatible and conflicting editorial decisions, format-specific lookups, protected changes and unrelated copyedits. A fresh directory is required for each arm and lane. Preparation makes no model calls. The opt-in runner installs the requested bundle into the test project, verifies native discovery and records one fresh Terra session per phase. The seven-stage history question uses the existing six-shift runner. Run both for the full 22-phase workload. The [architecture study](../../docs/2026-11-20-context-paths-study.md) also records a separate DSH host comparison. Apply [the archived runtime patch](fixtures/context-paths-candidate.patch.gz) to a disposable checkout of the study baseline to reproduce the candidate.
 
 ```sh
 python3 tests/benchmark/stewardship_paths.py --plain --lane research --output /tmp/ssot-plain-research

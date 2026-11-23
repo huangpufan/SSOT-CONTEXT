@@ -1,6 +1,6 @@
 # General context: implementation and mechanical evidence
 
-Bundle 5.0 adds explicitly maintained general context spaces while preserving development consumer format 4. New general spaces use format 5 because their authorized-record admission and cross-space owners must not be silently interpreted by an old development writer. The [accepted direction and compatibility matrix](../docs/context-generalization-2026-11-10.md) distinguish this implementation from its release gates. The unchanged baseline is bundle 4.5 at `7c15dd8`.
+Bundle 5.0 adds explicitly maintained general context spaces while preserving development consumer format 4. New general spaces use format 5 because their authorized-record admission and cross-space owners must not be silently interpreted by an old development writer. The [accepted direction and compatibility matrix](../docs/2026-11-10-context-generalization.md) distinguish this implementation from its release gates. The unchanged baseline is bundle 4.5 at `7c15dd8`.
 
 This file owns the implementation/mechanical evidence summary. The [native report](context/trials-5.0.md) and [native result account](context/results/context-evolution-5.0-2026-11-10.json) own actual model attempts, original/repaired oracle judgments, manifests, receipts and whole-task costs. Native trials are separate evidence; successful CLI or checker tests do not establish agent discovery, semantic acceptance, useful writing or general cost improvement.
 

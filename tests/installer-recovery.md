@@ -1,6 +1,6 @@
 # Installer replacement and recovery evidence
 
-The old installer deleted an installed skill directory before moving its replacement into place. A failed move then removed staging during exit cleanup, leaving neither the previous skill nor the candidate. This report covers the repair authorized during the [evolution review](../docs/evolution-review-2026-11-10.md). The installed skill protocol remains 4.5 and the consumer format remains 4.
+The old installer deleted an installed skill directory before moving its replacement into place. A failed move then removed staging during exit cleanup, leaving neither the previous skill nor the candidate. This report covers the repair authorized during the [evolution review](../docs/2026-11-10-evolution-review.md). The installed skill protocol remains 4.5 and the consumer format remains 4.
 
 ## Result and ownership
 

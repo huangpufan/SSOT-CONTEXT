@@ -99,7 +99,7 @@ Existing maintained documents can stay the owners and are linked from the entry.
 
 A reader can answer a lookup from the current authorized document that owns the answer. When an approved change affects only existing prose in that document, the agent updates it in place, preserves the earlier decision and its reason where required, then reads the result back. Changes involving other owners, approvals or protections follow the full workflow.
 
-Version 5.15 shortens the descriptions Codex includes when it lists available skills. In two fresh sessions, an ordinary request that used no skills cost 247 fewer input tokens each time. [Installed comparison and whole-task costs](./docs/skill-discovery-cost-5.15.md)
+Version 5.15 shortens the descriptions Codex includes when it lists available skills. In two fresh sessions, an ordinary request that used no skills cost 247 fewer input tokens each time. [Installed comparison and whole-task costs](./docs/2026-11-21-skill-discovery-cost-v5.15.md)
 
 ## Limits
 
@@ -109,7 +109,7 @@ When a decision maker changes, the project’s decision process establishes what
 
 For a registered source, withdrawal records the stop before collecting impacts. If its working documents must stay closed, use `withdraw-source --metadata-only`. Later status queries can then report targets and earlier receipts without reopening those documents. [Source withdrawal and recovery](./skills/ssot-doctor/references/source-integration.md#correction-and-withdrawal)
 
-Doctor can check the entry and selected permitted documents in either format when links to restricted originals are retained. The report names the files covered. For a nested general-space entry, `--space-root DIR` with `--owners` can check named guides in sibling directories under the agreed root. Git catch-up includes decisions on merged branches and advances the saved commit only across fully reviewed history. [Selected checks](./skills/ssot-preflight/references/source-retention.md#selected-mechanical-checks), [5.9 catch-up examples](./docs/catchup-5.9.md)
+Doctor can check the entry and selected permitted documents in either format when links to restricted originals are retained. The report names the files covered. For a nested general-space entry, `--space-root DIR` with `--owners` can check named guides in sibling directories under the agreed root. Git catch-up includes decisions on merged branches and advances the saved commit only across fully reviewed history. [Selected checks](./skills/ssot-preflight/references/source-retention.md#selected-mechanical-checks), [5.9 catch-up examples](./docs/2026-11-20-catchup-v5.9.md)
 
 Corrections compare the saved result with necessary earlier source excerpts as well as the new exchange, within current retention authority. The [5.3 trials](./tests/context/trials-5.3.md) record source-preservation failures and bounded checks of this readback rule.
 
@@ -140,14 +140,14 @@ After updating the skill files, refresh the repository’s managed instruction b
 
 - [Install guide](./INSTALL.md): setup, wiring, upgrade, removal and recovery.
 - [Design](./DESIGN.md): why the bundle is shaped this way.
-- [Evolving research and creative projects](./docs/evolving-research-and-creative-projects.md) (Chinese guide): practical examples using existing owners, scoped revisions, uncertain sources and deferred synchronization.
-- [Cross-domain context audit and release experiment](./docs/context-paths-study.md) compares plain documents, the installed protocol and a replayable architecture candidate across software, research and creative handoffs. The [reading and handoff follow-up](./docs/read-trigger-study.md) measures when direct lookups save input and what survives in documents passed to new readers.
-- [Everyday use and maintenance costs](./docs/ordered-lookup-cost.md) compares a price lookup and a single rule change with ordinary documents, including what a new reader could recover and which files the agent actually opened.
-- The [long-term route review](./docs/context-evolution-route.md) records the current stage, how far the evidence reaches and which result would change the next priority.
-- [Long-term context review and six-shift handoff in 5.13](./docs/context-stewardship-5.13.md) examines decision succession, competing goals, evidence reuse and owner checks.
-- [Conditional decisions and handoffs in 5.12](./docs/conditional-context-5.12.md) follows a decision through sign-off, partial rollout, delivery and withdrawal, with paired trials.
-- [5.8 maintenance review and trials](./docs/context-maintenance-5.8.md) cover shared-directory setup, interrupted source withdrawal and the remaining design questions.
-- [Evolution review](./docs/evolution-review-2026-11-12.md): current improvements, real continuation trials and evidence limits.
+- [Evolving research and creative projects](./docs/2026-11-14-evolving-research-and-creative-projects.md) (Chinese guide): practical examples using existing owners, scoped revisions, uncertain sources and deferred synchronization.
+- [Cross-domain context audit and release experiment](./docs/2026-11-20-context-paths-study.md) compares plain documents, the installed protocol and a replayable architecture candidate across software, research and creative handoffs. The [reading and handoff follow-up](./docs/2026-11-20-read-trigger-study.md) measures when direct lookups save input and what survives in documents passed to new readers.
+- [Everyday use and maintenance costs](./docs/2026-11-20-ordered-lookup-cost.md) compares a price lookup and a single rule change with ordinary documents, including what a new reader could recover and which files the agent actually opened.
+- The [long-term route review](./docs/2026-11-20-context-evolution-route.md) records the current stage, how far the evidence reaches and which result would change the next priority.
+- [Long-term context review and six-shift handoff in 5.13](./docs/2026-11-20-context-stewardship-v5.13.md) examines decision succession, competing goals, evidence reuse and owner checks.
+- [Conditional decisions and handoffs in 5.12](./docs/2026-11-20-conditional-context-v5.12.md) follows a decision through sign-off, partial rollout, delivery and withdrawal, with paired trials.
+- [5.8 maintenance review and trials](./docs/2026-11-19-context-maintenance-v5.8.md) cover shared-directory setup, interrupted source withdrawal and the remaining design questions.
+- [Evolution review](./docs/2026-11-12-evolution-review.md): current improvements, real continuation trials and evidence limits.
 - [Evaluation](./tests/benchmark/README.md): task outcomes, cold handoff, plain-docs controls and evidence limits.
 - [Changelog](./CHANGELOG.md): what changed in each version.
 - [Contributing](./CONTRIBUTING.md) and [AGENTS.md](./AGENTS.md): how to change this bundle repository.

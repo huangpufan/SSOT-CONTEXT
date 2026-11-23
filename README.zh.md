@@ -99,7 +99,7 @@ curl -fsSL https://raw.githubusercontent.com/huangpufan/SSOT-CONTEXT/main/instal
 
 日常查询可以直接依据获准读取、负责该事项的现行文档作答。已经批准的改动若只涉及这一份文档的现有正文，维护者就地更新，保留应当留存的旧决定及其理由，再读回核对。涉及其他负责人、审批或保护规则时，走完整流程。
 
-5.15 精简了 Codex 列出可用技能时带入上下文的说明。在新会话中两次对照同一个普通请求，全程都用不到技能，每次都少用 247 个输入 token。[安装对照与整项任务消耗](./docs/skill-discovery-cost-5.15.md)
+5.15 精简了 Codex 列出可用技能时带入上下文的说明。在新会话中两次对照同一个普通请求，全程都用不到技能，每次都少用 247 个输入 token。[安装对照与整项任务消耗](./docs/2026-11-21-skill-discovery-cost-v5.15.md)
 
 ## 限度
 
@@ -109,7 +109,7 @@ Skill 只在 Agent 加载它们时生效。它们不会在后台采集材料，�
 
 撤回访谈等已登记的来源时，工具先保存撤回决定，再盘点受影响文档。若工作文档必须保持关闭，使用 `withdraw-source --metadata-only`。以后的状态查询可以据已有登记列出目标和早先的回执，正文保持关闭。[来源撤回与恢复](./skills/ssot-doctor/references/source-integration.md#correction-and-withdrawal)
 
-开发仓库和通用空间都可以保留指向受限原件的链接。Doctor 能只检查入口和本次获准读取的文档，报告会列出范围。通用空间的入口放在子目录时，`--space-root DIR` 配合 `--owners` 可以检查同一约定根目录下、位于平级目录的指定指南。补录 Git 历史时会读合并分支中的决定，只有连续区间核对完才推进已检查到的提交。[受限检查](./skills/ssot-preflight/references/source-retention.md#selected-mechanical-checks)、[5.9 追补示例](./docs/catchup-5.9.md)
+开发仓库和通用空间都可以保留指向受限原件的链接。Doctor 能只检查入口和本次获准读取的文档，报告会列出范围。通用空间的入口放在子目录时，`--space-root DIR` 配合 `--owners` 可以检查同一约定根目录下、位于平级目录的指定指南。补录 Git 历史时会读合并分支中的决定，只有连续区间核对完才推进已检查到的提交。[受限检查](./skills/ssot-preflight/references/source-retention.md#selected-mechanical-checks)、[5.9 追补示例](./docs/2026-11-20-catchup-v5.9.md)
 
 更正决定后，复核保存结果时既对照新交流，也在当前保留授权范围内核对必要的早期来源摘录。[5.3 试验](./tests/context/trials-5.3.md)记录了原话丢失的失败，以及对这条复核规则的有限验证。
 
@@ -140,14 +140,14 @@ curl -fsSL https://raw.githubusercontent.com/huangpufan/SSOT-CONTEXT/main/instal
 
 - [安装指南](./INSTALL.md)：安装、接线、升级、卸载和恢复。
 - [设计说明](./DESIGN.md)：Skill 包为什么是现在这个形态。
-- [持续修改的研究和创作项目](./docs/evolving-research-and-creative-projects.md)：沿用现有 owner，处理局部修订、来源缺口、旧素材与暂缓同步的具体例子。
-- [跨领域 context 审计与发布试验](./docs/context-paths-study.md)比较纯文档、已安装协议与可复跑的架构候选，覆盖软件、研究与创作交接。[读取与交接验证](./docs/read-trigger-study.md)记录了直接查询省下多少输入，以及新接手者能从项目文档中找回哪些决定。
-- [日常使用与维护成本](./docs/ordered-lookup-cost.md)把查价、改一条规则的成本与普通文档做同题比较，也检查了新人能找回什么，以及 AI 实际打开了哪些文件。
-- [长期路线与阶段判断](./docs/context-evolution-route.md)说明现在走到哪、离真实项目持续受益还有多远，以及什么结果会改变下一步的优先级。
-- [5.13 的长期 context 审视与六班交接](./docs/context-stewardship-5.13.md)检验负责人交接、目标争用、证据重复和文档核对。
-- [5.12 的决定生效与交接试验](./docs/conditional-context-5.12.md)比较签字前后、部分部署、送印权限和受限撤回时的实际产物。
-- [5.8 维护审视与试验](./docs/context-maintenance-5.8.md)记录了同目录空间的接续、撤回中断恢复，以及尚待验证的设计。
-- [演进审视](./docs/evolution-review-2026-11-12.md)：本轮改进、真实接续试验与证据边界。
+- [持续修改的研究和创作项目](./docs/2026-11-14-evolving-research-and-creative-projects.md)：沿用现有 owner，处理局部修订、来源缺口、旧素材与暂缓同步的具体例子。
+- [跨领域 context 审计与发布试验](./docs/2026-11-20-context-paths-study.md)比较纯文档、已安装协议与可复跑的架构候选，覆盖软件、研究与创作交接。[读取与交接验证](./docs/2026-11-20-read-trigger-study.md)记录了直接查询省下多少输入，以及新接手者能从项目文档中找回哪些决定。
+- [日常使用与维护成本](./docs/2026-11-20-ordered-lookup-cost.md)把查价、改一条规则的成本与普通文档做同题比较，也检查了新人能找回什么，以及 AI 实际打开了哪些文件。
+- [长期路线与阶段判断](./docs/2026-11-20-context-evolution-route.md)说明现在走到哪、离真实项目持续受益还有多远，以及什么结果会改变下一步的优先级。
+- [5.13 的长期 context 审视与六班交接](./docs/2026-11-20-context-stewardship-v5.13.md)检验负责人交接、目标争用、证据重复和文档核对。
+- [5.12 的决定生效与交接试验](./docs/2026-11-20-conditional-context-v5.12.md)比较签字前后、部分部署、送印权限和受限撤回时的实际产物。
+- [5.8 维护审视与试验](./docs/2026-11-19-context-maintenance-v5.8.md)记录了同目录空间的接续、撤回中断恢复，以及尚待验证的设计。
+- [演进审视](./docs/2026-11-12-evolution-review.md)：本轮改进、真实接续试验与证据边界。
 - [评测指南](./tests/benchmark/README.md)：任务结果、冷接续、普通文档对照和证据边界。
 - [更新日志](./CHANGELOG.md)：每个版本改了什么。
 - [贡献指南](./CONTRIBUTING.md)和 [AGENTS.md](./AGENTS.md)：怎样修改本 Skill 包仓库。

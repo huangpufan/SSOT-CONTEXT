@@ -24,7 +24,7 @@ Each final session invoked the checker on the declared file. The final rule repl
 
 ## Old startup instructions and an outdated product claim
 
-A frozen development repository had a large register, a product owner document and dated rollout evidence. The handoff asked whether a reading feature still needed enabling and what happens when opening an old report fails. Four fresh sessions distinguished historical authorization and rollout evidence, preserved reading state on failure, and distinguished durable reports from older source-dependent items. They gave read-only handoffs. No live service was exercised. The source fixture and exclusions are described in the [earlier large-entry trial](large-entry-preflight-2026-11-19.md).
+A frozen development repository had a large register, a product owner document and dated rollout evidence. The handoff asked whether a reading feature still needed enabling and what happens when opening an old report fails. Four fresh sessions distinguished historical authorization and rollout evidence, preserved reading state on failure, and distinguished durable reports from older source-dependent items. They gave read-only handoffs. No live service was exercised. The source fixture and exclusions are described in the [earlier large-entry trial](2026-11-19-large-entry-preflight.md).
 
 | Installed instructions and project wording | First command output containing the entry, bytes | Recorded turn input, tokens |
 | --- | ---: | ---: |

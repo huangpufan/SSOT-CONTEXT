@@ -8,9 +8,13 @@ Thanks for your interest in improving the SSOT-CONTEXT bundle. Read [DESIGN.md](
 |---|---|---|
 | Protocol | `skills/*/SKILL.md`, `skills/*/references/*.md`, templates | Protocol review (below) |
 | Engineering | `install.sh`, `skills/*/assets/scripts/`, `tests/`, `.github/workflows/` | Standard review |
-| Docs | `README*`, `INSTALL.md`, `DESIGN.md`, `CHANGELOG.md` | Standard review |
+| Docs | `README*`, `INSTALL.md`, `DESIGN.md`, `CHANGELOG.md`, `docs/` | Standard review |
 
 `skills/ssot-preflight/references/memory-model.md` owns what a consumer's `SSOT/` contains and how it is written. The `SKILL.md` files link to it rather than restating it.
+
+### Naming files in `docs/`
+
+Start each filename with the date it first enters the repository (`YYYY-MM-DD`), then a short lowercase English topic with words separated by hyphens. To identify a release, append the version before the extension, as in `2026-11-21-skill-discovery-cost-v5.15.md`. For a second report on the same topic that day, add a qualifier such as `round-2`. Use a lowercase file extension and keep the original date when revising a document so its links stay stable.
 
 ## Changing the protocol
 
@@ -54,11 +58,11 @@ Version 4.4 raises the runtime limit to 14,000 words for native reading, stale-r
 
 Version 5.0 sets 17,000 runtime words and 220 KiB of skills for a conditional general-space model and source-state/readback reference adapter. Existing development format 4, protection and recovery text remains; general spaces use format 5 so old writers that discover them take their read-only branch. Added references are reached only for relevant tasks. The coordinator accepted the observed bounded cost tradeoff for this release after native quality/reading review; this is not a user statement accepting higher costs or a performance-improvement claim. See the [native result account](tests/context/results/context-evolution-5.0-2026-11-10.json) and [implementation report](tests/trials-5.0.md). Entrypoint, template and checker limits remain unchanged; a size pass alone is never a behavioral release gate.
 
-Version 5.9 allows 52 KiB for the checker and 223 KiB for the bundle. The former limits left 77 and 70 bytes respectively. A real checker run opened a withdrawn Markdown original through a retained link. The additional code bounds document and anchor reads to an explicit selection and reports its coverage. The agent reading budgets stay fixed. See the [checks and tradeoffs](docs/catchup-5.9.md).
+Version 5.9 allows 52 KiB for the checker and 223 KiB for the bundle. The former limits left 77 and 70 bytes respectively. A real checker run opened a withdrawn Markdown original through a retained link. The additional code bounds document and anchor reads to an explicit selection and reports its coverage. The agent reading budgets stay fixed. See the [checks and tradeoffs](docs/2026-11-20-catchup-v5.9.md).
 
-Version 5.10 allows 18,500 runtime words, 53 KiB for the checker and 227 KiB for the bundle. The runtime additions route goal and preference capture, task handoff and selected checks in both formats. The checker adds selected format-4 owners within its existing repository boundary. These are distribution ceilings. The [release evidence](docs/context-lifecycle-5.10.md) describes what the agent actually used and the limits of the cost comparison.
+Version 5.10 allows 18,500 runtime words, 53 KiB for the checker and 227 KiB for the bundle. The runtime additions route goal and preference capture, task handoff and selected checks in both formats. The checker adds selected format-4 owners within its existing repository boundary. These are distribution ceilings. The [release evidence](docs/2026-11-20-context-lifecycle-v5.10.md) describes what the agent actually used and the limits of the cost comparison.
 
-Version 5.12 allows 18,700 runtime words and 232 KiB for the bundle. Version 5.11 had 139 words and 55 bytes of headroom. Conditional decision use, recovery of premise-dependent progress and metadata-only withdrawal use existing owners. The connector also protects a restricted withdrawal from older readers. The [release study](docs/conditional-context-5.12.md) accounts for behaviour and cost on both changed and ordinary tasks.
+Version 5.12 allows 18,700 runtime words and 232 KiB for the bundle. Version 5.11 had 139 words and 55 bytes of headroom. Conditional decision use, recovery of premise-dependent progress and metadata-only withdrawal use existing owners. The connector also protects a restricted withdrawal from older readers. The [release study](docs/2026-11-20-conditional-context-v5.12.md) accounts for behaviour and cost on both changed and ordinary tasks.
 
 A budget is a reason to rethink responsibilities, never a reason to cut a recovery or authorization branch to fit, and never a reason to rewrite unrelated rule text to make room: such edits are untested changes. In 3.5 the owner raised the limits from 3,000 and 8,000 words, with room left on purpose, after a trial branch had tightened about 40 unrelated sentences to fit new rules into the old limits; in 3.7 the owner raised the runtime limit from 9,500 to 10,000 words for the mining changes, instead of cutting other rules; in 3.9 the owner raised the checker limit from 40 to 44 KiB for the check on confirmed invariants; in 3.10 the owner raised the runtime limit from 10,000 to 11,000 words for the row-fixing step in mining. A v2 word cap once rejected a complete entrypoint for being complete. Raising a limit requires the same evidence as adding a rule. Record the reason in `CHANGELOG.md`.
 

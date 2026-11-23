@@ -3,7 +3,7 @@
   "codex_cli": "codex-cli 0.170.0",
   "protocol": "5.11",
   "study": "Installed official bundle; fresh isolated workspace per path and independent native session/home per turn. Only workspace files carry over. One run per path per listed arm, plus two further identical one-off report runs on the shipped arm.",
-  "assessment": "See docs/goal-changes-5.11.md for artifact-level assessment, including failures. Completion and file deltas alone do not assert quality.",
+  "assessment": "See docs/2026-11-20-goal-changes-v5.11.md for artifact-level assessment, including failures. Completion and file deltas alone do not assert quality.",
   "public_source": "tests/context/results/delegated-decisions-2026-11-18.json",
   "private_evidence_archive": "goal-evolution-5.11-DSX0N1EG",
   "input_freeze_sha256": {

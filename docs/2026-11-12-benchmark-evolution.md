@@ -2,7 +2,7 @@
 
 The user explicitly requested comprehensive benchmark improvement after the preceding optimization round, followed by further SSOT optimization using that improved benchmark. This remains implementation work, not a recommendation-only review. The coordinator owns this record and the shared inventory.
 
-The preceding slice is published as `ca25772` (5.2). Ordinary push succeeded, `git ls-remote origin refs/heads/main` matched HEAD, and the worktree was clean before this phase. Its [review](evolution-review-2026-11-12-round2.md) and [native report](../tests/context/trials-5.2.md) distinguish implemented tool repairs, rejected behavior clauses and hosted CI still awaiting execution.
+The preceding slice is published as `ca25772` (5.2). Ordinary push succeeded, `git ls-remote origin refs/heads/main` matched HEAD, and the worktree was clean before this phase. Its [review](2026-11-12-evolution-review-round-2.md) and [native report](../tests/context/trials-5.2.md) distinguish implemented tool repairs, rejected behavior clauses and hosted CI still awaiting execution.
 
 ## Decision and acceptance
 

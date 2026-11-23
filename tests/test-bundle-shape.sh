@@ -82,6 +82,37 @@ while IFS= read -r f; do
 done < <(find "$SKILLS" -type f \( -name SKILL.md -o -path '*/references/*.md' \))
 [[ $LINK_FAILS -eq 0 ]] && pass "all skill and reference links resolve" || fail "$LINK_FAILS file(s) have broken links"
 
+# Repository documentation follows the filename convention in CONTRIBUTING.md.
+if python3 - <<'PY'
+from datetime import date
+from pathlib import Path
+import re
+import subprocess
+
+pattern = re.compile(
+    r'([0-9]{4}-[0-9]{2}-[0-9]{2})-'
+    r'[a-z][a-z0-9]*(?:-[a-z0-9]+)*'
+    r'(?:-v[0-9]+\.[0-9]+(?:\.[0-9]+)?)?'
+    r'\.[a-z][a-z0-9]*'
+)
+paths = subprocess.check_output(['git', 'ls-files', '-co', '--exclude-standard', '-z', '--', 'docs/'])
+invalid = []
+for path in filter(None, paths.decode().split('\0')):
+    match = pattern.fullmatch(Path(path).name)
+    if match:
+        try:
+            date.fromisoformat(match[1])
+            continue
+        except ValueError:
+            pass
+    invalid.append(path)
+if invalid:
+    raise SystemExit("Invalid docs filename(s), see CONTRIBUTING.md:\n" + "\n".join(invalid))
+PY
+then pass "docs filenames follow the naming convention"
+else fail "docs filenames must follow the naming convention"
+fi
+
 # 5. Templates: both languages, same file names, nothing stray at the root,
 # and the shapes other parts of the bundle depend on.
 check_adapter() {

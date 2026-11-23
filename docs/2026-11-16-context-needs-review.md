@@ -8,7 +8,7 @@
 
 一个产品改过目标用户和交互方式，一部作品多次调整角色关系，或一个研究项目反复更换假设。几周后接手的人需要知道现行方向、仍有效的理由和例外，也需要理解为什么某条旧路被否决。只有一份最新结论，会丢失判断依据；把所有补丁堆在正文里，又可能使当前含义难以理解。
 
-已有支持包括[局部决定替换](../skills/ssot-closeout/references/decision-capture.md)、[整理时的内容保全](../skills/ssot-preflight/references/memory-layout.md#preserving-content-when-reorganizing)，以及[连续维护试验](../tests/context/README.md#connected-maintenance-and-an-executable-cold-handoff)。因此缺口不是没有修订或冷恢复。现有[开放判断报告](open-judgment-2026-11-14.md#additional-creative-critique)明确把长修订链、守住字面规则却丢失预期效果列为未测方向。
+已有支持包括[局部决定替换](../skills/ssot-closeout/references/decision-capture.md)、[整理时的内容保全](../skills/ssot-preflight/references/memory-layout.md#preserving-content-when-reorganizing)，以及[连续维护试验](../tests/context/README.md#connected-maintenance-and-an-executable-cold-handoff)。因此缺口不是没有修订或冷恢复。现有[开放判断报告](2026-11-14-open-judgment.md#additional-creative-critique)明确把长修订链、守住字面规则却丢失预期效果列为未测方向。
 
 建议先取一个获授权的真实演变片段：有局部更正、旧材料仍部分有效、未采纳提案和一次重新整理。让不看原会话的新读者完成一个实际判断或产物，检查理由、例外、历史身份和当前可读性。对照已有文档与候选维护方式；保留允许不同正确方案的评价。若现有方式已能正确承接且负担合理，就不增加协议规则。先检查内容和维护方式，证实共性缺陷后才改共享协议。
 
@@ -16,7 +16,7 @@
 
 产品策略依赖一份用户调研，技术选择依赖一次试验，创作设定依赖一份原始资料。来源被更正、撤回或发现采集错误时，维护者需要找出受影响的结论，同时继续使用不受影响的内容。来源变化不自动撤销人的决定，但应让相关决定的事实前提重新可见。
 
-[空间模型](../skills/ssot-preflight/references/context-spaces.md#what-the-material-means)要求区分事实、假设、采用与历史；[来源工具](../skills/ssot-doctor/references/source-integration.md#correction-and-withdrawal)能报告已登记的受影响文档。它明确不能发现所有未登记的派生材料。[研究接续观察](open-judgment-2026-11-14.md#what-was-observed)证明了已知来源限制的保留和应用，没有证明发现隐蔽的原始缺陷。
+[空间模型](../skills/ssot-preflight/references/context-spaces.md#what-the-material-means)要求区分事实、假设、采用与历史；[来源工具](../skills/ssot-doctor/references/source-integration.md#correction-and-withdrawal)能报告已登记的受影响文档。它明确不能发现所有未登记的派生材料。[研究接续观察](2026-11-14-open-judgment.md#what-was-observed)证明了已知来源限制的保留和应用，没有证明发现隐蔽的原始缺陷。
 
 建议用一个来源支持两个结论、其中一项又支持后续方案的案例，加入局部更正和一个未登记但在授权范围内可发现的引用。观察任务触发的核查能否找到需要重看的部分，保留无关结论，并把无法检查的范围说清。再加入“来源措辞变了但证据含义未变”的反例，避免整片失效。先验证现有引用和搜索是否足够；不预先决定建设依赖图或后台巡检。宿主采集、来源工具与知识正文各自修自己的问题。
 
@@ -24,7 +24,7 @@
 
 一项工作横跨父子仓库、设计文档和运营安排；上游已经决定，下游有的获准更新、有的暂时冻结。新会话可能直接从子项目或某份素材进入。使用者需要找到相关约束，知道哪些已经生效、哪些还只是决定，并完成当前有权限的下一步。
 
-[跨空间关系](../skills/ssot-preflight/references/context-spaces.md#entry-boundaries-and-compatibility)、[任务身份和副作用核对](../skills/ssot-preflight/references/memory-layout.md#existing-task-and-evidence-owners)及[部分解锁观察](open-judgment-2026-11-14.md#what-was-observed)已有支持。真正观察到的入口问题在 [5.2 报告](../tests/context/trials-5.2.md#actual-installation-and-cold-entry)：特定旧版宿主的子目录启动缺失祖先安装或声明位置，两条候选协议修补均未通过目标检查而撤回。这是有版本边界的历史证据，本轮没有复现当前宿主。
+[跨空间关系](../skills/ssot-preflight/references/context-spaces.md#entry-boundaries-and-compatibility)、[任务身份和副作用核对](../skills/ssot-preflight/references/memory-layout.md#existing-task-and-evidence-owners)及[部分解锁观察](2026-11-14-open-judgment.md#what-was-observed)已有支持。真正观察到的入口问题在 [5.2 报告](../tests/context/trials-5.2.md#actual-installation-and-cold-entry)：特定旧版宿主的子目录启动缺失祖先安装或声明位置，两条候选协议修补均未通过目标检查而撤回。这是有版本边界的历史证据，本轮没有复现当前宿主。
 
 建议先在一个实际使用的入口核对当前安装和加载，再走“上游改变 → 下游冻结 → 部分解锁 → 新会话执行 → 有权限的负责人对账”的连续路径。成功不只是某份文件变了，还要能判断剩余工作和当前事实；没有同步权限的记录保持为明确缺口。包含全部解锁的相邻路径，防止把临时冻结永久化。入口故障优先修安装或宿主边界；内容联动再判断路由、记录或共享协议的责任。
 
@@ -40,7 +40,7 @@
 
 设计评审需要理解画面与交互，研究需要核对图表或访谈，创作需要记住节奏、情感和被否定方案的原因。一个文字摘要可能事实齐全，却不足以支持下一版原型、章节或研究选择。这里的需求是保留能参与判断的理解，以及返回原件的路径。
 
-[空间模型](../skills/ssot-preflight/references/context-spaces.md#what-the-material-means)已经允许多模态来源并要求标出实际看过的范围。[开放判断评测](open-judgment-2026-11-14.md)观察到了具体方案、理由和受限行动；报告也明确没有证明审美、真实采用或实际活动效果。因此不能把“没有图像记忆”直接列为功能缺失，也不能把书面方案成功当成真实成果成功。
+[空间模型](../skills/ssot-preflight/references/context-spaces.md#what-the-material-means)已经允许多模态来源并要求标出实际看过的范围。[开放判断评测](2026-11-14-open-judgment.md)观察到了具体方案、理由和受限行动；报告也明确没有证明审美、真实采用或实际活动效果。因此不能把“没有图像记忆”直接列为功能缺失，也不能把书面方案成功当成真实成果成功。
 
 建议选一个能返回原始载体的小任务，例如根据原型及有范围的反馈继续修改一段交互，或从原始访谈片段继续一项研究判断。客观核对来源范围、采纳身份和改动边界；实用性、审美及真实采用由合适的人评价。另设仅凭文字已经足够的任务，避免无条件增加原件读取。若瓶颈是访问或解析工具，应由集成层处理；若是摘要丢失判断依据，再改维护方法或相关模板。
 
@@ -48,7 +48,7 @@
 
 长期使用者希望减少重复解释、遗漏决定和重新查证，而不是每轮多管理一套文档。软件开发之外，还包括项目里的支持、研究、运营、个人经历保存等低频或跨阶段任务。显式授权保留的经历本身也有价值，不能要求每条记录都证明未来决策收益。
 
-当前已有自动触发条件、无长期变化时不写入、普通聊天不建空间、分支按需读取和[整项任务成本方法](../tests/benchmark/METHOD.md)。但现有[连续试验说明](../tests/context/README.md)将证据限定为短合成过程；[开放判断报告](open-judgment-2026-11-14.md#what-was-observed)也没有把原生模型时间当作包含人工介入和返工的全成本。尚不能据此承诺长期净收益或所有入口都稳定触发。
+当前已有自动触发条件、无长期变化时不写入、普通聊天不建空间、分支按需读取和[整项任务成本方法](../tests/benchmark/METHOD.md)。但现有[连续试验说明](../tests/context/README.md)将证据限定为短合成过程；[开放判断报告](2026-11-14-open-judgment.md#what-was-observed)也没有把原生模型时间当作包含人工介入和返工的全成本。尚不能据此承诺长期净收益或所有入口都稳定触发。
 
 建议在获授权的一段日常工作中，观察自然出现的决定、更正、无变化任务和退出后的接续，记录实际遗漏、误触发、用户提醒、返工及维护成本。比较的任务目标和保留授权必须一致。纪念性记录以保真、可找回和授权范围验收；工作知识另外看是否帮助后续行动。评测记录留在本项目的研究或任务材料中，不要求所有使用者增加常驻维护账本。
 

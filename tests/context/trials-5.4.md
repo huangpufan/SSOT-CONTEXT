@@ -2,7 +2,7 @@
 
 Status: the checked paired scenarios and actual Calliope installation checks passed. This establishes the observed paths, not a general performance or reliability improvement.
 
-The scope and protocol decisions are in [the design account](../../docs/context-tiering-design-2026-11-16.md). Baseline 5.3 and candidate 5.4 use `gpt-6.1-terra` with medium reasoning. C09 tests context consolidation, partial replacement, a frozen dependency and a fresh consumer; C10 tests necessary historical retrieval; D03 and D06 retain development correction and typo controls.
+The scope and protocol decisions are in [the design account](../../docs/2026-11-16-context-tiering-design.md). Baseline 5.3 and candidate 5.4 use `gpt-6.1-terra` with medium reasoning. C09 tests context consolidation, partial replacement, a frozen dependency and a fresh consumer; C10 tests necessary historical retrieval; D03 and D06 retain development correction and typo controls.
 
 The first C09 baseline completed both native sessions. Reporting then failed because the context oracle imported a different module also named `run` when launched as a CLI. Original attempts are preserved. The cost helper now resolves by file path and has a subprocess regression check; this repair changes reporting, not those model actions. The corrected report reuses original native records instead of replaying completed calls. Subsequent execution uses a new frozen harness; fixture and bundle equality are checked before comparing this retained baseline.
 

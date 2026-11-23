@@ -2,7 +2,7 @@
 
 SSOT-CONTEXT helps someone resume work without losing the subject's purpose, its people's choices or the reasons behind them. Its value depends on three things holding together: the right context is reachable, its meaning and authority survive updates, and keeping it useful costs less than reconstructing it. Adding more stored material or more rules is not, by itself, progress.
 
-This review covers the direction from `6b05fe1` to `cae20ad`, with a clean starting worktree and matching remote main. It examines the current protocol routes, source adapter, template checks and published evidence, rather than claiming an exhaustive audit of every historical patch or consumer. [DESIGN](../DESIGN.md) owns the architecture; the [previous review](evolution-review-2026-11-10.md) and [5.0 report](../tests/context/trials-5.0.md) retain their original evidence boundaries.
+This review covers the direction from `6b05fe1` to `cae20ad`, with a clean starting worktree and matching remote main. It examines the current protocol routes, source adapter, template checks and published evidence, rather than claiming an exhaustive audit of every historical patch or consumer. [DESIGN](../DESIGN.md) owns the architecture; the [previous review](2026-11-10-evolution-review.md) and [5.0 report](../tests/context/trials-5.0.md) retain their original evidence boundaries.
 
 ## Direction and priorities
 

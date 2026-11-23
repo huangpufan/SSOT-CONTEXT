@@ -1,6 +1,6 @@
 # V2 knowledge preservation and decision continuity
 
-These trials complete the next bundle-local verification slice identified by the [evolution review](../docs/evolution-review-2026-11-10.md). They run the unchanged 4.5 skill bundle from `590977a`. No agent protocol or consumer format changes are made on the strength of these observations. They are scoped behavior evidence, not certification of all repositories or histories.
+These trials complete the next bundle-local verification slice identified by the [evolution review](../docs/2026-11-10-evolution-review.md). They run the unchanged 4.5 skill bundle from `590977a`. No agent protocol or consumer format changes are made on the strength of these observations. They are scoped behavior evidence, not certification of all repositories or histories.
 
 ## Requirements and cases
 

@@ -1,10 +1,10 @@
 # 降低 SSOT 使用和维护成本，走到哪了？
 
-**2026-11-21，5.15 降低了 Codex 每次列出技能的输入开销。** 相同的无工具请求做了两轮，每次少用 247 个输入 token。跨文档查询试了两种改法，均有任务变贵，沿用 5.14 的查询流程。[5.15 安装实测](skill-discovery-cost-5.15.md)
+**2026-11-21，5.15 降低了 Codex 每次列出技能的输入开销。** 相同的无工具请求做了两轮，每次少用 247 个输入 token。跨文档查询试了两种改法，均有任务变贵，沿用 5.14 的查询流程。[5.15 安装实测](2026-11-21-skill-discovery-cost-v5.15.md)
 
 本仓库采用的单文档查询和修改方式已进入技能包 5.14，开发仓库和通用空间均可使用。已获准的小改直接更新原文档并读回，涉及多个负责人时核对各自的决定，保留后人需要的旧理由。此前本仓库已交付三项真实维护，四个执行环节少用了 228.8 万输入 token。启用和演练用了 134.1 万，计入选材、审稿和返工后的净节省仍未测定。
 
-截至 2026-11-20，四个环节的输入从 292.9 万降到 64.1 万，降幅 78.1%。这是本仓库采用前后的执行者数据。另见[消费者安装 5.14 后的八项同题比较](scoped-owner-5.14.md)。目标覆盖日常查、改和交接，也包括人的等待与补救。[长期目标](../DESIGN.md#accepted-direction-reduce-the-cost-and-friction-of-using-and-maintaining-context) · [实测与总账](scoped-maintenance-pilot.md)
+截至 2026-11-20，四个环节的输入从 292.9 万降到 64.1 万，降幅 78.1%。这是本仓库采用前后的执行者数据。另见[消费者安装 5.14 后的八项同题比较](2026-11-20-scoped-owner-v5.14.md)。目标覆盖日常查、改和交接，也包括人的等待与补救。[长期目标](../DESIGN.md#accepted-direction-reduce-the-cost-and-friction-of-using-and-maintaining-context) · [实测与总账](2026-11-20-scoped-maintenance-pilot.md)
 
 ## 当前阶段与剩余距离
 
@@ -20,6 +20,6 @@
 
 优先处理实际反复出现的问题。试点前一周的 48 条用户消息里，6 条明确问进度、取舍或原因。下一位问进度的人，应能直接从本页得到简短答复。已明确负责人和范围的公开文档，可由当前维护者就地处理；需要受限原件时，仍由负责人提供授权材料。
 
-今后评估全流程收益时，将普通文档与这套做法从接单到交付的成本放在一起看，包括选材、返工和等待。若普通文档同样可靠又更省，该类工作就用普通文档。[真实试点记录](scoped-maintenance-pilot.md)
+今后评估全流程收益时，将普通文档与这套做法从接单到交付的成本放在一起看，包括选材、返工和等待。若普通文档同样可靠又更省，该类工作就用普通文档。[真实试点记录](2026-11-20-scoped-maintenance-pilot.md)
 
-单条费表、跨班历史和多文档换班怎样影响了以上判断，可查[单条规则对照](ordered-lookup-cost.md)、[五班交接](read-trigger-study.md#只凭维护后的文件能交出什么)和[跨领域实测](context-paths-study.md#发行裁决与整组实测)。[试点前后的选题依据](https://github.com/huangpufan/SSOT-CONTEXT/blob/99e5537/docs/context-evolution-route.md)保留了当时的任务权重与取舍。
+单条费表、跨班历史和多文档换班怎样影响了以上判断，可查[单条规则对照](2026-11-20-ordered-lookup-cost.md)、[五班交接](2026-11-20-read-trigger-study.md#只凭维护后的文件能交出什么)和[跨领域实测](2026-11-20-context-paths-study.md#发行裁决与整组实测)。[试点前后的选题依据](https://github.com/huangpufan/SSOT-CONTEXT/blob/99e5537/docs/context-evolution-route.md)保留了当时的任务权重与取舍。

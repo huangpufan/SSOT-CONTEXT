@@ -9,9 +9,9 @@ Entries up to 2.86 were derived from the v2 protocol-upgrade ledger, which is pr
 ## [Unreleased]
 
 ### Added
-- A [cross-domain architecture study](docs/context-paths-study.md) and reproducible opt-in trial package cover isolated software, research and creative work, concurrent edits and cold handoffs. The evaluated protocol candidate is available as a benchmark fixture.
-- A [practical Chinese guide](docs/evolving-research-and-creative-projects.md) shows how evolving research and creative projects can use existing owners, scoped decisions, source limits, historical material and deferred synchronization. It adds no runtime reading obligation or consumer format.
-- Opt-in prose handoffs evaluate concrete judgment and useful proposals separately from file/scope checks, with artifact-bound semantic review, explicit research transfers and actual partial-unlock actions. See the [evaluation account](docs/open-judgment-2026-11-14.md); this guidance and evaluation work leaves protocol 5.3 unchanged.
+- A [cross-domain architecture study](docs/2026-11-20-context-paths-study.md) and reproducible opt-in trial package cover isolated software, research and creative work, concurrent edits and cold handoffs. The evaluated protocol candidate is available as a benchmark fixture.
+- A [practical Chinese guide](docs/2026-11-14-evolving-research-and-creative-projects.md) shows how evolving research and creative projects can use existing owners, scoped decisions, source limits, historical material and deferred synchronization. It adds no runtime reading obligation or consumer format.
+- Opt-in prose handoffs evaluate concrete judgment and useful proposals separately from file/scope checks, with artifact-bound semantic review, explicit research transfers and actual partial-unlock actions. See the [evaluation account](docs/2026-11-14-open-judgment.md); this guidance and evaluation work leaves protocol 5.3 unchanged.
 - Installed continuity trials now connect multi-owner capture, a real partial-owner process interruption, cold recovery, duplicate/conflict handling with genuinely new independent progress, limited-use withdrawal and a fresh executable handoff. An independently authored format-4 Python queue task confirms a different maintenance shape; ceiling, floor and stale consumers calibrate both. See the [context trial guide](tests/context/README.md) and [continuity account](tests/context/results/continuity-deepening-2026-11-12.json) for observed paths and limits.
 
 ### Fixed
@@ -23,25 +23,25 @@ Entries up to 2.86 were derived from the v2 protocol-upgrade ledger, which is pr
 - Benchmark reports preserve running attempts and known phase spend when final evidence is missing or corrupt, isolate damaged records, and require native model plus reasoning identity for comparable costs. Handoff privacy checks cover hidden project files and expose unreadable scope; reading reports preserve failed/mismatched spend and include reasoning failures. Offline calibration includes meaningful mutations, alternate valid artifacts and real completed native evidence.
 
 ### Changed
-- Cold-handoff trials now default to an explicit persistence goal shared by plain/protocol writers, retain automatic capture as a separate estimand, and add an independently authored museum confirmation. The [deepening record](docs/benchmark-deepening-2026-11-12.md) distinguishes measurement repairs, actual subject outcomes and evidence limits; the SSOT protocol remains 5.3.
+- Cold-handoff trials now default to an explicit persistence goal shared by plain/protocol writers, retain automatic capture as a separate estimand, and add an independently authored museum confirmation. The [deepening record](docs/2026-11-12-benchmark-deepening.md) distinguishes measurement repairs, actual subject outcomes and evidence limits; the SSOT protocol remains 5.3.
 
 ## [5.15] - 2026-11-21
 
 ### Changed
 
-- Shortened the six descriptions that hosts show when listing available skills. Two matched Codex requests that used no tools each saved 247 input tokens. Installed lookup and review trials also checked the selected work and the resulting answers. [Measurements and routing experiments](docs/skill-discovery-cost-5.15.md)
+- Shortened the six descriptions that hosts show when listing available skills. Two matched Codex requests that used no tools each saved 247 input tokens. Installed lookup and review trials also checked the selected work and the resulting answers. [Measurements and routing experiments](docs/2026-11-21-skill-discovery-cost-v5.15.md)
 
 ## [5.14] - 2026-11-20
 
 ### Changed
 
-- Preflight can answer a bounded lookup from the current authorized owner. Closeout can finish an approved change to existing prose in one owner with in-place capture and readback. It retains the previous decision’s sole recorded attribution and rationale within retention permissions. Missing approvals keep the current rule in force. Cross-owner changes and protected departures follow the full route. [Installed-consumer trials](docs/scoped-owner-5.14.md)
+- Preflight can answer a bounded lookup from the current authorized owner. Closeout can finish an approved change to existing prose in one owner with in-place capture and readback. It retains the previous decision’s sole recorded attribution and rationale within retention permissions. Missing approvals keep the current rule in force. Cross-owner changes and protected departures follow the full route. [Installed-consumer trials](docs/2026-11-20-scoped-owner-v5.14.md)
 
 ## [5.13] - 2026-11-20
 
 ### Changed
 
-- Decision history preserves who accepted each choice when authority passes to a successor. The [release study](docs/context-stewardship-5.13.md) follows a project across six shifts and compares resource allocations and research handoffs.
+- Decision history preserves who accepted each choice when authority passes to a successor. The [release study](docs/2026-11-20-context-stewardship-v5.13.md) follows a project across six shifts and compares resource allocations and research handoffs.
 
 ### Fixed
 
@@ -53,7 +53,7 @@ Entries up to 2.86 were derived from the v2 protocol-upgrade ledger, which is pr
 
 ### Changed
 
-- Record the interim rule for conditional decisions where a new task will act on it. A partial rollout can change what earlier evidence establishes for one part of the work. The [release study](docs/conditional-context-5.12.md) compares whole tasks against 5.11.
+- Record the interim rule for conditional decisions where a new task will act on it. A partial rollout can change what earlier evidence establishes for one part of the work. The [release study](docs/2026-11-20-conditional-context-v5.12.md) compares whole tasks against 5.11.
 - Overlapping preferences keep their owners and agreed priority. A delegated content choice may be saved to a draft while release through an active destination remains with its operator.
 - Runtime protocol and bundle ceilings are now 18,700 words and 232 KiB to accommodate these conditional routes and restricted withdrawal recovery.
 
@@ -70,7 +70,7 @@ Entries up to 2.86 were derived from the v2 protocol-upgrade ledger, which is pr
 
 ### Fixed
 
-- Restricted structural checks can follow a route through explicitly selected Markdown indexes to a nested task card in either format. See the [design, comparisons and limitations](docs/goal-changes-5.11.md).
+- Restricted structural checks can follow a route through explicitly selected Markdown indexes to a nested task card in either format. See the [design, comparisons and limitations](docs/2026-11-20-goal-changes-v5.11.md).
 
 ## [5.10] - 2026-11-20
 
@@ -82,13 +82,13 @@ Entries up to 2.86 were derived from the v2 protocol-upgrade ledger, which is pr
 ### Fixed
 
 - Development repositories can check an explicit selection with `ssot-check.py SSOT/README.md --owners FILE ...`. Both formats route restricted reads to selected checks, including after discussion-only decision captures that change context structure. Conversation catch-up requires independent protection evidence for candidate invariants.
-- Runtime protocol, checker and bundle ceilings increase to 18,500 words, 53 KiB and 227 KiB. See the [design and trials](docs/context-lifecycle-5.10.md).
+- Runtime protocol, checker and bundle ceilings increase to 18,500 words, 53 KiB and 227 KiB. See the [design and trials](docs/2026-11-20-context-lifecycle-v5.10.md).
 
 ## [5.9] - 2026-11-20
 
 ### Fixed
 - General-space checks can limit body and anchor reads to the entry and named owners when retained originals have restricted use. Conversation recovery checks current permission before searching content. The existing permissions owner can carry a payload-free stop-use notice across loss of task progress.
-- Git catch-up reads merged commit messages, including decisions in empty commits. Its saved position advances only across contiguous reviewed work. Both consumer formats stay compatible. Selected-file checking raises the checker budget by 2 KiB and the bundle budget by 3 KiB. Runtime reading limits stay fixed. See the [design and trials](docs/catchup-5.9.md).
+- Git catch-up reads merged commit messages, including decisions in empty commits. Its saved position advances only across contiguous reviewed work. Both consumer formats stay compatible. Selected-file checking raises the checker budget by 2 KiB and the bundle budget by 3 KiB. Runtime reading limits stay fixed. See the [design and trials](docs/2026-11-20-catchup-v5.9.md).
 
 ## [5.8] - 2026-11-19
 
@@ -97,32 +97,32 @@ Entries up to 2.86 were derived from the v2 protocol-upgrade ledger, which is pr
 - Source withdrawal persists its original reason before reading bound owners. After an interrupted report, a fresh process can check withdrawal and recover known impacts. An old interrupted attempt that left the state active needs a retry.
 
 ### Changed
-- Source impact inventories read each bound owner once per scan and retain per-alias captures, missing owners and historical receipts. The [maintenance review and trials](docs/context-maintenance-5.8.md) cover scope, recovery, measured read counts and remaining limits.
+- Source impact inventories read each bound owner once per scan and retain per-alias captures, missing owners and historical receipts. The [maintenance review and trials](docs/2026-11-19-context-maintenance-v5.8.md) cover scope, recovery, measured read counts and remaining limits.
 
 ## [5.7] - 2026-11-19
 
 ### Changed
 - Repository bootstrap reuses the first source inventory for units a writer and an independent reviewer can each cover in full. The reviewer records findings before seeing the draft, then challenges the exact owner text and rows. Repairs receive independent rechecks. A fresh reader exercises the saved routes and receives the source sample after recording its answers. Units without a usable owner that require reconstructing a guide across sources use distributed mining, as do larger or disputed units. The reconstructed guide is tested with a worked example.
-- Setup and legacy migration now load separate guides. A finished repository entry identifies the scope handed over and distinguishes remaining product questions from unfinished setup. See the [setup trials and their limits](docs/bootstrap-5.7.md).
+- Setup and legacy migration now load separate guides. A finished repository entry identifies the scope handed over and distinguishes remaining product questions from unfinished setup. See the [setup trials and their limits](docs/2026-11-19-bootstrap-v5.7.md).
 
 ## [5.6] - 2026-11-19
 
 ### Fixed
 - The confirmed-rule check preserves the case of names and the spacing of code literals. Status labels remain case-insensitive.
 - General-space checks now name the selected entry in the final verdict. The space protocol uses the declared entry file and explains when a directory selects `README.md`.
-- Doctor establishes repair scope before reviewing findings. A narrowly requested fix leaves other findings for the report. See the [5.6 trials](docs/context-checks-5.6.md).
+- Doctor establishes repair scope before reviewing findings. A narrowly requested fix leaves other findings for the report. See the [5.6 trials](docs/2026-11-19-context-checks-v5.6.md).
 
 ## [5.5] - 2026-11-19
 
 ### Changed
-- Preflight locates the entry format and headings before opening relevant sections. For large development entries it searches the full scope of the invariant register, then reads the applicable rows and owners with their exceptions. See the [large-entry trial evidence](docs/large-entry-preflight-2026-11-19.md).
+- Preflight locates the entry format and headings before opening relevant sections. For large development entries it searches the full scope of the invariant register, then reads the applicable rows and owners with their exceptions. See the [large-entry trial evidence](docs/2026-11-19-large-entry-preflight.md).
 - The bilingual development instruction blocks route the reader to preflight before opening the entry. The installation guide explains how to refresh the block and verify the active skill version in independent Git worktrees.
 
 ## [5.4] - 2026-11-16
 
 ### Added
 - An explicit local symlink setup points existing installations directly to one persistent checkout, preserving originals in external backups and leaving unrelated skills intact. Copy installation remains the default; local-only links are not automatically committed to consumer repositories.
-- Conditional hot/warm/cold context guidance for oversized entries, repeated reconstruction from history and requested consolidation. Existing owners and source records remain authoritative; targeted historical lookup preserves low-frequency constraints and partial exceptions. See the [design account](docs/context-tiering-design-2026-11-16.md) and [native trials](tests/context/trials-5.4.md).
+- Conditional hot/warm/cold context guidance for oversized entries, repeated reconstruction from history and requested consolidation. Existing owners and source records remain authoritative; targeted historical lookup preserves low-frequency constraints and partial exceptions. See the [design account](docs/2026-11-16-context-tiering-design.md) and [native trials](tests/context/trials-5.4.md).
 - Antigravity App installation key `antigravity-app` (alias `agy`) uses the shared `~/.gemini/config/skills` global location and existing `.agents/skills` project path. Standalone IDE and legacy CLI keys retain their supported global locations and scoped upgrade/uninstall behavior. Installation guidance distinguishes file delivery, session discovery and actual skill reads.
 
 ### Changed
@@ -153,7 +153,7 @@ Entries up to 2.86 were derived from the v2 protocol-upgrade ledger, which is pr
 - Reusable opt-in installed trials for four cold sessions sharing a general space, and 80-rule development registers with protected-departure and typo controls. Host-side checks, independent semantic review and frozen identities distinguish actual outcomes from model self-report; CI runs only offline calibration.
 
 ### Changed
-- General-space closeout returns after its own lifecycle and shared references, instead of falling through into the development batch recipe; its model supplies the plain structural-check command without a Git prerequisite. An actual installed four-session task exposed unnecessary Git comparison in a non-Git space. Frozen before/after behavior evidence and development controls are recorded in the [evolution review](docs/evolution-review-2026-11-12.md); development format 4, general format 5 and their authorization boundaries stay unchanged.
+- General-space closeout returns after its own lifecycle and shared references, instead of falling through into the development batch recipe; its model supplies the plain structural-check command without a Git prerequisite. An actual installed four-session task exposed unnecessary Git comparison in a non-Git space. Frozen before/after behavior evidence and development controls are recorded in the [evolution review](docs/2026-11-12-evolution-review.md); development format 4, general format 5 and their authorization boundaries stay unchanged.
 - Explain task-local source recovery after actual renewed permission or authoritative byte-identity reconciliation: preserve prior state and known impacts, reuse source/item identities, reconcile current owners and obtain new readbacks. A fresh state grants no authority and is not an ordinary retry shortcut.
 - [Install step 4](INSTALL.md#4-wire-the-skills-into-the-repos-agent-instructions-file) now chooses the instruction block before editing: an existing format 4/5 entry or a clearly software repository is wired without a question; a target that looks like a non-code space, or has conflicting signals, gets one question with a recommended mode, the chosen entry and the files to change. Agreeing to a general space also covers the minimal entry front matter, writer sentence and invariants section. The installer adds one line saying its printed block is for development repositories. Previously a registry-like folder received the development block and later sessions would offer a parallel `SSOT/`. Isolated `gpt-6.1-terra` installs from a frozen local source: a registry fixture asked and changed no instruction file (baseline wired the development block), then after the answer added only the general block and minimal entry edits with a clean check; a software fixture and an existing format-4 fixture were wired without questions. One run each; no reliability claim.
 
@@ -164,7 +164,7 @@ Entries up to 2.86 were derived from the v2 protocol-upgrade ledger, which is pr
 - Clarify the installed trial fixture's prohibition on agent delegation, which one subject misread as forbidding checker scripts. Calibrate structural-check ordering and public source completion instead of treating a whole shell batch's exit code as every subcommand's outcome; preserve earlier failed attempts.
 - Calibrate the current C06 oracle against the ancestor-conflict contract: preserve original completed capture, block successor completion, and accept legitimate completion with renewed receipts instead of requiring every historical receipt. Historical 5.0 results retain their original evidence limits.
 - Block source progress through any unresolved ancestor conflict, including same-revision content conflicts; choosing a fork cannot bypass a conflicting ancestor. Completion retries accept the same valid receipts in another order while preserving saved history and rejecting stale or changed evidence.
-- Check both development and general templates in both languages: ordered managed-block markers, all four lifecycle routes inside the block, and matching entry format/language. Whole-bundle negative probes expose the previous general-template coverage gap. See the [evolution review and evidence](docs/evolution-review-2026-11-11.md).
+- Check both development and general templates in both languages: ordered managed-block markers, all four lifecycle routes inside the block, and matching entry format/language. Whole-bundle negative probes expose the previous general-template coverage gap. See the [evolution review and evidence](docs/2026-11-11-evolution-review.md).
 - Reconcile both READMEs with the existing general-space permission to retain authorized experiences and exact words without requiring future decision value. That earlier documentation repair did not change consumer formats or default agent instructions.
 
 ## [5.0] - 2026-11-10
@@ -201,7 +201,7 @@ Entries up to 2.86 were derived from the v2 protocol-upgrade ledger, which is pr
 - Isolate checker Git queries from inherited repository-routing variables. A caller's `GIT_DIR`, `GIT_COMMON_DIR` or object directory could otherwise select foreign history and silently pass an unauthorized confirmed-rule change; `GIT_WORK_TREE` could reject valid local memory. Regression checks exercise clean and changed rules under foreign routing, retaining alias and cross-repository boundaries. No consumer format or agent protocol changes.
 
 ### Added
-- [Evolution and lifecycle review](docs/evolution-review-2026-11-10.md), separating completed directions, the checker repair, incomplete behavior evidence and separately scoped host/consumer work.
+- [Evolution and lifecycle review](docs/2026-11-10-evolution-review.md), separating completed directions, the checker repair, incomplete behavior evidence and separately scoped host/consumer work.
 
 ## [4.4] - 2026-11-09
 

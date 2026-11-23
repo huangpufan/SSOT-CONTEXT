@@ -1,6 +1,6 @@
 # Open judgment and evolving-context evaluation
 
-The deliverable is a practical [Chinese guide](evolving-research-and-creative-projects.md) and an opt-in evaluation path for concrete judgment, useful proposals and scoped actions. Existing protocol 5.3 supported the observed paths; this work does not change the runtime protocol or demonstrate that leaving it unchanged improves behavior.
+The deliverable is a practical [Chinese guide](2026-11-14-evolving-research-and-creative-projects.md) and an opt-in evaluation path for concrete judgment, useful proposals and scoped actions. Existing protocol 5.3 supported the observed paths; this work does not change the runtime protocol or demonstrate that leaving it unchanged improves behavior.
 
 The user authorized implementation after a needs study and discussion with Opus and Fable. Creative benefits must not offset permission violations, incorrect action, lost knowledge or regressions elsewhere. Calliope remained read-only during this evaluation, without installation or changes. A later user instruction authorizes consumer-project updates and Calliope installation after this repository change passes CI; those follow-on installation results are outside this trial account. Public fixtures are synthetic; no private creative assets or original project decision quotations are published here.
 
