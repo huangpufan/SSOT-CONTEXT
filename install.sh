@@ -51,7 +51,7 @@ ARROW="${CYAN}›${NC}"
 # -----------------------------------------------------------------------------
 # Globals populated by argument parsing
 # -----------------------------------------------------------------------------
-MODE="install"          # install | uninstall | upgrade
+MODE="install"          # install | uninstall | upgrade | list-agents | check-block | sync-block
 ARG_AGENT=""
 ARG_SCOPE=""
 ARG_LANG=""
@@ -59,10 +59,14 @@ ARG_YES=0
 ARG_NONINTERACTIVE=0
 ARG_UI_LANG=""
 ARG_REF=""
+ARG_BLOCK_FILE=""
+ARG_ENTRY=""
 SOURCE_DIR="${SOURCE_DIR:-}"
 FETCHED_SOURCE_DIR=""
 INSTALL_STAGE=""
 INSTALL_BASE=""
+BLOCK_SYNC_TMP=""
+BLOCK_PAYLOAD_TMP=""
 INSTALL_LOCK=""
 INSTALL_REPLACING=0
 INSTALL_ENTRIES=()
@@ -109,6 +113,8 @@ cleanup() {
   fi
   [[ -z "$INSTALL_LOCK" ]] || release_install_lock || err "could not release installation lock at $INSTALL_LOCK"
   [[ -z "$FETCHED_SOURCE_DIR" ]] || rm -rf -- "$FETCHED_SOURCE_DIR"
+  [[ -z "$BLOCK_SYNC_TMP" ]] || rm -f -- "$BLOCK_SYNC_TMP"
+  [[ -z "$BLOCK_PAYLOAD_TMP" ]] || rm -f -- "$BLOCK_PAYLOAD_TMP"
   tput cnorm 2>/dev/null || true
 }
 trap cleanup EXIT
@@ -175,6 +181,7 @@ t() {
       WIRE_TARGET_HINT) echo "目标文件：CLAUDE.md / AGENTS.md / .cursorrules / GEMINI.md / 等（按你用的 Agent 选）" ;;
       WIRE_GENERAL_HINT) echo "这段只适用于开发仓库。登记处、笔记、研究、创作等非代码空间改用已安装的 context-adapter.md；不确定时由 Agent 按安装指南第 4 步判断，必要时问你。" ;;
       WIRE_SEE_README) echo "由 Agent 合并指令并验证安装：https://github.com/huangpufan/SSOT-CONTEXT/blob/main/INSTALL.md#4-wire-the-skills-into-the-repos-agent-instructions-file" ;;
+      WIRE_SYNC_HINT) echo "已有受管标记块可用 --check-block <文件> 核验，或 --sync-block <文件> 仅同步标记块内正文。" ;;
       NO_AGENT_DETECTED) echo "未检测到已安装的 Agent" ;;
       SHOWING_ALL) echo "显示所有支持的目标" ;;
       NO_AGENT_SELECTED) echo "未选择任何 Agent" ;;
@@ -216,6 +223,7 @@ t() {
       WIRE_TARGET_HINT) echo "Target file: CLAUDE.md / AGENTS.md / .cursorrules / GEMINI.md / etc. (whichever your agent uses)" ;;
       WIRE_GENERAL_HINT) echo "This block is for development repositories. Registries, notes, research, creative work and other non-code spaces use the installed context-adapter.md instead; when unsure, the agent decides under install guide step 4 and asks you if needed." ;;
       WIRE_SEE_README) echo "Ask your agent to merge the instructions and verify setup: https://github.com/huangpufan/SSOT-CONTEXT/blob/main/INSTALL.md#4-wire-the-skills-into-the-repos-agent-instructions-file" ;;
+      WIRE_SYNC_HINT) echo "To check or refresh an existing marked block in place, run --check-block <file> or --sync-block <file>." ;;
       NO_AGENT_DETECTED) echo "No installed Agent detected" ;;
       SHOWING_ALL) echo "Showing all supported targets" ;;
       NO_AGENT_SELECTED) echo "No Agent selected" ;;
@@ -287,6 +295,7 @@ print_wire_block() {
   printf '%s\n' "$block"
   echo ""
   echo -e "  ${DIM}$(t WIRE_SEE_README)${NC}"
+  echo -e "  ${DIM}$(t WIRE_SYNC_HINT)${NC}"
 }
 
 # -----------------------------------------------------------------------------
@@ -1085,9 +1094,9 @@ resolve_template_lang_dir() {
 # The marked template section is shared by installation and bootstrap.
 # Validate before installing so a broken source cannot silently omit wiring.
 read_wire_block() {
-  local lang="$1" template_dir template block skill
+  local lang="$1" template_name="${2:-adapter-thin.md}" template_dir template block skill
   template_dir="$(resolve_template_lang_dir "$lang")" || return 1
-  template="${template_dir:-$SOURCE_DIR/skills/ssot-bootstrap/assets/templates}/adapter-thin.md"
+  template="${template_dir:-$SOURCE_DIR/skills/ssot-bootstrap/assets/templates}/$template_name"
   [[ -f "$template" ]] || { err "missing SSOT instruction template: $template"; return 1; }
   block="$(awk '
     $0 ~ /^<!-- SSOT-(CONTEXT|SKILL):BEGIN -->$/ { starts++; active = 1; closing = $0; sub(/:BEGIN/, ":END", closing) }
@@ -1103,6 +1112,245 @@ read_wire_block() {
     [[ "$block" == *"\$$skill"* ]] || { err "missing $skill route in SSOT instruction block: $template"; return 1; }
   done
   printf '%s\n' "$block"
+}
+
+# Resolve symlinks on an instruction file so syncing updates the canonical target
+# without replacing a symlink (e.g. CLAUDE.md -> AGENTS.md) with a regular copy.
+resolve_block_target() {
+  local path="$1" hops=0 dir link
+  [[ -e "$path" ]] || die "instruction file not found: $path"
+  while [[ -L "$path" ]]; do
+    hops=$((hops + 1))
+    (( hops <= 20 )) || die "symlink loop while resolving instruction file: $1"
+    link="$(readlink "$path")" || die "could not read symlink: $path"
+    if [[ "$link" == /* ]]; then
+      path="$link"
+    else
+      dir="$(cd "$(dirname "$path")" && pwd -P)" || die "could not resolve parent of $path"
+      path="$dir/$link"
+    fi
+  done
+  [[ -f "$path" ]] || die "instruction target is not a regular file: $1"
+  dir="$(cd "$(dirname "$path")" && pwd -P)" || die "could not resolve directory for $path"
+  printf '%s/%s\n' "$dir" "$(basename "$path")"
+}
+
+# Extract the single ordered managed block (BEGIN through END) from an instruction file.
+extract_file_block() {
+  local file="$1"
+  awk '
+    $0 ~ /^<!-- SSOT-(CONTEXT|SKILL):BEGIN -->$/ {
+      starts++
+      if (starts == 1) {
+        active = 1
+        closing = $0
+        sub(/:BEGIN/, ":END", closing)
+      }
+    }
+    active { block = block $0 ORS }
+    $0 ~ /^<!-- SSOT-(CONTEXT|SKILL):END -->$/ {
+      ends++
+      if (active) {
+        if ($0 != closing) mismatch = 1
+        active = 0
+      } else {
+        order_err = 1
+      }
+    }
+    END {
+      if (starts != 1 || ends != 1 || active || mismatch || order_err) exit 1
+      printf "%s", block
+    }
+  ' "$file"
+}
+
+detect_block_lang() {
+  local block="$1"
+  if [[ "$block" == *"工作流"* || "$block" == *"长期 context"* || "$block" == *"保护规则"* || "$block" == *"回读"* || "$block" == *"空间"* || "$block" == *"建库"* ]]; then
+    echo "zh"
+  else
+    echo "en"
+  fi
+}
+
+# Extract ENTRY from format-5 adapter blocks (5.0-5.13 and 5.14+ EN/ZH wordings).
+extract_format5_entry() {
+  local block="$1"
+  printf '%s\n' "$block" | awk '
+    BEGIN { found = 0 }
+    function trim(s) {
+      sub(/^[ \t]+/, "", s)
+      sub(/[ \t]+$/, "", s)
+      return s
+    }
+    /ssot_format: 5/ {
+      line = $0
+      if (index(line, "through ") > 0 && index(line, " (`ssot_format: 5`)") > 0) {
+        s = substr(line, index(line, "through ") + 8)
+        s = substr(s, 1, index(s, " (`ssot_format: 5`)") - 1)
+        print trim(s); found = 1; exit 0
+      }
+      if (index(line, " defines this space (`ssot_format: 5`)") > 0) {
+        s = substr(line, 1, index(line, " defines this space (`ssot_format: 5`)") - 1)
+        print trim(s); found = 1; exit 0
+      }
+      if (index(line, "本空间通过") > 0 && index(line, "（`ssot_format: 5`）") > 0) {
+        s = substr(line, index(line, "本空间通过") + length("本空间通过"))
+        s = substr(s, 1, index(s, "（`ssot_format: 5`）") - 1)
+        print trim(s); found = 1; exit 0
+      }
+      if (index(line, "本空间的入口为") > 0 && index(line, "（`ssot_format: 5`）") > 0) {
+        s = substr(line, index(line, "本空间的入口为") + length("本空间的入口为"))
+        s = substr(s, 1, index(s, "（`ssot_format: 5`）") - 1)
+        print trim(s); found = 1; exit 0
+      }
+      if (index(line, "本空间的入口为") > 0 && index(line, "(`ssot_format: 5`)") > 0) {
+        s = substr(line, index(line, "本空间的入口为") + length("本空间的入口为"))
+        s = substr(s, 1, index(s, "(`ssot_format: 5`)") - 1)
+        print trim(s); found = 1; exit 0
+      }
+    }
+    END { if (!found) exit 1 }
+  '
+}
+
+# Replace the first literal occurrence of ENTRY without regex/escape interpretation.
+substitute_entry_literal() {
+  local block="$1" entry="$2"
+  SSOT_ENTRY_VALUE="$entry" awk '
+    BEGIN { done = 0; entry = ENVIRON["SSOT_ENTRY_VALUE"] }
+    {
+      if (!done) {
+        pos = index($0, "ENTRY")
+        if (pos > 0) {
+          $0 = substr($0, 1, pos - 1) entry substr($0, pos + 5)
+          done = 1
+        }
+      }
+      print
+    }
+    END { if (!done) exit 1 }
+  ' <<< "$block"
+}
+
+# Populate BLOCK_REAL_TARGET, BLOCK_CURRENT, BLOCK_EXPECTED, BLOCK_FMT, BLOCK_LANG, BLOCK_LEGACY.
+prepare_block_check() {
+  [[ -n "$ARG_BLOCK_FILE" ]] || die "missing instruction file path"
+  if [[ -n "$ARG_ENTRY" && "$ARG_ENTRY" == *$'\n'* ]]; then
+    die "--entry must be a single line"
+  fi
+  BLOCK_REAL_TARGET="$(resolve_block_target "$ARG_BLOCK_FILE")"
+  ensure_source
+  if [[ -f "$SOURCE_DIR/VERSION" ]]; then
+    local src_ver
+    src_ver="$(tr -d '[:space:]' < "$SOURCE_DIR/VERSION")"
+    [[ -n "$src_ver" ]] && VERSION="$src_ver"
+  fi
+
+  if ! BLOCK_CURRENT="$(extract_file_block "$BLOCK_REAL_TARGET")"; then
+    err "invalid or missing SSOT managed markers in $ARG_BLOCK_FILE (expected one ordered <!-- SSOT-CONTEXT:BEGIN --> ... <!-- SSOT-CONTEXT:END --> pair)"
+    return 1
+  fi
+
+  BLOCK_LEGACY=0
+  [[ "$BLOCK_CURRENT" == *"<!-- SSOT-SKILL:BEGIN -->"* ]] && BLOCK_LEGACY=1
+
+  if [[ -n "$ARG_LANG" ]]; then
+    BLOCK_LANG="$ARG_LANG"
+  else
+    BLOCK_LANG="$(detect_block_lang "$BLOCK_CURRENT")"
+  fi
+
+  local template_name="adapter-thin.md" entry=""
+  if [[ -n "$ARG_ENTRY" || "$BLOCK_CURRENT" == *"ssot_format: 5"* ]]; then
+    BLOCK_FMT="5"
+    template_name="context-adapter.md"
+    if [[ -n "$ARG_ENTRY" ]]; then
+      entry="$ARG_ENTRY"
+    else
+      if ! entry="$(extract_format5_entry "$BLOCK_CURRENT")" || [[ -z "$entry" ]]; then
+        err "could not extract format-5 ENTRY path from $ARG_BLOCK_FILE; pass --entry <path>"
+        return 1
+      fi
+    fi
+  else
+    BLOCK_FMT="4"
+  fi
+
+  local expected_raw
+  expected_raw="$(read_wire_block "$BLOCK_LANG" "$template_name")" || return 1
+  if [[ "$BLOCK_FMT" == "5" ]]; then
+    BLOCK_EXPECTED="$(substitute_entry_literal "$expected_raw" "$entry")" || {
+      err "failed to substitute ENTRY in format-5 template"
+      return 1
+    }
+  else
+    BLOCK_EXPECTED="$expected_raw"
+  fi
+  return 0
+}
+
+run_check_block() {
+  prepare_block_check || return 1
+  if [[ "$BLOCK_CURRENT" == "$BLOCK_EXPECTED" ]]; then
+    ok "managed block up-to-date: $ARG_BLOCK_FILE (format ${BLOCK_FMT}, lang=${BLOCK_LANG}, v${VERSION})"
+    return 0
+  fi
+  local note=""
+  [[ "$BLOCK_LEGACY" -eq 1 ]] && note=" (uses legacy SSOT-SKILL markers)"
+  warn "managed block outdated: $ARG_BLOCK_FILE (format ${BLOCK_FMT}, lang=${BLOCK_LANG}; expected v${VERSION})${note}"
+  info "Run with --sync-block \"$ARG_BLOCK_FILE\" to update only the marked block."
+  return 1
+}
+
+run_sync_block() {
+  prepare_block_check || return 1
+  if [[ "$BLOCK_CURRENT" == "$BLOCK_EXPECTED" ]]; then
+    ok "managed block already up-to-date: $ARG_BLOCK_FILE (format ${BLOCK_FMT}, lang=${BLOCK_LANG}, v${VERSION})"
+    return 0
+  fi
+
+  local target_dir
+  target_dir="$(dirname "$BLOCK_REAL_TARGET")"
+  BLOCK_PAYLOAD_TMP="$(mktemp "${target_dir}/.ssot-block-payload.XXXXXX")"
+  BLOCK_SYNC_TMP="$(mktemp "${target_dir}/.ssot-block-sync.XXXXXX")"
+  cp -p "$BLOCK_REAL_TARGET" "$BLOCK_SYNC_TMP"
+  printf '%s\n' "$BLOCK_EXPECTED" > "$BLOCK_PAYLOAD_TMP"
+
+  awk -v payload="$BLOCK_PAYLOAD_TMP" '
+    $0 ~ /^<!-- SSOT-(CONTEXT|SKILL):BEGIN -->$/ {
+      in_block = 1
+      replaced = 1
+      while ((getline pline < payload) > 0) {
+        print pline
+      }
+      close(payload)
+      next
+    }
+    in_block {
+      if ($0 ~ /^<!-- SSOT-(CONTEXT|SKILL):END -->$/) {
+        in_block = 0
+      }
+      next
+    }
+    { print }
+    END { if (!replaced || in_block) exit 1 }
+  ' "$BLOCK_REAL_TARGET" > "$BLOCK_SYNC_TMP" || die "failed to assemble synced instruction file for $ARG_BLOCK_FILE"
+
+  local verify_tmp
+  verify_tmp="$(extract_file_block "$BLOCK_SYNC_TMP")" || die "synced output failed marker verification; original file untouched"
+  [[ "$verify_tmp" == "$BLOCK_EXPECTED" ]] || die "synced output did not match expected template; original file untouched"
+
+  mv -f "$BLOCK_SYNC_TMP" "$BLOCK_REAL_TARGET"
+  BLOCK_SYNC_TMP=""
+  rm -f -- "$BLOCK_PAYLOAD_TMP"
+  BLOCK_PAYLOAD_TMP=""
+
+  local verify_final
+  verify_final="$(extract_file_block "$BLOCK_REAL_TARGET")" || die "post-write readback failed on $ARG_BLOCK_FILE"
+  [[ "$verify_final" == "$BLOCK_EXPECTED" ]] || die "post-write readback mismatch on $ARG_BLOCK_FILE"
+  ok "synced managed block: $ARG_BLOCK_FILE (format ${BLOCK_FMT}, lang=${BLOCK_LANG}, v${VERSION})"
+  return 0
 }
 
 # Print the protocol_version a SKILL.md declares, or nothing if it has none.
@@ -1400,6 +1648,8 @@ USAGE:
   install.sh [OPTIONS]
   install.sh --uninstall [OPTIONS]
   install.sh --upgrade [--agent <list>] [--scope <global|project>]
+  install.sh --check-block <file> [--lang <en|zh>] [--entry <path>]
+  install.sh --sync-block <file> [--lang <en|zh>] [--entry <path>]
   install.sh --list-agents
 
 OPTIONS:
@@ -1418,6 +1668,9 @@ OPTIONS:
   --quickstart              Non-interactive project-local install with autodetect
   --uninstall               Remove installed bundle (requires --agent, --scope)
   --upgrade                 Re-install detected locations; respects --agent/--scope
+  --check-block <file>      Check whether the SSOT-CONTEXT marked block in <file> is current (read-only)
+  --sync-block <file>       Update only the SSOT-CONTEXT marked block in <file>; leave other lines intact
+  --entry <path>            Explicit format-5 entry path for --check-block / --sync-block
   --list-agents             Print supported agents (KEY / NAME / DETECT / PATH)
   --ui-lang <en|zh>         Installer UI language (default: auto from $LANG)
   --version                 Print bundle version and exit
@@ -1448,6 +1701,8 @@ EXAMPLES:
   # Maintenance
   bash install.sh --upgrade --agent codex --scope project
   bash install.sh --upgrade
+  bash install.sh --check-block AGENTS.md
+  bash install.sh --sync-block AGENTS.md
   bash install.sh --uninstall --agent claude-code --scope project --yes
   bash install.sh --list-agents
 EOF
@@ -1494,6 +1749,21 @@ parse_args() {
         MODE="uninstall"; shift ;;
       --upgrade)
         MODE="upgrade"; shift ;;
+      --check-block)
+        [[ $# -ge 2 ]] || die "--check-block requires a file path"
+        MODE="check-block"; ARG_BLOCK_FILE="$2"; shift 2 ;;
+      --check-block=*)
+        MODE="check-block"; ARG_BLOCK_FILE="${1#*=}"; shift ;;
+      --sync-block)
+        [[ $# -ge 2 ]] || die "--sync-block requires a file path"
+        MODE="sync-block"; ARG_BLOCK_FILE="$2"; shift 2 ;;
+      --sync-block=*)
+        MODE="sync-block"; ARG_BLOCK_FILE="${1#*=}"; shift ;;
+      --entry)
+        [[ $# -ge 2 ]] || die "--entry requires a path"
+        ARG_ENTRY="$2"; shift 2 ;;
+      --entry=*)
+        ARG_ENTRY="${1#*=}"; shift ;;
       --list-agents)
         MODE="list-agents"; shift ;;
       --version)
@@ -1823,6 +2093,14 @@ main() {
     banner
     print_agent_list
     exit 0
+  fi
+  if [[ "$MODE" == "check-block" ]]; then
+    run_check_block
+    exit $?
+  fi
+  if [[ "$MODE" == "sync-block" ]]; then
+    run_sync_block
+    exit $?
   fi
   banner
   case "$MODE" in

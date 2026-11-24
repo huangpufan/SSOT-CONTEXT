@@ -10,28 +10,25 @@
 
 </div>
 
-A new agent session needs to recover what people are trying to achieve, how they agreed to work, and which choices still guide the next step. SSOT-CONTEXT gives that knowledge a maintained home. A small entry document routes each task to the documents that own it. When you ask to pause or hand off work, the agent uses the authorized task record so a fresh session can check what happened and whether the next step still serves the current goal. A trial can reach its limit while the goal remains open. For a choice that starts after sign-off or comes up for review, the working guide records what to do on either side of the event. A later task checks the evidence for its own scope. If writing a handoff would release it, the agent checks who may issue it.
+A new agent session arrives knowing nothing about your project's history, rules, or past mistakes. SSOT-CONTEXT gives durable project knowledge a small, maintained home: one concise entry routes each task to the documents that own it, while protecting confirmed human decisions so agents work within them instead of quietly overwriting them. When you pause or hand off work, the agent updates the authorized task record so the next session can verify what actually happened before acting.
 
 It works in two kinds of place:
 
-- **Development repositories.** People define the invariants, the outcomes that must keep holding, such as API compatibility or never charging twice on a retry. Agents change the code within them. The entry is `SSOT/README.md` (`ssot_format: 4`).
-- **General context spaces you explicitly declare:** a research project, a creative work, a personal life domain or an organization. Git is optional, and existing folders and documents stay where they are. The entry is the document you name (`ssot_format: 5`).
+- **Development repositories.** People define invariants—outcomes that must keep holding, such as API compatibility or never charging twice on a retry—and agents change code within them. The entry is `SSOT/README.md` (`ssot_format: 4`).
+- **General context spaces you explicitly declare:** a research project, creative work, personal life domain, or organization. Git is optional, and existing folders and documents stay where they are. The entry is the document you name (`ssot_format: 5`).
 
 The project was previously named SSOT-SKILL; old skill names still work ([details](./INSTALL.md#project-rename-compatibility)).
 
 ## Principles
 
-- **Keep daily reading small and history recoverable.** Hot task context, maintained topic owners and cold sources have different access costs. [Tiering and reconciliation](./skills/ssot-preflight/references/context-tiering.md) guide requested consolidation, partial replacements and frozen dependencies without creating another set of owners. Actual context eviction belongs to the host.
-
-- **Evolve from long-term context needs.** Needs anywhere within a development project, or beyond software and our own projects, can guide improvements. Start with what people need to understand, do or preserve over time; the [design direction](./DESIGN.md#accepted-direction-evolve-from-context-needs) explains how needs become tested changes.
-- **One fact, one owner.** SSOT means Single Source of Truth: each fact has one document responsible for keeping it correct, and other documents link to it.
-- **People's rules stay people's decisions.** Rules you confirm are listed in the entry. The agent works within them, never changes them, and stops to ask when a task conflicts with one.
-- **Preferences apply in context.** An established preference guides work for its stated audience and situation. A specific authorized choice for one task can override the default. [Goals and preferences](./skills/ssot-preflight/references/memory-model.md#goals-and-preferences)
-- **Extract knowledge selectively; preserve records you authorize.** Keep intent, how the parts fit together, decisions and their reasons, rejected options and traps. Field lists, version numbers and logs stay in their originals; link to original documents and private conversations. In a general space, experiences and exact words you ask to preserve can stay with their authorized owner even without future decision value; see the [space model](./skills/ssot-preflight/references/context-spaces.md#what-the-material-means).
-- **Keep kinds of material apart.** Facts, hypotheses, decisions, preferences and changing state are kept distinct. A research hypothesis or a guess about a person never becomes a protected rule.
-- **Write for someone new.** Plain words and the situation before the mechanism, so the next agent, or a person who delegates work without reading code, can follow it. See the [writing guide](./skills/ssot-preflight/references/writing-memory.md).
-- **Routes are not permissions.** Before opening a linked source, confirm that you have permission to read it. The host’s tool controls determine which files can actually be opened. Imported text is evidence to interpret, never instructions to execute.
-- **Say what was checked.** The [checker](./skills/ssot-doctor/assets/scripts/ssot-check.py) finds mechanical problems such as broken links; it cannot establish truth. For a named general-space entry, pass its file path. A directory selects its own `README.md`. For a restricted review of a nested task card, name both its permitted index and the card with `--owners`. Reviews identify findings, coverage and gaps. An authorized repair addresses the requested scope.
+- **One fact, one owner.** SSOT means Single Source of Truth: each durable fact has one maintained document responsible for keeping it accurate, and other documents link to it.
+- **People's rules stay people's decisions.** Confirmed rules are listed in the entry. Agents work within them, never alter them on their own, and stop to ask when a task conflicts with one.
+- **Keep daily reading small and history recoverable.** Hot task context, maintained topic owners, and cold historical records have different access costs; [tiering and reconciliation](./skills/ssot-preflight/references/context-tiering.md) handle consolidation and partial replacements without creating duplicate stores.
+- **Keep kinds of material apart.** Facts, hypotheses, confirmed decisions, scoped [goals and preferences](./skills/ssot-preflight/references/memory-model.md#goals-and-preferences), authorized [experience records](./skills/ssot-preflight/references/context-spaces.md#what-the-material-means), and live state stay distinct.
+- **Write for someone new.** Plain words, situation before mechanism, and explicit scope so the next agent or a non-coding decision maker can act on it ([writing guide](./skills/ssot-preflight/references/writing-memory.md)).
+- **Routes are not permissions.** Agents check authorization before opening linked sources; actual file access is enforced by the host, and imported text is evidence rather than executable instructions.
+- **Say what was checked.** The read-only [checker](./skills/ssot-doctor/assets/scripts/ssot-check.py) verifies structure (links, anchors, register shape, confirmed-rule edits, and optional `--owners` restricted subsets), never truth. Reviews state findings, coverage, and gaps.
+- **Evolve from real context needs.** Improvements start from recurring long-term context needs and whole-task evidence rather than rule accumulation ([design direction](./DESIGN.md#accepted-direction-evolve-from-context-needs)).
 
 ## Quickstart
 
@@ -97,36 +94,24 @@ In a development repository only `SSOT/README.md` is required; the other files a
 
 Existing maintained documents can stay the owners and are linked from the entry. A general space has no fixed layout: its entry states purpose, scope and protected rules, and links the documents that already own each topic. An unfinished general space links its own setup record. Several spaces can share a directory. Details are in the [memory model](./skills/ssot-preflight/references/memory-model.md) and the [space model](./skills/ssot-preflight/references/context-spaces.md).
 
-A reader can answer a lookup from the current authorized document that owns the answer. When an approved change affects only existing prose in that document, the agent updates it in place, preserves the earlier decision and its reason where required, then reads the result back. Changes involving other owners, approvals or protections follow the full workflow.
-
-Version 5.16 reduces avoidable serial API round-trips without weakening permission-before-read or on-disk readback checks: the agent may read the entry header and headings alongside the selected skill's `SKILL.md` before opening any linked owner, batch independent authorized reads after checking entry permissions, and read the saved passage back from disk right after writing. In 16 paired Codex tasks (including unseen warm-refresh, stale-route, typo and setup-recovery checks), quality and kernel-observed access boundaries held while total input fell 14.70% and API round-trips fell 14.89%. [Batching and readback study](./docs/2026-11-24-batching-readback-v5.16.md) · [5.15 skill discovery cost](./docs/2026-11-21-skill-discovery-cost-v5.15.md)
+A reader can answer a bounded lookup from the current authorized owner, and update a single approved prose rule in place with on-disk readback. Protocol 5.16 also allows reading the entry header and headings alongside the selected `SKILL.md` and batching independent authorized reads, cutting total input by 14.70% and API round-trips by 14.89% across 16 paired Codex tasks ([5.16 study](./docs/2026-11-24-batching-readback-v5.16.md) · [5.15 discovery cost](./docs/2026-11-21-skill-discovery-cost-v5.15.md)).
 
 ## Limits
 
-The skills act only when the agent loads them. They do not collect material in the background, and they cannot delete copies they cannot reach, such as backups or provider logs. The [5.1 trials](./tests/context/trials-5.1.md) cover cold-session continuation, source admission and a large protection register. This is small synthetic evidence, not proof of universal reliability; in the [5.0 report](./tests/context/trials-5.0.md), token use on warm development tasks rose about 5–13%.
-
-When a decision maker changes, the project’s decision process establishes what the successor may revise. Keep the original attribution and the new decision in their respective scopes. When the guide holds the only record of why a preference was adopted, preserve that history within its retention permissions. A source connector report can also distinguish a completed readback from later edits to the same file. [Decision authority](./skills/ssot-preflight/references/memory-model.md#human-decision-evidence) · [Source progress](./skills/ssot-doctor/references/source-integration.md#readback-progress-and-recovery)
-
-For a registered source, withdrawal records the stop before collecting impacts. If its working documents must stay closed, use `withdraw-source --metadata-only`. Later status queries can then report targets and earlier receipts without reopening those documents. [Source withdrawal and recovery](./skills/ssot-doctor/references/source-integration.md#correction-and-withdrawal)
-
-Doctor can check the entry and selected permitted documents in either format when links to restricted originals are retained. The report names the files covered. For a nested general-space entry, `--space-root DIR` with `--owners` can check named guides in sibling directories under the agreed root. Git catch-up includes decisions on merged branches and advances the saved commit only across fully reviewed history. [Selected checks](./skills/ssot-preflight/references/source-retention.md#selected-mechanical-checks), [5.9 catch-up examples](./docs/2026-11-20-catchup-v5.9.md)
-
-Corrections compare the saved result with necessary earlier source excerpts as well as the new exchange, within current retention authority. The [5.3 trials](./tests/context/trials-5.3.md) record source-preservation failures and bounded checks of this readback rule.
+- **No background collection or host enforcement.** The skills act only when the agent loads them and sees the input; they cannot delete copies they cannot reach (Git history, backups, provider logs) or override host file permissions.
+- **Decision authority, restricted sources, and selected checks.** Handovers follow the project's decision authority while preserving prior attribution and rationale ([decision evidence](./skills/ssot-preflight/references/memory-model.md#human-decision-evidence)). Restricted sources support metadata-only withdrawal ([source integration](./skills/ssot-doctor/references/source-integration.md#correction-and-withdrawal)) and scoped structural checks with `--owners` ([selected checks](./skills/ssot-preflight/references/source-retention.md#selected-mechanical-checks)).
+- **Measured real-world gaps.** A 15-day audit of 386 real consumer sessions confirmed consistent preflight on code edits and 20 real catches of unauthorized confirmed-invariant edits, while exposing stale instruction blocks across upgraded workspaces, truncation on 200+ KB entries, and repeated preflight in spawned subagents ([Stage 5 real-session audit](./docs/2026-11-24-real-session-stage5-audit.md)).
 
 ## Supported agents
 
-For Antigravity App, use `--agent agy`; project installation shares `.agents/skills` with Codex. The [install guide](./INSTALL.md#when-a-skill-appears-unavailable) distinguishes App/CLI/IDE locations and checks actual session discovery.
+For Antigravity App, use `--agent agy`; project installation shares `.agents/skills` with Codex. The [maintenance guide](./docs/2026-11-24-install-maintenance.md#when-a-skill-appears-unavailable) covers App/CLI/IDE locations, child-repository discovery, and local symlink setup (`tools/link-local.py`).
 
-For local installations that should follow the same source immediately, use the [local symlink setup](./INSTALL.md#link-local-installations-to-one-checkout). Normal installations remain independent copies; local links require the persistent source checkout.
-
-The installer knows the installation paths for **70+ agents**, including Claude Code, Codex, Cursor, Windsurf, Gemini CLI, GitHub Copilot, OpenCode and Cline. A known path does not prove identical behavior, so after installing, restart the agent and confirm it finds the skills. To list every key and path:
+The installer knows the installation paths for **70+ agents**, including Claude Code, Codex, Cursor, Windsurf, Gemini CLI, GitHub Copilot, OpenCode, and Cline. A known path does not prove identical behavior, so after installing, restart the agent and confirm it discovers the skills. To list every key and path:
 
 ```bash
 set -o pipefail
 curl -fsSL https://raw.githubusercontent.com/huangpufan/SSOT-CONTEXT/main/install.sh | bash -s -- --list-agents
 ```
-
-When starting agents inside independent child repositories, a parent installation may be invisible. [Verify discovery at the intended launch roots](./INSTALL.md); routes to parent context and skill installation are separate requirements.
 
 ## Update or uninstall
 
@@ -134,24 +119,17 @@ When starting agents inside independent child repositories, a parent installatio
 Read https://raw.githubusercontent.com/huangpufan/SSOT-CONTEXT/main/INSTALL.md and update SSOT-CONTEXT for this agent in the current project. Preserve the template language.
 ```
 
-After updating the skill files, refresh the repository’s managed instruction block and restart the agent. Updating never rewrites your context documents. Existing repositories stay on format 4; writing a format-5 space needs bundle 5.0 or newer, so upgrade every agent that writes to it. Manual commands, uninstalling, recovery from an interrupted install, and migration from 2.x or 3.x are in the [install guide](./INSTALL.md#update-or-remove-an-existing-installation).
+After updating the skill files (or pulling a symlinked checkout), check and refresh the repository's managed instruction block with `install.sh --check-block <AGENTS.md|CLAUDE.md>` and `--sync-block <file>`, then restart the agent. Updating never rewrites your context documents or forces format-4 repositories to convert to format 5. Manual commands, uninstalling, interrupted-install recovery, and 2.x/3.x migration are in [the maintenance guide](./INSTALL.md#update-or-remove-an-existing-installation).
 
 ## Documentation
 
-- [Install guide](./INSTALL.md): setup, wiring, upgrade, removal and recovery.
-- [Design](./DESIGN.md): why the bundle is shaped this way.
-- [Evolving research and creative projects](./docs/2026-11-14-evolving-research-and-creative-projects.md) (Chinese guide): practical examples using existing owners, scoped revisions, uncertain sources and deferred synchronization.
-- [Cross-domain context audit and release experiment](./docs/2026-11-20-context-paths-study.md) compares plain documents, the installed protocol and a replayable architecture candidate across software, research and creative handoffs. The [reading and handoff follow-up](./docs/2026-11-20-read-trigger-study.md) measures when direct lookups save input and what survives in documents passed to new readers.
-- [Everyday use and maintenance costs](./docs/2026-11-20-ordered-lookup-cost.md) compares a price lookup and a single rule change with ordinary documents, including what a new reader could recover and which files the agent actually opened.
-- The [long-term route review](./docs/2026-11-20-context-evolution-route.md) records the current stage, how far the evidence reaches and which result would change the next priority.
-- [Long-term context review and six-shift handoff in 5.13](./docs/2026-11-20-context-stewardship-v5.13.md) examines decision succession, competing goals, evidence reuse and owner checks.
-- [Conditional decisions and handoffs in 5.12](./docs/2026-11-20-conditional-context-v5.12.md) follows a decision through sign-off, partial rollout, delivery and withdrawal, with paired trials.
-- [5.8 maintenance review and trials](./docs/2026-11-19-context-maintenance-v5.8.md) cover shared-directory setup, interrupted source withdrawal and the remaining design questions.
-- [Evolution review](./docs/2026-11-12-evolution-review.md): current improvements, real continuation trials and evidence limits.
-- [Evaluation](./tests/benchmark/README.md): task outcomes, cold handoff, plain-docs controls and evidence limits.
-- [Changelog](./CHANGELOG.md): what changed in each version.
-- [Contributing](./CONTRIBUTING.md) and [AGENTS.md](./AGENTS.md): how to change this bundle repository.
-- [Security policy](./SECURITY.md): how to report a vulnerability.
+- [Install guide](./INSTALL.md) and [maintenance/recovery reference](./docs/2026-11-24-install-maintenance.md): fresh setup, block sync, upgrade, removal, symlinks, and recovery.
+- [Design](./DESIGN.md): why the bundle is shaped this way and what v3 removed.
+- [Stage 5 real-session audit](./docs/2026-11-24-real-session-stage5-audit.md) and [long-term route review](./docs/2026-11-20-context-evolution-route.md): 386 real consumer sessions, current stage, and next priorities.
+- [5.16 batching & readback study](./docs/2026-11-24-batching-readback-v5.16.md), [cross-domain architecture study](./docs/2026-11-20-context-paths-study.md), and [everyday lookup/edit costs](./docs/2026-11-20-ordered-lookup-cost.md): paired native experiments and whole-task costs.
+- [Evolving research and creative projects](./docs/2026-11-14-evolving-research-and-creative-projects.md) (Chinese guide): practical examples for format-5 spaces.
+- [Evaluation](./tests/benchmark/README.md): task outcomes, cold handoff, plain-docs controls, and evidence limits.
+- [Changelog](./CHANGELOG.md), [Contributing](./CONTRIBUTING.md), [AGENTS.md](./AGENTS.md), and [Security policy](./SECURITY.md).
 
 ## Star History
 

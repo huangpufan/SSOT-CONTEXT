@@ -255,9 +255,9 @@ else
   pass "Markdown paragraphs are one line each"
 fi
 
-# 9. Budgets. These are hard limits on what agents load and what this
-# repository maintains; see CONTRIBUTING.md "Protocol budgets" before raising
-# one. Every file an agent may read at runtime counts.
+# 9. Budgets. These guard the always-loaded cost surface (skill catalog and
+# managed adapter blocks), model-read protocol text, and distribution tooling
+# separately; see CONTRIBUTING.md "Protocol budgets" before raising one.
 words() { cat "$@" | wc -w | tr -d ' '; }
 bytes() { cat "$@" | wc -c | tr -d ' '; }
 budget() { # $1=label $2=value $3=limit $4=unit
@@ -265,14 +265,52 @@ budget() { # $1=label $2=value $3=limit $4=unit
 }
 mapfile -t ENTRY_FILES < <(find "$SKILLS" -name SKILL.md | sort)
 mapfile -t RUNTIME_FILES < <(find "$SKILLS" \( -name SKILL.md -o -path '*/references/*.md' \) -type f | sort)
+mapfile -t SCRIPT_FILES < <(find "$SKILLS" -path '*/assets/scripts/*.py' -type f | sort)
 budget "SKILL.md entrypoints" "$(words "${ENTRY_FILES[@]}")" 3600 words
 budget "runtime protocol (SKILL.md + references)" "$(words "${RUNTIME_FILES[@]}")" 18700 words
+if CATALOG_BYTES="$(python3 -B - "$SKILLS" <<'PY'
+import pathlib, re, sys
+root = pathlib.Path(sys.argv[1])
+total = 0
+for p in sorted(root.glob("*/SKILL.md")):
+    txt = p.read_text(encoding="utf-8")
+    m_name = re.search(r"^name:\s*(.+)$", txt, re.M)
+    m_desc = re.search(r"^description:\s*(.+)$", txt, re.M)
+    if not (m_name and m_desc):
+        sys.exit(1)
+    total += len(f"{m_name.group(1).strip()}: {m_desc.group(1).strip()}".encode("utf-8"))
+print(total)
+PY
+)" && (( CATALOG_BYTES > 0 )); then
+  budget "always-loaded skill catalog (name + description)" "$CATALOG_BYTES" 768 bytes
+else
+  fail "could not measure always-loaded skill catalog"
+fi
 for lang in en zh; do
+  for tpl in adapter-thin.md context-adapter.md; do
+    if BLOCK_BYTES="$(python3 -B - "$TEMPLATES/$lang/$tpl" <<'PY'
+import pathlib, re, sys
+txt = pathlib.Path(sys.argv[1]).read_text(encoding="utf-8")
+m = re.search(r"(<!-- SSOT-CONTEXT:BEGIN -->.*?<!-- SSOT-CONTEXT:END -->)", txt, re.S)
+if not m:
+    sys.exit(1)
+print(len(m.group(1).encode("utf-8")))
+PY
+)" && (( BLOCK_BYTES > 0 )); then
+      budget "managed block $lang/$tpl" "$BLOCK_BYTES" 1600 bytes
+    else
+      fail "could not measure managed block $lang/$tpl"
+    fi
+  done
   budget "templates/$lang" "$(bytes "$TEMPLATES/$lang"/*)" 16384 bytes
 done
-budget "checker" "$(bytes "$SKILLS/ssot-doctor/assets/scripts/ssot-check.py")" 54272 bytes
-if TOTAL_BYTES="$(git ls-files -co --exclude-standard -z -- skills | xargs -0 cat | wc -c)" && (( TOTAL_BYTES > 0 )); then
-  budget "skills/ total" "$TOTAL_BYTES" 237568 bytes
+SCRIPT_BYTES="$(bytes "${SCRIPT_FILES[@]}")"
+budget "checker" "$(bytes "$SKILLS/ssot-doctor/assets/scripts/ssot-check.py")" 65536 bytes
+budget "bundle scripts" "$SCRIPT_BYTES" 98304 bytes
+if TOTAL_BYTES="$(git -C "$PROJECT_ROOT" ls-files -co --exclude-standard -z -- skills | xargs -0 cat | wc -c)" && (( TOTAL_BYTES > 0 )); then
+  RUNTIME_ASSET_BYTES=$((TOTAL_BYTES - SCRIPT_BYTES))
+  budget "runtime assets (skills/ excluding scripts)" "$RUNTIME_ASSET_BYTES" 163840 bytes
+  budget "skills/ total" "$TOTAL_BYTES" 253952 bytes
 else
   fail "could not measure the runtime files in skills/"
 fi

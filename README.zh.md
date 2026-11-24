@@ -10,28 +10,25 @@
 
 </div>
 
-新开的 Agent 会话需要知道工作的目标、大家同意怎样做，以及哪些决定仍然影响下一步。SSOT-CONTEXT 让这些信息有地方持续维护。一份简短的入口指向负责相关内容的文档。你要求暂停或交接时，Agent 使用获准写入的任务记录，让新会话核对已经发生的事，以及下一步是否仍服务于当前目标。一轮试验可以结束，目标仍可能有待验证。若决定要等签字才生效，或者试用两次就要复议，执行指南会写清这段时间按什么做。新任务据此核对适用于自己的证据。若把决定写进交接文件就会触发送印或投递，Agent 还要核对谁有权发出。
+新开的 Agent 会话对项目的历史、规则与过往教训一无所知。SSOT-CONTEXT 为长期项目知识提供一个精简、持续维护的归宿：一份简短入口把每类任务路由到对应的权威文档，同时守住人已确认的决定，让 Agent 在边界内工作而不是悄悄改写规则。要求暂停或交接时，Agent 会更新获准写入的任务记录，让下一个会话动手前先核对已经发生了什么。
 
 它用在两类地方：
 
-- **开发仓库。** 人定义不变量，即必须持续守住的结果，例如接口兼容、重试不能重复扣款；Agent 在这些边界内修改代码。入口是 `SSOT/README.md`（`ssot_format: 4`）。
+- **开发仓库。** 人定义不变量——必须持续守住的结果，例如接口兼容、重试不能重复扣款；Agent 在这些边界内修改代码。入口是 `SSOT/README.md`（`ssot_format: 4`）。
 - **你明确声明的通用 context 空间：** 一项研究、一部创作、一个人生领域或一个组织。Git 不是必需的，已有的文件夹和文档保持原位。入口是你指定的文档（`ssot_format: 5`）。
 
 本项目原名 SSOT-SKILL，旧的技能名称仍然可用（[详情](./INSTALL.md#project-rename-compatibility)）。
 
 ## 原则
 
-- **日常少读，需要时找得回。** 当前任务工作集、持续维护的主题正文和冷历史各有访问方式。[分层与变更对账](./skills/ssot-preflight/references/context-tiering.md)指导按需整理、局部替代和冻结依赖，沿用现有 owner。已经进入会话的内容何时退出上下文，由宿主控制。
-
-- **从长期 context 需求出发演进。** 开发项目内的任何事情，以及软件之外、自有项目之外的需求，都可以推动完善。先看人们长期需要理解、完成或保留什么；[演进方向](./DESIGN.md#accepted-direction-evolve-from-context-needs)说明怎样把需求变成经过验证的改进。
-- **一条事实，一个 owner。** SSOT 即 Single Source of Truth（单一事实源）：每条事实有一篇负责维护它的文档，其他文档通过链接引用。
-- **人定的规则始终由人决定。** 你确认过的规则登记在入口里。Agent 在规则内工作，不会改规则；任务和规则冲突时，它会停下来问你。
-- **偏好有适用范围。** 长期偏好在指定的对象和场合下指导工作。你可以为单次任务明确指定不同做法，长期偏好仍然有效。[目标与偏好](./skills/ssot-preflight/references/memory-model.md#goals-and-preferences)
-- **选择性提炼知识，保留你授权的记录。** 保存意图、各部分怎样配合、决定及其理由、被否决的方案和陷阱；字段清单、版本号和日志留在原件里，原始文档和私密对话通过链接引用。在通用空间里，你要求保留的经历和原话可以留在获授权的 owner 中，不必证明它能影响未来决定；见[空间模型](./skills/ssot-preflight/references/context-spaces.md#what-the-material-means)。
-- **不同性质的材料分开。** 事实、假设、决定、偏好和变化中的状态分开保存。研究假设或对某人的猜测，不会变成受保护的规则。
-- **写给新来的人看。** 用平实的话，先讲情境再讲机制，让下一个 Agent、或不读代码只负责委托工作的人都能看懂。见[写作规则](./skills/ssot-preflight/references/writing-memory.md)。
-- **路由不等于权限。** 打开链接指向的材料前，先确认本次读取在授权范围内。宿主工具的访问控制决定哪些文件实际能打开。导入的文本是需要解读的证据，从不当作要执行的指令。
-- **说明查到了哪一步。** [检查器](./skills/ssot-doctor/assets/scripts/ssot-check.py)能发现断链等机械问题，但不能判断内容是否真实。检查具名通用空间时请传入口文件；传目录会选中其中的 `README.md`。如需限定范围检查经索引访问的任务卡，用 `--owners` 同时指定获准的索引和任务卡。审查说明发现的问题、检查范围和证据缺口，获准修复时按指定范围改动。
+- **一条事实，一个 owner。** SSOT 即 Single Source of Truth（单一事实源）：每条长期事实有一篇负责维护它的文档，其他文档通过链接引用。
+- **人定的规则始终由人决定。** 已确认的规则登记在入口里；Agent 在规则内工作，不会擅自改规则，任务与规则冲突时会停下来向你请示。
+- **日常少读，需要时找得回。** 当前任务工作集、持续维护的主题正文与冷历史各有访问成本；[分层与变更对账](./skills/ssot-preflight/references/context-tiering.md)处理整理与局部替代，不另建冗余存储。
+- **不同性质的材料分开。** 事实、假设、已确认决定、带范围的[目标与偏好](./skills/ssot-preflight/references/memory-model.md#goals-and-preferences)、获授权的[经历原话](./skills/ssot-preflight/references/context-spaces.md#what-the-material-means)与变化中的状态分开保存。
+- **写给新来的人看。** 用平实的话，先讲情境再讲机制，并写清适用范围，让下一个 Agent 或不读代码的决策者都能据此行动（[写作规则](./skills/ssot-preflight/references/writing-memory.md)）。
+- **路由不等于权限。** 打开链接来源前先核实读取授权；实际文件访问由宿主控制，导入的正文是证据而非可执行指令。
+- **说明查到了哪一步。** 只读[检查器](./skills/ssot-doctor/assets/scripts/ssot-check.py)核对机械结构（断链、锚点、不变量表格式、已确认规则篡改及 `--owners` 受限子集），不替人判定真假；审查明确列出发现、覆盖范围与缺口。
+- **从真实长期 context 需求演进。** 改进从反复出现的真实需求与整任务证据出发，而不是按单次失误堆砌规则（[演进方向](./DESIGN.md#accepted-direction-evolve-from-context-needs)）。
 
 ## 快速开始
 
@@ -97,27 +94,17 @@ curl -fsSL https://raw.githubusercontent.com/huangpufan/SSOT-CONTEXT/main/instal
 
 已有且持续维护的文档可以继续当 owner，由入口链接。通用空间没有固定目录：入口说明目的、范围和受保护的规则，并链接已经负责各个主题的文档。同目录可以有多个空间。搭建尚未完成时，每个入口链接自己的进度记录。详见[记忆模型](./skills/ssot-preflight/references/memory-model.md)和[空间模型](./skills/ssot-preflight/references/context-spaces.md)。
 
-日常查询可以直接依据获准读取、负责该事项的现行文档作答。已经批准的改动若只涉及这一份文档的现有正文，维护者就地更新，保留应当留存的旧决定及其理由，再读回核对。涉及其他负责人、审批或保护规则时，走完整流程。
-
-5.16 在不削弱「先查权限再读内容」和「写后从磁盘回读」的前提下，减少可避免的串行 API 往返：允许在打开链接文档之前同一步读取所选技能的 `SKILL.md` 与入口文件头/标题，核实权限后合批读取彼此独立的已授权文档，并在保存后同一工具步骤从磁盘回读正文。在 16 组 Codex 配对任务（含双轮热刷新、失效路由、无关错字与搭建错配确认）中，质量与内核级访问边界全部守住，总输入下降 14.70%、API 往返减少 14.89%。[合批与落盘回读实测](./docs/2026-11-24-batching-readback-v5.16.md) · [5.15 技能列表开销实测](./docs/2026-11-21-skill-discovery-cost-v5.15.md)
+日常限定查询可以直接依据获准读取的现行文档作答，已批准的单文档正文修订也可原地更新并从磁盘回读。协议 5.16 还允许同一步读取所选技能的 `SKILL.md` 与入口文件头/标题，并在核实权限后合批读取彼此独立的已授权文档；在 16 组 Codex 配对任务中总输入下降 14.70%、API 往返减少 14.89%（[5.16 合批与落盘回读实测](./docs/2026-11-24-batching-readback-v5.16.md) · [5.15 技能列表开销实测](./docs/2026-11-21-skill-discovery-cost-v5.15.md)）。
 
 ## 限度
 
-Skill 只在 Agent 加载它们时生效。它们不会在后台采集材料，也删不掉触及不到的副本，例如备份或服务商日志。[5.1 试验](./tests/context/trials-5.1.md)覆盖冷会话接续、来源准入和大型保护规则表。这些小型合成证据不证明普遍可靠；[5.0 报告](./tests/context/trials-5.0.md)中，开发热任务的 token 用量增加约 5–13%。
-
-项目负责人换人后，依项目约定判断继任者能够修改哪项选择，分别保留前后两次决定的归属。若早先采用某个偏好的理由只存在于现行指南，替换该做法时会按保留权限保存这段来由。对已登记的来源，还可以查到文档完成读回后，其内容是否又有改动。[决策权与来源](./skills/ssot-preflight/references/memory-model.md#human-decision-evidence) · [来源进度](./skills/ssot-doctor/references/source-integration.md#readback-progress-and-recovery)
-
-撤回访谈等已登记的来源时，工具先保存撤回决定，再盘点受影响文档。若工作文档必须保持关闭，使用 `withdraw-source --metadata-only`。以后的状态查询可以据已有登记列出目标和早先的回执，正文保持关闭。[来源撤回与恢复](./skills/ssot-doctor/references/source-integration.md#correction-and-withdrawal)
-
-开发仓库和通用空间都可以保留指向受限原件的链接。Doctor 能只检查入口和本次获准读取的文档，报告会列出范围。通用空间的入口放在子目录时，`--space-root DIR` 配合 `--owners` 可以检查同一约定根目录下、位于平级目录的指定指南。补录 Git 历史时会读合并分支中的决定，只有连续区间核对完才推进已检查到的提交。[受限检查](./skills/ssot-preflight/references/source-retention.md#selected-mechanical-checks)、[5.9 追补示例](./docs/2026-11-20-catchup-v5.9.md)
-
-更正决定后，复核保存结果时既对照新交流，也在当前保留授权范围内核对必要的早期来源摘录。[5.3 试验](./tests/context/trials-5.3.md)记录了原话丢失的失败，以及对这条复核规则的有限验证。
+- **不后台采集，也不替代宿主权限。** Skill 只在 Agent 加载并看到输入时生效；无法删除触及不到的副本（Git 历史、备份、服务商日志），也无法绕过宿主的文件访问控制。
+- **决策权、受限来源与限定范围检查。** 换人接手依项目决策权保留前后归属与唯一旧理由（[决策证据](./skills/ssot-preflight/references/memory-model.md#human-decision-evidence)）；受限来源支持仅元数据撤回（[来源集成](./skills/ssot-doctor/references/source-integration.md#correction-and-withdrawal)）以及使用 `--owners` 限定文件范围的机械检查（[受限检查](./skills/ssot-preflight/references/source-retention.md#selected-mechanical-checks)）。
+- **已实测的真实世界缺口。** 对 5 个在用空间近 15 天 386 条真实消费会话的审计证实，改代码会话稳定触发预检且检查器 20 次拦住了未经授权的已确认不变量篡改，同时也暴露出升级后指令块过期、200+ KB 巨型入口截断以及子 Agent 重复预检税（[Stage 5 真实会话审计](./docs/2026-11-24-real-session-stage5-audit.md)）。
 
 ## 支持的 Agent
 
-Antigravity App 使用 `--agent agy`，项目安装与 Codex 共用 `.agents/skills`。[安装指南](./INSTALL.md#when-a-skill-appears-unavailable)区分 App、CLI 和独立 IDE 的位置，并说明如何核验实际会话发现。
-
-若希望本机安装即时跟随同一份源码，使用[本机软链接安装](./INSTALL.md#link-local-installations-to-one-checkout)。普通安装仍保留独立副本；软链接依赖持续保留的源码 checkout。
+Antigravity App 使用 `--agent agy`，项目安装与 Codex 共用 `.agents/skills`。[维护与排障参考](./docs/2026-11-24-install-maintenance.md#when-a-skill-appears-unavailable)说明 App/CLI/IDE 位置差异、子仓库发现边界与本机软链接方案（`tools/link-local.py`）。
 
 安装器登记了 **70 多种 Agent** 的安装路径，包括 Claude Code、Codex、Cursor、Windsurf、Gemini CLI、GitHub Copilot、OpenCode 和 Cline。登记了路径不等于行为完全一致，安装后请重启 Agent，确认它能发现这些 Skill。查看全部标识与路径：
 
@@ -126,32 +113,23 @@ set -o pipefail
 curl -fsSL https://raw.githubusercontent.com/huangpufan/SSOT-CONTEXT/main/install.sh | bash -s -- --list-agents
 ```
 
-从独立子仓库启动 Agent 时，父目录安装的 Skill 可能不可见。[按实际启动位置确认发现结果](./INSTALL.md)；指向父级上下文的路由和 Skill 安装是两项独立条件。
-
 ## 更新与卸载
 
 ```text
 请阅读 https://raw.githubusercontent.com/huangpufan/SSOT-CONTEXT/main/INSTALL.md，为当前 Agent 更新本项目的 SSOT-CONTEXT，保留原模板语言。
 ```
 
-更新技能文件后，刷新仓库中受管理的指令块，再重启 Agent。更新不会改写你的 context 文档。已有仓库继续使用 format 4；写入 format 5 空间需要 bundle 5.0 或更新版本，所以每个会写入它的 Agent 都要升级。手动命令、卸载、安装中断后的恢复，以及从 2.x 或 3.x 迁移，见[安装指南](./INSTALL.md#update-or-remove-an-existing-installation)。
+更新技能文件（或拉取软链接源码）后，可用 `install.sh --check-block <AGENTS.md|CLAUDE.md>` 和 `--sync-block <文件>` 仅检查并刷新受管指令块，再重启 Agent。更新不会改写你的 context 文档，也不强制 format 4 仓库转为 format 5。手动命令、卸载、安装中断恢复及 2.x/3.x 迁移见[维护指南](./INSTALL.md#update-or-remove-an-existing-installation)。
 
 ## 文档
 
-- [安装指南](./INSTALL.md)：安装、接线、升级、卸载和恢复。
-- [设计说明](./DESIGN.md)：Skill 包为什么是现在这个形态。
-- [持续修改的研究和创作项目](./docs/2026-11-14-evolving-research-and-creative-projects.md)：沿用现有 owner，处理局部修订、来源缺口、旧素材与暂缓同步的具体例子。
-- [跨领域 context 审计与发布试验](./docs/2026-11-20-context-paths-study.md)比较纯文档、已安装协议与可复跑的架构候选，覆盖软件、研究与创作交接。[读取与交接验证](./docs/2026-11-20-read-trigger-study.md)记录了直接查询省下多少输入，以及新接手者能从项目文档中找回哪些决定。
-- [日常使用与维护成本](./docs/2026-11-20-ordered-lookup-cost.md)把查价、改一条规则的成本与普通文档做同题比较，也检查了新人能找回什么，以及 AI 实际打开了哪些文件。
-- [长期路线与阶段判断](./docs/2026-11-20-context-evolution-route.md)说明现在走到哪、离真实项目持续受益还有多远，以及什么结果会改变下一步的优先级。
-- [5.13 的长期 context 审视与六班交接](./docs/2026-11-20-context-stewardship-v5.13.md)检验负责人交接、目标争用、证据重复和文档核对。
-- [5.12 的决定生效与交接试验](./docs/2026-11-20-conditional-context-v5.12.md)比较签字前后、部分部署、送印权限和受限撤回时的实际产物。
-- [5.8 维护审视与试验](./docs/2026-11-19-context-maintenance-v5.8.md)记录了同目录空间的接续、撤回中断恢复，以及尚待验证的设计。
-- [演进审视](./docs/2026-11-12-evolution-review.md)：本轮改进、真实接续试验与证据边界。
-- [评测指南](./tests/benchmark/README.md)：任务结果、冷接续、普通文档对照和证据边界。
-- [更新日志](./CHANGELOG.md)：每个版本改了什么。
-- [贡献指南](./CONTRIBUTING.md)和 [AGENTS.md](./AGENTS.md)：怎样修改本 Skill 包仓库。
-- [安全政策](./SECURITY.md)：怎样报告安全漏洞。
+- [安装指南](./INSTALL.md)与[维护与恢复参考](./docs/2026-11-24-install-maintenance.md)：新装、指令块同步、升级、卸载、软链接与中断恢复。
+- [设计说明](./DESIGN.md)：Skill 包为什么是现在这个形态，以及 v3 移除了什么。
+- [Stage 5 真实会话审计](./docs/2026-11-24-real-session-stage5-audit.md)与[长期路线审视](./docs/2026-11-20-context-evolution-route.md)：386 条真实消费会话分布、当前阶段与后续优先级。
+- [5.16 合批与落盘回读实测](./docs/2026-11-24-batching-readback-v5.16.md)、[跨领域架构研究](./docs/2026-11-20-context-paths-study.md)与[日常查改成本对照](./docs/2026-11-20-ordered-lookup-cost.md)：原生配对试验与整任务成本。
+- [持续修改的研究和创作项目](./docs/2026-11-14-evolving-research-and-creative-projects.md)：格式 5 通用空间的实用示例。
+- [评测指南](./tests/benchmark/README.md)：任务结果、冷接续、普通文档对照与证据边界。
+- [更新日志](./CHANGELOG.md)、[贡献指南](./CONTRIBUTING.md)、[AGENTS.md](./AGENTS.md)与[安全政策](./SECURITY.md)。
 
 ## Star 趋势
 

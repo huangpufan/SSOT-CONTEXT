@@ -40,15 +40,19 @@ Detailed shared material belongs in a reference, read at the point of use. `SKIL
 
 ### Protocol budgets
 
-`tests/test-bundle-shape.sh` enforces these limits in CI:
+`tests/test-bundle-shape.sh` enforces these limits in CI, separating the always-loaded prompt surface, model-read protocol text, and executable scripts:
 
 | What | Limit |
 |---|---|
+| Always-loaded skill catalog (`SKILL.md` frontmatter `name + description`) | 768 bytes |
+| Managed instruction block (`en`/`zh`, format 4/5, between markers) | 1,600 bytes each |
 | All `SKILL.md` files together | 3,600 words |
 | Everything an agent may read at runtime (`SKILL.md` + `references/`) | 18,700 words |
 | Templates, per language | 16 KiB |
-| `ssot-check.py` | 53 KiB |
-| All of `skills/` | 232 KiB |
+| Runtime assets (`skills/` excluding Python scripts) | 160 KiB |
+| `ssot-check.py` | 64 KiB |
+| All bundle scripts (`skills/*/assets/scripts/*.py`) | 96 KiB |
+| All of `skills/` | 248 KiB |
 
 Version 4.0 raises entrypoints to 3,600 words, runtime protocol to 13,000 words, and the checker to 48 KiB for immediate decision capture, accessible conversation-source recovery, external-owner routes, preservation-aware migration, and checks on those routes. Measured template and whole-bundle sizes fit their existing limits, which remain unchanged.
 
@@ -58,17 +62,19 @@ Version 4.4 raises the runtime limit to 14,000 words for native reading, stale-r
 
 Version 5.0 sets 17,000 runtime words and 220 KiB of skills for a conditional general-space model and source-state/readback reference adapter. Existing development format 4, protection and recovery text remains; general spaces use format 5 so old writers that discover them take their read-only branch. Added references are reached only for relevant tasks. The coordinator accepted the observed bounded cost tradeoff for this release after native quality/reading review; this is not a user statement accepting higher costs or a performance-improvement claim. See the [native result account](tests/context/results/context-evolution-5.0-2026-11-10.json) and [implementation report](tests/trials-5.0.md). Entrypoint, template and checker limits remain unchanged; a size pass alone is never a behavioral release gate.
 
+Version 5.4 allows 18,000 runtime words for conditional context tiering and shared reconciliation of changed guidance across formats 4 and 5. It replaces the development-only supersession recipe rather than duplicating it, keeps consolidation off ordinary task paths, and retains existing authorization/recovery text. Other budgets and consumer formats stay unchanged. Whole-task trials and their cost limits are recorded in [the 5.4 report](tests/context/trials-5.4.md); the ceiling is not a performance claim.
+
 Version 5.9 allows 52 KiB for the checker and 223 KiB for the bundle. The former limits left 77 and 70 bytes respectively. A real checker run opened a withdrawn Markdown original through a retained link. The additional code bounds document and anchor reads to an explicit selection and reports its coverage. The agent reading budgets stay fixed. See the [checks and tradeoffs](docs/2026-11-20-catchup-v5.9.md).
 
 Version 5.10 allows 18,500 runtime words, 53 KiB for the checker and 227 KiB for the bundle. The runtime additions route goal and preference capture, task handoff and selected checks in both formats. The checker adds selected format-4 owners within its existing repository boundary. These are distribution ceilings. The [release evidence](docs/2026-11-20-context-lifecycle-v5.10.md) describes what the agent actually used and the limits of the cost comparison.
 
 Version 5.12 allows 18,700 runtime words and 232 KiB for the bundle. Version 5.11 had 139 words and 55 bytes of headroom. Conditional decision use, recovery of premise-dependent progress and metadata-only withdrawal use existing owners. The connector also protects a restricted withdrawal from older readers. The [release study](docs/2026-11-20-conditional-context-v5.12.md) accounts for behaviour and cost on both changed and ordinary tasks.
 
+On 2026-11-24, following the [Stage 5 real-session audit](docs/2026-11-24-real-session-stage5-audit.md), the CI budget ruler was decoupled without changing the protocol word ceilings (3,600 entrypoint words and 18,700 runtime words stay fixed): always-loaded surfaces gained explicit caps (768 bytes for skill discovery descriptions, 1,600 bytes per managed adapter block), model-read runtime assets are bounded separately at 160 KiB, and executable scripts (`ssot-check.py` at 64 KiB, all scripts at 96 KiB, overall `skills/` at 248 KiB) no longer compete with Markdown protocol headroom or force code-golfing at the former 10-byte checker cliff.
+
 A budget is a reason to rethink responsibilities, never a reason to cut a recovery or authorization branch to fit, and never a reason to rewrite unrelated rule text to make room: such edits are untested changes. In 3.5 the owner raised the limits from 3,000 and 8,000 words, with room left on purpose, after a trial branch had tightened about 40 unrelated sentences to fit new rules into the old limits; in 3.7 the owner raised the runtime limit from 9,500 to 10,000 words for the mining changes, instead of cutting other rules; in 3.9 the owner raised the checker limit from 40 to 44 KiB for the check on confirmed invariants; in 3.10 the owner raised the runtime limit from 10,000 to 11,000 words for the row-fixing step in mining. A v2 word cap once rejected a complete entrypoint for being complete. Raising a limit requires the same evidence as adding a rule. Record the reason in `CHANGELOG.md`.
 
 ## Versions
-
-Version 5.4 allows 18,000 runtime words for conditional context tiering and shared reconciliation of changed guidance across formats 4 and 5. It replaces the development-only supersession recipe rather than duplicating it, keeps consolidation off ordinary task paths, and retains existing authorization/recovery text. Other budgets and consumer formats stay unchanged. Whole-task trials and their cost limits are recorded in [the 5.4 report](tests/context/trials-5.4.md); the ceiling is not a performance claim.
 
 `VERSION` and `metadata.protocol_version` in `skills/ssot-preflight/SKILL.md` must match; CI checks this. Bump the minor version for protocol changes and add a `CHANGELOG.md` entry. The consumer data format (`ssot_format` in `SSOT/README.md`) changes only when existing SSOTs would otherwise be misread. That needs a major version and a migration path in `ssot-bootstrap`.
 
@@ -78,7 +84,7 @@ Templates under `skills/ssot-bootstrap/assets/templates/{en,zh}/` are copied int
 
 ## README reconciliation
 
-Before completing or committing any repository change, compare the resulting behavior with `README.md` and `README.zh.md` without waiting for a user reminder. Update both in the same change when it affects the bundle's purpose or capabilities, normal usage, installation, upgrade, uninstall, migration, recovery, prerequisites, compatibility or material limitations. Keep detailed procedures and evidence in their existing owners and link to them from the READMEs.
+Before completing or committing any repository change, compare the resulting behavior with `README.md` and `README.zh.md` without waiting for a user reminder. Update both in the same change when it affects the bundle's purpose or capabilities, normal usage, installation, upgrade, uninstall, migration, recovery, prerequisites, compatibility or material limitations. Keep `README.md` and `README.zh.md` readable for a newcomer: summarize the current workflow and primary boundaries on the front page, and keep release-specific edge cases, CLI flags, and trial numbers in their authoritative reference documents and `CHANGELOG.md` instead of appending footnotes to the opening paragraphs.
 
 This check is complete when both READMEs describe the verified current behavior, agree in meaning, and their affected links and commands match the authoritative guides. Internal refactors, test-only changes and typo fixes can leave them untouched when the existing user-facing description remains accurate.
 

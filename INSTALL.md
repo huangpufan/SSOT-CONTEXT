@@ -1,12 +1,8 @@
 # Install Guide (Agent-facing)
 
-Use this guide when a user asks you to install, reinstall, update, or remove SSOT-CONTEXT. Work in the **user's target repository or explicitly selected context workspace**, preserve existing instructions, and respond in the user's language. General context setup does not require Git; installer fetching prerequisites and the optional POSIX source CLI are separate from that data model.
+Use this guide when a user asks you to install or reinstall SSOT-CONTEXT in a **target repository or explicitly selected context workspace**. Preserve existing instructions and respond in the user's language. General context setup does not require Git; installer fetching prerequisites and the optional POSIX source CLI are separate from that data model.
 
-For a new installation, finish the setup: install the bundle, verify the installed files, and merge the lifecycle instructions. Skill discovery is confirmed only after the agent session restarts.
-
-For an authorized workspace with independently launched child repositories, check discovery from each intended launch root. A parent installation and a link to parent context are separate: in Codex, project skills installed only above a child's Git root were absent from child-start sessions. Use an existing visible global installation or install at the authorized child root, and retain the child's instruction routes to its own and relevant parent context. Do not assume directory nesting makes either skills or parent instructions visible, or install into unrelated children. See the [child-start evidence](tests/context/trials-5.2.md).
-
-For an update or removal, resolve the choices and download the installer, then follow [the maintenance section](#update-or-remove-an-existing-installation) instead of running a fresh installation.
+For a new installation, finish the setup: install the bundle, verify the installed files, and merge the lifecycle instructions. Skill discovery is confirmed only after the agent session restarts. For updates, removal, local symlinks, troubleshooting, interrupted-install recovery, or 2.x/3.x migration, read [the maintenance and recovery guide](docs/2026-11-24-install-maintenance.md) instead of reading the fresh-install steps below.
 
 ## 1. Resolve the installation choices
 
@@ -14,12 +10,12 @@ Honor options the user already supplied. Otherwise use these defaults without as
 
 - **Agent:** the coding agent you are currently running as. Pass its canonical installer key explicitly; a machine may have several agents installed.
 - **Scope:** `project` by default; use `global` for an explicit global-only request. Install in both locations only when the user requests both. Run project commands from the target repository root.
-- **Template language:** keep the repository's existing choice: the `language` in `SSOT/README.md` front matter, the `documentation_language` of an older `SSOT/STATUS.md`, or the installed template language on reinstall. For a new setup, use `zh` when the user is communicating in Chinese, otherwise `en`. A template choice never changes the language an existing SSOT is written in.
-- **Version:** the current release, from `main`. Add `--ref v2-final` only when the user wants to stay on the earlier v2 protocol (see [Update or remove](#update-or-remove-an-existing-installation)).
+- **Template language:** keep the repository's existing choice (`language` in `SSOT/README.md` front matter, `documentation_language` of an older `SSOT/STATUS.md`, or the installed template language on reinstall). For a new setup, use `zh` when the user is communicating in Chinese, otherwise `en`. A template choice never changes the language an existing SSOT is written in.
+- **Version:** the current release from `main`. Add `--ref v2-final` only when the user wants to stay on the frozen v2 protocol.
 
 If the target repository or agent identity cannot be determined from the current session, ask for that missing information. Routine defaults do not need a separate approval step.
 
-Common keys and project locations:
+Common keys and project locations (for other agents or global locations, run `install.sh --list-agents`; for Antigravity legacy global paths, see [Antigravity surface locations](docs/2026-11-24-install-maintenance.md#antigravity-surface-locations)):
 
 | Current agent | Key | Project skills directory |
 |---|---|---|
@@ -33,15 +29,9 @@ Common keys and project locations:
 | Antigravity CLI with its legacy global location | `antigravity-cli` | `.agents/skills/` |
 | GitHub Copilot | `github-copilot` | `.agents/skills/` |
 
-For other agents or global locations, use the installer's `--list-agents` output. Its registry is the authority for paths; respect configuration overrides shown there.
-
-Antigravity surfaces share the project path. The App key uses `~/.gemini/config/skills`, the current shared App/CLI/IDE global location. Existing `antigravity` and `antigravity-cli` keys retain the legacy global locations supported by the standalone IDE and CLI respectively; the App does not consume those legacy locations. This preserves scoped upgrades/uninstalls of existing installations. Choose the key for the actual surface and inspect existing copies before a global change; installing to a new location does not migrate or remove an old one. Compare discovered versions in a fresh session when multiple locations exist. See [Google's skill locations](https://antigravity.google/docs/skills). A project-only request does not authorize changing machine-wide installations.
-
 ## 2. Install the bundle
 
-Check that Bash 4+, `git`, `curl`, and `python3` are available. On macOS, the system Bash is too old. If Homebrew Bash is already installed, use `"$(brew --prefix)/bin/bash"`; otherwise explain the missing prerequisite and install it only within the user's authorization.
-
-Download the installer to a temporary directory so a failed download cannot look like a successful installation. Replace the placeholder values with the choices resolved above, then run:
+Check that Bash 4+, `git`, `curl`, and `python3` are available. On macOS, use Homebrew Bash (`"$(brew --prefix)/bin/bash"`). Download the installer to a temporary directory so a failed download cannot look like a successful installation, replace the placeholders, and run:
 
 ```bash
 ssot_agent='<agent-key>'
@@ -55,32 +45,15 @@ if ! curl -fsSL --connect-timeout 10 --max-time 60 --retry 2 \
   printf 'Installer download failed; setup has not run.\n' >&2
   exit 1
 fi
-```
-
-For an installation, run:
-
-```bash
 bash "$ssot_install_dir/install.sh" --quickstart \
   --agent "$ssot_agent" --scope "$ssot_scope" --lang "$ssot_template_lang"
 ```
 
-Check the download and installer results separately. Retain the printed temporary path and resolved choices if subsequent steps run in a new shell. A download failure means nothing was installed; an installer failure must be resolved before continuing to verification or instruction wiring. Preserve stderr and report the specific failure.
-
-If the download fails for network reasons, the existing mirror is:
-
-```text
-https://gh-proxy.com/https://raw.githubusercontent.com/huangpufan/SSOT-CONTEXT/main/install.sh
-```
-
-Retry the download using that URL, then run the same installer command. Do not treat invalid arguments, missing prerequisites, or verification failures as network problems.
-
-If the user supplied a local SSOT-CONTEXT checkout, use its `install.sh` with `SOURCE_DIR` set to that checkout instead of downloading another copy. The installer normally fetches the current `main` bundle; `--ref <branch-or-tag>` fetches another one, and `SOURCE_DIR` selects a local source. The two cannot be combined.
-
-If the user requested both scopes, run the installation once for each scope and verify both locations. Installation does not create or migrate the target repository's `SSOT/`.
+Check download and installer exit codes separately, preserve stderr, and report the specific failure. If download fails for network reasons, retry with `https://gh-proxy.com/https://raw.githubusercontent.com/huangpufan/SSOT-CONTEXT/main/install.sh`. If the user supplied a local checkout, run its `install.sh` with `SOURCE_DIR` set to that checkout (`SOURCE_DIR` and `--ref` cannot be combined). Installation does not create or migrate the target repository's `SSOT/`.
 
 ## 3. Verify the installed bundle
 
-Read the actual target path from installer output and check that location. Replace the placeholder below with it:
+Read the actual target path from installer output and check that location:
 
 ```bash
 ssot_skills_dir='<installed-skills-directory>'
@@ -88,166 +61,59 @@ for ssot_skill in ssot-preflight ssot-bootstrap ssot-closeout ssot-audit ssot-do
   test -f "$ssot_skills_dir/$ssot_skill/SKILL.md" || exit 1
   test -f "$ssot_skills_dir/$ssot_skill/agents/openai.yaml" || exit 1
 done
-# Current bundle (development format 4 and general format 5): the checker must start.
 python3 "$ssot_skills_dir/ssot-doctor/assets/scripts/ssot-check.py" --help >/dev/null
-# v2 (installed with --ref v2-final) instead:
-#   SSOT_TEST_PACKAGE_SHAPE_ONLY=1 bash "$ssot_skills_dir/ssot-doctor/assets/scripts/test/run-tests.sh"
 ```
 
-Also inspect the installed bootstrap templates: they should use the selected language directly under `ssot-bootstrap/assets/templates/`, without `en/` and `zh/` subdirectories. Read the installed `ssot-preflight/SKILL.md` `metadata.protocol_version` and include it in the result.
-
-These checks verify the installation, not the health of the user's repository documentation. Do not run an SSOT review or bootstrap as part of installation unless the user requested that work.
+Confirm templates are flattened into the selected language directly under `ssot-bootstrap/assets/templates/` (without `en/` and `zh/` subdirectories) and read `metadata.protocol_version` from the installed `ssot-preflight/SKILL.md`. Do not run an SSOT review or bootstrap as part of installation unless the user asked for it.
 
 ## 4. Wire the skills into the repo's agent-instructions file
 
-The installer prints the `SSOT-CONTEXT:BEGIN` / `SSOT-CONTEXT:END` block from the selected-language bootstrap `adapter-thin.md` template. That template is the shared source for installation and later bootstrap; the skill protocols own the detailed behavior. Merge the printed block into the target repository's existing instructions; discovery alone does not establish when a skill should run. When upgrading an installation with `SSOT-SKILL:BEGIN` / `SSOT-SKILL:END` markers, replace that old block with the new one rather than appending a second block. A global-only installation without a target repository stops after verification and reports that each consuming repository still needs these instructions; it does not authorize editing global agent instructions.
+The installer prints the `SSOT-CONTEXT:BEGIN` / `SSOT-CONTEXT:END` block from the selected-language `adapter-thin.md` template without editing your files. Merge the block into the target repository's existing instructions; discovery alone does not establish when a skill should run. A global-only installation without a target repository stops after verification and does not edit global instructions. If the file already carries a managed `SSOT-CONTEXT` or legacy `SSOT-SKILL` block, you can check and refresh only that block with `bash "$ssot_install_dir/install.sh" --check-block <file>` and `--sync-block <file>`.
 
-**Choose the block first.** The printed block suits development repositories only. Before editing an instruction file, decide which block the target needs from what is already there: entry front matter, existing `SSOT-CONTEXT` or `SSOT-SKILL` blocks, the instruction files, the top-level README and the top-level file layout. Do not search beyond the target for clues.
+**Choose the block first** from what is already in the target (entry front matter, existing SSOT blocks, instruction files, top-level README and layout; do not search outside the target):
 
-- **Existing marked entry: no question.** `ssot_format: 4`, or a v2/v3 `SSOT/`, keeps `adapter-thin.md`; any migration stays a separate step. `ssot_format: 5` uses `context-adapter.md` with that entry.
+- **Existing marked entry: no question.** `ssot_format: 4` or a v2/v3 `SSOT/` uses `adapter-thin.md` (migration stays separate). `ssot_format: 5` uses `context-adapter.md` with that entry.
 - **No entry, clearly software: no question.** Build manifests, source code and tests with no contrary signal use `adapter-thin.md`.
-- **No entry, otherwise: ask one question before editing.** Ask when instructions or the README describe the target as a registry, notes, research, creative work, a life domain or an organization; when there is no Git repository or almost only prose; or when software and non-software signals conflict. Recommend a mode, name the signals behind it, the entry you would use (an existing README that already routes the space, or a new `README.md`) and every file outside the marked block you would change. An explicit user statement of the mode answers this question.
+- **No entry, otherwise: ask one question before editing.** Ask when the folder looks like a registry, notes, research, creative work, life domain or organization, has no Git repository or almost only prose, or has conflicting signals. Recommend a mode, name the signals, the entry path and every file outside the marked block you would change.
 
-The `adapter-thin.md` block routes to `SSOT/README.md`. Wiring it into a space whose context already lives in other documents leads later sessions to offer a parallel `SSOT/` tree, which is the outcome this choice prevents.
-
-For a general space, use the installed selected-language `context-adapter.md`, replacing ENTRY with the agreed entry and preserving the authorized instruction owner. The agreement also covers the minimum that makes that entry valid: `ssot_format: 5` and `language` front matter, the writer requirement sentence, and an invariants section that may say none are recorded yet, all from `context-readme.md`. Preserve the entry's other content and any uncommitted edits, and stage only your own changes. Building further owners or content is bootstrap work under `context-spaces.md` and needs its own agreement. Run the checker against the entry. Name known writers and their upgrade/read-only arrangement: older bundles require a discoverable read-only entry and must upgrade rather than convert 5 to 4. If the user declines both modes, leave the skills installed, edit no instruction file, and report that they are not wired. A standalone chat, poem or research answer does not authorize creating a space or editing startup instructions.
-
-Make clear that these are instructions for the agent: apply the skills automatically when their conditions match, without waiting for the user to name each skill. Users should be able to describe ordinary repository tasks after setup and restart. Explicit skill invocation remains an optional way to request a focused check or diagnose a missed trigger.
+For a general space, use the installed selected-language `context-adapter.md`, replacing `ENTRY` with the agreed entry. The agreement also covers the minimum valid entry (`ssot_format: 5`, `language`, writer requirement sentence and invariants section from `context-readme.md`), preserving existing content and running `ssot-check.py` against the entry. If the user declines both modes, leave the skills installed and edit no instruction file.
 
 | Agent | Instruction entry |
 |---|---|
 | Claude Code | `CLAUDE.md` |
 | Codex / OpenAI-style agents | `AGENTS.md` |
-| Cursor | `.cursor/rules/ssot.mdc`, or the repository's existing `.cursorrules` |
-| Windsurf | `.windsurf/rules/ssot.md`, or the repository's existing `.windsurfrules` |
+| Cursor | `.cursor/rules/ssot.mdc`, or existing `.cursorrules` |
+| Windsurf | `.windsurf/rules/ssot.md`, or existing `.windsurfrules` |
 | Gemini CLI | `GEMINI.md` |
 | Antigravity App / CLI / IDE | Existing `AGENTS.md`, `GEMINI.md`, or supported project rules pointing to that owner |
 | Other agents | Their supported repository-instruction entry |
 
-Read existing instructions first. Follow any pointer or symlink to the repository's shared instruction owner, and update that one source. Keep one marked block in that owner so future updates can replace just this section. Reconcile older, unmarked SSOT instructions in place; preserve unrelated instructions and avoid duplicate blocks. Adapt the heading level if needed, preserving the routes and exceptions. Copy only the marked block from the template, not the template's surrounding explanation. When creating a tool-specific rules file, use that agent's supported activation format.
-
-Before finishing, reread the resulting file and confirm it covers:
-
-- automatic preflight for substantive work, immediate closeout capture of accepted durable decisions, and batch-end reconciliation, with bootstrap (only with the user's agreement) and doctor selected by their conditions;
-- the skip cases for chat, pure command execution, and meaning-preserving typo/format edits, while explicit SSOT requests still route to a skill;
-- loading the selected skill's full instructions, and reporting a missing skill honestly;
-- for a 4.x installation, no leftover instructions from an older SSOT setup, such as running `$ssot-audit` for protocol lag, advancing `tracked_*` fields, or reading `STATUS.md` first (a v2 installation keeps those, and uses the block from its own `adapter-thin.md`);
-- preserving existing project rules, user decisions, and commit/push authorization.
-
-Do not copy or apply SSOT-CONTEXT's own `AGENTS.md` to the user's repository. It governs maintenance of the bundle source, including its release and commit conventions.
+Read existing instructions first, follow any symlink/pointer to the shared instruction owner, keep one ordered marked block, preserve unrelated instructions, and copy only the marked block (never copy SSOT-CONTEXT's own `AGENTS.md`). Reread the resulting file to verify it covers automatic preflight, immediate closeout capture, batch reconciliation, skip cases (chat, pure commands, typos), honest missing-skill reporting, and no leftover v2 directives.
 
 ## 5. Report the result and restart step
 
-Remove the temporary installer directory you created after verification. Report:
+Remove the temporary installer directory after verification. Report the installed version, agent, scope, target path, template language, the instruction file updated, which installed-file checks passed, and that the user must restart the agent session to load the skills and instructions. Make clear that the agent applies the lifecycle automatically once restarted; do not hand routine skill invocation back to the user as a manual checklist, and do not claim skills are active before restart and discovery are confirmed.
 
-- the installed version, agent, scope, target path, and template language;
-- the instruction file updated, or why its existing block already suffices;
-- which installed-file checks passed;
-- that the user must restart the agent session to load the skills and repository instructions, then can describe tasks as usual.
+## When a skill appears unavailable
 
-Explain that the agent handles the lifecycle: preflight before substantive work, an offer to bootstrap when `SSOT/` is missing or unfinished, immediate capture of accepted durable decisions through closeout, and reconciliation before finishing a substantive batch, with doctor used for checks and catch-up. Do not hand routine skill invocation back to the user as a manual checklist. Do not claim the skills are active before restart and discovery are confirmed. Do not ask the user to choose a global installation again after a successful project-only setup.
-
-### When a skill appears unavailable
-
-Check the actual workspace and agent surface, the installed path (including symlink resolution), then a fresh session's skill catalog and an actual read of the selected `SKILL.md` and protocol version. A file check alone proves neither discovery nor execution; a model's claim to have used a skill needs a matching read or load receipt. If the catalog contains the skill but it was not selected, inspect the instruction route and request trigger before adding another copy. If new files are absent from an old session, start a new conversation in the intended workspace. Antigravity CLI also documents `/skills reload`; in the App, `/ssot-doctor` explicitly selects a focused review. Ordinary requests should still select the appropriate skill automatically.
+See [troubleshooting and child-repository discovery](docs/2026-11-24-install-maintenance.md#when-a-skill-appears-unavailable).
 
 ## Link local installations to one checkout
 
-Use this only when the user wants local installations to follow a persistent source checkout. Changes and new files in that checkout become visible through the links immediately; already loaded sessions still need refresh or restart. It does not fetch remote changes in the background. Keep the source checkout in place and keep frozen trial bundles as independent copies.
-
-`tools/link-local.py` replaces only the six named SSOT skill directories in explicitly selected existing installations. It preserves surrounding skill-directory symlinks and unrelated skills, deduplicates shared locations, and moves originals into a required external backup directory with a recovery manifest. It refuses source replacement, unknown skill owners, changes since planning and cross-filesystem backup moves. A normal failure restores touched originals; after a process kill, inspect the saved manifest and originals before resuming. Backups can contain local modifications and should stay private.
-
-Run from the persistent SSOT-CONTEXT checkout. Repeat `--base` for additional **actual** agent skills directories; inventory and distinguish source checkouts, active installations and historical/generated trial snapshots before selecting them:
-
-```bash
-python3 tools/link-local.py --base /path/to/project/.agents/skills
-python3 tools/link-local.py --base /path/to/project/.agents/skills \
-  --apply --backup-root /path/to/private/ssot-installation-backups
-```
-
-The first command only prints a plan. Links point directly to the checkout's skill directories, including both `assets/templates/en/` and `assets/templates/zh/`; choose the consumer's declared documentation language when using those templates. This avoids a second generated copy that can become stale. Verify link targets, tools, template reads and a fresh agent session after conversion. A local source edit through any linked installation changes the shared source; maintain skill changes in that owner.
-
-A linked installation applies to the paths you selected. A separate Git worktree can still get older tracked copies of the same skills from its checked-out commit. Verify the installation from the worktree where the agent will actually start, including the version it opens.
-
-If installed copies are tracked by Git, conversion appears as deleted tracked files and new directory links. Agree whether the links are local-only or part of the repository's distribution before committing them. Do not hide changes with index flags or push machine-dependent paths without authorization. To restore a local-only conversion, use its exact saved paths and originals; do not reset unrelated work.
+See [local symlink setup with `tools/link-local.py`](docs/2026-11-24-install-maintenance.md#link-local-installations-to-one-checkout).
 
 ## Update or remove an existing installation
 
-For an installation already linked to a persistent local checkout, update that checkout instead of running the copy installer. Repoint it with the local-link command below if its source moved. The normal installer still produces independent copies and can replace links when explicitly used to reinstall; do not silently change an agreed live installation back to copies.
+Run `install.sh --upgrade --agent <key> --scope <project|global>` (or `--uninstall ... --yes`), then check and refresh the repository's managed instruction block with `install.sh --check-block <file>` and `--sync-block <file>`. Full procedures and transition rules are in [update, removal, and transitions](docs/2026-11-24-install-maintenance.md#update-or-remove-an-existing-installation).
 
-Resolve the target agent and scope as above. To update, use the downloaded installer:
+## Failed or interrupted replacement
 
-```bash
-# Update only the selected agent and scope.
-# Omit --lang to preserve its installed template language.
-bash "$ssot_install_dir/install.sh" --upgrade --agent "$ssot_agent" --scope "$ssot_scope"
-```
+See [interrupted replacement and SIGKILL lock recovery](docs/2026-11-24-install-maintenance.md#failed-or-interrupted-replacement).
 
-To remove the installation instead:
+## Upgrading from 2.x or 3.x to 4.0
 
-```bash
-bash "$ssot_install_dir/install.sh" --uninstall --agent "$ssot_agent" --scope "$ssot_scope" --yes
-```
-
-A scoped upgrade honors both `--agent` and `--scope`. Bare `--upgrade` scans every supported location in the current project and globally; use it only when that broader update was requested. Shared directories are updated once, and agents sharing a directory share the same installation.
-
-After removal, verify the bundle files are absent. Preserve generated `SSOT/` documentation and unrelated skills. Reconcile obsolete trigger instructions with any remaining SSOT installation; the installer itself does not edit instruction files. Remove the temporary installer directory afterward.
-
-After an update, check the worktree where the agent will start. Read back the resolved preflight file and its protocol version, the entry named by the project's instructions, and the marked block in the actual instruction owner. A linked skill can advance while that block still uses older wording. Compare it with the installed template for the same language and space, substituting the declared entry for a general space. Preserve custom instructions with equivalent behavior. [Reconcile an outdated block](#4-wire-the-skills-into-the-repos-agent-instructions-file) within the requested installation scope.
-
-Restart and verify discovery. When checking reading behavior, use an ordinary task in that worktree and inspect its first entry read and its answer. For substantive work outside the bounded route, preflight starts from the entry's header and headings. A bounded lookup checks the current entry's ownership and permissions before reading its owner. A single approved prose change goes directly to closeout after those checks. A catalog listing alone cannot show that order.
-
-### Failed or interrupted replacement
-
-Replacement is recoverable per installation location. The installer prepares the new bundle first, then keeps the previous skill directories and owned companions as backups until every replacement succeeds. An error before commit, or an INT/TERM cancellation, restores that location's previous installation. Locations already completed by a multi-location command remain updated. The lock prevents another install, upgrade or uninstall from modifying the same location while it is active; it does not make the separate directory moves invisible to concurrent readers.
-
-If the error says **installation changes completed**, replacement already committed and only temporary-file or lock cleanup failed. Verify the complete installed bundle before cleaning the reported owned artifacts; a nonzero exit alone does not mean the old version is still installed.
-
-If rollback cannot finish, or an installer is killed with SIGKILL, keep the reported recovery directory. Further operations refuse to overwrite pending recovery state. A regular `.ssot-skill-lock` file records the installer PID followed by its staging directory; that directory's `.ssot-transaction` records the installation location, PID and intended slots. The PID is a clue, not proof that the same process is still running. Establish that the owning installer has stopped before clearing its lock or recovering its files.
-
-For an active recovery marker, work within the existing installation write authorization and preserve evidence:
-
-1. Create an owned recovery directory on the same filesystem, for example with `mktemp -d "$ssot_skills_dir/.ssot-skill-recovered.XXXXXX"`. Read the transaction first and limit recovery to its SSOT skill/companion names. Leave unrelated skills, shared-root files and project memory alone.
-2. Each entry in `.backup/` is a previous entry: move any current entry of the same name into the recovery directory, then rename the backup back into place. Preserve symlinks as links. If a slot has a `.touched/` marker but no `.had-old/` marker, it was absent before this attempt; move its current entry aside too. Untouched slots, and prior entries already restored without a remaining backup, stay in place. Stop if the saved state cannot account for a slot or a move fails; preserve the remaining files.
-3. Verify the recovered previous bundle, language, companion ownership and shared instruction identity. Move the resolved transaction directory into the owned recovery directory, outside the scanned `.ssot-skill-install.*` names. Clear only a lock whose directory field still names that stopped transaction; another installer's lock stays. Retry the original command and verify the new installed files and integrations before removing the retained owned recovery artifacts.
-
-Without an active transaction marker, staging may be from preparation or from a completed replacement whose cleanup failed. Inspect and verify the current installation; do not infer that it needs rollback merely because backup files exist. The installer never guesses that a lock is stale or discards another attempt's backups automatically. These steps recover filesystem replacement, not a consumer's SSOT migration or an intentionally cancelled uninstall.
-
-### Check the transition, not only the new installation
-
-Before replacing an older bundle, note its installed version and any repository instructions, hooks or scripts that call its tools. Afterward, verify those integrations against the files actually installed. A successful copy does not prove the old workflow still runs. Preserve the existing blocking/nonblocking behavior and run each changed command; do not substitute a health check for a migration operation or a Markdown reader.
-
-| Transition | Required reconciliation |
-| --- | --- |
-| v2 memory → format 4 | With migration agreement, follow bootstrap section 7: extract unique ledger content, retain decisions and rule status, reconcile all instruction entries and inbound links, and replace retired tool calls before finishing. |
-| v3 memory → format 4 | Follow bootstrap section 8, including instruction/tooling reconciliation. Keep existing owners and the review watermark; do not perform v2 ledger deletion merely because the bundle was old. |
-| Protocol upgrade within format 4 | Verify installed tools and instruction wiring. Do not rewrite memory, advance a watermark or initiate history catch-up solely because the bundle version changed. |
-| Bundle 5.0 with existing development format 4 | Keep format 4, its owners and normal authorized writing. No format-5 conversion is required. |
-| Explicit new general space or agreed generalization to format 5 | Preserve owners/content, use the general adapter with the actual entry, require known writers to upgrade or remain discoverably read-only, and validate source/record semantics. Do not downgrade to satisfy an older checker. |
-| 4.3 reader → 4.4 or later | If local integration calls `ssot-preflight/assets/scripts/read-context.py`, replace that call with ordinary Markdown reads under preflight's current reading rules. `ssot-check.py` is a checker, not a reader replacement. No data-format migration is needed. |
-
-For unfinished general spaces sharing a directory, use 5.8+ for participating writers. Older 5.x writers may attribute a neighboring `BOOTSTRAP.md` to the wrong entry. An existing, clearly identified single-space checkpoint can be resumed in place.
-
-[Selected-file checks](./skills/ssot-preflight/references/source-retention.md#selected-mechanical-checks) require the 5.9+ checker for format-5 spaces or 5.10+ for format-4 repositories. With an older installation, check the permitted files manually or upgrade before running Doctor over restricted routes.
-
-The installer prints the current block but does not edit project instructions or callers. A marked block can be replaced in place; inspect unmarked legacy directives and shared instruction owners too. Preserve unrelated project rules and show proposed edits outside the block before applying them, within existing authorization. If the user requested only a bundle update, leave old-format memory unchanged and report migration as a separate step. An interrupted agreed migration resumes from `SSOT/BOOTSTRAP.md`, checking that record against the actual tree before continuing.
-
-### Upgrading from 2.x or 3.x to 4.0
-
-Version 4.0 uses `ssot_format: 4`: `SSOT/README.md` routes to maintained repository-local owners, including documents outside `SSOT/`. Explain the boundary before upgrading:
-
-- Agents read v2 and v3 memory but do not write to it until the user agrees to migrate with `$ssot-bootstrap`. Installing skills never migrates consumer documents.
-- A v3 migration preserves knowledge, invariant IDs and statuses, and existing owner paths. A v2 migration additionally extracts durable content before removing certification ledgers and repoints scripts using retired v2 tools. Preserve unique uncommitted material before removing anything; migration is one commit with no unrelated changes.
-- Every installation that writes the repository must use v4 before migration; old v3 agents otherwise misread external-owner routes. To retain v3, choose a v3 release with `--ref`.
-- Reconcile the instruction block and restart the session. Decision capture saves accepted durable confirmations, corrections, rejections, and scope limits immediately; batch closeout reconciles final behavior. Setup and catch-up inspect accessible project-related AI conversations, including later additions to existing threads, without putting private raw transcripts in the repository. Report inaccessible sources and examined ranges; commit watermarks do not certify conversation coverage. No automatic background collection or zero-omission guarantee is provided.
-
-- To stay on v2 instead, upgrade with `--ref v2-final`, which installs the frozen last v2 release (2.86):
-
-```bash
-bash "$ssot_install_dir/install.sh" --upgrade --agent "$ssot_agent" --scope "$ssot_scope" --ref v2-final
-```
-
+See [2.x / 3.x upgrade boundaries and `--ref v2-final`](docs/2026-11-24-install-maintenance.md#upgrading-from-2x-or-3x-to-40).
 
 ## Project rename compatibility
 
-SSOT-CONTEXT was previously named SSOT-SKILL. The six skill directory names remain stable, including the `ssot-skill` compatibility router, so existing prompts and installations continue to work. `SSOT_CONTEXT_REPO_URL` overrides the installer source; the legacy `SSOT_SKILL_REPO_URL` remains a fallback, and the new variable takes precedence when both are set. Installer lock, staging and companion ownership names retain their legacy spelling so upgrades still detect interrupted transactions and remove only companions they own. Development memory keeps `SSOT/`; a general space can retain its explicitly wired entry and current owners.
+SSOT-CONTEXT was previously named SSOT-SKILL; all six skill directory names and legacy installer markers remain compatible. See [rename compatibility details](docs/2026-11-24-install-maintenance.md#project-rename-compatibility).

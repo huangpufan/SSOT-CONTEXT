@@ -856,5 +856,129 @@ else
   fail "scenario28: dangling skill symlink survived uninstall"
 fi
 
+# Scenario 29: --check-block and --sync-block inspect and update only marked blocks
+# across format 4, format 5 (preserving ENTRY), legacy markers, symlinks, and malformed inputs.
+SCENARIO29="$WORK_ROOT/scenario29"
+mkdir -p "$SCENARIO29"
+cat > "$SCENARIO29/AGENTS-en.md" <<'EOF'
+# Custom Header
+
+Keep this custom intro untouched.
+
+<!-- SSOT-SKILL:BEGIN -->
+## SSOT workflow
+
+Old stale block from 5.0.
+<!-- SSOT-SKILL:END -->
+
+## Project rules
+
+Keep this footer verbatim ($100 & \n literal).
+EOF
+if SOURCE_DIR="$PROJECT_ROOT" bash "$INSTALLER" --check-block "$SCENARIO29/AGENTS-en.md" >/dev/null 2>&1; then
+  fail "scenario29: --check-block should report outdated on stale EN block"
+else
+  pass "scenario29: --check-block detects outdated stale EN block"
+fi
+if SOURCE_DIR="$PROJECT_ROOT" bash "$INSTALLER" --sync-block "$SCENARIO29/AGENTS-en.md" >/dev/null 2>&1; then
+  pass "scenario29: --sync-block updates stale EN legacy block"
+else
+  fail "scenario29: --sync-block failed on stale EN legacy block"
+fi
+if SOURCE_DIR="$PROJECT_ROOT" bash "$INSTALLER" --check-block "$SCENARIO29/AGENTS-en.md" >/dev/null 2>&1; then
+  pass "scenario29: --check-block passes after EN sync"
+else
+  fail "scenario29: --check-block failed after EN sync"
+fi
+assert_grep "scenario29: EN sync upgraded legacy markers" "$SCENARIO29/AGENTS-en.md" '^<!-- SSOT-CONTEXT:BEGIN -->$'
+assert_no_grep "scenario29: EN sync removed legacy SSOT-SKILL marker" "$SCENARIO29/AGENTS-en.md" 'SSOT-SKILL:BEGIN'
+assert_grep "scenario29: EN sync preserved custom header" "$SCENARIO29/AGENTS-en.md" 'Keep this custom intro untouched.'
+assert_grep "scenario29: EN sync preserved custom footer literally" "$SCENARIO29/AGENTS-en.md" 'Keep this footer verbatim (\$100 & \\n literal).'
+
+# Symlinked CLAUDE.md -> AGENTS-zh.md should preserve the symlink and update target in place.
+cat > "$SCENARIO29/AGENTS-zh.md" <<'EOF'
+# 中文项目说明
+
+<!-- SSOT-CONTEXT:BEGIN -->
+## SSOT 工作流
+
+旧版保护规则说明。
+<!-- SSOT-CONTEXT:END -->
+
+保留底部自定义规则。
+EOF
+ln -s AGENTS-zh.md "$SCENARIO29/CLAUDE.md"
+if SOURCE_DIR="$PROJECT_ROOT" bash "$INSTALLER" --sync-block "$SCENARIO29/CLAUDE.md" >/dev/null 2>&1; then
+  pass "scenario29: --sync-block auto-detects ZH through symlink"
+else
+  fail "scenario29: --sync-block failed on ZH symlink"
+fi
+if [[ -L "$SCENARIO29/CLAUDE.md" ]] && SOURCE_DIR="$PROJECT_ROOT" bash "$INSTALLER" --check-block "$SCENARIO29/CLAUDE.md" >/dev/null 2>&1; then
+  pass "scenario29: symlink preserved and ZH block is up-to-date"
+else
+  fail "scenario29: symlink broken or ZH block mismatch"
+fi
+assert_grep "scenario29: ZH sync preserved custom footer" "$SCENARIO29/AGENTS-zh.md" '保留底部自定义规则。'
+
+# Format 5 (old 5.0-5.13 ZH wording + custom ENTRY path) auto-extracts and preserves ENTRY.
+cat > "$SCENARIO29/SPACE-zh.md" <<'EOF'
+顶部自定义说明。
+
+<!-- SSOT-CONTEXT:BEGIN -->
+## 长期 context
+
+本空间通过 `docs/space-home.md`（`ssot_format: 5`）路由长期 context。写入要求 SSOT-CONTEXT 5.0+。
+<!-- SSOT-CONTEXT:END -->
+
+底部自定义说明。
+EOF
+if SOURCE_DIR="$PROJECT_ROOT" bash "$INSTALLER" --sync-block "$SCENARIO29/SPACE-zh.md" >/dev/null 2>&1; then
+  pass "scenario29: --sync-block updates old format-5 ZH block"
+else
+  fail "scenario29: --sync-block failed on format-5 ZH block"
+fi
+assert_grep "scenario29: format-5 ZH preserved custom ENTRY" "$SCENARIO29/SPACE-zh.md" '本空间的入口为 `docs/space-home.md`（`ssot_format: 5`）'
+assert_grep "scenario29: format-5 ZH preserved outside prose" "$SCENARIO29/SPACE-zh.md" '顶部自定义说明。'
+if SOURCE_DIR="$PROJECT_ROOT" bash "$INSTALLER" --check-block "$SCENARIO29/SPACE-zh.md" >/dev/null 2>&1; then
+  pass "scenario29: --check-block passes on synced format-5 ZH block"
+else
+  fail "scenario29: --check-block failed on synced format-5 ZH block"
+fi
+
+# Format 5 EN with special characters in explicit --entry (& and /).
+cat > "$SCENARIO29/SPACE-en.md" <<'EOF'
+<!-- SSOT-CONTEXT:BEGIN -->
+## Maintained context
+
+This bounded space routes maintained context through docs/a&b/README.md (`ssot_format: 5`).
+<!-- SSOT-CONTEXT:END -->
+EOF
+if SOURCE_DIR="$PROJECT_ROOT" bash "$INSTALLER" --sync-block "$SCENARIO29/SPACE-en.md" >/dev/null 2>&1; then
+  pass "scenario29: --sync-block handles format-5 EN ENTRY with & and /"
+else
+  fail "scenario29: --sync-block failed on format-5 EN ENTRY with & and /"
+fi
+assert_grep "scenario29: format-5 EN preserved & and / literally" "$SCENARIO29/SPACE-en.md" 'docs/a&b/README.md defines this space'
+
+# Malformed markers (missing / reversed) must be refused with zero bytes changed.
+printf 'No markers here.\n' > "$SCENARIO29/NO-MARKERS.md"
+cp "$SCENARIO29/NO-MARKERS.md" "$SCENARIO29/NO-MARKERS.before"
+if SOURCE_DIR="$PROJECT_ROOT" bash "$INSTALLER" --sync-block "$SCENARIO29/NO-MARKERS.md" >/dev/null 2>&1; then
+  fail "scenario29: --sync-block should refuse file without markers"
+elif cmp -s "$SCENARIO29/NO-MARKERS.md" "$SCENARIO29/NO-MARKERS.before"; then
+  pass "scenario29: --sync-block refuses missing markers and leaves file untouched"
+else
+  fail "scenario29: --sync-block modified file without markers"
+fi
+printf '<!-- SSOT-CONTEXT:END -->\n<!-- SSOT-CONTEXT:BEGIN -->\n' > "$SCENARIO29/REVERSED.md"
+cp "$SCENARIO29/REVERSED.md" "$SCENARIO29/REVERSED.before"
+if SOURCE_DIR="$PROJECT_ROOT" bash "$INSTALLER" --sync-block "$SCENARIO29/REVERSED.md" >/dev/null 2>&1; then
+  fail "scenario29: --sync-block should refuse reversed markers"
+elif cmp -s "$SCENARIO29/REVERSED.md" "$SCENARIO29/REVERSED.before"; then
+  pass "scenario29: --sync-block refuses reversed markers and leaves file untouched"
+else
+  fail "scenario29: --sync-block modified file with reversed markers"
+fi
+
 echo "=== RESULT: pass=$PASS fail=$FAIL ==="
 [[ $FAIL -eq 0 ]] && exit 0 || exit 1
