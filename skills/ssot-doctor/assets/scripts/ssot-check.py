@@ -49,6 +49,8 @@ FORMAT = "4"
 # languages with multi-byte scripts (Chinese, Japanese) are not penalised.
 README_WARN_CHARS = 8000
 DOC_WARN_CHARS = 16000
+INLINE_SHARD_INFO_ROWS = 50
+INSTRUCTION_FILES = ("AGENTS.md", "CLAUDE.md", "GEMINI.md")
 INVARIANT_STATUSES = {"confirmed", "candidate", "retired"}
 INVARIANT_HEADINGS = ("invariants", "不变量", "保护规则")
 INVARIANT_COLUMNS = "ID | Kind | Rule | Explained in | Status | Source"
@@ -334,7 +336,7 @@ def resolve(doc, target):
     return os.path.normpath(os.path.join(os.path.dirname(doc), path_part)), fragment
 
 
-def check_link(report, doc, number, target):
+def check_link(report, doc, number, target, local_links=None):
     target = target.strip()
     if not target or SCHEME_RE.match(target):
         return  # external URLs and mailto: are outside this checker's scope
@@ -363,6 +365,8 @@ def check_link(report, doc, number, target):
     if not os.path.exists(resolved):
         report.add("ERROR", doc, number, f"broken link: {target}")
         return
+    if local_links is not None and resolved != doc:
+        local_links.append((doc, number, target, resolved))
     if not fragment or not os.path.isfile(resolved):
         return
     line_anchor = LINE_ANCHOR_RE.match(fragment)
@@ -608,6 +612,11 @@ def validate_register_tables(report, doc, lines, body, tables, seen, shard_lines
                            f"invariant {ident} needs a source (user directive, decision, or date)")
 
 
+def shard_register_tables(lines, text):
+    found = register_tables(lines, text)
+    return found if found is not None else (lines, pipe_tables(lines))
+
+
 def check_invariants(report, readme, text, ssot_dir):
     lines = list(markdown_lines(text))
     found = register_tables(lines, text)
@@ -618,9 +627,14 @@ def check_invariants(report, readme, text, ssot_dir):
     shards, shard_lines = linked_shards(readme, text, ssot_dir, report.documents)
     seen = {}
     validate_register_tables(report, readme, lines, body, tables, seen, shard_lines)
+    if len(seen) >= INLINE_SHARD_INFO_ROWS:
+        report.add("INFO", readme, None,
+                   f"{len(seen)} inline invariant rows in {os.path.basename(readme)}; "
+                   "optional topic shards (SSOT/invariants/<topic>.md) keep entry reads small")
     for shard_path, shard_text in shards:
         shard_lines_md = list(markdown_lines(shard_text))
-        validate_register_tables(report, shard_path, shard_lines_md, shard_lines_md, pipe_tables(shard_lines_md), seen)
+        sbody, stables = shard_register_tables(shard_lines_md, shard_text)
+        validate_register_tables(report, shard_path, shard_lines_md, sbody, stables, seen)
     return shards
 
 
@@ -967,7 +981,8 @@ def check_confirmed(report, readme, text, since, ssot_dir=None, current_shards=(
                 shard_blob = git_output(directory, "cat-file", "blob", f"{base}:{rel}")
                 if is_register_shard(shard_path, ssot_dir, shard_blob):
                     seen_old.add(shard_path)
-                    for ident, row in rows_from_tables(pipe_tables(list(markdown_lines(shard_blob))), shard_path).items():
+                    _, old_tables = shard_register_tables(list(markdown_lines(shard_blob)), shard_blob)
+                    for ident, row in rows_from_tables(old_tables, shard_path).items():
                         old.setdefault(ident, row)
     except OSError:
         report.add("INFO", None, None, "git is not available, so changes to confirmed invariants were not checked")
@@ -977,7 +992,8 @@ def check_confirmed(report, readme, text, since, ssot_dir=None, current_shards=(
         return
     new, when = register_rows(text, readme), f"since {since}" if since else "since the last commit"
     for shard_path, shard_text in current_shards:
-        for ident, row in rows_from_tables(pipe_tables(list(markdown_lines(shard_text))), shard_path).items():
+        _, new_tables = shard_register_tables(list(markdown_lines(shard_text)), shard_text)
+        for ident, row in rows_from_tables(new_tables, shard_path).items():
             new.setdefault(ident, row)
     def comparable(cell, column):
         if column == 2:  # Exact names and code span contents can be part of the contract.
@@ -1014,6 +1030,92 @@ def check_confirmed(report, readme, text, since, ssot_dir=None, current_shards=(
     if approved:
         report.add("INFO", readme, None, f"confirmed invariant(s) {', '.join(approved)} changed {when} with a newly "
                                          "dated Source; verify the accepted decision and scope, then show each change to the user")
+
+
+BLOCK_MARK_RE = re.compile(r"^<!-- SSOT-(CONTEXT|SKILL):(BEGIN|END) -->$", re.M)
+F5_ENTRY_RE = re.compile(
+    r"(?:through |本空间通过|本空间的入口为)(.+?)(?: \(`ssot_format: 5`\)|（`ssot_format: 5`）|\(`ssot_format: 5`\))"
+    r"|^(.+?) defines this space \(`ssot_format: 5`\)", re.M)
+
+
+def check_gitignored_links(report, ssot_dir, local_links):
+    if not local_links:
+        return
+    try:
+        top = os.path.realpath(git_output(ssot_dir, "rev-parse", "--show-toplevel").rstrip("\n"))
+    except (FileNotFoundError, GitError):
+        return
+    entries, unique = [], {}
+    for doc, num, target, resolved in local_links:
+        real = os.path.realpath(resolved)
+        if not inside(real, top):
+            continue
+        rel = os.path.relpath(real, top).replace(os.sep, "/")
+        if rel not in (".", "") and not rel.startswith("../"):
+            entries.append((doc, num, target, rel))
+            unique[rel] = None
+    if not unique:
+        return
+    try:
+        res = subprocess.run(["git", *GIT_SAFE, "-C", top, "check-ignore", "-z", "--stdin"], env=GIT_ENV,
+                             input=("\0".join(unique) + "\0").encode("utf-8", "surrogateescape"),
+                             capture_output=True, check=False)
+    except OSError:
+        return
+    if res.returncode != 0:
+        return
+    ignored = set(filter(None, res.stdout.decode("utf-8", "surrogateescape").split("\0")))
+    for doc, num, target, rel in entries:
+        if rel in ignored:
+            report.add("WARN", doc, num, f"link targets gitignored path (may break after cleanup/clone): {target}")
+
+
+def extract_managed_block(text):
+    norm = text.replace("\r\n", "\n")
+    m = list(BLOCK_MARK_RE.finditer(norm))
+    if len(m) != 2 or m[0].group(2) != "BEGIN" or m[1].group(2) != "END" or m[0].group(1) != m[1].group(1):
+        return None, False
+    return norm[m[0].start():m[1].end()], m[0].group(1) == "SKILL"
+
+
+def check_instruction_blocks(report, root):
+    tpl_root = os.path.normpath(os.path.join(
+        os.path.dirname(os.path.realpath(__file__)), "..", "..", "..", "ssot-bootstrap", "assets", "templates"))
+    if not os.path.isdir(tpl_root):
+        return
+    is_zh = lambda s: any(k in s for k in ("工作流", "长期 context", "保护规则", "回读", "空间", "建库"))
+    checked = set()
+    for name in INSTRUCTION_FILES:
+        path = os.path.join(root, name)
+        if not os.path.isfile(path):
+            continue
+        real = os.path.realpath(path)
+        if real in checked or not inside(real, root):
+            continue
+        checked.add(real)
+        cur, legacy = extract_managed_block(read_text(path))
+        if not cur:
+            continue
+        lang = "zh" if is_zh(cur) else "en"
+        fmt5 = "ssot_format: 5" in cur
+        tpl = "context-adapter.md" if fmt5 else "adapter-thin.md"
+        lt, ft = os.path.join(tpl_root, lang, tpl), os.path.join(tpl_root, tpl)
+        tpl_path = lt if os.path.isfile(lt) else ft if os.path.isfile(ft) else None
+        if not tpl_path:
+            continue
+        exp, _ = extract_managed_block(read_text(tpl_path))
+        if not exp or (tpl_path == ft and ("zh" if is_zh(exp) else "en") != lang):
+            continue
+        if fmt5:
+            hit = F5_ENTRY_RE.search(cur)
+            entry = (hit.group(1) or hit.group(2)).strip() if hit else ""
+            if not entry or "ENTRY" not in exp:
+                continue
+            exp = exp.replace("ENTRY", entry)
+        if cur != exp:
+            note = " (legacy SSOT-SKILL markers)" if legacy else ""
+            report.add("INFO", path, None,
+                       f"managed block differs from installed templates{note}; run install.sh --check-block / --sync-block")
 
 
 # --- reviewed_through ----------------------------------------------------------
@@ -1247,6 +1349,7 @@ def main(argv):
 
     shard_paths = {path for path, _ in shards}
     mentions = []
+    local_links = [] if not scoped else None
     for doc in checked_documents(ssot_dir, readme, report):
         if not repository_local(doc):
             report.add("ERROR", doc, None, "document leaves the repository (possibly through a symlink)")
@@ -1269,7 +1372,7 @@ def main(argv):
                        f"{' (invariant rows not counted)' if is_register_doc else ''}; "
                        "split it by topic or move detail out")
         for number, target in link_targets(text):
-            check_link(report, doc, number, target)
+            check_link(report, doc, number, target, local_links)
         wrapped = list(hard_wrapped_paragraphs(text))
         if wrapped and not legacy:
             lines = ", ".join(str(n) for n in wrapped[:5]) + (", ..." if len(wrapped) > 5 else "")
@@ -1277,7 +1380,10 @@ def main(argv):
                        f"{len(wrapped)} paragraph(s) are broken across short lines (lines {lines}); "
                        "write each paragraph or list item as one line and let the editor wrap it")
     if not scoped:
+        check_gitignored_links(report, ssot_dir, local_links)
         check_removed_paths(report, ssot_dir, mentions, since)
+        if not legacy:
+            check_instruction_blocks(report, REPO_ROOT[0])
     for path in sorted(UNDECODABLE):
         report.add("WARN", path, None, "not valid UTF-8; undecodable bytes were replaced while checking")
 

@@ -988,5 +988,56 @@ else
   fail "scenario29: --sync-block modified file with reversed markers"
 fi
 
+# Scenario 30: offline local-template resolution for --check-block / --sync-block
+# and read-only managed block drift hint during project-scope --upgrade.
+SCENARIO30="$WORK_ROOT/scenario30"
+mkdir -p "$SCENARIO30/project" "$SCENARIO30/standalone"
+cp "$INSTALLER" "$SCENARIO30/standalone/install.sh"
+HOME="$SCENARIO30" SOURCE_DIR="$PROJECT_ROOT" \
+  bash -c "cd '$SCENARIO30/project' && bash '$INSTALLER' --quickstart --agent codex --scope project --lang en" >/dev/null 2>&1 \
+  || fail "scenario30: initial project install failed"
+cat > "$SCENARIO30/project/AGENTS.md" <<'EOF'
+# Project instructions
+
+<!-- SSOT-CONTEXT:BEGIN -->
+## SSOT workflow
+
+Outdated 5.0 wording.
+<!-- SSOT-CONTEXT:END -->
+EOF
+cp "$SCENARIO30/project/AGENTS.md" "$SCENARIO30/project/AGENTS.before"
+# Upgrade reports stale managed block read-only and never edits AGENTS.md.
+UPG30_OUT="$(HOME="$SCENARIO30" SOURCE_DIR="$PROJECT_ROOT" \
+  bash -c "cd '$SCENARIO30/project' && bash '$INSTALLER' --upgrade --agent codex --scope project" 2>&1)"
+UPG30_RC=$?
+if [[ $UPG30_RC -eq 0 ]] && grep -q 'managed block outdated: AGENTS.md' <<< "$UPG30_OUT" && cmp -s "$SCENARIO30/project/AGENTS.md" "$SCENARIO30/project/AGENTS.before"; then
+  pass "scenario30: --upgrade warns on stale AGENTS.md without editing it"
+else
+  fail "scenario30: --upgrade drift hint failed (rc=$UPG30_RC, out=$UPG30_OUT)"
+fi
+# Standalone install.sh without SOURCE_DIR resolves local installed templates with unreachable remote.
+if HOME="$SCENARIO30" SSOT_CONTEXT_REPO_URL="http://127.0.0.1:1/unreachable.git" \
+   bash -c "cd '$SCENARIO30/project' && bash '$SCENARIO30/standalone/install.sh' --check-block AGENTS.md" >/dev/null 2>&1; then
+  fail "scenario30: offline --check-block should report stale AGENTS.md"
+else
+  pass "scenario30: offline --check-block detects stale AGENTS.md without cloning"
+fi
+if HOME="$SCENARIO30" SSOT_CONTEXT_REPO_URL="http://127.0.0.1:1/unreachable.git" \
+   bash -c "cd '$SCENARIO30/project' && bash '$SCENARIO30/standalone/install.sh' --sync-block AGENTS.md" >/dev/null 2>&1 &&
+   HOME="$SCENARIO30" SSOT_CONTEXT_REPO_URL="http://127.0.0.1:1/unreachable.git" \
+   bash -c "cd '$SCENARIO30/project' && bash '$SCENARIO30/standalone/install.sh' --check-block AGENTS.md" >/dev/null 2>&1; then
+  pass "scenario30: offline --sync-block and --check-block succeed using local installed templates"
+else
+  fail "scenario30: offline --sync-block failed using local installed templates"
+fi
+# After sync, --upgrade prints no stale block warning.
+UPG30_CLEAN="$(HOME="$SCENARIO30" SOURCE_DIR="$PROJECT_ROOT" \
+  bash -c "cd '$SCENARIO30/project' && bash '$INSTALLER' --upgrade --agent codex --scope project" 2>&1)"
+if [[ $? -eq 0 ]] && ! grep -q 'managed block outdated' <<< "$UPG30_CLEAN"; then
+  pass "scenario30: --upgrade stays clean after syncing managed block"
+else
+  fail "scenario30: --upgrade still warned after sync (out=$UPG30_CLEAN)"
+fi
+
 echo "=== RESULT: pass=$PASS fail=$FAIL ==="
 [[ $FAIL -eq 0 ]] && exit 0 || exit 1

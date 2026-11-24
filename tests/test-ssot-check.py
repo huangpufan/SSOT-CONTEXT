@@ -1922,6 +1922,102 @@ class CheckerTest(unittest.TestCase):
         self.assertNotIn("ERROR", out)
         self.assertNotIn("UNCHECKED", out)
 
+    def test_gitignored_link_warns_while_tracked_ignored_pattern_passes(self):
+        self.valid()
+        self.git("init", "-q")
+        with open(os.path.join(self.repo, ".gitignore"), "w", encoding="utf-8") as handle:
+            handle.write("tmp/\n*.log\n")
+        os.makedirs(os.path.join(self.repo, "tmp"))
+        with open(os.path.join(self.repo, "tmp/verify.md"), "w", encoding="utf-8") as handle:
+            handle.write("# Ephemeral\n")
+        with open(os.path.join(self.repo, "tracked.log"), "w", encoding="utf-8") as handle:
+            handle.write("kept\n")
+        self.git("add", "-f", "tracked.log")
+        self.write("architecture.md", ARCHITECTURE
+                   + "\nSee [ephemeral](../tmp/verify.md), [dir](../tmp), and [tracked](../tracked.log).\n")
+        self.commit("baseline")
+        out = self.assert_clean()
+        self.assertIn("link targets gitignored path", out)
+        self.assertIn("../tmp/verify.md", out)
+        self.assertIn("../tmp", out)
+        self.assertNotIn("../tracked.log", out)
+        # --owners scoped mode excludes git checks and stays clean without gitignore warnings.
+        code, scoped_out = self.run_checker(os.path.join(self.ssot, "README.md"), "--owners", "architecture.md")
+        self.assertEqual(code, 0, scoped_out)
+        self.assertNotIn("gitignored", scoped_out)
+
+    def test_large_inline_register_emits_nonblocking_shard_info_without_warn(self):
+        rows = "\n".join(f"| INV-{n:03d} | product promise | Rule {n} | [R](architecture.md#failure-and-recovery) | candidate | tests |"
+                         for n in range(1, 56))
+        self.invariant_row(rows)
+        out = self.assert_clean()
+        self.assertIn("INFO", out)
+        self.assertIn("optional topic shards", out)
+        self.assertNotIn("WARN", out)
+
+    def test_shard_with_invariants_heading_allows_helper_table_above(self):
+        self.sharded_setup()
+        self.write("invariants/shipping.md", textwrap.dedent("""\
+            # Shipping invariants
+
+            | Scope | Owner |
+            |---|---|
+            | Parcel pricing | `shipping.py` |
+
+            ## Invariants
+
+            | ID | Kind | Rule | Explained in | Status | Source |
+            |---|---|---|---|---|---|
+            | SHP-01 | product promise | Express keeps standard intact | [Retries](../architecture.md#failure-and-recovery) | confirmed | user, 2026-05-02 |
+            """))
+        self.git("init", "-q")
+        self.commit("shard with helper table")
+        out = self.assert_clean()
+        self.assertNotIn("WARN", out)
+        # Mutating the confirmed rule under ## Invariants must still fail.
+        self.write("invariants/shipping.md", textwrap.dedent("""\
+            # Shipping invariants
+
+            | Scope | Owner |
+            |---|---|
+            | Parcel pricing | `shipping.py` |
+
+            ## Invariants
+
+            | ID | Kind | Rule | Explained in | Status | Source |
+            |---|---|---|---|---|---|
+            | SHP-01 | product promise | Express weakens standard | [Retries](../architecture.md#failure-and-recovery) | confirmed | user, 2026-05-02 |
+            """))
+        self.assert_error("confirmed invariant SHP-01 changed its rule")
+
+    def test_drifted_instruction_block_emits_nonblocking_info_and_current_stays_quiet(self):
+        self.valid()
+        agents_path = os.path.join(self.repo, "AGENTS.md")
+        claude_path = os.path.join(self.repo, "CLAUDE.md")
+        with open(agents_path, "w", encoding="utf-8") as handle:
+            handle.write("# Repo\n\n<!-- SSOT-SKILL:BEGIN -->\nOld stale instructions.\n<!-- SSOT-SKILL:END -->\n")
+        os.symlink("AGENTS.md", claude_path)
+        out = self.assert_clean()
+        self.assertEqual(out.count("managed block differs from installed templates"), 1, out)
+        self.assertIn("(legacy SSOT-SKILL markers)", out)
+        self.assertNotIn("WARN", out)
+        # Syncing to current template silences the INFO completely.
+        tpl = os.path.join(os.path.dirname(CHECKER), "../../../ssot-bootstrap/assets/templates/en/adapter-thin.md")
+        with open(tpl, encoding="utf-8") as handle:
+            tpl_text = handle.read()
+        begin = tpl_text.index("<!-- SSOT-CONTEXT:BEGIN -->")
+        end = tpl_text.index("<!-- SSOT-CONTEXT:END -->") + len("<!-- SSOT-CONTEXT:END -->")
+        with open(agents_path, "w", encoding="utf-8") as handle:
+            handle.write("# Repo\n\n" + tpl_text[begin:end] + "\n")
+        out = self.assert_clean()
+        self.assertNotIn("managed block differs", out)
+        # --owners mode must not read AGENTS.md at all.
+        with open(agents_path, "w", encoding="utf-8") as handle:
+            handle.write("<!-- SSOT-CONTEXT:BEGIN -->\nStale.\n<!-- SSOT-CONTEXT:END -->\n")
+        code, scoped_out = self.run_checker(os.path.join(self.ssot, "README.md"), "--owners")
+        self.assertEqual(code, 0, scoped_out)
+        self.assertNotIn("managed block differs", scoped_out)
+
 
 if __name__ == "__main__":
     unittest.main(verbosity=1)

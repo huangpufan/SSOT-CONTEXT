@@ -1091,12 +1091,9 @@ resolve_template_lang_dir() {
   die "no templates found under $templates_root"
 }
 
-# The marked template section is shared by installation and bootstrap.
-# Validate before installing so a broken source cannot silently omit wiring.
-read_wire_block() {
-  local lang="$1" template_name="${2:-adapter-thin.md}" template_dir template block skill
-  template_dir="$(resolve_template_lang_dir "$lang")" || return 1
-  template="${template_dir:-$SOURCE_DIR/skills/ssot-bootstrap/assets/templates}/$template_name"
+# Validate and extract the managed instruction block from a single template file.
+read_wire_block_from_file() {
+  local template="$1" block skill
   [[ -f "$template" ]] || { err "missing SSOT instruction template: $template"; return 1; }
   block="$(awk '
     $0 ~ /^<!-- SSOT-(CONTEXT|SKILL):BEGIN -->$/ { starts++; active = 1; closing = $0; sub(/:BEGIN/, ":END", closing) }
@@ -1112,6 +1109,15 @@ read_wire_block() {
     [[ "$block" == *"\$$skill"* ]] || { err "missing $skill route in SSOT instruction block: $template"; return 1; }
   done
   printf '%s\n' "$block"
+}
+
+# The marked template section is shared by installation and bootstrap.
+# Validate before installing so a broken source cannot silently omit wiring.
+read_wire_block() {
+  local lang="$1" template_name="${2:-adapter-thin.md}" template_dir template
+  template_dir="$(resolve_template_lang_dir "$lang")" || return 1
+  template="${template_dir:-$SOURCE_DIR/skills/ssot-bootstrap/assets/templates}/$template_name"
+  read_wire_block_from_file "$template"
 }
 
 # Resolve symlinks on an instruction file so syncing updates the canonical target
@@ -1233,6 +1239,42 @@ substitute_entry_literal() {
   ' <<< "$block"
 }
 
+# Try resolving an already-installed local template matching lang without network access.
+# Prints "<template_path>|<skill_base>" on success.
+find_local_installed_template() {
+  local target_file="$1" lang="$2" template_name="$3"
+  local target_dir base tpl_root cand block_probe
+  target_dir="$(dirname "$target_file")"
+  local -a candidates=(
+    "$target_dir/.agents/skills"
+    "$target_dir/.claude/skills"
+    "$target_dir/.windsurf/skills"
+    "$PWD/.agents/skills"
+    "$PWD/.claude/skills"
+    "$PWD/.windsurf/skills"
+  )
+  local -A seen=()
+  for base in "${candidates[@]}"; do
+    [[ -d "$base/ssot-bootstrap/assets/templates" && -f "$base/$PRIMARY_SKILL/SKILL.md" ]] || continue
+    [[ -z "${seen[$base]+x}" ]] || continue
+    seen[$base]=1
+    tpl_root="$base/ssot-bootstrap/assets/templates"
+    if [[ -f "$tpl_root/$lang/$template_name" ]]; then
+      printf '%s|%s\n' "$tpl_root/$lang/$template_name" "$base"
+      return 0
+    fi
+    cand="$tpl_root/$template_name"
+    if [[ -f "$cand" ]]; then
+      block_probe="$(extract_file_block "$cand" 2>/dev/null || true)"
+      if [[ -n "$block_probe" && "$(detect_block_lang "$block_probe")" == "$lang" ]]; then
+        printf '%s|%s\n' "$cand" "$base"
+        return 0
+      fi
+    fi
+  done
+  return 1
+}
+
 # Populate BLOCK_REAL_TARGET, BLOCK_CURRENT, BLOCK_EXPECTED, BLOCK_FMT, BLOCK_LANG, BLOCK_LEGACY.
 prepare_block_check() {
   [[ -n "$ARG_BLOCK_FILE" ]] || die "missing instruction file path"
@@ -1240,12 +1282,6 @@ prepare_block_check() {
     die "--entry must be a single line"
   fi
   BLOCK_REAL_TARGET="$(resolve_block_target "$ARG_BLOCK_FILE")"
-  ensure_source
-  if [[ -f "$SOURCE_DIR/VERSION" ]]; then
-    local src_ver
-    src_ver="$(tr -d '[:space:]' < "$SOURCE_DIR/VERSION")"
-    [[ -n "$src_ver" ]] && VERSION="$src_ver"
-  fi
 
   if ! BLOCK_CURRENT="$(extract_file_block "$BLOCK_REAL_TARGET")"; then
     err "invalid or missing SSOT managed markers in $ARG_BLOCK_FILE (expected one ordered <!-- SSOT-CONTEXT:BEGIN --> ... <!-- SSOT-CONTEXT:END --> pair)"
@@ -1277,8 +1313,26 @@ prepare_block_check() {
     BLOCK_FMT="4"
   fi
 
-  local expected_raw
-  expected_raw="$(read_wire_block "$BLOCK_LANG" "$template_name")" || return 1
+  local expected_raw="" script_dir="" local_hit="" local_tpl="" local_base="" local_ver=""
+  script_dir="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+  if [[ -z "$ARG_REF" && -z "${SOURCE_DIR:-}" && ! -f "$script_dir/skills/$PRIMARY_SKILL/SKILL.md" ]]; then
+    if local_hit="$(find_local_installed_template "$BLOCK_REAL_TARGET" "$BLOCK_LANG" "$template_name")"; then
+      IFS='|' read -r local_tpl local_base <<< "$local_hit"
+      expected_raw="$(read_wire_block_from_file "$local_tpl")" || return 1
+      local_ver="$(skill_protocol_version "$local_base/$PRIMARY_SKILL/SKILL.md")"
+      [[ -n "$local_ver" ]] && VERSION="$local_ver"
+    fi
+  fi
+  if [[ -z "$expected_raw" ]]; then
+    ensure_source
+    if [[ -f "$SOURCE_DIR/VERSION" ]]; then
+      local src_ver
+      src_ver="$(tr -d '[:space:]' < "$SOURCE_DIR/VERSION")"
+      [[ -n "$src_ver" ]] && VERSION="$src_ver"
+    fi
+    expected_raw="$(read_wire_block "$BLOCK_LANG" "$template_name")" || return 1
+  fi
+
   if [[ "$BLOCK_FMT" == "5" ]]; then
     BLOCK_EXPECTED="$(substitute_entry_literal "$expected_raw" "$entry")" || {
       err "failed to substitute ENTRY in format-5 template"
@@ -1288,6 +1342,35 @@ prepare_block_check() {
     BLOCK_EXPECTED="$expected_raw"
   fi
   return 0
+}
+
+# Read-only drift summary after a project-scope upgrade; never edits instruction files.
+report_project_block_drift() {
+  local fname real note
+  local saved_file="$ARG_BLOCK_FILE" saved_entry="$ARG_ENTRY" saved_lang="$ARG_LANG" saved_ref="$ARG_REF"
+  local -A seen=()
+  # Reuse the SOURCE_DIR already resolved by run_upgrade (even when --ref was passed).
+  ARG_REF=""
+  for fname in AGENTS.md CLAUDE.md GEMINI.md; do
+    [[ -f "$PWD/$fname" ]] || continue
+    real="$(resolve_block_target "$PWD/$fname" 2>/dev/null)" || continue
+    [[ -z "${seen[$real]+x}" ]] || continue
+    seen[$real]=1
+    extract_file_block "$real" >/dev/null 2>&1 || continue
+    ARG_BLOCK_FILE="$PWD/$fname"
+    ARG_ENTRY=""
+    ARG_LANG=""
+    if prepare_block_check >/dev/null 2>&1 && [[ "$BLOCK_CURRENT" != "$BLOCK_EXPECTED" ]]; then
+      note=""
+      [[ "$BLOCK_LEGACY" -eq 1 ]] && note=" (uses legacy SSOT-SKILL markers)"
+      warn "managed block outdated: $fname (format ${BLOCK_FMT}, lang=${BLOCK_LANG}; expected v${VERSION})${note}"
+      info "Run with --sync-block \"$fname\" to update only the marked block."
+    fi
+  done
+  ARG_BLOCK_FILE="$saved_file"
+  ARG_ENTRY="$saved_entry"
+  ARG_LANG="$saved_lang"
+  ARG_REF="$saved_ref"
 }
 
 run_check_block() {
@@ -2061,9 +2144,10 @@ run_upgrade() {
   ensure_source
   echo ""
 
-  local lang
+  local lang upgraded_project=0
   for row in "${UPGRADE_ROWS[@]}"; do
     IFS='|' read -r agent scope base label <<< "$row"
+    [[ "$scope" == "project" ]] && upgraded_project=1
     if [[ -n "$ARG_LANG" ]]; then
       lang="$ARG_LANG"
     else
@@ -2078,6 +2162,9 @@ run_upgrade() {
   echo -e "  ${DIM}  $(t RESTART_TIP)${NC}"
   echo -e "  ${GREEN}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${NC}"
   print_wire_block "${lang:-en}"
+  if [[ "$upgraded_project" -eq 1 ]]; then
+    report_project_block_drift
+  fi
   echo ""
 }
 
