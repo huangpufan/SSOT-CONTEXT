@@ -938,6 +938,7 @@ else
   fail "scenario29: --sync-block failed on format-5 ZH block"
 fi
 assert_grep "scenario29: format-5 ZH preserved custom ENTRY" "$SCENARIO29/SPACE-zh.md" '本空间的入口为 `docs/space-home.md`（`ssot_format: 5`）'
+assert_no_grep "scenario29: format-5 ZH leaves no unreplaced ENTRY placeholder" "$SCENARIO29/SPACE-zh.md" 'ENTRY'
 assert_grep "scenario29: format-5 ZH preserved outside prose" "$SCENARIO29/SPACE-zh.md" '顶部自定义说明。'
 if SOURCE_DIR="$PROJECT_ROOT" bash "$INSTALLER" --check-block "$SCENARIO29/SPACE-zh.md" >/dev/null 2>&1; then
   pass "scenario29: --check-block passes on synced format-5 ZH block"
@@ -959,6 +960,13 @@ else
   fail "scenario29: --sync-block failed on format-5 EN ENTRY with & and /"
 fi
 assert_grep "scenario29: format-5 EN preserved & and / literally" "$SCENARIO29/SPACE-en.md" 'docs/a&b/README.md defines this space'
+assert_no_grep "scenario29: format-5 EN leaves no unreplaced ENTRY placeholder" "$SCENARIO29/SPACE-en.md" 'ENTRY'
+if SOURCE_DIR="$PROJECT_ROOT" bash "$INSTALLER" --sync-block "$SCENARIO29/SPACE-en.md" --entry 'docs/ENTRY.md' >/dev/null 2>&1 &&
+   grep -q 'read docs/ENTRY.md in the same step' "$SCENARIO29/SPACE-en.md"; then
+  pass "scenario29: --entry containing literal ENTRY replaces every placeholder in one pass"
+else
+  fail "scenario29: --entry containing literal ENTRY failed"
+fi
 
 # Malformed markers (missing / reversed) must be refused with zero bytes changed.
 printf 'No markers here.\n' > "$SCENARIO29/NO-MARKERS.md"

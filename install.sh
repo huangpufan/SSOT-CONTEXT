@@ -1214,22 +1214,22 @@ extract_format5_entry() {
   '
 }
 
-# Replace the first literal occurrence of ENTRY without regex/escape interpretation.
+# Replace every literal occurrence of ENTRY in one forward pass without regex/escape interpretation.
 substitute_entry_literal() {
   local block="$1" entry="$2"
   SSOT_ENTRY_VALUE="$entry" awk '
-    BEGIN { done = 0; entry = ENVIRON["SSOT_ENTRY_VALUE"] }
+    BEGIN { count = 0; entry = ENVIRON["SSOT_ENTRY_VALUE"] }
     {
-      if (!done) {
-        pos = index($0, "ENTRY")
-        if (pos > 0) {
-          $0 = substr($0, 1, pos - 1) entry substr($0, pos + 5)
-          done = 1
-        }
+      rest = $0
+      out = ""
+      while ((pos = index(rest, "ENTRY")) > 0) {
+        out = out substr(rest, 1, pos - 1) entry
+        rest = substr(rest, pos + 5)
+        count++
       }
-      print
+      print out rest
     }
-    END { if (!done) exit 1 }
+    END { if (count == 0) exit 1 }
   ' <<< "$block"
 }
 
