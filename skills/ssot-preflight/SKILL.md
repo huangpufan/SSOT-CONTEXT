@@ -2,7 +2,7 @@
 name: ssot-preflight
 description: Read SSOT before substantive work in a repository or declared space. Follow its bounded lookup and edit routes. Skip pure commands and cosmetic edits.
 metadata:
-  protocol_version: "5.15"
+  protocol_version: "5.16"
   bundle: "SSOT-CONTEXT"
 ---
 
@@ -12,7 +12,7 @@ Find the entry point before loading the [memory model](references/memory-model.m
 
 When the workflow says placing content in a destination can trigger delivery, publication or execution, check who may cause that effect before writing or moving anything there. If only the choice is delegated, leave the live destination untouched and use an authorized draft or handoff. If release is delegated, use the designated destination.
 
-Read the explicit entry or default `SSOT/README.md` by header and headings first. Check its applicable ownership, permissions and protections before following a route. Explicit SSOT checks, reviews and catch-up use `$ssot-doctor` even alongside implementation; ordinary code reviews do not.
+Read the explicit entry or default `SSOT/README.md` by header and headings first (you may read it in the same step as this `SKILL.md`, before opening any linked owner or source). Check its applicable ownership, permissions and protections before following a route. Explicit SSOT checks, reviews and catch-up use `$ssot-doctor` even alongside implementation; ordinary code reviews do not.
 
 In formats 4 and 5, answer a lookup from its current authorized owner when that owner settles the question. For one settled prose change confined to that owner, use `$ssot-closeout` directly. Follow owner-specific requirements. If the answer depends on other evidence or decisions, follow their authorized routes. Restricted sources require the permission result before any dependent read, including a search.
 

@@ -99,7 +99,7 @@ Existing maintained documents can stay the owners and are linked from the entry.
 
 A reader can answer a lookup from the current authorized document that owns the answer. When an approved change affects only existing prose in that document, the agent updates it in place, preserves the earlier decision and its reason where required, then reads the result back. Changes involving other owners, approvals or protections follow the full workflow.
 
-Version 5.15 shortens the descriptions Codex includes when it lists available skills. In two fresh sessions, an ordinary request that used no skills cost 247 fewer input tokens each time. [Installed comparison and whole-task costs](./docs/2026-11-21-skill-discovery-cost-v5.15.md)
+Version 5.16 reduces avoidable serial API round-trips without weakening permission-before-read or on-disk readback checks: the agent may read the entry header and headings alongside the selected skill's `SKILL.md` before opening any linked owner, batch independent authorized reads after checking entry permissions, and read the saved passage back from disk right after writing. In 16 paired Codex tasks (including unseen warm-refresh, stale-route, typo and setup-recovery checks), quality and kernel-observed access boundaries held while total input fell 14.70% and API round-trips fell 14.89%. [Batching and readback study](./docs/2026-11-24-batching-readback-v5.16.md) · [5.15 skill discovery cost](./docs/2026-11-21-skill-discovery-cost-v5.15.md)
 
 ## Limits
 

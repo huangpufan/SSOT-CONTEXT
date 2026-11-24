@@ -30,6 +30,12 @@ Entries up to 2.86 were derived from the v2 protocol-upgrade ledger, which is pr
 ### Changed
 - Cold-handoff trials now default to an explicit persistence goal shared by plain/protocol writers, retain automatic capture as a separate estimand, and add an independently authored museum confirmation. The [deepening record](docs/2026-11-12-benchmark-deepening.md) distinguishes measurement repairs, actual subject outcomes and evidence limits; the SSOT protocol remains 5.3.
 
+## [5.16] - 2026-11-24
+
+### Changed
+
+- Allowed reading the entry header and headings in the same step as the selected skill's `SKILL.md` (strictly before opening any linked owner or restricted source), batching independent authorized reads once entry permissions and protections are verified, and running on-disk post-write readback in the same tool step right after saving. Also added `stop here,` and `Otherwise,` guards in `ssot-closeout/SKILL.md` so completed single-owner format-5 prose edits do not fall through to full `context-spaces.md`. Across 16 paired Codex sessions (12 main + 4 unseen confirmation pairs, plus 4 cold readers), quality, permission (`inotify` zero-open), and readback checks passed 100%, while total input dropped 14.70% (1,832,077 to 1,562,792) and API round-trips dropped 14.89% (94 to 80; 10 fewer, 6 tied, 0 more) with zero new files or budget increases. [Measurements and confirmation trials](docs/2026-11-24-batching-readback-v5.16.md)
+
 ## [5.15] - 2026-11-21
 
 ### Changed
