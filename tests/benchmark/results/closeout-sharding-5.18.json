@@ -1,0 +1,597 @@
+{
+  "study": "closeout-sharding-5.18",
+  "date": "2026-11-24",
+  "verdict": "adopted_as_5.18",
+  "baseline_protocol": "5.17",
+  "baseline_commit_short": "fffa53a",
+  "candidate_protocol": "5.18",
+  "host": {
+    "cli_groups_A_and_B": "codex-cli 0.171.0",
+    "cli_group_C": "codex-cli 0.172.0",
+    "model": "gpt-6.1-terra",
+    "reasoning": "medium"
+  },
+  "bundle_tree_sha256": {
+    "baseline": "2eb98a10843e16e77e8d93012b4f430b71287b6e053f2f3b8436a02ab9016049",
+    "candidate": "94285607dbbfb7a0ce91eca55a6049b8c153e35d098f752b60a5fad64fdb0dc0"
+  },
+  "private_evidence_archive": {
+    "filename": "closeout-sharding-5.18-fffa53a-20261124.tar.gz",
+    "sha256": "4475cd2e52aa10a5d0ee08a7890827307b43e1d39217444c334ef331357439e5"
+  },
+  "probes": {
+    "baseline_en": {
+      "ok": true,
+      "returncode": 0,
+      "skills_found": [
+        "ssot-bootstrap",
+        "ssot-closeout",
+        "ssot-doctor",
+        "ssot-preflight"
+      ],
+      "agents_md_loaded": true,
+      "prompt_bytes": 70173
+    },
+    "candidate_en": {
+      "ok": true,
+      "returncode": 0,
+      "skills_found": [
+        "ssot-bootstrap",
+        "ssot-closeout",
+        "ssot-doctor",
+        "ssot-preflight"
+      ],
+      "agents_md_loaded": true,
+      "prompt_bytes": 70180
+    },
+    "baseline_zh": {
+      "ok": true,
+      "returncode": 0,
+      "skills_found": [
+        "ssot-bootstrap",
+        "ssot-closeout",
+        "ssot-doctor",
+        "ssot-preflight"
+      ],
+      "agents_md_loaded": true,
+      "prompt_bytes": 70099
+    },
+    "candidate_zh": {
+      "ok": true,
+      "returncode": 0,
+      "skills_found": [
+        "ssot-bootstrap",
+        "ssot-closeout",
+        "ssot-doctor",
+        "ssot-preflight"
+      ],
+      "agents_md_loaded": true,
+      "prompt_bytes": 70104
+    }
+  },
+  "aggregates": {
+    "A_add_external": {
+      "pairs": 3,
+      "baseline_pass": 3,
+      "candidate_pass": 3,
+      "baseline_input": 437703,
+      "candidate_input": 384054,
+      "input_delta_pct": -12.26,
+      "baseline_uncached": 34375,
+      "candidate_uncached": 41654,
+      "uncached_delta_pct": 21.18,
+      "baseline_output": 3974,
+      "candidate_output": 3776,
+      "baseline_api_turns": 21,
+      "candidate_api_turns": 19,
+      "api_turns_delta_pct": -9.52,
+      "baseline_tools": 18,
+      "candidate_tools": 16,
+      "baseline_checker_runs": 3,
+      "candidate_checker_runs": 0,
+      "baseline_seconds": 129.88,
+      "candidate_seconds": 116.63
+    },
+    "B_sharded_capture": {
+      "pairs": 2,
+      "baseline_pass": 2,
+      "candidate_pass": 2,
+      "baseline_input": 232215,
+      "candidate_input": 225602,
+      "input_delta_pct": -2.85,
+      "baseline_uncached": 27287,
+      "candidate_uncached": 40514,
+      "uncached_delta_pct": 48.47,
+      "baseline_output": 2235,
+      "candidate_output": 1944,
+      "baseline_api_turns": 11,
+      "candidate_api_turns": 11,
+      "api_turns_delta_pct": 0.0,
+      "baseline_tools": 9,
+      "candidate_tools": 9,
+      "baseline_checker_runs": 2,
+      "candidate_checker_runs": 2,
+      "baseline_seconds": 74.14,
+      "candidate_seconds": 69.79
+    },
+    "C_delete_counterexample": {
+      "pairs": 1,
+      "baseline_pass": 1,
+      "candidate_pass": 1,
+      "baseline_input": 176912,
+      "candidate_input": 158651,
+      "input_delta_pct": -10.32,
+      "baseline_uncached": 22544,
+      "candidate_uncached": 15291,
+      "uncached_delta_pct": -32.17,
+      "baseline_output": 1016,
+      "candidate_output": 1251,
+      "baseline_api_turns": 8,
+      "candidate_api_turns": 7,
+      "api_turns_delta_pct": -12.5,
+      "baseline_tools": 7,
+      "candidate_tools": 6,
+      "baseline_checker_runs": 1,
+      "candidate_checker_runs": 1,
+      "baseline_seconds": 41.22,
+      "candidate_seconds": 39.65
+    },
+    "ALL": {
+      "pairs": 6,
+      "baseline_pass": 6,
+      "candidate_pass": 6,
+      "baseline_input": 846830,
+      "candidate_input": 768307,
+      "input_delta_pct": -9.27,
+      "baseline_uncached": 84206,
+      "candidate_uncached": 97459,
+      "uncached_delta_pct": 15.74,
+      "baseline_output": 7225,
+      "candidate_output": 6971,
+      "baseline_api_turns": 40,
+      "candidate_api_turns": 37,
+      "api_turns_delta_pct": -7.5,
+      "baseline_tools": 34,
+      "candidate_tools": 31,
+      "baseline_checker_runs": 6,
+      "candidate_checker_runs": 3,
+      "baseline_seconds": 245.24,
+      "candidate_seconds": 226.07
+    }
+  },
+  "runs": [
+    {
+      "pair_id": "A1_r1_add_external_en",
+      "group": "A_add_external",
+      "arm": "baseline",
+      "cli_version": "codex-cli 0.171.0",
+      "completed": true,
+      "returncode": 0,
+      "models": [
+        "gpt-6.1-terra"
+      ],
+      "reasoning": [
+        "medium"
+      ],
+      "passed": true,
+      "seconds": 43.24,
+      "input_tokens": 143644,
+      "cached_input_tokens": 132736,
+      "uncached_input_tokens": 10908,
+      "output_tokens": 1200,
+      "api_turns": 7,
+      "tool_calls": 6,
+      "ran_checker": true,
+      "checker_calls": 1,
+      "protocol_reads": [
+        "ssot-closeout/SKILL.md",
+        "ssot-closeout/references/batch-closeout.md",
+        "ssot-preflight/SKILL.md",
+        "ssot-preflight/references/memory-model.md"
+      ],
+      "changed_files": [
+        "src/tax_format.py",
+        "tests/test_tax_format.py"
+      ]
+    },
+    {
+      "pair_id": "A1_r1_add_external_en",
+      "group": "A_add_external",
+      "arm": "candidate",
+      "cli_version": "codex-cli 0.171.0",
+      "completed": true,
+      "returncode": 0,
+      "models": [
+        "gpt-6.1-terra"
+      ],
+      "reasoning": [
+        "medium"
+      ],
+      "passed": true,
+      "seconds": 41.34,
+      "input_tokens": 139787,
+      "cached_input_tokens": 129408,
+      "uncached_input_tokens": 10379,
+      "output_tokens": 1362,
+      "api_turns": 7,
+      "tool_calls": 6,
+      "ran_checker": false,
+      "checker_calls": 0,
+      "protocol_reads": [
+        "ssot-closeout/SKILL.md",
+        "ssot-preflight/SKILL.md",
+        "ssot-preflight/references/memory-model.md"
+      ],
+      "changed_files": [
+        "src/tax_format.py",
+        "tests/test_tax_format.py"
+      ]
+    },
+    {
+      "pair_id": "A1_r2_add_external_en",
+      "group": "A_add_external",
+      "arm": "candidate",
+      "cli_version": "codex-cli 0.171.0",
+      "completed": true,
+      "returncode": 0,
+      "models": [
+        "gpt-6.1-terra"
+      ],
+      "reasoning": [
+        "medium"
+      ],
+      "passed": true,
+      "seconds": 37.76,
+      "input_tokens": 142299,
+      "cached_input_tokens": 121984,
+      "uncached_input_tokens": 20315,
+      "output_tokens": 1139,
+      "api_turns": 7,
+      "tool_calls": 6,
+      "ran_checker": false,
+      "checker_calls": 0,
+      "protocol_reads": [
+        "ssot-closeout/SKILL.md",
+        "ssot-preflight/SKILL.md",
+        "ssot-preflight/references/memory-model.md"
+      ],
+      "changed_files": [
+        "src/tax_format.py",
+        "tests/test_tax_format.py"
+      ]
+    },
+    {
+      "pair_id": "A1_r2_add_external_en",
+      "group": "A_add_external",
+      "arm": "baseline",
+      "cli_version": "codex-cli 0.171.0",
+      "completed": true,
+      "returncode": 0,
+      "models": [
+        "gpt-6.1-terra"
+      ],
+      "reasoning": [
+        "medium"
+      ],
+      "passed": true,
+      "seconds": 47.29,
+      "input_tokens": 164933,
+      "cached_input_tokens": 153600,
+      "uncached_input_tokens": 11333,
+      "output_tokens": 1484,
+      "api_turns": 8,
+      "tool_calls": 7,
+      "ran_checker": true,
+      "checker_calls": 1,
+      "protocol_reads": [
+        "ssot-closeout/SKILL.md",
+        "ssot-closeout/references/batch-closeout.md",
+        "ssot-preflight/SKILL.md",
+        "ssot-preflight/references/memory-model.md"
+      ],
+      "changed_files": [
+        "src/tax_format.py",
+        "tests/test_tax_format.py"
+      ]
+    },
+    {
+      "pair_id": "A2_r1_add_external_zh",
+      "group": "A_add_external",
+      "arm": "candidate",
+      "cli_version": "codex-cli 0.171.0",
+      "completed": true,
+      "returncode": 0,
+      "models": [
+        "gpt-6.1-terra"
+      ],
+      "reasoning": [
+        "medium"
+      ],
+      "passed": true,
+      "seconds": 37.53,
+      "input_tokens": 101968,
+      "cached_input_tokens": 91008,
+      "uncached_input_tokens": 10960,
+      "output_tokens": 1275,
+      "api_turns": 5,
+      "tool_calls": 4,
+      "ran_checker": false,
+      "checker_calls": 0,
+      "protocol_reads": [
+        "ssot-closeout/SKILL.md",
+        "ssot-preflight/SKILL.md",
+        "ssot-preflight/references/memory-model.md"
+      ],
+      "changed_files": [
+        "src/slug.py",
+        "tests/test_slug.py"
+      ]
+    },
+    {
+      "pair_id": "A2_r1_add_external_zh",
+      "group": "A_add_external",
+      "arm": "baseline",
+      "cli_version": "codex-cli 0.171.0",
+      "completed": true,
+      "returncode": 0,
+      "models": [
+        "gpt-6.1-terra"
+      ],
+      "reasoning": [
+        "medium"
+      ],
+      "passed": true,
+      "seconds": 39.35,
+      "input_tokens": 129126,
+      "cached_input_tokens": 116992,
+      "uncached_input_tokens": 12134,
+      "output_tokens": 1290,
+      "api_turns": 6,
+      "tool_calls": 5,
+      "ran_checker": true,
+      "checker_calls": 1,
+      "protocol_reads": [
+        "ssot-closeout/SKILL.md",
+        "ssot-closeout/references/batch-closeout.md",
+        "ssot-preflight/SKILL.md",
+        "ssot-preflight/references/memory-model.md"
+      ],
+      "changed_files": [
+        "src/slug.py",
+        "tests/test_slug.py"
+      ]
+    },
+    {
+      "pair_id": "B1_r1_sharded_capture_zh",
+      "group": "B_sharded_capture",
+      "arm": "baseline",
+      "cli_version": "codex-cli 0.171.0",
+      "completed": true,
+      "returncode": 0,
+      "models": [
+        "gpt-6.1-terra"
+      ],
+      "reasoning": [
+        "medium"
+      ],
+      "passed": true,
+      "seconds": 36.78,
+      "input_tokens": 133122,
+      "cached_input_tokens": 117120,
+      "uncached_input_tokens": 16002,
+      "output_tokens": 1101,
+      "api_turns": 6,
+      "tool_calls": 5,
+      "ran_checker": true,
+      "checker_calls": 1,
+      "protocol_reads": [
+        "ssot-closeout/SKILL.md",
+        "ssot-closeout/references/batch-closeout.md",
+        "ssot-closeout/references/decision-capture.md",
+        "ssot-preflight/references/memory-layout.md",
+        "ssot-preflight/references/memory-model.md",
+        "ssot-preflight/references/writing-memory.md"
+      ],
+      "changed_files": [
+        "SSOT/invariants/webhooks.md",
+        "docs/webhooks.md"
+      ],
+      "placed_in_shard": true,
+      "readme_has_new_401_row": false,
+      "doc_marked_planned": true
+    },
+    {
+      "pair_id": "B1_r1_sharded_capture_zh",
+      "group": "B_sharded_capture",
+      "arm": "candidate",
+      "cli_version": "codex-cli 0.171.0",
+      "completed": true,
+      "returncode": 0,
+      "models": [
+        "gpt-6.1-terra"
+      ],
+      "reasoning": [
+        "medium"
+      ],
+      "passed": true,
+      "seconds": 33.67,
+      "input_tokens": 114303,
+      "cached_input_tokens": 98816,
+      "uncached_input_tokens": 15487,
+      "output_tokens": 874,
+      "api_turns": 6,
+      "tool_calls": 5,
+      "ran_checker": true,
+      "checker_calls": 1,
+      "protocol_reads": [
+        "ssot-closeout/SKILL.md",
+        "ssot-closeout/references/batch-closeout.md",
+        "ssot-closeout/references/decision-capture.md"
+      ],
+      "changed_files": [
+        "SSOT/invariants/webhooks.md",
+        "docs/webhooks.md"
+      ],
+      "placed_in_shard": true,
+      "readme_has_new_401_row": false,
+      "doc_marked_planned": true
+    },
+    {
+      "pair_id": "B1_r2_sharded_capture_zh",
+      "group": "B_sharded_capture",
+      "arm": "candidate",
+      "cli_version": "codex-cli 0.171.0",
+      "completed": true,
+      "returncode": 0,
+      "models": [
+        "gpt-6.1-terra"
+      ],
+      "reasoning": [
+        "medium"
+      ],
+      "passed": true,
+      "seconds": 36.12,
+      "input_tokens": 111299,
+      "cached_input_tokens": 86272,
+      "uncached_input_tokens": 25027,
+      "output_tokens": 1070,
+      "api_turns": 5,
+      "tool_calls": 4,
+      "ran_checker": true,
+      "checker_calls": 1,
+      "protocol_reads": [
+        "ssot-closeout/SKILL.md",
+        "ssot-closeout/references/batch-closeout.md",
+        "ssot-closeout/references/decision-capture.md",
+        "ssot-preflight/SKILL.md",
+        "ssot-preflight/references/memory-model.md",
+        "ssot-preflight/references/writing-memory.md"
+      ],
+      "changed_files": [
+        "SSOT/invariants/webhooks.md",
+        "docs/webhooks.md"
+      ],
+      "placed_in_shard": true,
+      "readme_has_new_401_row": false,
+      "doc_marked_planned": true
+    },
+    {
+      "pair_id": "B1_r2_sharded_capture_zh",
+      "group": "B_sharded_capture",
+      "arm": "baseline",
+      "cli_version": "codex-cli 0.171.0",
+      "completed": true,
+      "returncode": 0,
+      "models": [
+        "gpt-6.1-terra"
+      ],
+      "reasoning": [
+        "medium"
+      ],
+      "passed": true,
+      "seconds": 37.36,
+      "input_tokens": 99093,
+      "cached_input_tokens": 87808,
+      "uncached_input_tokens": 11285,
+      "output_tokens": 1134,
+      "api_turns": 5,
+      "tool_calls": 4,
+      "ran_checker": true,
+      "checker_calls": 1,
+      "protocol_reads": [
+        "ssot-closeout/SKILL.md",
+        "ssot-closeout/references/batch-closeout.md",
+        "ssot-closeout/references/decision-capture.md",
+        "ssot-preflight/references/memory-model.md"
+      ],
+      "changed_files": [
+        "SSOT/README.md",
+        "SSOT/invariants/webhooks.md",
+        "docs/webhooks.md"
+      ],
+      "placed_in_shard": true,
+      "readme_has_new_401_row": false,
+      "doc_marked_planned": true
+    },
+    {
+      "pair_id": "C1_r1_delete_mentioned_en",
+      "group": "C_delete_counterexample",
+      "arm": "baseline",
+      "cli_version": "codex-cli 0.172.0",
+      "completed": true,
+      "returncode": 0,
+      "models": [
+        "gpt-6.1-terra"
+      ],
+      "reasoning": [
+        "medium"
+      ],
+      "passed": true,
+      "seconds": 41.22,
+      "input_tokens": 176912,
+      "cached_input_tokens": 154368,
+      "uncached_input_tokens": 22544,
+      "output_tokens": 1016,
+      "api_turns": 8,
+      "tool_calls": 7,
+      "ran_checker": true,
+      "checker_calls": 1,
+      "protocol_reads": [
+        "ssot-closeout/SKILL.md",
+        "ssot-closeout/references/batch-closeout.md",
+        "ssot-preflight/SKILL.md",
+        "ssot-preflight/references/context-tiering.md",
+        "ssot-preflight/references/memory-layout.md",
+        "ssot-preflight/references/memory-model.md",
+        "ssot-preflight/references/writing-memory.md"
+      ],
+      "changed_files": [
+        "SSOT/architecture.md",
+        "src/legacy_cache.py"
+      ],
+      "deleted": true,
+      "arch_cleaned": true,
+      "no_removed_warn": true
+    },
+    {
+      "pair_id": "C1_r1_delete_mentioned_en",
+      "group": "C_delete_counterexample",
+      "arm": "candidate",
+      "cli_version": "codex-cli 0.172.0",
+      "completed": true,
+      "returncode": 0,
+      "models": [
+        "gpt-6.1-terra"
+      ],
+      "reasoning": [
+        "medium"
+      ],
+      "passed": true,
+      "seconds": 39.65,
+      "input_tokens": 158651,
+      "cached_input_tokens": 143360,
+      "uncached_input_tokens": 15291,
+      "output_tokens": 1251,
+      "api_turns": 7,
+      "tool_calls": 6,
+      "ran_checker": true,
+      "checker_calls": 1,
+      "protocol_reads": [
+        "ssot-closeout/SKILL.md",
+        "ssot-closeout/references/batch-closeout.md",
+        "ssot-preflight/SKILL.md",
+        "ssot-preflight/references/context-tiering.md",
+        "ssot-preflight/references/memory-layout.md",
+        "ssot-preflight/references/memory-model.md",
+        "ssot-preflight/references/writing-memory.md"
+      ],
+      "changed_files": [
+        "SSOT/architecture.md",
+        "src/legacy_cache.py"
+      ],
+      "deleted": true,
+      "arch_cleaned": true,
+      "no_removed_warn": true
+    }
+  ]
+}
