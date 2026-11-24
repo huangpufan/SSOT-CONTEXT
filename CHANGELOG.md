@@ -35,6 +35,14 @@ Entries up to 2.86 were derived from the v2 protocol-upgrade ledger, which is pr
 - Split heavy installation maintenance, symlink, interrupted-replacement recovery, and 2.x/3.x migration instructions out of `INSTALL.md` into [docs/2026-11-24-install-maintenance.md](docs/2026-11-24-install-maintenance.md) (preserving all existing anchor links in `INSTALL.md` while cutting fresh-install reading volume by ~66%, from 29.4 KB to 9.9 KB), and streamlined `README.md` and `README.zh.md` for cold readers.
 - Cold-handoff trials now default to an explicit persistence goal shared by plain/protocol writers, retain automatic capture as a separate estimand, and add an independently authored museum confirmation. The [deepening record](docs/2026-11-12-benchmark-deepening.md) distinguishes measurement repairs, actual subject outcomes and evidence limits; the SSOT protocol remains 5.3.
 
+## [5.17] - 2026-11-24
+
+### Added
+
+- Added optional topic-sharded invariants registers (`SSOT/invariants/<topic>.md` or files with `ssot_register: shard` front matter, linked from a bullet list under `## Invariants`) while keeping `ssot_format: 4` and `ssot_format: 5` fully backward compatible and adding zero bytes to managed adapter blocks or the skill discovery catalog (+133 runtime protocol words across `ssot-preflight/SKILL.md`, `memory-model.md`, `memory-layout.md`, and `batch-closeout.md`, with zero budget ceiling raises).
+- Extended `ssot-check.py` (+18 unit tests, 159/159 passing) to validate 6-column tables and relative explanation links across the entry and linked shards, enforce global cross-shard ID uniqueness, reject unlinked orphan shards, preserve confirmed-rule Git history across lossless moves between entry and shards (still catching silent edits, removals, unlinking, deletion, or escaping symlinks), ignore shard invariant rows in reading-budget warnings, and avoid opening unselected shards under `--owners`.
+- Across 8 frozen counterbalanced Codex pairs (16 `gpt-6.1-terra` `medium` sessions; [release study](docs/2026-11-24-register-sharding-v5.17.md), [sanitized results](tests/benchmark/results/register-sharding-5.17.json)), all 16 sessions passed quality and safety checks (including cross-topic widening to `AUTH-12` and sharded closeout with `ssot-check.py` verification); on the 6 large 360-invariant pairs, initial `SSOT/README.md` read truncations dropped from 6/6 to 0/6 (total truncated tool calls 13 to 4), aggregate native input dropped 21.60% (1,178,239 to 923,693, lower on all 6/6 pairs), uncached input dropped 16.92%, and API requests dropped 8.11%, while the 2 byte-identical unsharded controls passed with no regression (input -5.95%, uncached -20.19%).
+
 ## [5.16] - 2026-11-24
 
 ### Changed

@@ -3,6 +3,7 @@
 ```text
 SSOT/
 ├── README.md        required: entry point, task routes, invariants, open questions
+├── invariants/      optional: topic shards linked from README.md ## Invariants
 ├── product.md       who uses it, what problem, promises, non-goals, main journeys
 ├── architecture.md  parts, state ownership, key flows, failure and recovery, boundaries
 ├── process.md       build, run, test, release, and deploy; required checks

@@ -428,6 +428,22 @@ def inside(path, root):
     return os.path.commonpath([real_path, real_root]) == real_root
 
 
+def pipe_tables(lines):
+    """Group consecutive Markdown pipe-table lines into lists of (line number, cells)."""
+    tables, current = [], []
+    for number, line in lines:
+        cells = table_cells(line)
+        if cells is None:
+            if current:
+                tables.append(current)
+            current = []
+        else:
+            current.append((number, cells))
+    if current:
+        tables.append(current)
+    return tables
+
+
 def register_tables(lines, text):
     """The Invariants section's lines and its pipe tables (lists of (line number, cells)); None if no section."""
     section = None
@@ -441,29 +457,155 @@ def register_tables(lines, text):
     if section is None:
         return None
     body = [(n, line) for n, line in lines if n > section[0] and (section[2] is None or n < section[2])]
-    tables, current = [], []
+    return body, pipe_tables(body)
+
+
+def is_invariants_subdir(path, ssot_dir):
+    inv_dir = os.path.abspath(os.path.join(ssot_dir, "invariants"))
+    target = os.path.abspath(path)
+    return target != inv_dir and os.path.commonpath([target, inv_dir]) == inv_dir
+
+
+def is_register_shard(path, ssot_dir, text=None):
+    if is_invariants_subdir(path, ssot_dir):
+        return True
+    return text is not None and front_matter(text).get("ssot_register") == "shard"
+
+
+def non_table_invariants_links(lines, body):
+    """Return local link targets on non-table lines inside ## Invariants."""
+    refdefs = {m.group(1).lower(): m.group(2).strip("<>")
+               for _, line in lines for m in [REFDEF_RE.match(line)] if m}
+    targets = []
     for number, line in body:
-        cells = table_cells(line)
-        if cells is None:
-            if current:
-                tables.append(current)
-            current = []
-        else:
-            current.append((number, cells))
-    if current:
-        tables.append(current)
-    return body, tables
+        if table_cells(line) is not None:
+            continue
+        clean = blank_inline_code(line)
+        for target in links_in(clean):
+            targets.append((number, target))
+        for label, alt in re.findall(r"\[([^\]]+)\]\[([^\]]*)\]", clean):
+            target = refdefs.get((alt or label).lower())
+            if target:
+                targets.append((number, target))
+    return targets
 
 
-def register_rows(text):
-    """Map each invariant ID to (line number, its six cells); the first row wins for a duplicate ID."""
-    found = register_tables(list(markdown_lines(text)), text)
+def linked_shards(readme, text, ssot_dir, selection=None):
+    """Return ([(shard_path, shard_text), ...], set_of_shard_link_lines) for linked register shards."""
+    lines = list(markdown_lines(text))
+    found = register_tables(lines, text)
+    if found is None:
+        return [], set()
+    body, _ = found
+    shards, seen_paths, shard_lines = [], set(), set()
+    for number, target in non_table_invariants_links(lines, body):
+        if SCHEME_RE.match(target) or (unquote(target).startswith("/") and not GENERAL[0]):
+            continue
+        path, _ = resolve(readme, target)
+        if path == readme or path in seen_paths or not path.lower().endswith(".md"):
+            continue
+        if not repository_local(path):
+            continue
+        if selection is not None and path not in selection:
+            shard_lines.add(number)
+            continue
+        if not os.path.isfile(path):
+            if is_invariants_subdir(path, ssot_dir):
+                shard_lines.add(number)
+            continue
+        shard_text = read_text(path)
+        if is_register_shard(path, ssot_dir, shard_text):
+            seen_paths.add(path)
+            shards.append((path, shard_text))
+            shard_lines.add(number)
+    return shards, shard_lines
+
+
+def rows_from_tables(tables, doc_path):
     rows = {}
-    for table in found[1] if found else []:
+    for table in tables:
         for number, cells in table:
             if len(cells) == 6 and INVARIANT_ID_RE.match(cells[0].strip("`* ")):
-                rows.setdefault(cells[0].strip("`* "), (number, cells))
+                rows.setdefault(cells[0].strip("`* "), (doc_path, number, cells))
     return rows
+
+
+def register_rows(text, doc_path=None):
+    """Map each invariant ID to (line number, its six cells) — or (doc_path, line, cells) when doc_path is set."""
+    found = register_tables(list(markdown_lines(text)), text)
+    tables = found[1] if found else []
+    if doc_path is not None:
+        return rows_from_tables(tables, doc_path)
+    return {ident: (number, cells) for ident, (_, number, cells) in rows_from_tables(tables, "").items()}
+
+
+def validate_register_tables(report, doc, lines, body, tables, seen, shard_lines=()):
+    refdefs = {m.group(1).lower(): m.group(2).strip("<>")
+               for _, line in lines for m in [REFDEF_RE.match(line)] if m}
+    if not tables:
+        for number, line in body:
+            if number in shard_lines:
+                continue
+            if re.search(r"\b[A-Z][A-Z0-9]*(?:-[A-Z][A-Z0-9]*)*-\d+\b", blank_inline_code(line)):
+                report.add("ERROR", doc, number,
+                           f"invariants must be written as a table ({INVARIANT_COLUMNS}) so they can be checked")
+                break
+    for table in tables:
+        header_number, header = table[0]
+        if len(header) != 6:
+            report.add("ERROR", doc, header_number, f"invariants table needs 6 columns: {INVARIANT_COLUMNS}")
+            continue
+        if any(cell.strip("`* ").lower() not in names for cell, names in zip(header, INVARIANT_HEADERS)):
+            report.add("ERROR", doc, header_number,
+                       f"invariants table columns must be, in order: {INVARIANT_COLUMNS} "
+                       "(or 类型 / 规则 / 解释位置 / 状态 / 来源)")
+            continue
+        if len(table) < 2 or len(table[1][1]) != len(header) \
+                or not all(SEPARATOR_CELL_RE.match(cell) for cell in table[1][1]):
+            report.add("ERROR", doc, header_number,
+                       "invariants table needs a separator row (|---|---|...) under its header")
+            continue
+        for number, cells in table[2:]:
+            if len(cells) != 6:
+                report.add("ERROR", doc, number, "invariants row does not have 6 cells")
+                continue
+            ident, kind, rule, explained, status, source = cells
+            ident, status = ident.strip("`* "), status.strip("`* ")
+            if not INVARIANT_ID_RE.match(ident):
+                report.add("ERROR", doc, number, f"invariant ID '{ident}' should look like INV-01")
+            elif ident in seen:
+                first_doc, first_line = seen[ident]
+                where = f"line {first_line}" if first_doc == doc else f"{os.path.relpath(first_doc, report.root)}:{first_line}"
+                report.add("ERROR", doc, number, f"duplicate invariant ID {ident} (first on {where})")
+            else:
+                seen[ident] = (doc, number)
+            if not kind:
+                report.add("ERROR", doc, number,
+                           f"invariant {ident} needs a kind (product promise, architecture invariant, or process rule)")
+            if not rule:
+                report.add("ERROR", doc, number, f"invariant {ident} has an empty rule")
+            targets = list(links_in(blank_inline_code(explained)))
+            for label, alt in re.findall(r"\[([^\]]+)\]\[([^\]]*)\]", explained):
+                target = refdefs.get((alt or label).lower())
+                if target:
+                    targets.append(target)
+            if not targets:
+                report.add("ERROR", doc, number, f"invariant {ident} needs a link to where it is explained")
+            for target in targets:
+                path = None if SCHEME_RE.match(target) else resolve(doc, target)[0]
+                if GENERAL[0] and (path is None or not repository_local(path)):
+                    report.add("INFO", doc, number, f"external explanation not checked: {target}")
+                    continue
+                if path is None or not repository_local(path) or not path.lower().endswith(".md"):
+                    report.add("ERROR", doc, number,
+                               f"invariant {ident} needs a Markdown explanation in the same repository ({target}); "
+                               "URLs, other repositories, and symlink escapes are not explanations")
+            if status.lower() not in INVARIANT_STATUSES:
+                report.add("ERROR", doc, number,
+                           f"invariant {ident} status '{status}' must be confirmed, candidate, or retired")
+            if not source:
+                report.add("ERROR", doc, number,
+                           f"invariant {ident} needs a source (user directive, decision, or date)")
 
 
 def check_invariants(report, readme, text, ssot_dir):
@@ -471,71 +613,15 @@ def check_invariants(report, readme, text, ssot_dir):
     found = register_tables(lines, text)
     if found is None:
         report.add("WARN", readme, None, "no Invariants section; add one (it may say there are none yet)")
-        return
+        return []
     body, tables = found
-    refdefs = {m.group(1).lower(): m.group(2).strip("<>")
-               for _, line in lines for m in [REFDEF_RE.match(line)] if m}
-    if not tables:
-        for number, line in body:
-            if re.search(r"\b[A-Z][A-Z0-9]*(?:-[A-Z][A-Z0-9]*)*-\d+\b", blank_inline_code(line)):
-                report.add("ERROR", readme, number,
-                           f"invariants must be written as a table ({INVARIANT_COLUMNS}) so they can be checked")
-                break
+    shards, shard_lines = linked_shards(readme, text, ssot_dir, report.documents)
     seen = {}
-    for table in tables:
-        header_number, header = table[0]
-        if len(header) != 6:
-            report.add("ERROR", readme, header_number, f"invariants table needs 6 columns: {INVARIANT_COLUMNS}")
-            continue
-        if any(cell.strip("`* ").lower() not in names for cell, names in zip(header, INVARIANT_HEADERS)):
-            report.add("ERROR", readme, header_number,
-                       f"invariants table columns must be, in order: {INVARIANT_COLUMNS} "
-                       "(or 类型 / 规则 / 解释位置 / 状态 / 来源)")
-            continue
-        if len(table) < 2 or len(table[1][1]) != len(header) \
-                or not all(SEPARATOR_CELL_RE.match(cell) for cell in table[1][1]):
-            report.add("ERROR", readme, header_number,
-                       "invariants table needs a separator row (|---|---|...) under its header")
-            continue
-        for number, cells in table[2:]:
-            if len(cells) != 6:
-                report.add("ERROR", readme, number, "invariants row does not have 6 cells")
-                continue
-            ident, kind, rule, explained, status, source = cells
-            ident, status = ident.strip("`* "), status.strip("`* ")
-            if not INVARIANT_ID_RE.match(ident):
-                report.add("ERROR", readme, number, f"invariant ID '{ident}' should look like INV-01")
-            elif ident in seen:
-                report.add("ERROR", readme, number, f"duplicate invariant ID {ident} (first on line {seen[ident]})")
-            else:
-                seen[ident] = number
-            if not kind:
-                report.add("ERROR", readme, number,
-                           f"invariant {ident} needs a kind (product promise, architecture invariant, or process rule)")
-            if not rule:
-                report.add("ERROR", readme, number, f"invariant {ident} has an empty rule")
-            targets = list(links_in(blank_inline_code(explained)))
-            for label, alt in re.findall(r"\[([^\]]+)\]\[([^\]]*)\]", explained):
-                target = refdefs.get((alt or label).lower())
-                if target:
-                    targets.append(target)
-            if not targets:
-                report.add("ERROR", readme, number, f"invariant {ident} needs a link to where it is explained")
-            for target in targets:
-                path = None if SCHEME_RE.match(target) else resolve(readme, target)[0]
-                if GENERAL[0] and (path is None or not repository_local(path)):
-                    report.add("INFO", readme, number, f"external explanation not checked: {target}")
-                    continue
-                if path is None or not repository_local(path) or not path.lower().endswith(".md"):
-                    report.add("ERROR", readme, number,
-                               f"invariant {ident} needs a Markdown explanation in the same repository ({target}); "
-                               "URLs, other repositories, and symlink escapes are not explanations")
-            if status.lower() not in INVARIANT_STATUSES:
-                report.add("ERROR", readme, number,
-                           f"invariant {ident} status '{status}' must be confirmed, candidate, or retired")
-            if not source:
-                report.add("ERROR", readme, number,
-                           f"invariant {ident} needs a source (user directive, decision, or date)")
+    validate_register_tables(report, readme, lines, body, tables, seen, shard_lines)
+    for shard_path, shard_text in shards:
+        shard_lines_md = list(markdown_lines(shard_text))
+        validate_register_tables(report, shard_path, shard_lines_md, shard_lines_md, pipe_tables(shard_lines_md), seen)
+    return shards
 
 
 # --- git -----------------------------------------------------------------------
@@ -833,9 +919,10 @@ def check_removed_paths(report, ssot_dir, mentions, since):
 DATE_RE = re.compile(r"\b\d{4}-\d{2}-\d{2}\b")
 
 
-def check_confirmed(report, readme, text, since):
+def check_confirmed(report, readme, text, since, ssot_dir=None, current_shards=()):
     base, directory = since or "HEAD", os.path.dirname(readme)
     entry = os.path.basename(readme)
+    ssot_dir = ssot_dir or directory
     try:
         code, stderr = git(directory, "rev-parse", "--verify", "--quiet", f"{base}:./{entry}")
         if code == GIT_NO:
@@ -846,17 +933,52 @@ def check_confirmed(report, readme, text, since):
             else:
                 report.unchecked.append(f"confirmed invariants: git failed ({stderr.strip() or code})")
             return
-        old = git_output(directory, "cat-file", "blob", f"{base}:./{entry}")
-        if front_matter(old).get("ssot_format") not in {"3", FORMAT, "5"}:
+        old_readme = git_output(directory, "cat-file", "blob", f"{base}:./{entry}")
+        if front_matter(old_readme).get("ssot_format") not in {"3", FORMAT, "5"}:
             return  # a v2 base has other columns; the migration's own check covers its rows
-        old = register_rows(old)
+        old = register_rows(old_readme, readme)
+        # Also load any register shards linked from base commit's ## Invariants section.
+        old_lines = list(markdown_lines(old_readme))
+        old_found = register_tables(old_lines, old_readme)
+        old_links = non_table_invariants_links(old_lines, old_found[0]) if old_found else []
+        if old_links:
+            git_top = os.path.realpath(git_output(directory, "rev-parse", "--show-toplevel").strip())
+            real_dir = os.path.realpath(directory)
+            seen_old = set()
+            for _, target in old_links:
+                if SCHEME_RE.match(target) or (unquote(target).startswith("/") and not GENERAL[0]):
+                    continue
+                shard_path, _ = resolve(readme, target)
+                if shard_path == readme or shard_path in seen_old or not shard_path.lower().endswith(".md"):
+                    continue
+                path_part = unquote(re.sub(r"\\([!-/:-@\[-`{-~])", r"\1", target).partition("#")[0].partition("?")[0])
+                old_abs = os.path.normpath(os.path.join(real_dir, path_part))
+                if os.path.commonpath([old_abs, git_top]) != git_top:
+                    continue
+                rel = os.path.relpath(old_abs, git_top).replace(os.sep, "/")
+                if rel.startswith(".."):
+                    continue
+                scode, sstderr = git(directory, "rev-parse", "--verify", "--quiet", f"{base}:{rel}")
+                if scode == GIT_NO:
+                    continue
+                if scode != 0:
+                    report.unchecked.append(f"confirmed invariants shard {rel}: git failed ({sstderr.strip() or scode})")
+                    continue
+                shard_blob = git_output(directory, "cat-file", "blob", f"{base}:{rel}")
+                if is_register_shard(shard_path, ssot_dir, shard_blob):
+                    seen_old.add(shard_path)
+                    for ident, row in rows_from_tables(pipe_tables(list(markdown_lines(shard_blob))), shard_path).items():
+                        old.setdefault(ident, row)
     except OSError:
         report.add("INFO", None, None, "git is not available, so changes to confirmed invariants were not checked")
         return
     except GitError as error:
         report.unchecked.append(f"confirmed invariants: git failed ({error})")
         return
-    new, when = register_rows(text), f"since {since}" if since else "since the last commit"
+    new, when = register_rows(text, readme), f"since {since}" if since else "since the last commit"
+    for shard_path, shard_text in current_shards:
+        for ident, row in rows_from_tables(pipe_tables(list(markdown_lines(shard_text))), shard_path).items():
+            new.setdefault(ident, row)
     def comparable(cell, column):
         if column == 2:  # Exact names and code span contents can be part of the contract.
             return re.sub(r"(?<!`)(`+)(?!`).*?(?<!`)\1(?!`)|\s+",
@@ -864,14 +986,14 @@ def check_confirmed(report, readme, text, since):
         return " ".join(cell.strip("`* ").split()).lower()
 
     approved = []
-    for ident, (_, cells) in old.items():
+    for ident, (old_doc, _, cells) in old.items():
         if comparable(cells[4], 4) != "confirmed":
             continue
         if ident not in new:
-            report.add("ERROR", readme, None, f"confirmed invariant {ident} was removed {when}; restore it "
-                                              "(a rule the user retires keeps its row, with status retired)")
+            report.add("ERROR", old_doc, None, f"confirmed invariant {ident} was removed {when}; restore it "
+                                               "(a rule the user retires keeps its row, with status retired)")
             continue
-        number, now = new[ident]
+        new_doc, number, now = new[ident]
         changed = [name for name, at in (("kind", 1), ("rule", 2), ("status", 4))
                    if comparable(cells[at], at) != comparable(now[at], at)]
         if not changed:
@@ -880,7 +1002,7 @@ def check_confirmed(report, readme, text, since):
         if any(dates.count(date) > before.count(date) for date in dates):  # a same-day change adds the date again
             approved.append(ident)
             continue
-        report.add("ERROR", readme, number,
+        report.add("ERROR", new_doc, number,
                    f"confirmed invariant {ident} changed its {' and '.join(changed)} {when}. An editorial correction can cite the existing "
                    "decision; changing the protection requires acceptance. First check this task and existing owners for "
                    "human-decision evidence (memory-model section 3). With matching acceptance, keep only the "
@@ -1070,6 +1192,7 @@ def main(argv):
     GENERAL[0] = False
 
     legacy = False
+    shards = []
     if not os.path.isfile(readme):
         report.add("ERROR", readme, None, "missing SSOT/README.md (the entry every task starts from)")
     elif not repository_local(readme):
@@ -1101,9 +1224,9 @@ def main(argv):
         if meta.get("ssot_format") in {FORMAT, "5"}:
             if not meta.get("language"):
                 report.add("ERROR", readme, 1, "front matter needs `language:` (for example en or zh-CN)")
-            check_invariants(report, readme, text, ssot_dir)
+            shards = check_invariants(report, readme, text, ssot_dir)
             if not scoped:
-                check_confirmed(report, readme, text, since)
+                check_confirmed(report, readme, text, since, ssot_dir, shards)
                 check_reviewed_through(report, readme, meta.get("reviewed_through"))
             if not GENERAL[0] and not scoped:
                 for path in ledgers(ssot_dir):
@@ -1122,22 +1245,28 @@ def main(argv):
     if not GENERAL[0] and not scoped and os.path.isfile(checkpoint):
         report.add("INFO", checkpoint, None, "bootstrap is unfinished; continue it with ssot-bootstrap")
 
+    shard_paths = {path for path, _ in shards}
     mentions = []
     for doc in checked_documents(ssot_dir, readme, report):
         if not repository_local(doc):
             report.add("ERROR", doc, None, "document leaves the repository (possibly through a symlink)")
             continue
         text = read_text(doc)
+        if doc != readme and doc not in shard_paths and not scoped and not legacy:
+            if is_register_shard(doc, ssot_dir, text):
+                report.add("ERROR", doc, None,
+                           f"unlinked invariants shard is not linked under ## Invariants in {os.path.basename(readme)}")
         mentions.extend((doc, number, path, line) for number, path, line in path_mentions(ssot_dir, doc, text))
         limit = README_WARN_CHARS if doc == readme else DOC_WARN_CHARS
         measured = text
-        if doc == readme:  # the invariants register is meant to grow; budget the prose around it
+        is_register_doc = doc == readme or doc in shard_paths
+        if is_register_doc:  # the invariants register is meant to grow; budget the prose around it
             measured = "\n".join(line for line in text.splitlines()
                                   if not re.match(r"^\s*\|\s*`?[A-Z][A-Z0-9]*(?:-[A-Z][A-Z0-9]*)*-\d+", line))
         if len(measured) > limit and "/.bootstrap/" not in doc and not legacy:
             report.add("WARN", doc, None,
                        f"{len(measured)} characters is past the {limit}-character reading budget"
-                       f"{' (invariant rows not counted)' if doc == readme else ''}; "
+                       f"{' (invariant rows not counted)' if is_register_doc else ''}; "
                        "split it by topic or move detail out")
         for number, target in link_targets(text):
             check_link(report, doc, number, target)

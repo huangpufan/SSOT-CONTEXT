@@ -2,7 +2,7 @@
 name: ssot-preflight
 description: Read SSOT before substantive work in a repository or declared space. Follow its bounded lookup and edit routes. Skip pure commands and cosmetic edits.
 metadata:
-  protocol_version: "5.16"
+  protocol_version: "5.17"
   bundle: "SSOT-CONTEXT"
 ---
 
@@ -28,7 +28,7 @@ Otherwise format 5 and agreed general-space setup use [general context spaces](r
 
 Read the orientation, task routes and relevant open questions using the section locations above. A compact entry can fit in one pass. For a large entry, use bounded ranges and search the invariants register in place. Recover any needed text cut off by tool output before relying on it. Load [memory-model](references/memory-model.md) sections 1, 3 and 5; reuse them while current in context. Use [decision evidence](references/memory-model.md#human-decision-evidence) for acceptance or replacement; [writing rules](references/writing-memory.md) when writing. Then:
 
-1. **Invariants.** Search the register for affected outcomes, including general rules and related topics. Use route terms, user-facing behavior and dependencies to find matches. If headings or terms are unclear, widen the search through related topics and product or architecture owners. Read each matching row and its linked explanation with conditions and exceptions intact. Section 3 says what to do when the change could break one.
+1. **Invariants.** Search the register for affected outcomes, including general rules and related topics. When `## Invariants` links topic shards (such as `invariants/<topic>.md`), read the cross-cutting rows in the entry and open only the shards whose topics or dependencies match the task, rather than every shard. Use route terms, user-facing behavior and dependencies to find matches. If headings or terms are unclear, widen to related shards and product or architecture owners. Read each matching row and its linked explanation with conditions and exceptions intact. Section 3 says what to do when the change could break one.
 2. **Open questions.** If one blocks the path this task needs, say so. Only the work that depends on the answer waits; unrelated work goes ahead.
 3. **Known traps and limits.** Read the gotchas and the known gaps that touch the parts you will change, and handle each one: fix it, work around it deliberately, or say why it does not apply.
 4. **Routes.** Follow matching task routes to owner sections and their stated expansion conditions. If no route fits or a link is stale, use the product and architecture entries, then search for the current owner. Read related constraints across owners before changing shared behavior; a route is a starting point, not the task boundary. Avoid whole-tree reads.

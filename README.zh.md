@@ -83,6 +83,7 @@ curl -fsSL https://raw.githubusercontent.com/huangpufan/SSOT-CONTEXT/main/instal
 ```text
  your-repo/SSOT/
  ├── README.md        项目是什么、每类任务先看哪里、人定下的规则、待决问题
+ ├── invariants/      可选：不变量表长大后的按主题分片
  ├── product.md       谁在用、承诺了什么、不做什么
  ├── architecture.md  由哪些部分组成、谁掌管哪些状态、关键流程、出错与恢复
  ├── process.md       怎样构建、测试、发布和部署
@@ -94,7 +95,7 @@ curl -fsSL https://raw.githubusercontent.com/huangpufan/SSOT-CONTEXT/main/instal
 
 已有且持续维护的文档可以继续当 owner，由入口链接。通用空间没有固定目录：入口说明目的、范围和受保护的规则，并链接已经负责各个主题的文档。同目录可以有多个空间。搭建尚未完成时，每个入口链接自己的进度记录。详见[记忆模型](./skills/ssot-preflight/references/memory-model.md)和[空间模型](./skills/ssot-preflight/references/context-spaces.md)。
 
-日常限定查询可以直接依据获准读取的现行文档作答，已批准的单文档正文修订也可原地更新并从磁盘回读。协议 5.16 还允许同一步读取所选技能的 `SKILL.md` 与入口文件头/标题，并在核实权限后合批读取彼此独立的已授权文档；在 16 组 Codex 配对任务中总输入下降 14.70%、API 往返减少 14.89%（[5.16 合批与落盘回读实测](./docs/2026-11-24-batching-readback-v5.16.md) · [5.15 技能列表开销实测](./docs/2026-11-21-skill-discovery-cost-v5.15.md)）。
+日常限定查询可以直接依据获准读取的现行文档作答，已批准的单文档正文修订也可原地更新并从磁盘回读。协议 5.16 允许同一步读取所选技能的 `SKILL.md` 与入口文件头/标题并合批读取彼此独立的已授权文档（16 组 Codex 配对总输入下降 14.70%），协议 5.17 新增可选的主题分片不变量表（`SSOT/invariants/<topic>.md` 或 `ssot_register: shard`）与跨分片保护校验（360 条不变量大仓库总输入下降 21.60%、入口首读截断 6/6 → 0/6；[5.17 主题分片实测](./docs/2026-11-24-register-sharding-v5.17.md) · [5.16 合批与落盘回读实测](./docs/2026-11-24-batching-readback-v5.16.md) · [5.15 技能列表开销实测](./docs/2026-11-21-skill-discovery-cost-v5.15.md)）。
 
 ## 限度
 

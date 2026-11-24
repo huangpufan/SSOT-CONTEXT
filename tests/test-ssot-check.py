@@ -1671,6 +1671,257 @@ class CheckerTest(unittest.TestCase):
         self.assertIn(second_drop[:10], out)
         self.assertNotIn(first_drop[:10], out)
 
+    # --- optional topic-sharded invariants register -----------------------
+    def sharded_setup(self, readme_invariants=None, shipping_rows=None, webhooks_rows=None):
+        self.write("architecture.md", ARCHITECTURE)
+        inv_block = readme_invariants if readme_invariants is not None else textwrap.dedent("""\
+            | ID | Kind | Rule | Explained in | Status | Source |
+            |---|---|---|---|---|---|
+            | INV-01 | product promise | A retry never charges twice | [Retries](architecture.md#failure-and-recovery) | confirmed | user, 2026-05-02 |
+
+            Topic shards:
+            - [Shipping invariants](invariants/shipping.md) (`SHP-01`..`SHP-02`)
+            - [Webhooks invariants](invariants/webhooks.md) (`WHK-01`)
+            """)
+        readme = README.split("## Invariants\n")[0] + "## Invariants\n\n" + inv_block.strip() + "\n\n## Open questions\n\nNone yet.\n"
+        self.write("README.md", readme)
+        ship = shipping_rows if shipping_rows is not None else (
+            "| SHP-01 | architecture invariant | Never drop parcel manifests | [Retries](../architecture.md#failure-and-recovery) | confirmed | user, 2026-05-02 |\n"
+        )
+        self.write("invariants/shipping.md",
+                   "# Shipping invariants\n\n| ID | Kind | Rule | Explained in | Status | Source |\n|---|---|---|---|---|---|\n" + ship)
+        whk = webhooks_rows if webhooks_rows is not None else (
+            "| WHK-01 | process rule | Cap webhook retries at 10 seconds | [Retries](../architecture.md#failure-and-recovery) | confirmed | user, 2026-05-03 |\n"
+        )
+        self.write("invariants/webhooks.md",
+                   "# Webhooks invariants\n\n| ID | 类型 | 规则 | 解释位置 | 状态 | 来源 |\n|---|---|---|---|---|---|\n" + whk)
+
+    def test_sharded_invariants_valid_passes(self):
+        self.sharded_setup()
+        out = self.assert_clean()
+        self.assertNotIn("WARN", out)
+
+    def test_sharded_only_invariants_without_inline_table_passes(self):
+        self.sharded_setup(readme_invariants="- [Shipping invariants](invariants/shipping.md) covers SHP-01\n- [Webhooks invariants](invariants/webhooks.md) covers WHK-01\n")
+        out = self.assert_clean()
+        self.assertNotIn("WARN", out)
+
+    def test_sharded_duplicate_id_between_readme_and_shard_fails(self):
+        self.sharded_setup(shipping_rows="| INV-01 | process rule | Duplicate rule | [Retries](../architecture.md#failure-and-recovery) | confirmed | user, 2026-05-02 |\n")
+        out = self.assert_error("duplicate invariant ID INV-01")
+        self.assertIn("invariants/shipping.md", out)
+        self.assertIn("README.md:", out)
+
+    def test_sharded_duplicate_id_across_two_shards_fails(self):
+        self.sharded_setup(webhooks_rows="| SHP-01 | process rule | Duplicate across shards | [Retries](../architecture.md#failure-and-recovery) | confirmed | user, 2026-05-02 |\n")
+        out = self.assert_error("duplicate invariant ID SHP-01")
+        self.assertIn("invariants/webhooks.md", out)
+        self.assertIn("invariants/shipping.md:", out)
+
+    def test_sharded_bad_table_columns_and_invalid_status_fail(self):
+        self.sharded_setup(shipping_rows="| SHP-01 | process rule | Rule | [Ext](https://example.com) | bogus | user |\n")
+        out = self.assert_error("status 'bogus' must be confirmed, candidate, or retired")
+        self.assertIn("invariants/shipping.md", out)
+        self.assertIn("needs a Markdown explanation in the same repository", out)
+
+    def test_sharded_non_table_prose_rule_fails(self):
+        self.sharded_setup()
+        self.write("invariants/shipping.md", "# Shipping invariants\n\n- SHP-01: never drop parcel manifests.\n")
+        out = self.assert_error("invariants must be written as a table")
+        self.assertIn("invariants/shipping.md", out)
+
+    def test_sharded_broken_explanation_anchor_relative_to_shard_fails(self):
+        self.sharded_setup(shipping_rows="| SHP-01 | process rule | Rule | [Missing](../architecture.md#missing-anchor) | confirmed | user, 2026-05-02 |\n")
+        out = self.assert_error("missing heading anchor: ../architecture.md#missing-anchor")
+        self.assertIn("invariants/shipping.md", out)
+
+    def test_unlinked_invariants_subdir_shard_fails(self):
+        self.sharded_setup()
+        self.write("invariants/orphan.md",
+                   "# Orphan\n\n| ID | Kind | Rule | Explained in | Status | Source |\n|---|---|---|---|---|---|\n"
+                   "| ORP-01 | process rule | Unreachable rule | [R](../architecture.md#failure-and-recovery) | confirmed | user, 2026-05-02 |\n")
+        out = self.assert_error("unlinked invariants shard")
+        self.assertIn("invariants/orphan.md", out)
+
+    def test_unlinked_frontmatter_register_shard_fails(self):
+        self.valid()
+        self.write("README.md", README.replace("- [Architecture](architecture.md)",
+                                               "- [Architecture](architecture.md)\n- [Extra rules](extra-rules.md)"))
+        self.write("extra-rules.md",
+                   "---\nssot_register: shard\n---\n\n# Extra rules\n\n| ID | Kind | Rule | Explained in | Status | Source |\n|---|---|---|---|---|---|\n"
+                   "| EXT-01 | process rule | Rule | [R](architecture.md#failure-and-recovery) | confirmed | user, 2026-05-02 |\n")
+        out = self.assert_error("unlinked invariants shard")
+        self.assertIn("extra-rules.md", out)
+
+    def test_ordinary_link_under_invariants_is_not_treated_as_shard(self):
+        self.write("architecture.md", ARCHITECTURE + "\n| ColA | ColB |\n|---|---|\n| a | b |\n")
+        self.write("README.md", README.replace("## Open questions",
+                                               "Background: [Architecture](architecture.md).\n\n## Open questions"))
+        out = self.assert_clean()
+        self.assertNotIn("WARN", out)
+
+    def test_large_invariants_shard_is_not_a_warning(self):
+        rows = "\n".join(f"| SHP-{n:03d} | product promise | Rule {n} for shipping | [R](../architecture.md#failure-and-recovery) | candidate | tests |"
+                         for n in range(1, 151)) + "\n"
+        self.sharded_setup(shipping_rows=rows)
+        self.assertNotIn("WARN", self.assert_clean())
+        self.write("invariants/shipping.md",
+                   "# Shipping invariants\n\n" + ("prose " * 2800) + "\n\n| ID | Kind | Rule | Explained in | Status | Source |\n|---|---|---|---|---|---|\n" + rows)
+        self.assertIn("reading budget (invariant rows not counted)", self.assert_clean())
+
+    def test_confirmed_invariant_moved_from_readme_to_shard_passes(self):
+        self.write("architecture.md", ARCHITECTURE)
+        mono = README.replace(
+            "| INV-01 | product promise | A retry never charges twice | [Retries](architecture.md#failure-and-recovery) | confirmed | user, 2026-05-02 |",
+            "| INV-01 | product promise | A retry never charges twice | [Retries](architecture.md#failure-and-recovery) | confirmed | user, 2026-05-02 |\n"
+            "| SHP-01 | architecture invariant | Never drop parcel manifests | [Retries](architecture.md#failure-and-recovery) | confirmed | user, 2026-05-02 |"
+        )
+        self.write("README.md", mono)
+        self.git("init", "-q")
+        base = self.commit("monolithic register")
+        self.sharded_setup()
+        out = self.assert_clean()
+        self.assertNotIn("WARN", out)
+        code, since_out = self.run_checker(self.ssot, "--since", base)
+        self.assertEqual(code, 0, since_out)
+
+    def test_confirmed_invariant_altered_during_move_to_shard_fails(self):
+        self.write("architecture.md", ARCHITECTURE)
+        mono = README.replace(
+            "| INV-01 | product promise | A retry never charges twice | [Retries](architecture.md#failure-and-recovery) | confirmed | user, 2026-05-02 |",
+            "| INV-01 | product promise | A retry never charges twice | [Retries](architecture.md#failure-and-recovery) | confirmed | user, 2026-05-02 |\n"
+            "| SHP-01 | architecture invariant | Never drop parcel manifests | [Retries](architecture.md#failure-and-recovery) | confirmed | user, 2026-05-02 |"
+        )
+        self.write("README.md", mono)
+        self.git("init", "-q")
+        self.commit("monolithic register")
+        self.sharded_setup(shipping_rows="| SHP-01 | architecture invariant | Drop parcel manifests after 1 day | [Retries](../architecture.md#failure-and-recovery) | confirmed | user, 2026-05-02 |\n")
+        out = self.assert_error("confirmed invariant SHP-01 changed its rule")
+        self.assertIn("invariants/shipping.md", out)
+
+    def test_confirmed_invariant_edited_or_removed_inside_shard_fails(self):
+        self.sharded_setup()
+        self.git("init", "-q")
+        self.commit("sharded baseline")
+        # Silent edit without new date fails.
+        self.write("invariants/shipping.md",
+                   "# Shipping invariants\n\n| ID | Kind | Rule | Explained in | Status | Source |\n|---|---|---|---|---|---|\n"
+                   "| SHP-01 | architecture invariant | Drop manifests freely | [Retries](../architecture.md#failure-and-recovery) | confirmed | user, 2026-05-02 |\n")
+        self.assert_error("confirmed invariant SHP-01 changed its rule")
+        # Removal fails.
+        self.write("invariants/shipping.md",
+                   "# Shipping invariants\n\n| ID | Kind | Rule | Explained in | Status | Source |\n|---|---|---|---|---|---|\n")
+        self.assert_error("confirmed invariant SHP-01 was removed")
+        # Approved update with new date passes and reports approval INFO.
+        self.write("invariants/shipping.md",
+                   "# Shipping invariants\n\n| ID | Kind | Rule | Explained in | Status | Source |\n|---|---|---|---|---|---|\n"
+                   "| SHP-01 | architecture invariant | Archive manifests after 30 days | [Retries](../architecture.md#failure-and-recovery) | confirmed | user, 2026-05-02; updated 2026-06-01 |\n")
+        self.assertIn("SHP-01", self.assert_clean())
+
+    def test_confirmed_invariant_fails_when_shard_unlinked_or_deleted(self):
+        self.sharded_setup()
+        self.git("init", "-q")
+        self.commit("sharded baseline")
+        # Unlinking the shard drops SHP-01 from active register and leaves an orphan shard.
+        self.write("README.md", README)
+        out = self.assert_error("confirmed invariant SHP-01 was removed")
+        self.assertIn("unlinked invariants shard", out)
+        # Deleting the shard from disk still reports the removed confirmed invariant from git history.
+        os.remove(os.path.join(self.ssot, "invariants/shipping.md"))
+        out = self.assert_error("confirmed invariant SHP-01 was removed")
+        self.assertIn("invariants/shipping.md", out)
+
+    def test_confirmed_invariant_fails_when_shard_replaced_with_escaping_symlink(self):
+        self.sharded_setup()
+        self.git("init", "-q")
+        self.commit("sharded baseline")
+        with tempfile.TemporaryDirectory() as outside:
+            ext = os.path.join(outside, "evil.md")
+            with open(ext, "w", encoding="utf-8") as handle:
+                handle.write("# Evil\n")
+            target = os.path.join(self.ssot, "invariants/shipping.md")
+            os.remove(target)
+            os.symlink(ext, target)
+            try:
+                out = self.assert_error("confirmed invariant SHP-01 was removed")
+                self.assertIn("leaves the repository", out)
+            finally:
+                os.unlink(target)
+
+    def test_format5_general_space_supports_register_shard_and_catches_map_only_shard(self):
+        space = os.path.join(self.repo, "space")
+        os.makedirs(space)
+        def write_space(name, content):
+            path = os.path.join(space, name)
+            os.makedirs(os.path.dirname(path), exist_ok=True)
+            with open(path, "w", encoding="utf-8") as handle:
+                handle.write(textwrap.dedent(content))
+            return path
+        write_space("owner.md", "# Owner\n\n## Rules\n\nKeep receipts.\n")
+        write_space("finance-rules.md",
+                    "---\nssot_register: shard\n---\n\n# Finance rules\n\n"
+                    "| ID | Kind | Rule | Explained in | Status | Source |\n|---|---|---|---|---|---|\n"
+                    "| FIN-01 | process rule | Keep tax receipts 7 years | [Rules](owner.md#rules) | confirmed | user, 2026-05-02 |\n")
+        entry = write_space("CONTEXT.md", """\
+            ---
+            ssot_format: 5
+            language: en
+            ---
+
+            # Space
+
+            ## Map
+
+            - [Owner](owner.md)
+
+            ## Invariants
+
+            - [Finance rules](finance-rules.md) (`FIN-01`)
+            """)
+        self.git("init", "-q")
+        self.commit("format 5 sharded")
+        code, out = self.run_checker(entry)
+        self.assertEqual(code, 0, out)
+        # Linking the shard only under ## Map (not ## Invariants) must fail.
+        write_space("CONTEXT.md", """\
+            ---
+            ssot_format: 5
+            language: en
+            ---
+
+            # Space
+
+            ## Map
+
+            - [Owner](owner.md)
+            - [Finance rules](finance-rules.md)
+
+            ## Invariants
+
+            None yet.
+            """)
+        code, out = self.run_checker(entry)
+        self.assertEqual(code, 1, out)
+        self.assertIn("unlinked invariants shard", out)
+        self.assertIn("confirmed invariant FIN-01 was removed", out)
+
+    @unittest.skipIf(hasattr(os, "geteuid") and os.geteuid() == 0, "root can read unreadable files")
+    def test_scoped_owners_does_not_open_unselected_shard(self):
+        self.sharded_setup(readme_invariants=(
+            "- [Shipping invariants](invariants/shipping.md) (`SHP-01`)\n"
+            "- [Webhooks invariants](invariants/webhooks.md) (`WHK-01`)\n"
+        ))
+        secret = os.path.join(self.ssot, "invariants/webhooks.md")
+        os.chmod(secret, 0)
+        try:
+            code, out = self.run_checker(os.path.join(self.ssot, "README.md"),
+                                         "--owners", "invariants/shipping.md", "architecture.md")
+        finally:
+            os.chmod(secret, 0o644)
+        self.assertEqual(code, 0, out)
+        self.assertNotIn("ERROR", out)
+        self.assertNotIn("UNCHECKED", out)
+
 
 if __name__ == "__main__":
     unittest.main(verbosity=1)

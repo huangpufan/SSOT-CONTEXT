@@ -95,6 +95,8 @@ For unfinished general spaces sharing a directory, use 5.8+ for participating wr
 
 [Selected-file checks](../skills/ssot-preflight/references/source-retention.md#selected-mechanical-checks) require the 5.9+ checker for format-5 spaces or 5.10+ for format-4 repositories. With an older installation, check the permitted files manually or upgrade before running Doctor over restricted routes.
 
+Optional topic-sharded invariant registers (`SSOT/invariants/<topic>.md` or files with `ssot_register: shard` front matter) require the 5.17+ checker for cross-shard ID uniqueness, orphan-shard detection, and confirmed-rule Git history checks; inline registers remain unchanged in both format 4 and format 5 without any consumer format upgrade.
+
 Normal install and upgrade commands print the current block without editing project instructions or callers; use `--sync-block <file>` when you explicitly want to replace a marked block in place, and inspect unmarked legacy directives and shared instruction owners too. Preserve unrelated project rules and show proposed edits outside the block before applying them, within existing authorization. If the user requested only a bundle update, leave old-format memory unchanged and report migration as a separate step. An interrupted agreed migration resumes from `SSOT/BOOTSTRAP.md`, checking that record against the actual tree before continuing.
 
 ## Upgrading from 2.x or 3.x to 4.0

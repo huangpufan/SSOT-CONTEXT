@@ -83,6 +83,7 @@ In a development repository only `SSOT/README.md` is required; the other files a
 ```text
  your-repo/SSOT/
  ├── README.md        What the project is, where to look for each task, the rules people decided, open questions
+ ├── invariants/      Optional topic shards when the invariants register grows large
  ├── product.md       Who uses it, what it promises, what it does not do
  ├── architecture.md  The parts, who owns which state, key flows, failure and recovery
  ├── process.md       How to build, test, release, and deploy
@@ -94,7 +95,7 @@ In a development repository only `SSOT/README.md` is required; the other files a
 
 Existing maintained documents can stay the owners and are linked from the entry. A general space has no fixed layout: its entry states purpose, scope and protected rules, and links the documents that already own each topic. An unfinished general space links its own setup record. Several spaces can share a directory. Details are in the [memory model](./skills/ssot-preflight/references/memory-model.md) and the [space model](./skills/ssot-preflight/references/context-spaces.md).
 
-A reader can answer a bounded lookup from the current authorized owner, and update a single approved prose rule in place with on-disk readback. Protocol 5.16 also allows reading the entry header and headings alongside the selected `SKILL.md` and batching independent authorized reads, cutting total input by 14.70% and API round-trips by 14.89% across 16 paired Codex tasks ([5.16 study](./docs/2026-11-24-batching-readback-v5.16.md) · [5.15 discovery cost](./docs/2026-11-21-skill-discovery-cost-v5.15.md)).
+A reader can answer a bounded lookup from the current authorized owner, and update a single approved prose rule in place with on-disk readback. Protocol 5.16 allows reading the entry header and headings alongside the selected `SKILL.md` and batching independent authorized reads (-14.70% input across 16 paired Codex tasks), and protocol 5.17 adds optional topic-sharded invariant registers (`SSOT/invariants/<topic>.md` or `ssot_register: shard`) with cross-shard checker enforcement (-21.60% input and 0/6 entry-read truncations on 360-invariant repositories; [5.17 sharded register](./docs/2026-11-24-register-sharding-v5.17.md) · [5.16 study](./docs/2026-11-24-batching-readback-v5.16.md) · [5.15 discovery cost](./docs/2026-11-21-skill-discovery-cost-v5.15.md)).
 
 ## Limits
 
