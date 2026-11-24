@@ -4,7 +4,7 @@
 
 ## What This Repo Is
 
-SSOT-CONTEXT maintains small routed context for development repositories and explicitly declared general spaces. Development consumers retain format 4; general spaces use format 5 with named content owners and no Git prerequisite. [DESIGN.md](./DESIGN.md) explains the boundaries and what version 3 removed. The bundle contains six skills:
+SSOT-CONTEXT maintains small routed context for development repositories and explicitly declared general spaces. Development consumers retain format 4; general spaces use format 5 with named content owners and no Git prerequisite. [DESIGN.md](./DESIGN.md) explains the boundaries and what version 3 removed. The bundle contains six skills (fresh installs copy the four core lifecycle skills; the two compatibility shims are opt-in via `--with-legacy-shims` and preserved on upgrade):
 
 | Skill | Role |
 |-------|------|
@@ -41,7 +41,7 @@ The consumer instruction block lives in the bootstrap adapter template ([English
 
 - For this repository's public documentation, start with the named document and the evidence that can change the answer. When handing off a bounded edit, provide the authorized files and name the writable owners. Read an accepted rule back after updating it and retain its unique reason when replacing it. For changes across owners, check each affected decision and its scope. Ask for a missing source when it matters.
 - When evaluating improvements, follow [needs-driven evolution](./DESIGN.md#accepted-direction-evolve-from-context-needs): begin with a long-term context need, then assess current support and the responsible owner.
-- `install.sh` is the installer entrypoint; change it only for the skill list, the agent registry, or how sources are fetched (`--ref`).
+- `install.sh` is the installer entrypoint; change it only for the skill list (including opt-in legacy shims), the agent registry, source fetching (`--ref`), managed-block checks/sync (`--check-block` / `--sync-block`), or atomic replacement and recovery.
 - `skills/*/SKILL.md` is the protocol authority; `memory-model.md` owns development format 4, and conditional `context-spaces.md` owns general format 5, under `skills/ssot-preflight/references/`.
 - Protocol changes follow [CONTRIBUTING.md](./CONTRIBUTING.md#changing-the-protocol), including the budgets CI enforces.
 - `skills/ssot-bootstrap/assets/templates/{en,zh}/` contains template files; keep `en/` and `zh/` in file-name parity.
@@ -59,7 +59,7 @@ Every modification to this repository — code, templates, docs, installer, test
 - Direct commits to `main` are the established pattern for maintainers on this repo; external contributors go through `CONTRIBUTING.md` (branch + PR).
 - Group related edits into a single commit per task; do not split into per-file commits.
 - Commit message follows the `<type>: <subject>` form used in `git log` (e.g. `docs:`, `feat(protocol):`, `fix:`, `vX.YY (low|medium|high):` for protocol bumps).
-- Run any relevant local check before committing (`bash tests/test-bundle-shape.sh` for shape, links, and budgets; `python3 tests/test-ssot-check.py` for checker changes; `bash tests/test-installer-e2e.sh` for installer changes); a failing check is a blocker, not a footnote.
+- Run any relevant local check before committing (`bash tests/test-bundle-shape.sh` for shape, links/anchors, hygiene, and budgets; `python3 tests/test-ssot-check.py` for checker changes; `bash tests/test-installer-e2e.sh` and `python3 tests/test-installer-recovery.py` for installer changes; `python3 tests/test-local-links.py` and `python3 tests/test-precommit-hook.py` for `tools/` changes; full list in [CONTRIBUTING.md](./CONTRIBUTING.md#local-verification)); a failing check is a blocker, not a footnote.
 - If the user explicitly says "don't push" or "stage only", that overrides this rule for that turn only — it does not change the default.
 
 ## Models for Development and Trials
@@ -87,5 +87,6 @@ KISS is the permanent SSOT design principle: choose the shortest **reliable path
 | `skills/ssot-bootstrap/assets/templates/{en,zh}/` | Bootstrap templates |
 | `tests/benchmark/README.md` | Reproducible reading benchmark and its limits |
 | `skills/ssot-doctor/assets/scripts/ssot-check.py` | Read-only mechanical checker |
-| `tests/` | Bundle shape and budgets, checker, installer, and diagram tests |
+| `tools/` | Opt-in tools outside `skills/` (`link-local.py` local symlinks, `ssot-precommit.sh` zero-token Git pre-commit guard) |
+| `tests/` | Bundle shape and budgets, checker, installer, tools, and diagram tests |
 | `.github/workflows/ci.yml` | CI pipeline |

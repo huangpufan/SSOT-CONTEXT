@@ -997,7 +997,7 @@
     "Canonical temporary-root preparation repairs macOS-style alias rejection in three freezer entrypoints; native sandbox remains Linux-only."
   ],
   "archive": {
-    "archive_path": "/home/hpf/.local/state/ssot-context/evidence/calliope-optimization-20261114/archive/open-judgment-evidence-20261114-v2.tar.gz",
+    "archive_path": "<local-home>/.local/state/ssot-context/evidence/calliope-optimization-20261114/archive/open-judgment-evidence-20261114-v2.tar.gz",
     "archive_sha256": "adb9e54f7439d88773c4f40fe11eaa079fc3b943d2f3b6ae9d9992f7c17ad8d2",
     "bytes": 4124130,
     "credential_pattern_scan_files": 915,
@@ -1029,55 +1029,55 @@
         "archived": "experiments/ssot-judgment-confirmation-20261114-a1"
       },
       {
-        "original": "/home/hpf/.local/state/ssot-context/evidence/calliope-optimization-20261114/carbon-medium/prompt.md",
+        "original": "<local-home>/.local/state/ssot-context/evidence/calliope-optimization-20261114/carbon-medium/prompt.md",
         "archived": "task/carbon-medium/prompt.md"
       },
       {
-        "original": "/home/hpf/.local/state/ssot-context/evidence/calliope-optimization-20261114/carbon-medium/response.md",
+        "original": "<local-home>/.local/state/ssot-context/evidence/calliope-optimization-20261114/carbon-medium/response.md",
         "archived": "task/carbon-medium/response.md"
       },
       {
-        "original": "/home/hpf/.local/state/ssot-context/evidence/calliope-optimization-20261114/carbon-medium/receipt.json",
+        "original": "<local-home>/.local/state/ssot-context/evidence/calliope-optimization-20261114/carbon-medium/receipt.json",
         "archived": "task/carbon-medium/receipt.json"
       },
       {
-        "original": "/home/hpf/.local/state/ssot-context/evidence/calliope-optimization-20261114/carbon-medium/followup-prompt.md",
+        "original": "<local-home>/.local/state/ssot-context/evidence/calliope-optimization-20261114/carbon-medium/followup-prompt.md",
         "archived": "task/carbon-medium/followup-prompt.md"
       },
       {
-        "original": "/home/hpf/.local/state/ssot-context/evidence/calliope-optimization-20261114/carbon-medium/followup.md",
+        "original": "<local-home>/.local/state/ssot-context/evidence/calliope-optimization-20261114/carbon-medium/followup.md",
         "archived": "task/carbon-medium/followup.md"
       },
       {
-        "original": "/home/hpf/.local/state/ssot-context/evidence/calliope-optimization-20261114/carbon-medium/followup-receipt.json",
+        "original": "<local-home>/.local/state/ssot-context/evidence/calliope-optimization-20261114/carbon-medium/followup-receipt.json",
         "archived": "task/carbon-medium/followup-receipt.json"
       },
       {
-        "original": "/home/hpf/.local/state/ssot-context/evidence/calliope-optimization-20261114/carbon-medium/model-selection.json",
+        "original": "<local-home>/.local/state/ssot-context/evidence/calliope-optimization-20261114/carbon-medium/model-selection.json",
         "archived": "task/carbon-medium/model-selection.json"
       },
       {
-        "original": "/home/hpf/.local/state/ssot-context/evidence/calliope-optimization-20261114/carbon-medium/inputs.json",
+        "original": "<local-home>/.local/state/ssot-context/evidence/calliope-optimization-20261114/carbon-medium/inputs.json",
         "archived": "task/carbon-medium/inputs.json"
       },
       {
-        "original": "/home/hpf/.local/state/ssot-context/evidence/calliope-optimization-20261114/carbon-medium/initial-native-observation.json",
+        "original": "<local-home>/.local/state/ssot-context/evidence/calliope-optimization-20261114/carbon-medium/initial-native-observation.json",
         "archived": "task/carbon-medium/initial-native-observation.json"
       },
       {
-        "original": "/home/hpf/.local/state/ssot-context/evidence/calliope-optimization-20261114/carbon-medium/final-native-observation.json",
+        "original": "<local-home>/.local/state/ssot-context/evidence/calliope-optimization-20261114/carbon-medium/final-native-observation.json",
         "archived": "task/carbon-medium/final-native-observation.json"
       },
       {
-        "original": "/home/hpf/.local/state/ssot-context/evidence/calliope-optimization-20261114/carbon-medium/source-check.md",
+        "original": "<local-home>/.local/state/ssot-context/evidence/calliope-optimization-20261114/carbon-medium/source-check.md",
         "archived": "task/carbon-medium/source-check.md"
       },
       {
-        "original": "/home/hpf/.local/state/ssot-context/evidence/calliope-optimization-20261114/carbon-medium/discussion.md",
+        "original": "<local-home>/.local/state/ssot-context/evidence/calliope-optimization-20261114/carbon-medium/discussion.md",
         "archived": "task/carbon-medium/discussion.md"
       },
       {
-        "original": "/home/hpf/.local/state/ssot-context/evidence/calliope-optimization-20261114/carbon-medium/workspace",
+        "original": "<local-home>/.local/state/ssot-context/evidence/calliope-optimization-20261114/carbon-medium/workspace",
         "archived": "task/carbon-medium/workspace"
       },
       {
@@ -1177,43 +1177,43 @@
         "archived": "discussions/ssot-calliope-opt-20261114/opus-design.txt"
       },
       {
-        "original": "/home/hpf/.local/state/ssot-context/evidence/calliope-optimization-20261114/WORK.md",
+        "original": "<local-home>/.local/state/ssot-context/evidence/calliope-optimization-20261114/WORK.md",
         "archived": "task/WORK.md"
       },
       {
-        "original": "/home/hpf/.local/state/ssot-context/evidence/calliope-optimization-20261114/acceptance-design.md",
+        "original": "<local-home>/.local/state/ssot-context/evidence/calliope-optimization-20261114/acceptance-design.md",
         "archived": "task/acceptance-design.md"
       },
       {
-        "original": "/home/hpf/.local/state/ssot-context/evidence/calliope-optimization-20261114/execution-account.json",
+        "original": "<local-home>/.local/state/ssot-context/evidence/calliope-optimization-20261114/execution-account.json",
         "archived": "task/execution-account.json"
       },
       {
-        "original": "/home/hpf/.local/state/ssot-context/evidence/calliope-optimization-20261114/scope-equivalence.json",
+        "original": "<local-home>/.local/state/ssot-context/evidence/calliope-optimization-20261114/scope-equivalence.json",
         "archived": "task/scope-equivalence.json"
       },
       {
-        "original": "/home/hpf/.local/state/ssot-context/evidence/calliope-optimization-20261114/offline-checks.json",
+        "original": "<local-home>/.local/state/ssot-context/evidence/calliope-optimization-20261114/offline-checks.json",
         "archived": "task/offline-checks.json"
       },
       {
-        "original": "/home/hpf/.local/state/ssot-context/evidence/calliope-optimization-20261114/archive-v1-identity-gap.json",
+        "original": "<local-home>/.local/state/ssot-context/evidence/calliope-optimization-20261114/archive-v1-identity-gap.json",
         "archived": "task/archive-v1-identity-gap.json"
       },
       {
-        "original": "/home/hpf/.local/state/ssot-context/evidence/calliope-optimization-20261114/fixtures",
+        "original": "<local-home>/.local/state/ssot-context/evidence/calliope-optimization-20261114/fixtures",
         "archived": "task/fixtures"
       },
       {
-        "original": "/home/hpf/.local/state/ssot-context/evidence/calliope-optimization-20261114/reviews",
+        "original": "<local-home>/.local/state/ssot-context/evidence/calliope-optimization-20261114/reviews",
         "archived": "task/reviews"
       },
       {
-        "original": "/home/hpf/.local/state/ssot-context/evidence/calliope-optimization-20261114/calibration",
+        "original": "<local-home>/.local/state/ssot-context/evidence/calliope-optimization-20261114/calibration",
         "archived": "task/calibration"
       },
       {
-        "original": "/home/hpf/.local/state/ssot-context/evidence/calliope-optimization-20261114/archive-evidence.py",
+        "original": "<local-home>/.local/state/ssot-context/evidence/calliope-optimization-20261114/archive-evidence.py",
         "archived": "task/archive-evidence.py"
       }
     ],
@@ -1275,9 +1275,9 @@
       "all_seven_match": true
     },
     "supersedes_incomplete_v1": {
-      "archive_path": "/home/hpf/.local/state/ssot-context/evidence/calliope-optimization-20261114/archive/open-judgment-evidence-20261114.tar.gz",
+      "archive_path": "<local-home>/.local/state/ssot-context/evidence/calliope-optimization-20261114/archive/open-judgment-evidence-20261114.tar.gz",
       "archive_sha256": "c0a25755deb7a619f806a52f3541845671a21974cee350d3a10d970ba4024ec4",
-      "gap_observation": "/home/hpf/.local/state/ssot-context/evidence/calliope-optimization-20261114/archive-v1-identity-gap.json"
+      "gap_observation": "<local-home>/.local/state/ssot-context/evidence/calliope-optimization-20261114/archive-v1-identity-gap.json"
     }
   },
   "offline_checks": {

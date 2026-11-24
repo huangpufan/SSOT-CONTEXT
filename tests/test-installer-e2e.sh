@@ -1075,5 +1075,186 @@ HOME="$SCENARIO31" SOURCE_DIR="$PROJECT_ROOT" \
 assert_no_dir "scenario31: uninstall removes ssot-audit" "$SCENARIO31/legacy/.agents/skills/ssot-audit"
 assert_no_dir "scenario31: uninstall removes ssot-skill" "$SCENARIO31/legacy/.agents/skills/ssot-skill"
 
+# SSOT_LEGACY_SHIMS=1 env var and --ref v2-final both install all 6 skills.
+mkdir -p "$SCENARIO31/env-shims" "$SCENARIO31/v2ref-src" "$SCENARIO31/v2ref-proj"
+HOME="$SCENARIO31" SOURCE_DIR="$PROJECT_ROOT" SSOT_LEGACY_SHIMS=1 \
+  bash -c "cd '$SCENARIO31/env-shims' && bash '$INSTALLER' --quickstart --agent codex --scope project --lang en" >/dev/null 2>&1 \
+  || fail "scenario31: SSOT_LEGACY_SHIMS=1 install failed"
+assert_file "scenario31: SSOT_LEGACY_SHIMS=1 installs ssot-audit" "$SCENARIO31/env-shims/.agents/skills/ssot-audit/SKILL.md"
+assert_file "scenario31: SSOT_LEGACY_SHIMS=1 installs ssot-skill" "$SCENARIO31/env-shims/.agents/skills/ssot-skill/SKILL.md"
+cp -R "$PROJECT_ROOT/skills" "$SCENARIO31/v2ref-src/skills"
+cp "$PROJECT_ROOT/VERSION" "$SCENARIO31/v2ref-src/VERSION"
+sed -i.bak 's/protocol_version: "[^"]*"/protocol_version: "2.86-fixture"/' "$SCENARIO31/v2ref-src/skills/ssot-preflight/SKILL.md"
+rm -f "$SCENARIO31/v2ref-src/skills/ssot-preflight/SKILL.md.bak"
+git -C "$SCENARIO31/v2ref-src" init -q
+git -C "$SCENARIO31/v2ref-src" symbolic-ref HEAD refs/heads/main
+git -C "$SCENARIO31/v2ref-src" add -A
+git -C "$SCENARIO31/v2ref-src" -c core.hooksPath=/dev/null -c commit.gpgsign=false \
+  -c user.name=SSOT-test -c user.email=ssot-test@example.invalid commit -qm 'v2-final fixture'
+git -C "$SCENARIO31/v2ref-src" tag v2-final
+V2REF_OUT="$(env -u SOURCE_DIR HOME="$SCENARIO31" SSOT_CONTEXT_REPO_URL="$SCENARIO31/v2ref-src" \
+  bash -c "cd '$SCENARIO31/v2ref-proj' && bash '$INSTALLER' --non-interactive --agent codex --scope project --lang en --yes --ref v2-final" 2>&1)"
+V2REF_RC=$?
+if [[ $V2REF_RC -eq 0 ]] && grep -q 'ssot-audit' <<< "$V2REF_OUT"; then
+  pass "scenario31: --ref v2-final succeeds and previews legacy shims"
+else
+  fail "scenario31: --ref v2-final failed (rc=$V2REF_RC, out=$V2REF_OUT)"
+fi
+assert_file "scenario31: --ref v2-final installs ssot-audit without --with-legacy-shims" "$SCENARIO31/v2ref-proj/.agents/skills/ssot-audit/SKILL.md"
+assert_file "scenario31: --ref v2-final installs ssot-skill without --with-legacy-shims" "$SCENARIO31/v2ref-proj/.agents/skills/ssot-skill/SKILL.md"
+
+# Scenario 32: CRLF + ZH ASCII-paren format-5 block sync, and offline global template lookup
+SCENARIO32="$WORK_ROOT/scenario32"
+mkdir -p "$SCENARIO32/project" "$SCENARIO32/standalone" "$SCENARIO32/userhome"
+cp "$INSTALLER" "$SCENARIO32/standalone/install.sh"
+printf '# Header\r\n\r\n<!-- SSOT-CONTEXT:BEGIN -->\r\n## SSOT workflow\r\nStale block.\r\n<!-- SSOT-CONTEXT:END -->\r\n\r\nFooter line.\r\n' \
+  > "$SCENARIO32/project/AGENTS-crlf.md"
+if SOURCE_DIR="$PROJECT_ROOT" bash "$INSTALLER" --check-block "$SCENARIO32/project/AGENTS-crlf.md" >/dev/null 2>&1; then
+  fail "scenario32: --check-block should detect stale CRLF block"
+else
+  pass "scenario32: --check-block recognizes stale CRLF block"
+fi
+if SOURCE_DIR="$PROJECT_ROOT" bash "$INSTALLER" --sync-block "$SCENARIO32/project/AGENTS-crlf.md" >/dev/null 2>&1 &&
+   SOURCE_DIR="$PROJECT_ROOT" bash "$INSTALLER" --check-block "$SCENARIO32/project/AGENTS-crlf.md" >/dev/null 2>&1; then
+  pass "scenario32: --sync-block and --check-block handle CRLF files"
+else
+  fail "scenario32: --sync-block failed on CRLF file"
+fi
+if python3 - "$SCENARIO32/project/AGENTS-crlf.md" <<'PY'
+import sys
+data = open(sys.argv[1], "rb").read()
+assert b"\r\n<!-- SSOT-CONTEXT:BEGIN -->\r\n" in data
+assert b"<!-- SSOT-CONTEXT:END -->\r\n\r\nFooter line.\r\n" in data
+assert data.count(b"\r\n") == data.count(b"\n"), "mixed line endings after CRLF sync"
+PY
+then
+  pass "scenario32: CRLF sync preserves CRLF line endings consistently"
+else
+  fail "scenario32: CRLF sync lost or mixed line endings"
+fi
+
+cat > "$SCENARIO32/project/SPACE-zh-ascii.md" <<'EOF'
+<!-- SSOT-CONTEXT:BEGIN -->
+## 长期 context
+
+本空间通过 INDEX.md(`ssot_format: 5`) 管理。
+<!-- SSOT-CONTEXT:END -->
+EOF
+if SOURCE_DIR="$PROJECT_ROOT" bash "$INSTALLER" --sync-block "$SCENARIO32/project/SPACE-zh-ascii.md" >/dev/null 2>&1 &&
+   SOURCE_DIR="$PROJECT_ROOT" bash "$INSTALLER" --check-block "$SCENARIO32/project/SPACE-zh-ascii.md" >/dev/null 2>&1; then
+  pass "scenario32: ZH ASCII-paren format-5 block extracts ENTRY and syncs cleanly"
+else
+  fail "scenario32: ZH ASCII-paren format-5 block failed"
+fi
+assert_grep "scenario32: ZH ASCII-paren format-5 preserved INDEX.md" "$SCENARIO32/project/SPACE-zh-ascii.md" '本空间的入口为 INDEX.md（`ssot_format: 5`）'
+
+# Offline standalone --check-block / --sync-block discovers global ~/.codex/skills templates.
+HOME="$SCENARIO32/userhome" SOURCE_DIR="$PROJECT_ROOT" \
+  bash "$INSTALLER" --non-interactive --agent codex --scope global --lang en --yes >/dev/null 2>&1 \
+  || fail "scenario32: global codex setup failed"
+cat > "$SCENARIO32/project/AGENTS.md" <<'EOF'
+<!-- SSOT-CONTEXT:BEGIN -->
+## SSOT workflow
+Old global-install repo block.
+<!-- SSOT-CONTEXT:END -->
+EOF
+if HOME="$SCENARIO32/userhome" SSOT_CONTEXT_REPO_URL="http://127.0.0.1:1/unreachable.git" \
+   bash -c "cd '$SCENARIO32/project' && bash '$SCENARIO32/standalone/install.sh' --sync-block AGENTS.md" >/dev/null 2>&1 &&
+   HOME="$SCENARIO32/userhome" SSOT_CONTEXT_REPO_URL="http://127.0.0.1:1/unreachable.git" \
+   bash -c "cd '$SCENARIO32/project' && bash '$SCENARIO32/standalone/install.sh' --check-block AGENTS.md" >/dev/null 2>&1; then
+  pass "scenario32: offline --check-block/--sync-block resolves global ~/.codex/skills templates"
+else
+  fail "scenario32: offline --check-block/--sync-block failed with global ~/.codex/skills"
+fi
+
+# Scenario 33: --upgrade preserves tools/link-local.py symlinks (en & zh), exits 0 when all
+# installs are linked, upgrades sibling copies, and warns on dangling skill symlinks.
+SCENARIO33="$WORK_ROOT/scenario33"
+mkdir -p "$SCENARIO33/userhome" "$SCENARIO33/linked-zh/.agents/skills" "$SCENARIO33/mixed/.agents/skills" "$SCENARIO33/dangling/.agents/skills"
+for skill in ssot-preflight ssot-bootstrap ssot-closeout ssot-doctor; do
+  ln -s "$PROJECT_ROOT/skills/$skill" "$SCENARIO33/linked-zh/.agents/skills/$skill"
+  ln -s "$PROJECT_ROOT/skills/$skill" "$SCENARIO33/mixed/.agents/skills/$skill"
+done
+UPG33_ONLY="$(HOME="$SCENARIO33/userhome" SOURCE_DIR="$PROJECT_ROOT" \
+  bash -c "cd '$SCENARIO33/linked-zh' && bash '$INSTALLER' --upgrade --agent codex --scope project" 2>&1)"
+UPG33_ONLY_RC=$?
+if [[ $UPG33_ONLY_RC -eq 0 ]] && [[ -L "$SCENARIO33/linked-zh/.agents/skills/ssot-preflight" ]] &&
+   [[ -d "$SCENARIO33/linked-zh/.agents/skills/ssot-bootstrap/assets/templates/zh" ]] &&
+   grep -q 'skipping symlink-linked installation' <<< "$UPG33_ONLY" &&
+   grep -q 'tools/link-local.py' <<< "$UPG33_ONLY"; then
+  pass "scenario33: --upgrade skips all-linked zh install, preserves symlinks, and exits 0"
+else
+  fail "scenario33: --upgrade failed on all-linked install (rc=$UPG33_ONLY_RC, out=$UPG33_ONLY)"
+fi
+# Mixed: linked codex + copied claude-code -> skips linked codex, upgrades copied claude-code.
+HOME="$SCENARIO33/userhome" SOURCE_DIR="$PROJECT_ROOT" \
+  bash -c "cd '$SCENARIO33/mixed' && bash '$INSTALLER' --quickstart --agent claude-code --scope project --lang en" >/dev/null 2>&1 \
+  || fail "scenario33: mixed claude setup failed"
+echo "OLD" > "$SCENARIO33/mixed/.claude/skills/ssot-preflight/SENTINEL"
+UPG33_MIX="$(HOME="$SCENARIO33/userhome" SOURCE_DIR="$PROJECT_ROOT" \
+  bash -c "cd '$SCENARIO33/mixed' && bash '$INSTALLER' --upgrade --scope project" 2>&1)"
+UPG33_MIX_RC=$?
+if [[ $UPG33_MIX_RC -eq 0 ]] && [[ -L "$SCENARIO33/mixed/.agents/skills/ssot-preflight" ]] &&
+   [[ ! -f "$SCENARIO33/mixed/.claude/skills/ssot-preflight/SENTINEL" ]] &&
+   grep -q 'skipping symlink-linked installation' <<< "$UPG33_MIX"; then
+  pass "scenario33: --upgrade preserves linked codex while upgrading copied claude-code"
+else
+  fail "scenario33: mixed upgrade failed (rc=$UPG33_MIX_RC, out=$UPG33_MIX)"
+fi
+# Dangling symlink (moved checkout) -> warns with repoint recovery hint and exits 0.
+ln -s "$SCENARIO33/moved-checkout/skills/ssot-preflight" "$SCENARIO33/dangling/.agents/skills/ssot-preflight"
+UPG33_DANG="$(HOME="$SCENARIO33/userhome" SOURCE_DIR="$PROJECT_ROOT" \
+  bash -c "cd '$SCENARIO33/dangling' && bash '$INSTALLER' --upgrade --agent codex --scope project" 2>&1)"
+UPG33_DANG_RC=$?
+if [[ $UPG33_DANG_RC -eq 0 ]] && [[ -L "$SCENARIO33/dangling/.agents/skills/ssot-preflight" ]] &&
+   grep -q 'skipping dangling symlink installation' <<< "$UPG33_DANG" &&
+   grep -q 'tools/link-local.py' <<< "$UPG33_DANG"; then
+  pass "scenario33: --upgrade detects dangling skill symlink and prints recovery hint"
+else
+  fail "scenario33: dangling symlink upgrade handling failed (rc=$UPG33_DANG_RC, out=$UPG33_DANG)"
+fi
+
+# Scenario 34: --uninstall --agent all removes undetected installs; tightened zed & gemini-cli detection
+SCENARIO34="$WORK_ROOT/scenario34"
+mkdir -p "$SCENARIO34/userhome/.claude" "$SCENARIO34/project" "$SCENARIO34/bin" "$SCENARIO34/fake-appdata" "$SCENARIO34/userhome-agy/.gemini/config"
+for utility in bash dirname mkdir mktemp rm tr cp mv ln cat tput head grep awk sed find basename readlink; do
+  if command -v "$utility" >/dev/null 2>&1; then
+    ln -s "$(command -v "$utility")" "$SCENARIO34/bin/$utility"
+  fi
+done
+HOME="$SCENARIO34/userhome" PATH="$SCENARIO34/bin" SOURCE_DIR="$PROJECT_ROOT" \
+  bash -c "cd '$SCENARIO34/project' && bash '$INSTALLER' --non-interactive --agent claude-code,windsurf --scope project --lang en --yes" >/dev/null 2>&1 \
+  || fail "scenario34: multi-agent project setup failed"
+HOME="$SCENARIO34/userhome" PATH="$SCENARIO34/bin" SOURCE_DIR="$PROJECT_ROOT" \
+  bash -c "cd '$SCENARIO34/project' && bash '$INSTALLER' --uninstall --agent all --scope project --yes" >/dev/null 2>&1 \
+  || fail "scenario34: --uninstall --agent all failed"
+assert_no_dir "scenario34: --uninstall --agent all removes detected claude-code" "$SCENARIO34/project/.claude/skills/ssot-preflight"
+assert_no_dir "scenario34: --uninstall --agent all also removes undetected windsurf" "$SCENARIO34/project/.windsurf/skills/ssot-preflight"
+
+LIST34_WIN="$(HOME="$SCENARIO34/userhome" PATH="$SCENARIO34/bin" APPDATA="$SCENARIO34/fake-appdata" \
+  bash "$INSTALLER" --list-agents 2>&1)"
+if grep -E '^  zed ' <<< "$LIST34_WIN" | grep -q '✓'; then
+  fail "scenario34: APPDATA without Zed dir must not detect zed"
+else
+  pass "scenario34: APPDATA without Zed dir does not false-detect zed"
+fi
+mkdir -p "$SCENARIO34/fake-appdata/Zed"
+LIST34_ZED="$(HOME="$SCENARIO34/userhome" PATH="$SCENARIO34/bin" APPDATA="$SCENARIO34/fake-appdata" \
+  bash "$INSTALLER" --list-agents 2>&1)"
+if grep -E '^  zed ' <<< "$LIST34_ZED" | grep -q '✓'; then
+  pass "scenario34: APPDATA/Zed directory detects zed"
+else
+  fail "scenario34: APPDATA/Zed directory should detect zed"
+fi
+
+LIST34_AGY="$(HOME="$SCENARIO34/userhome-agy" PATH="$SCENARIO34/bin" \
+  bash "$INSTALLER" --list-agents 2>&1)"
+if grep -E '^  antigravity-app ' <<< "$LIST34_AGY" | grep -q '✓' &&
+   ! grep -E '^  gemini-cli ' <<< "$LIST34_AGY" | grep -q '✓'; then
+  pass "scenario34: ~/.gemini/config alone detects antigravity-app without false-detecting gemini-cli"
+else
+  fail "scenario34: ~/.gemini/config detection mismatch (out=$LIST34_AGY)"
+fi
+
 echo "=== RESULT: pass=$PASS fail=$FAIL ==="
 [[ $FAIL -eq 0 ]] && exit 0 || exit 1

@@ -347,7 +347,7 @@
         {
           "model": "gpt-6.1-terra",
           "effort": "medium",
-          "cwd": "/home/hpf/project/calliope"
+          "cwd": "<local-home>/project/calliope"
         }
       ],
       "catalog_skill_count": 6,

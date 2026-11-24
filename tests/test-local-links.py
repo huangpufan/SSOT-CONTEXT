@@ -101,6 +101,43 @@ class LocalLinks(unittest.TestCase):
         opt_in = links.plan(self.source, [four], with_legacy_shims=True)
         self.assertEqual(len(opt_in['actions']), 2)
 
+    def test_repoints_dangling_ssot_symlinks_after_source_checkout_moves(self):
+        import json, os
+        first = links.apply(links.plan(self.source, [self.base]), self.backups)
+        self.assertEqual(first['linked_skills'], 6)
+        old_targets = {name: os.readlink(self.base / name) for name in links.SKILLS}
+        moved = self.root / 'moved-source'
+        self.source.rename(moved)
+        for name in links.SKILLS:
+            self.assertTrue((self.base / name).is_symlink())
+            self.assertFalse((self.base / name).exists())
+
+        repoint_plan = links.plan(moved, [self.base])
+        self.assertEqual(len(repoint_plan['actions']), 6)
+        res = links.apply(repoint_plan, self.backups)
+        self.assertEqual(res['linked_skills'], 6)
+        manifest = json.loads(Path(res['manifest']).read_text(encoding='utf-8'))
+        for action in manifest['actions']:
+            name = Path(action['path']).name
+            self.assertEqual(action['before'], {'link': old_targets[name]})
+            self.assertTrue((self.base / name).is_symlink())
+            self.assertEqual((self.base / name).resolve(), (moved / 'skills' / name).resolve())
+            self.assertTrue(Path(action['backup']).is_symlink())
+            self.assertEqual(os.readlink(action['backup']), old_targets[name])
+
+    def test_refuses_arbitrary_non_ssot_dangling_symlinks(self):
+        import shutil
+        missing = self.root / 'missing'
+        for idx, bad_target in enumerate((missing / 'unrelated', missing / 'other/ssot-doctor', missing / 'skills/wrong-skill')):
+            base = self.root / f'bad-{idx}/skills'
+            for name in links.CORE_SKILLS:
+                (base / name).mkdir(parents=True)
+                (base / name / 'SKILL.md').write_text(f'---\nname: {name}\n---\n')
+            shutil.rmtree(base / 'ssot-doctor')
+            (base / 'ssot-doctor').symlink_to(bad_target)
+            with self.assertRaisesRegex(ValueError, 'Unrecognised or broken installation'):
+                links.plan(self.source, [base])
+
 
 if __name__ == '__main__':
     unittest.main()

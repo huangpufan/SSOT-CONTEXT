@@ -67,7 +67,8 @@ INLINE_CODE_RE = re.compile(r"(`+)(.+?)\1")
 LABEL_RE = re.compile(r"!?\[(?:[^\[\]\\]|\\.|\[[^\]]*\])*\]\(")
 REFDEF_RE = re.compile(r"^ {0,3}\[(?!\^)([^\]]+)\]:[ \t]*(<[^>]*>|\S+)")
 SCHEME_RE = re.compile(r"^[a-zA-Z][a-zA-Z0-9+.-]*:")
-INVARIANT_ID_RE = re.compile(r"^[A-Z][A-Z0-9]*(?:-[A-Z][A-Z0-9]*)*-\d+$")  # INV-01, CORE-RULE-2
+ID_PAT = r"[A-Z][A-Z0-9]*(?:-[A-Z][A-Z0-9]*)*-\d+"  # INV-01, CORE-RULE-2
+INVARIANT_ID_RE = re.compile(f"^{ID_PAT}$")
 SEPARATOR_CELL_RE = re.compile(r"^:?-{3,}:?$")
 LINE_ANCHOR_RE = re.compile(r"^L(\d+)(?:-L?\d+)?$")
 SHA_RE = re.compile(r"^[0-9a-f]{7,40}$")
@@ -326,6 +327,10 @@ def link_targets(text):
             yield number, ref.group(2).strip("<>")
 
 
+def is_local_link(target):
+    return not SCHEME_RE.match(target) and (GENERAL[0] or not unquote(target).startswith("/"))
+
+
 def resolve(doc, target):
     """Return (path or None, fragment) for a local link target."""
     target = re.sub(r"\\([!-/:-@\[-`{-~])", r"\1", target)  # CommonMark backslash escapes
@@ -476,34 +481,33 @@ def is_register_shard(path, ssot_dir, text=None):
     return text is not None and front_matter(text).get("ssot_register") == "shard"
 
 
-def non_table_invariants_links(lines, body):
-    """Return local link targets on non-table lines inside ## Invariants."""
-    refdefs = {m.group(1).lower(): m.group(2).strip("<>")
-               for _, line in lines for m in [REFDEF_RE.match(line)] if m}
-    targets = []
-    for number, line in body:
-        if table_cells(line) is not None:
-            continue
-        clean = blank_inline_code(line)
-        for target in links_in(clean):
-            targets.append((number, target))
-        for label, alt in re.findall(r"\[([^\]]+)\]\[([^\]]*)\]", clean):
-            target = refdefs.get((alt or label).lower())
-            if target:
-                targets.append((number, target))
+def refdef_map(lines):
+    return {m.group(1).lower(): m.group(2).strip("<>")
+            for _, line in lines for m in [REFDEF_RE.match(line)] if m}
+
+
+def line_links(line, refdefs):
+    clean = blank_inline_code(line)
+    targets = list(links_in(clean))
+    for label, alt in re.findall(r"\[([^\]]+)\]\[([^\]]*)\]", clean):
+        target = refdefs.get((alt or label).lower())
+        if target:
+            targets.append(target)
     return targets
 
 
-def linked_shards(readme, text, ssot_dir, selection=None):
+def non_table_invariants_links(lines, body):
+    """Return local link targets on non-table lines inside ## Invariants."""
+    refdefs = refdef_map(lines)
+    return [(number, target) for number, line in body if table_cells(line) is None
+            for target in line_links(line, refdefs)]
+
+
+def linked_shards(readme, lines, body, ssot_dir, selection=None):
     """Return ([(shard_path, shard_text), ...], set_of_shard_link_lines) for linked register shards."""
-    lines = list(markdown_lines(text))
-    found = register_tables(lines, text)
-    if found is None:
-        return [], set()
-    body, _ = found
     shards, seen_paths, shard_lines = [], set(), set()
     for number, target in non_table_invariants_links(lines, body):
-        if SCHEME_RE.match(target) or (unquote(target).startswith("/") and not GENERAL[0]):
+        if not is_local_link(target):
             continue
         path, _ = resolve(readme, target)
         if path == readme or path in seen_paths or not path.lower().endswith(".md"):
@@ -529,8 +533,10 @@ def rows_from_tables(tables, doc_path):
     rows = {}
     for table in tables:
         for number, cells in table:
-            if len(cells) == 6 and INVARIANT_ID_RE.match(cells[0].strip("`* ")):
-                rows.setdefault(cells[0].strip("`* "), (doc_path, number, cells))
+            if len(cells) == 6:
+                ident = cells[0].strip("`* ")
+                if INVARIANT_ID_RE.match(ident):
+                    rows.setdefault(ident, (doc_path, number, cells))
     return rows
 
 
@@ -544,13 +550,12 @@ def register_rows(text, doc_path=None):
 
 
 def validate_register_tables(report, doc, lines, body, tables, seen, shard_lines=()):
-    refdefs = {m.group(1).lower(): m.group(2).strip("<>")
-               for _, line in lines for m in [REFDEF_RE.match(line)] if m}
+    refdefs = refdef_map(lines)
     if not tables:
         for number, line in body:
             if number in shard_lines:
                 continue
-            if re.search(r"\b[A-Z][A-Z0-9]*(?:-[A-Z][A-Z0-9]*)*-\d+\b", blank_inline_code(line)):
+            if re.search(rf"\b{ID_PAT}\b", blank_inline_code(line)):
                 report.add("ERROR", doc, number,
                            f"invariants must be written as a table ({INVARIANT_COLUMNS}) so they can be checked")
                 break
@@ -588,11 +593,7 @@ def validate_register_tables(report, doc, lines, body, tables, seen, shard_lines
                            f"invariant {ident} needs a kind (product promise, architecture invariant, or process rule)")
             if not rule:
                 report.add("ERROR", doc, number, f"invariant {ident} has an empty rule")
-            targets = list(links_in(blank_inline_code(explained)))
-            for label, alt in re.findall(r"\[([^\]]+)\]\[([^\]]*)\]", explained):
-                target = refdefs.get((alt or label).lower())
-                if target:
-                    targets.append(target)
+            targets = line_links(explained, refdefs)
             if not targets:
                 report.add("ERROR", doc, number, f"invariant {ident} needs a link to where it is explained")
             for target in targets:
@@ -624,7 +625,7 @@ def check_invariants(report, readme, text, ssot_dir):
         report.add("WARN", readme, None, "no Invariants section; add one (it may say there are none yet)")
         return []
     body, tables = found
-    shards, shard_lines = linked_shards(readme, text, ssot_dir, report.documents)
+    shards, shard_lines = linked_shards(readme, lines, body, ssot_dir, report.documents)
     seen = {}
     validate_register_tables(report, readme, lines, body, tables, seen, shard_lines)
     if len(seen) >= INLINE_SHARD_INFO_ROWS:
@@ -958,15 +959,15 @@ def check_confirmed(report, readme, text, since, ssot_dir=None, current_shards=(
         if old_links:
             git_top = os.path.realpath(git_output(directory, "rev-parse", "--show-toplevel").strip())
             real_dir = os.path.realpath(directory)
+            real_readme = os.path.join(real_dir, entry)
             seen_old = set()
             for _, target in old_links:
-                if SCHEME_RE.match(target) or (unquote(target).startswith("/") and not GENERAL[0]):
+                if not is_local_link(target):
                     continue
                 shard_path, _ = resolve(readme, target)
                 if shard_path == readme or shard_path in seen_old or not shard_path.lower().endswith(".md"):
                     continue
-                path_part = unquote(re.sub(r"\\([!-/:-@\[-`{-~])", r"\1", target).partition("#")[0].partition("?")[0])
-                old_abs = os.path.normpath(os.path.join(real_dir, path_part))
+                old_abs, _ = resolve(real_readme, target)
                 if os.path.commonpath([old_abs, git_top]) != git_top:
                     continue
                 rel = os.path.relpath(old_abs, git_top).replace(os.sep, "/")
@@ -1038,24 +1039,31 @@ F5_ENTRY_RE = re.compile(
     r"|^(.+?) defines this space \(`ssot_format: 5`\)", re.M)
 
 
-def check_gitignored_links(report, ssot_dir, local_links):
+def check_gitignored_links(report, ssot_dir, local_links, entry=None):
     if not local_links:
         return
     try:
         top = os.path.realpath(git_output(ssot_dir, "rev-parse", "--show-toplevel").rstrip("\n"))
     except (FileNotFoundError, GitError):
         return
+    def rel_in_top(path):
+        real = os.path.realpath(path)
+        if not inside(real, top):
+            return None
+        rel = os.path.relpath(real, top).replace(os.sep, "/")
+        return None if rel in (".", "") or rel.startswith("../") else rel
+
     entries, unique = [], {}
     for doc, num, target, resolved in local_links:
-        real = os.path.realpath(resolved)
-        if not inside(real, top):
-            continue
-        rel = os.path.relpath(real, top).replace(os.sep, "/")
-        if rel not in (".", "") and not rel.startswith("../"):
+        rel = rel_in_top(resolved)
+        if rel:
             entries.append((doc, num, target, rel))
             unique[rel] = None
     if not unique:
         return
+    entry_rel = rel_in_top(entry) if GENERAL[0] and entry else None
+    if entry_rel:
+        unique[entry_rel] = None
     try:
         res = subprocess.run(["git", *GIT_SAFE, "-C", top, "check-ignore", "-z", "--stdin"], env=GIT_ENV,
                              input=("\0".join(unique) + "\0").encode("utf-8", "surrogateescape"),
@@ -1065,6 +1073,8 @@ def check_gitignored_links(report, ssot_dir, local_links):
     if res.returncode != 0:
         return
     ignored = set(filter(None, res.stdout.decode("utf-8", "surrogateescape").split("\0")))
+    if entry_rel and entry_rel in ignored:
+        return
     for doc, num, target, rel in entries:
         if rel in ignored:
             report.add("WARN", doc, num, f"link targets gitignored path (may break after cleanup/clone): {target}")
@@ -1115,7 +1125,8 @@ def check_instruction_blocks(report, root):
         if cur != exp:
             note = " (legacy SSOT-SKILL markers)" if legacy else ""
             report.add("INFO", path, None,
-                       f"managed block differs from installed templates{note}; run install.sh --check-block / --sync-block")
+                       f"managed block differs from installed templates{note}; "
+                       "run the SSOT-CONTEXT installer with --check-block / --sync-block")
 
 
 # --- reviewed_through ----------------------------------------------------------
@@ -1217,7 +1228,7 @@ def checked_documents(ssot_dir, readme, report):
     while pending and documents != selection:
         doc = pending.pop()
         for _, target in link_targets(read_text(doc)):
-            if SCHEME_RE.match(target) or (unquote(target).startswith("/") and not GENERAL[0]):
+            if not is_local_link(target):
                 continue
             path, _ = resolve(doc, target)
             if path in documents or (selection is not None and path not in selection):
@@ -1295,6 +1306,13 @@ def main(argv):
 
     legacy = False
     shards = []
+    text = meta = None
+    if named_entry and os.path.isfile(readme) and inside(readme, space_root or os.path.realpath(ssot_dir)):
+        text = read_text(readme)
+        meta = front_matter(text)
+        if meta.get("ssot_format") == "5":
+            GENERAL[0] = True
+            REPO_ROOT[0] = space_root or os.path.realpath(ssot_dir)
     if not os.path.isfile(readme):
         report.add("ERROR", readme, None, "missing SSOT/README.md (the entry every task starts from)")
     elif not repository_local(readme):
@@ -1302,9 +1320,10 @@ def main(argv):
         if named_entry:
             return report.finish(readme)
     else:
-        text = read_text(readme)
-        meta = front_matter(text)
-        GENERAL[0] = meta.get("ssot_format") == "5"
+        if text is None:
+            text = read_text(readme)
+            meta = front_matter(text)
+            GENERAL[0] = meta.get("ssot_format") == "5"
         if space_root and not GENERAL[0]:
             parser.error("--space-root requires a format-5 entry")
         if GENERAL[0]:
@@ -1365,7 +1384,7 @@ def main(argv):
         is_register_doc = doc == readme or doc in shard_paths
         if is_register_doc:  # the invariants register is meant to grow; budget the prose around it
             measured = "\n".join(line for line in text.splitlines()
-                                  if not re.match(r"^\s*\|\s*`?[A-Z][A-Z0-9]*(?:-[A-Z][A-Z0-9]*)*-\d+", line))
+                                  if not re.match(rf"^\s*\|\s*[`*]*{ID_PAT}", line))
         if len(measured) > limit and "/.bootstrap/" not in doc and not legacy:
             report.add("WARN", doc, None,
                        f"{len(measured)} characters is past the {limit}-character reading budget"
@@ -1380,7 +1399,7 @@ def main(argv):
                        f"{len(wrapped)} paragraph(s) are broken across short lines (lines {lines}); "
                        "write each paragraph or list item as one line and let the editor wrap it")
     if not scoped:
-        check_gitignored_links(report, ssot_dir, local_links)
+        check_gitignored_links(report, ssot_dir, local_links, readme)
         check_removed_paths(report, ssot_dir, mentions, since)
         if not legacy:
             check_instruction_blocks(report, REPO_ROOT[0])

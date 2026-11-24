@@ -1952,29 +1952,29 @@
     }
   },
   "archive": {
-    "archive": "/home/hpf/.local/state/ssot-context/evidence/benchmark-deepening-20261112/evidence.tar.gz",
+    "archive": "<local-home>/.local/state/ssot-context/evidence/benchmark-deepening-20261112/evidence.tar.gz",
     "sha256": "a87ded1d68cfcde0235e9f3aa60539d1f69ee1986a3b231a3436cf77eaf2ccd0",
     "bytes": 22705378,
     "manifest_sha256": "4c948d483e624856559bb5553752a14e630abba9d80a53b92061784ac5c6c7a4",
     "entries_verified": 8161,
     "readback_rebuild_returncode": 0,
-    "readback_log": "/home/hpf/.local/state/ssot-context/evidence/benchmark-deepening-20261112/readback.log",
+    "readback_log": "<local-home>/.local/state/ssot-context/evidence/benchmark-deepening-20261112/readback.log",
     "independent_readback_review": {
-      "path": "/home/hpf/.local/state/ssot-context/evidence/benchmark-deepening-20261112/readback-review.md",
+      "path": "<local-home>/.local/state/ssot-context/evidence/benchmark-deepening-20261112/readback-review.md",
       "sha256": "c26f1a20ef6ab5a6587a12633fbd0f67abfb73cb1647aa7e31c6135aaffd5e44",
       "reviewer_actual_model": "gpt-6-astra",
       "reviewer_actual_reasoning": "high",
       "scope": "Tar member hashes/types/modes/links, frozen inputs, native count/account identities and read-only exact regeneration of all three reports; no native rerun."
     },
     "independent_readback_native_receipt": {
-      "path": "/home/hpf/.local/state/ssot-context/evidence/benchmark-deepening-20261112/readback-native-receipt.json",
+      "path": "<local-home>/.local/state/ssot-context/evidence/benchmark-deepening-20261112/readback-native-receipt.json",
       "sha256": "8fc66a68b7e612b0f501997aa014601e74476035a403126ebdc4cfcd7d9f16e7"
     },
     "final_document_gate": {
       "command": "bash tests/test-bundle-shape.sh",
-      "cwd": "/home/hpf/project/SSOT-CONTEXT",
+      "cwd": "<local-home>/project/SSOT-CONTEXT",
       "result": "pass=57 fail=0",
-      "log": "/home/hpf/.local/state/ssot-context/evidence/benchmark-deepening-20261112/final-doc-shape.log",
+      "log": "<local-home>/.local/state/ssot-context/evidence/benchmark-deepening-20261112/final-doc-shape.log",
       "log_sha256": "5841ff90ed1dbef71cba491cc09b78b479c49024759c1fe068f7ffb4667ad9a6",
       "owned_diff_check": "git diff --check on six experiment-owned delivery files, exit 0"
     }

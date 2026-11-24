@@ -2,7 +2,7 @@
 name: ssot-preflight
 description: Read SSOT before substantive work in a repository or declared space. Follow its bounded lookup and edit routes. Skip pure commands and cosmetic edits.
 metadata:
-  protocol_version: "5.18"
+  protocol_version: "5.19"
   bundle: "SSOT-CONTEXT"
 ---
 

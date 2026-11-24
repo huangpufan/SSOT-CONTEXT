@@ -104,7 +104,7 @@ See [local symlink setup with `tools/link-local.py`](docs/2026-11-24-install-mai
 
 ## Update or remove an existing installation
 
-Run `install.sh --upgrade --agent <key> --scope <project|global>` (or `--uninstall ... --yes`), then check and refresh the repository's managed instruction block with `install.sh --check-block <file>` and `--sync-block <file>`. Full procedures and transition rules are in [update, removal, and transitions](docs/2026-11-24-install-maintenance.md#update-or-remove-an-existing-installation).
+Run `install.sh --upgrade --agent <key> --scope <project|global>` (or `--uninstall ... --yes`), then check and refresh the repository's managed instruction block with `install.sh --check-block <file>` and `--sync-block <file>`—using a local checkout, a freshly downloaded copy as in step 2, or `curl -fsSL https://raw.githubusercontent.com/huangpufan/SSOT-CONTEXT/main/install.sh | bash -s -- <flags>`. Full procedures and transition rules are in [update, removal, and transitions](docs/2026-11-24-install-maintenance.md#update-or-remove-an-existing-installation).
 
 ## Failed or interrupted replacement
 

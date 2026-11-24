@@ -95,7 +95,7 @@ curl -fsSL https://raw.githubusercontent.com/huangpufan/SSOT-CONTEXT/main/instal
 
 已有且持续维护的文档可以继续当 owner，由入口链接。通用空间没有固定目录：入口说明目的、范围和受保护的规则，并链接已经负责各个主题的文档。同目录可以有多个空间。搭建尚未完成时，每个入口链接自己的进度记录。详见[记忆模型](./skills/ssot-preflight/references/memory-model.md)和[空间模型](./skills/ssot-preflight/references/context-spaces.md)。
 
-日常限定查询可以直接依据获准读取的现行文档作答，已批准的单文档正文修订也可原地更新并从磁盘回读。协议 5.16 允许同一步读取所选技能的 `SKILL.md` 与入口文件头/标题并合批读取彼此独立的已授权文档（16 组 Codex 配对总输入下降 14.70%），协议 5.17 新增可选的主题分片不变量表（`SSOT/invariants/<topic>.md` 或 `ssot_register: shard`）与跨分片保护校验（360 条不变量大仓库总输入下降 21.60%、入口首读截断 6/6 → 0/6），协议 5.18 移除了纯新增外部代码文件时的误触发收尾检查并补齐即时决策采集的分片落点（纯新增组输入下降 12.26%、无用检查 3/3 → 0/3；[5.18 收尾与分片采集](./docs/2026-11-24-closeout-sharding-v5.18.md) · [5.17 主题分片](./docs/2026-11-24-register-sharding-v5.17.md) · [5.16 合批与落盘回读](./docs/2026-11-24-batching-readback-v5.16.md)）。如需在所有 Agent 上零模型 token 做提交前机械校验，可选用 [`tools/ssot-precommit.sh`](./tools/ssot-precommit.sh) 钩子（[配置说明](./docs/2026-11-24-install-maintenance.md#optional-zero-token-git-pre-commit-guard)）。
+日常限定查询可以直接依据获准读取的现行文档作答，已批准的单文档正文修订也可原地更新并从磁盘回读；不变量表长大后还可以按需拆为由 `ssot-check.py` 跨文件校验的主题分片（`SSOT/invariants/<topic>.md` 或 `ssot_register: shard`）。如需在所有 Agent 上零模型 token 做提交前机械校验，可选用 [`tools/ssot-precommit.sh`](./tools/ssot-precommit.sh) 钩子（[配置说明](./docs/2026-11-24-install-maintenance.md#optional-zero-token-git-pre-commit-guard)）。
 
 ## 限度
 
@@ -120,14 +120,14 @@ curl -fsSL https://raw.githubusercontent.com/huangpufan/SSOT-CONTEXT/main/instal
 请阅读 https://raw.githubusercontent.com/huangpufan/SSOT-CONTEXT/main/INSTALL.md，为当前 Agent 更新本项目的 SSOT-CONTEXT，保留原模板语言。
 ```
 
-更新技能文件（或拉取软链接源码）后，可用 `install.sh --check-block <AGENTS.md|CLAUDE.md>` 和 `--sync-block <文件>` 仅检查并刷新受管指令块，再重启 Agent。更新不会改写你的 context 文档，也不强制 format 4 仓库转为 format 5。手动命令、卸载、安装中断恢复及 2.x/3.x 迁移见[维护指南](./INSTALL.md#update-or-remove-an-existing-installation)。
+更新技能文件（或拉取软链接源码）后，可用 `curl -fsSL https://raw.githubusercontent.com/huangpufan/SSOT-CONTEXT/main/install.sh | bash -s -- --check-block <AGENTS.md|CLAUDE.md>` 与 `--sync-block <文件>`（或在本地源码仓直接运行 `bash install.sh ...`）仅检查并刷新受管指令块，再重启 Agent。更新不会改写你的 context 文档，也不强制 format 4 仓库转为 format 5。手动命令、卸载、安装中断恢复及 2.x/3.x 迁移见[维护指南](./INSTALL.md#update-or-remove-an-existing-installation)。
 
 ## 文档
 
 - [安装指南](./INSTALL.md)与[维护与恢复参考](./docs/2026-11-24-install-maintenance.md)：新装、指令块同步、升级、卸载、软链接与中断恢复。
 - [设计说明](./DESIGN.md)：Skill 包为什么是现在这个形态，以及 v3 移除了什么。
 - [Stage 5 真实会话审计](./docs/2026-11-24-real-session-stage5-audit.md)与[长期路线审视](./docs/2026-11-20-context-evolution-route.md)：386 条真实消费会话分布、当前阶段与后续优先级。
-- [5.16 合批与落盘回读实测](./docs/2026-11-24-batching-readback-v5.16.md)、[跨领域架构研究](./docs/2026-11-20-context-paths-study.md)与[日常查改成本对照](./docs/2026-11-20-ordered-lookup-cost.md)：原生配对试验与整任务成本。
+- [5.19 即时采集检查](./docs/2026-11-25-bounded-shard-and-capture-v5.19.md)、[5.18 收尾与分片采集](./docs/2026-11-24-closeout-sharding-v5.18.md)、[5.17 主题分片](./docs/2026-11-24-register-sharding-v5.17.md)、[5.16 合批与落盘回读](./docs/2026-11-24-batching-readback-v5.16.md)、[跨领域架构研究](./docs/2026-11-20-context-paths-study.md)与[日常查改成本对照](./docs/2026-11-20-ordered-lookup-cost.md)：原生配对试验与整任务成本。
 - [持续修改的研究和创作项目](./docs/2026-11-14-evolving-research-and-creative-projects.md)：格式 5 通用空间的实用示例。
 - [评测指南](./tests/benchmark/README.md)：任务结果、冷接续、普通文档对照与证据边界。
 - [更新日志](./CHANGELOG.md)、[贡献指南](./CONTRIBUTING.md)、[AGENTS.md](./AGENTS.md)与[安全政策](./SECURITY.md)。

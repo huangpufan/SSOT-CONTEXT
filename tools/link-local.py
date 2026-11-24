@@ -36,6 +36,10 @@ def fingerprint(path):
     return result
 
 
+def is_dangling_ssot_link(target, name):
+    return target.is_symlink() and not target.exists() and Path(os.readlink(target)).parts[-2:] == ('skills', name)
+
+
 def plan(source, bases, with_legacy_shims=False):
     source = Path(source).resolve(strict=True)
     skills = source / 'skills'
@@ -55,11 +59,12 @@ def plan(source, bases, with_legacy_shims=False):
             target = base / name
             if target.exists() or target.is_symlink():
                 found = True
-                if not (target / 'SKILL.md').is_file():
-                    raise ValueError(f'Unrecognised or broken installation: {target}')
-                if f'name: {name}' not in (target / 'SKILL.md').read_text(encoding='utf-8').splitlines():
-                    raise ValueError(f'Unexpected skill owner: {target}')
-            if target.is_symlink() and target.resolve() == skills / name:
+                if not is_dangling_ssot_link(target, name):
+                    if not (target / 'SKILL.md').is_file():
+                        raise ValueError(f'Unrecognised or broken installation: {target}')
+                    if f'name: {name}' not in (target / 'SKILL.md').read_text(encoding='utf-8').splitlines():
+                        raise ValueError(f'Unexpected skill owner: {target}')
+            if target.is_symlink() and target.exists() and target.resolve() == skills / name:
                 continue
             actions.append({'path': str(target), 'source': str(skills / name),
                             'before': fingerprint(target)})

@@ -7,7 +7,7 @@ Thanks for your interest in improving the SSOT-CONTEXT bundle. Read [DESIGN.md](
 | Area | Files | Review weight |
 |---|---|---|
 | Protocol | `skills/*/SKILL.md`, `skills/*/references/*.md`, templates | Protocol review (below) |
-| Engineering | `install.sh`, `skills/*/assets/scripts/`, `tests/`, `.github/workflows/` | Standard review |
+| Engineering | `install.sh`, `skills/*/assets/scripts/`, `tools/`, `tests/`, `.github/workflows/` | Standard review |
 | Docs | `README*`, `INSTALL.md`, `DESIGN.md`, `CHANGELOG.md`, `docs/` | Standard review |
 
 `skills/ssot-preflight/references/memory-model.md` owns what a consumer's `SSOT/` contains and how it is written. The `SKILL.md` files link to it rather than restating it.
@@ -54,7 +54,7 @@ Detailed shared material belongs in a reference, read at the point of use. `SKIL
 | Runtime assets (`skills/` excluding Python scripts) | 160 KiB |
 | `ssot-check.py` | 64 KiB |
 | All bundle scripts (`skills/*/assets/scripts/*.py`) | 96 KiB |
-| All of `skills/` | 248 KiB |
+| All of `skills/` | 256 KiB |
 
 Version 4.0 raises entrypoints to 3,600 words, runtime protocol to 13,000 words, and the checker to 48 KiB for immediate decision capture, accessible conversation-source recovery, external-owner routes, preservation-aware migration, and checks on those routes. Measured template and whole-bundle sizes fit their existing limits, which remain unchanged.
 
@@ -72,7 +72,7 @@ Version 5.10 allows 18,500 runtime words, 53 KiB for the checker and 227 KiB for
 
 Version 5.12 allows 18,700 runtime words and 232 KiB for the bundle. Version 5.11 had 139 words and 55 bytes of headroom. Conditional decision use, recovery of premise-dependent progress and metadata-only withdrawal use existing owners. The connector also protects a restricted withdrawal from older readers. The [release study](docs/2026-11-20-conditional-context-v5.12.md) accounts for behaviour and cost on both changed and ordinary tasks.
 
-On 2026-11-24, following the [Stage 5 real-session audit](docs/2026-11-24-real-session-stage5-audit.md), the CI budget ruler was decoupled in two steps: first separating always-loaded surfaces (768 B full catalog, 1,600 B per managed adapter block), model-read runtime assets (160 KiB), and executable scripts (`ssot-check.py` 64 KiB, all scripts 96 KiB, overall `skills/` 248 KiB); then separating the flat 18,700-word cliff (99.6% full after 5.17, with 4,178 words in low-frequency `migration.md`, `area-mining.md`, and `source-integration.md`) into explicit hot-path (9,200 words, covering all `SKILL.md` entrypoints plus daily preflight/departure/closeout references) and conditional/cold-branch (10,400 words) ceilings alongside a 600 B cap on the default core-4 skill discovery catalog. The total runtime-assets byte cap (160 KiB) stays unchanged, and an exhaustive partition check prevents any new reference file from bypassing the word caps.
+On 2026-11-24, following the [Stage 5 real-session audit](docs/2026-11-24-real-session-stage5-audit.md), the CI budget ruler was decoupled in two steps: first separating always-loaded surfaces (768 B full catalog, 1,600 B per managed adapter block), model-read runtime assets (160 KiB), and executable scripts (`ssot-check.py` 64 KiB, all scripts 96 KiB, overall `skills/` initially 248 KiB and later aligned to 256 KiB to match the sum of the two disjoint 160 KiB + 96 KiB partitions); then separating the flat 18,700-word cliff (99.6% full after 5.17, with 4,178 words in low-frequency `migration.md`, `area-mining.md`, and `source-integration.md`) into explicit hot-path (9,200 words, covering all `SKILL.md` entrypoints plus daily preflight/departure/closeout references) and conditional/cold-branch (10,400 words) ceilings alongside a 600 B cap on the default core-4 skill discovery catalog. The total runtime-assets byte cap (160 KiB) stays unchanged, and an exhaustive partition check prevents any new reference file from bypassing the word caps.
 
 A budget is a reason to rethink responsibilities, never a reason to cut a recovery or authorization branch to fit, and never a reason to rewrite unrelated rule text to make room: such edits are untested changes. In 3.5 the owner raised the limits from 3,000 and 8,000 words, with room left on purpose, after a trial branch had tightened about 40 unrelated sentences to fit new rules into the old limits; in 3.7 the owner raised the runtime limit from 9,500 to 10,000 words for the mining changes, instead of cutting other rules; in 3.9 the owner raised the checker limit from 40 to 44 KiB for the check on confirmed invariants; in 3.10 the owner raised the runtime limit from 10,000 to 11,000 words for the row-fixing step in mining. A v2 word cap once rejected a complete entrypoint for being complete. Raising a limit requires the same evidence as adding a rule. Record the reason in `CHANGELOG.md`.
 
@@ -93,19 +93,17 @@ This check is complete when both READMEs describe the verified current behavior,
 ## Local verification
 
 ```bash
-bash tests/test-bundle-shape.sh        # shape, links, budgets
+bash tests/test-bundle-shape.sh        # shape, links/anchors, hygiene, budgets
 python3 tests/test-ssot-check.py       # checker regression tests
 python3 -m unittest discover -s tests/benchmark -p 'test_*.py' # outcome, observer and handoff calibration; no model calls
 python3 tests/test-migration-trials.py # migration fixtures, oracle and CI billing guard; no model calls
-python3 tests/test-context-source.py  # POSIX source/owner/readback contract; no model calls
-python3 tests/context/test_context.py # general-context fixtures/oracles; no model calls
-python3 tests/context/test_source_contract.py # independent source CLI contracts; no model calls
-python3 tests/context/test_continuation.py # continuation oracle; no model calls
-python3 tests/context/test_register.py # large-register outcomes; no model calls
-python3 tests/context/test_source_oracle.py # public source-state oracle; no model calls
+python3 tests/test-context-source.py   # POSIX source/owner/readback contract; no model calls
+python3 -m unittest discover -s tests/context -p 'test_*.py' # general-context, source CLI, continuation, register, tiering and longchain tests; no model calls
+python3 tests/test-local-links.py      # tools/link-local.py symlink plan, backup and rollback tests
+python3 tests/test-precommit-hook.py   # tools/ssot-precommit.sh zero-token Git pre-commit guard tests
 bash tests/test-installer-e2e.sh       # installer end to end
 python3 tests/test-installer-recovery.py # replacement faults, cancellation, locking and recovery
-shellcheck -S warning -e SC2034 install.sh tests/*.sh
+shellcheck -S warning -e SC2034 install.sh tests/*.sh tools/*.sh
 ```
 
 The recovery tests invoke Bash 4+ from `PATH`; on macOS, set `SSOT_TEST_BASH="$(brew --prefix)/bin/bash"` when the default `bash` is older.

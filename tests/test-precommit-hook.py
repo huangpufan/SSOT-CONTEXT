@@ -30,6 +30,9 @@ class PrecommitHookTest(unittest.TestCase):
             "GIT_COMMITTER_NAME": "Test",
             "GIT_COMMITTER_EMAIL": "t@example.test",
         }
+        for key in ("SSOT_CHECKER", "SSOT_DIR", "SSOT_PRECOMMIT_STRICT", "SSOT_PRECOMMIT_ALWAYS",
+                    "CODEX_HOME", "CLAUDE_CONFIG_DIR"):
+            self.env.pop(key, None)
         self.git("init", "-q")
         # Install hook in .git/hooks/pre-commit referencing a copied standalone script
         # (so it does not accidentally resolve ROOT/skills via script_dir unless configured).
@@ -159,6 +162,219 @@ class PrecommitHookTest(unittest.TestCase):
         res_soft = self.git("commit", "-m", "soft skip")
         self.assertEqual(res_soft.returncode, 0, res_soft.stdout + res_soft.stderr)
         self.assertIn("skipping", res_soft.stderr)
+
+    def test_symlinked_hook_discovers_checkout_and_global_codex_checker(self):
+        shutil.rmtree(self.repo / ".agents")
+        hook_dst = self.repo / ".git/hooks/pre-commit"
+        hook_dst.unlink()
+        # 1. Documented `ln -sf <checkout>/tools/ssot-precommit.sh .git/hooks/pre-commit`
+        # resolves symlinks back to ROOT/skills without any local or global install.
+        hook_dst.symlink_to(HOOK)
+        readme = self.repo / "SSOT/README.md"
+        orig = readme.read_text(encoding="utf-8")
+        readme.write_text(orig.replace("Never charge twice", "May charge twice"), encoding="utf-8")
+        self.git("add", "SSOT/README.md")
+        res = self.git("commit", "-m", "tamper via checkout symlink")
+        self.assertEqual(res.returncode, 1, res.stdout + res.stderr)
+        self.assertIn("confirmed invariant INV-01 changed its rule", res.stdout + res.stderr)
+
+        # 2. Symlink to standalone hook (no adjacent skills/) finds global ~/.codex/skills.
+        hook_dst.unlink()
+        hook_dst.symlink_to(self.standalone)
+        codex_chk = self.home / ".codex/skills/ssot-doctor/assets/scripts/ssot-check.py"
+        codex_chk.parent.mkdir(parents=True)
+        shutil.copy2(CHECKER, codex_chk)
+        res_global = self.git("commit", "-m", "tamper via global codex checker")
+        self.assertEqual(res_global.returncode, 1, res_global.stdout + res_global.stderr)
+        self.assertIn("confirmed invariant INV-01 changed its rule", res_global.stdout + res_global.stderr)
+        readme.write_text(orig, encoding="utf-8")
+        self.git("reset", "-q", "HEAD", "SSOT/README.md")
+
+    def test_staged_tamper_blocked_even_when_working_tree_reverted(self):
+        readme = self.repo / "SSOT/README.md"
+        orig = readme.read_text(encoding="utf-8")
+        readme.write_text(orig.replace("Never charge twice", "May charge twice"), encoding="utf-8")
+        self.git("add", "SSOT/README.md")
+        # Revert working tree without unstaging: index still carries the tampered invariant.
+        readme.write_text(orig, encoding="utf-8")
+        res = self.git("commit", "-m", "staged tamper clean wt")
+        self.assertEqual(res.returncode, 1, res.stdout + res.stderr)
+        self.assertIn("confirmed invariant INV-01 changed its rule", res.stdout + res.stderr)
+        self.assertIn("Never charge twice", self.git("show", "HEAD:SSOT/README.md").stdout)
+
+    def test_clean_staged_doc_passes_despite_dirty_unstaged_ssot(self):
+        readme = self.repo / "SSOT/README.md"
+        orig = readme.read_text(encoding="utf-8")
+        readme.write_text(orig.replace("Never charge twice", "Unstaged WIP edit"), encoding="utf-8")
+        api = self.repo / "docs/api.md"
+        api.write_text("# API\n\n## Retries\n\nIdempotent retry behavior with backoff.\n", encoding="utf-8")
+        self.git("add", "docs/api.md")
+        res = self.git("commit", "-m", "clean staged doc")
+        self.assertEqual(res.returncode, 0, res.stdout + res.stderr)
+        # Unstaged WIP in working tree remains untouched.
+        self.assertIn("Unstaged WIP edit", readme.read_text(encoding="utf-8"))
+
+    def test_commit_only_and_custom_git_index_file_check_staged_index(self):
+        readme = self.repo / "SSOT/README.md"
+        orig = readme.read_text(encoding="utf-8")
+        # Dirty staged SSOT in default index, but `git commit --only docs/api.md` commits only docs/api.md.
+        readme.write_text(orig.replace("Never charge twice", "Dirty staged edit"), encoding="utf-8")
+        self.git("add", "SSOT/README.md")
+        api = self.repo / "docs/api.md"
+        api.write_text("# API\n\n## Retries\n\nClarified retry wording.\n", encoding="utf-8")
+        res_only = self.git("commit", "--only", "docs/api.md", "-m", "only api doc")
+        self.assertEqual(res_only.returncode, 0, res_only.stdout + res_only.stderr)
+
+        # Custom GIT_INDEX_FILE holding a tampered SSOT while default index and WT are clean must block.
+        readme.write_text(orig, encoding="utf-8")
+        self.git("reset", "-q", "HEAD", "SSOT/README.md")
+        custom_idx = Path(self.tmp.name) / "custom.index"
+        shutil.copy2(self.repo / ".git/index", custom_idx)
+        custom_env = {**self.env, "GIT_INDEX_FILE": str(custom_idx)}
+        readme.write_text(orig.replace("Never charge twice", "Custom index tamper"), encoding="utf-8")
+        self.git("add", "SSOT/README.md", env=custom_env)
+        readme.write_text(orig, encoding="utf-8")
+        direct = subprocess.run([str(self.standalone)], cwd=self.repo, env=custom_env, capture_output=True, text=True)
+        self.assertEqual(direct.returncode, 1, direct.stdout + direct.stderr)
+        self.assertIn("confirmed invariant INV-01 changed its rule", direct.stdout + direct.stderr)
+
+    def test_linked_worktree_diffs_against_worktree_head_not_main_head(self):
+        wt = Path(self.tmp.name) / "linked-wt"
+        res_add = self.git("worktree", "add", "-q", "-b", "feature", str(wt))
+        self.assertEqual(res_add.returncode, 0, res_add.stdout + res_add.stderr)
+        # Copy repo-local checker into the linked worktree (since .agents was committed in repo).
+        wt_readme = wt / "SSOT/README.md"
+        # Legitimately update INV-01 in worktree HEAD with a new dated Source so worktree HEAD != main HEAD.
+        wt_text = wt_readme.read_text(encoding="utf-8").replace(
+            "Never charge twice | [Retries](../docs/api.md#retries) | confirmed | user, 2026-05-02",
+            "Never charge twice; refund in 24h | [Retries](../docs/api.md#retries) | confirmed | user, 2026-05-02; revised 2026-11-25",
+        )
+        wt_readme.write_text(wt_text, encoding="utf-8")
+        r_add = subprocess.run(["git", "add", "SSOT/README.md"], cwd=wt, env=self.env, capture_output=True, text=True)
+        self.assertEqual(r_add.returncode, 0, r_add.stderr)
+        r_com = subprocess.run(["git", "commit", "-m", "approved wt update"], cwd=wt, env=self.env, capture_output=True, text=True)
+        self.assertEqual(r_com.returncode, 0, r_com.stdout + r_com.stderr)
+
+        # 1. Dirty unstaged SSOT/README.md + clean staged docs/api.md triggers snapshot mode.
+        # Comparing against main HEAD would falsely fail on INV-01; comparing against worktree HEAD passes.
+        wt_readme.write_text(wt_text.replace("refund in 24h", "dirty unstaged"), encoding="utf-8")
+        (wt / "docs/api.md").write_text("# API\n\n## Retries\n\nWorktree doc update.\n", encoding="utf-8")
+        subprocess.run(["git", "add", "docs/api.md"], cwd=wt, env=self.env, check=True)
+        r_clean = subprocess.run(["git", "commit", "-m", "clean wt doc"], cwd=wt, env=self.env, capture_output=True, text=True)
+        self.assertEqual(r_clean.returncode, 0, r_clean.stdout + r_clean.stderr)
+
+        # 2. Staged tamper relative to worktree HEAD with reverted WT must block.
+        wt_readme.write_text(wt_text.replace("refund in 24h", "unauthorized tamper"), encoding="utf-8")
+        subprocess.run(["git", "add", "SSOT/README.md"], cwd=wt, env=self.env, check=True)
+        wt_readme.write_text(wt_text, encoding="utf-8")
+        r_tamper = subprocess.run(["git", "commit", "-m", "tamper wt"], cwd=wt, env=self.env, capture_output=True, text=True)
+        self.assertEqual(r_tamper.returncode, 1, r_tamper.stdout + r_tamper.stderr)
+        self.assertIn("confirmed invariant INV-01 changed its rule", r_tamper.stdout + r_tamper.stderr)
+
+    def test_blocks_whole_ssot_deletion_format4_cached_and_format5(self):
+        # 1. `git rm -r --cached SSOT` (still on disk) must be blocked.
+        self.git("rm", "-rq", "--cached", "SSOT")
+        res_cached = self.git("commit", "-m", "untrack whole SSOT")
+        self.assertEqual(res_cached.returncode, 1, res_cached.stdout + res_cached.stderr)
+        self.assertIn("removes tracked SSOT target 'SSOT'", res_cached.stderr)
+        self.git("reset", "-q", "HEAD", "SSOT")
+
+        # 2. `git rm -r SSOT` (deleted from index and disk) must be blocked.
+        self.git("rm", "-rq", "SSOT")
+        res_rm = self.git("commit", "-m", "delete whole SSOT")
+        self.assertEqual(res_rm.returncode, 1, res_rm.stdout + res_rm.stderr)
+        self.assertIn("removes tracked SSOT target 'SSOT'", res_rm.stderr)
+        self.assertIn("--no-verify", res_rm.stderr)
+        self.git("checkout", "HEAD", "--", "SSOT")
+
+        # 3. Format-5 single-file entry deletion (`SSOT_DIR=docs/context.md`) must be blocked.
+        f5 = self.repo / "docs/context.md"
+        f5.write_text(textwrap.dedent("""\
+            ---
+            ssot_format: 5
+            language: en
+            ---
+            # Space
+
+            ## Invariants
+
+            | ID | Kind | Rule | Explained in | Status | Source |
+            |---|---|---|---|---|---|
+            | F5-01 | product promise | Keep history | [Space](context.md#space) | confirmed | user, 2026-05-02 |
+            """), encoding="utf-8")
+        self.git("add", "docs/context.md")
+        env_f5 = {**self.env, "SSOT_DIR": "docs/context.md"}
+        res_init = self.git("commit", "-m", "add f5 space", env=env_f5)
+        self.assertEqual(res_init.returncode, 0, res_init.stdout + res_init.stderr)
+        self.git("rm", "-q", "docs/context.md")
+        res_f5_rm = self.git("commit", "-m", "delete f5 space", env=env_f5)
+        self.assertEqual(res_f5_rm.returncode, 1, res_f5_rm.stdout + res_f5_rm.stderr)
+        self.assertIn("removes tracked SSOT target 'docs/context.md'", res_f5_rm.stderr)
+
+    def test_ssot_dir_trailing_slash_triggers_on_non_markdown_inside_ssot(self):
+        marker = Path(self.tmp.name) / "slash-ran"
+        sentinel = Path(self.tmp.name) / "slash-sentinel.py"
+        sentinel.write_text(f"import pathlib, sys\npathlib.Path({str(marker)!r}).write_text('ran')\nsys.exit(0)\n", encoding="utf-8")
+        (self.repo / "SSOT/data.txt").write_text("metadata\n", encoding="utf-8")
+        self.git("add", "SSOT/data.txt")
+        env = {**self.env, "SSOT_DIR": "SSOT/", "SSOT_CHECKER": str(sentinel)}
+        res = self.git("commit", "-m", "add non-md in SSOT", env=env)
+        self.assertEqual(res.returncode, 0, res.stdout + res.stderr)
+        self.assertTrue(marker.exists(), "SSOT_DIR with trailing slash should still trigger on files inside SSOT/")
+
+    def test_missing_python3_respects_strict_flag(self):
+        # Build a minimal PATH directory with git/bash/coreutils but NO python3.
+        no_py_bin = Path(self.tmp.name) / "no-python-bin"
+        no_py_bin.mkdir()
+        for tool in ("bash", "git", "env", "dirname", "basename", "readlink", "mktemp", "rm", "tr"):
+            found = shutil.which(tool)
+            if found:
+                (no_py_bin / tool).symlink_to(found)
+        (self.repo / "SSOT/architecture.md").write_text("# Architecture\n\nNo-python test.\n", encoding="utf-8")
+        self.git("add", "SSOT/architecture.md")
+        base_no_py = {**self.env, "PATH": str(no_py_bin)}
+
+        # STRICT=1 exits 2 with clear python3 error (not 127 blaming ssot-check.py).
+        strict_direct = subprocess.run([str(self.standalone)], cwd=self.repo,
+                                       env={**base_no_py, "SSOT_PRECOMMIT_STRICT": "1"}, capture_output=True, text=True)
+        self.assertEqual(strict_direct.returncode, 2, strict_direct.stdout + strict_direct.stderr)
+        self.assertIn("python3 not found", strict_direct.stderr)
+        self.assertNotIn("blocked by ssot-check.py", strict_direct.stderr)
+
+        # STRICT=0 soft-skips with exit 0 and clear message.
+        soft_commit = self.git("commit", "-m", "commit without python3", env=base_no_py)
+        self.assertEqual(soft_commit.returncode, 0, soft_commit.stdout + soft_commit.stderr)
+        self.assertIn("python3 not found; skipping", soft_commit.stderr)
+
+    def test_clean_commit_uses_direct_path_and_unborn_head_uses_snapshot(self):
+        # 1. Clean staged SSOT edit + unrelated dirty non-.md code file keeps direct fast path (argv[1] == 'SSOT').
+        arg_log = Path(self.tmp.name) / "checker-arg"
+        recorder = Path(self.tmp.name) / "record-checker.py"
+        recorder.write_text(
+            f"import pathlib, sys\npathlib.Path({str(arg_log)!r}).write_text(sys.argv[1])\nsys.exit(0)\n",
+            encoding="utf-8",
+        )
+        (self.repo / "src/app.py").write_text("x = 999\n", encoding="utf-8")  # unstaged non-.md edit
+        (self.repo / "SSOT/architecture.md").write_text("# Architecture\n\nClean direct check.\n", encoding="utf-8")
+        self.git("add", "SSOT/architecture.md")
+        res = self.git("commit", "-m", "direct check", env={**self.env, "SSOT_CHECKER": str(recorder)})
+        self.assertEqual(res.returncode, 0, res.stdout + res.stderr)
+        self.assertEqual(arg_log.read_text(encoding="utf-8"), "SSOT")
+
+        # 2. Unborn HEAD with staged broken link + fixed WT catches the staged broken link via snapshot.
+        fresh = Path(self.tmp.name) / "unborn-repo"
+        fresh.mkdir()
+        subprocess.run(["git", "init", "-q"], cwd=fresh, env=self.env, check=True)
+        (fresh / ".git/hooks/pre-commit").symlink_to(HOOK)
+        (fresh / "SSOT").mkdir()
+        broken = "---\nssot_format: 4\nlanguage: en\n---\n# Demo\n\n- [Missing](missing.md)\n\n## Invariants\n\nNone.\n"
+        fixed = "---\nssot_format: 4\nlanguage: en\n---\n# Demo\n\n## Invariants\n\nNone.\n"
+        (fresh / "SSOT/README.md").write_text(broken, encoding="utf-8")
+        subprocess.run(["git", "add", "SSOT/README.md"], cwd=fresh, env=self.env, check=True)
+        (fresh / "SSOT/README.md").write_text(fixed, encoding="utf-8")
+        r_unborn = subprocess.run(["git", "commit", "-m", "initial broken"], cwd=fresh, env=self.env, capture_output=True, text=True)
+        self.assertEqual(r_unborn.returncode, 1, r_unborn.stdout + r_unborn.stderr)
+        self.assertIn("broken link: missing.md", r_unborn.stdout + r_unborn.stderr)
 
 
 if __name__ == "__main__":

@@ -2018,6 +2018,145 @@ class CheckerTest(unittest.TestCase):
         self.assertEqual(code, 0, scoped_out)
         self.assertNotIn("managed block differs", scoped_out)
 
+    def test_symlinked_nongit_format5_passes_while_escaping_symlinks_fail(self):
+        with tempfile.TemporaryDirectory() as outer:
+            vault = os.path.join(outer, "target", "space")
+            os.makedirs(vault)
+            with open(os.path.join(vault, "topic.md"), "w", encoding="utf-8") as handle:
+                handle.write("# Topic\n\nLocal notes.\n")
+            with open(os.path.join(vault, "INDEX.md"), "w", encoding="utf-8") as handle:
+                handle.write(textwrap.dedent("""\
+                    ---
+                    ssot_format: 5
+                    language: en
+                    ---
+
+                    # Personal Space
+
+                    - [Topic](topic.md)
+
+                    ## Invariants
+
+                    None yet.
+                    """))
+            home = os.path.join(outer, "home")
+            os.makedirs(home)
+            alias = os.path.join(home, "notes")
+            os.symlink(vault, alias)
+            # Symlinked non-git Format-5 directory succeeds (absolute and relative).
+            code, out = self.run_checker(os.path.join(alias, "INDEX.md"))
+            self.assertEqual(code, 0, out)
+            self.assertNotIn("ERROR", out)
+            rel_proc = subprocess.run(
+                [sys.executable, CHECKER, "notes/INDEX.md"],
+                cwd=home, capture_output=True, text=True, check=False,
+            )
+            self.assertEqual(rel_proc.returncode, 0, rel_proc.stdout + rel_proc.stderr)
+
+            # Escaping Format-5 file symlink pointing outside the space must fail.
+            outside_f5 = os.path.join(outer, "outside_f5.md")
+            with open(outside_f5, "w", encoding="utf-8") as handle:
+                handle.write("---\nssot_format: 5\nlanguage: en\n---\n# Outside\n\n## Invariants\n\nNone.\n")
+            os.symlink(outside_f5, os.path.join(vault, "ESCAPE.md"))
+            code, out = self.run_checker(os.path.join(vault, "ESCAPE.md"))
+            self.assertEqual(code, 1, out)
+            self.assertIn("README must belong to the same repository", out)
+
+            # Non-git Format-4 escaping directory symlink must still be rejected.
+            ext_ssot = os.path.join(outer, "external_ssot")
+            os.makedirs(ext_ssot)
+            with open(os.path.join(ext_ssot, "README.md"), "w", encoding="utf-8") as handle:
+                handle.write(README)
+            proj = os.path.join(outer, "proj")
+            os.makedirs(proj)
+            os.symlink(ext_ssot, os.path.join(proj, "SSOT"))
+            code, out = self.run_checker(os.path.join(proj, "SSOT"))
+            self.assertEqual(code, 1, out)
+            self.assertIn("README must belong to the same repository", out)
+
+    def test_format5_gitignored_space_skips_noise_while_tracked_format5_warns(self):
+        self.git("init", "-q")
+        with open(os.path.join(self.repo, ".gitignore"), "w", encoding="utf-8") as handle:
+            handle.write("private-space/\ntmp/\n")
+        # 1. Untracked Format-5 space inside a gitignored folder gets 0 gitignore warnings.
+        priv = os.path.join(self.repo, "private-space")
+        os.makedirs(priv)
+        with open(os.path.join(priv, "topic.md"), "w", encoding="utf-8") as handle:
+            handle.write("# Topic\n\nPrivate note.\n")
+        priv_entry = os.path.join(priv, "INDEX.md")
+        with open(priv_entry, "w", encoding="utf-8") as handle:
+            handle.write("---\nssot_format: 5\nlanguage: en\n---\n# Private\n\n- [Topic](topic.md)\n\n## Invariants\n\nNone.\n")
+        # 2. Tracked Format-5 space inside the same Git repo linking to a gitignored file still warns.
+        tracked = os.path.join(self.repo, "tracked-space")
+        os.makedirs(os.path.join(tracked, "tmp"))
+        with open(os.path.join(tracked, "tmp", "scratch.md"), "w", encoding="utf-8") as handle:
+            handle.write("# Scratch\n")
+        tracked_entry = os.path.join(tracked, "INDEX.md")
+        with open(tracked_entry, "w", encoding="utf-8") as handle:
+            handle.write("---\nssot_format: 5\nlanguage: en\n---\n# Tracked\n\n- [Scratch](tmp/scratch.md)\n\n## Invariants\n\nNone.\n")
+        self.valid()
+        self.commit("baseline")
+
+        code, priv_out = self.run_checker(priv_entry)
+        self.assertEqual(code, 0, priv_out)
+        self.assertNotIn("gitignored", priv_out)
+
+        code, tracked_out = self.run_checker(tracked_entry)
+        self.assertEqual(code, 0, tracked_out)
+        self.assertIn("link targets gitignored path", tracked_out)
+        self.assertIn("tmp/scratch.md", tracked_out)
+
+    def test_bold_invariant_ids_excluded_from_budget_and_inline_code_ref_ignored(self):
+        rows = "\n".join(
+            f"| **INV-{n:03d}** | product promise | {'Long contract text ' * 7} | [R](architecture.md#failure-and-recovery) | candidate | tests |"
+            for n in range(1, 70)
+        )
+        self.invariant_row(rows)
+        out = self.assert_clean()
+        self.assertNotIn("reading budget", out)
+        # Backticked reference-link syntax inside Explained in must not satisfy link requirement.
+        self.invariant_row(
+            "| INV-01 | product promise | Rule | `[fake][r]` | candidate | tests |\n\n[r]: architecture.md#failure-and-recovery"
+        )
+        self.assert_error("invariant INV-01 needs a link to where it is explained")
+
+    def test_instruction_block_crlf_and_zh_ascii_parens_format5_parity(self):
+        self.valid()
+        agents_path = os.path.join(self.repo, "AGENTS.md")
+        # 1. CRLF stale block emits updated installer guidance (not bare ./install.sh).
+        with open(agents_path, "wb") as handle:
+            handle.write(b"# Repo\r\n\r\n<!-- SSOT-CONTEXT:BEGIN -->\r\n## SSOT workflow\r\nStale.\r\n<!-- SSOT-CONTEXT:END -->\r\n")
+        out = self.assert_clean()
+        self.assertIn("managed block differs from installed templates", out)
+        self.assertIn("SSOT-CONTEXT installer with --check-block / --sync-block", out)
+
+        # 2. Synced CRLF block stays quiet.
+        tpl = os.path.join(os.path.dirname(CHECKER), "../../../ssot-bootstrap/assets/templates/en/adapter-thin.md")
+        with open(tpl, encoding="utf-8") as handle:
+            tpl_text = handle.read()
+        begin = tpl_text.index("<!-- SSOT-CONTEXT:BEGIN -->")
+        end = tpl_text.index("<!-- SSOT-CONTEXT:END -->") + len("<!-- SSOT-CONTEXT:END -->")
+        crlf_block = tpl_text[begin:end].replace("\n", "\r\n")
+        with open(agents_path, "wb") as handle:
+            handle.write(("# Repo\r\n\r\n" + crlf_block + "\r\n").encode("utf-8"))
+        out = self.assert_clean()
+        self.assertNotIn("managed block differs", out)
+
+        # 3. ZH Format-5 block using ASCII parens around `ssot_format: 5` detects drift when stale and passes when synced.
+        with open(agents_path, "w", encoding="utf-8") as handle:
+            handle.write("<!-- SSOT-CONTEXT:BEGIN -->\n## 长期 context\n\n本空间通过 INDEX.md(`ssot_format: 5`) 管理。\n<!-- SSOT-CONTEXT:END -->\n")
+        out = self.assert_clean()
+        self.assertIn("managed block differs from installed templates", out)
+        zh_f5 = os.path.join(os.path.dirname(CHECKER), "../../../ssot-bootstrap/assets/templates/zh/context-adapter.md")
+        with open(zh_f5, encoding="utf-8") as handle:
+            zh_text = handle.read()
+        zb = zh_text.index("<!-- SSOT-CONTEXT:BEGIN -->")
+        ze = zh_text.index("<!-- SSOT-CONTEXT:END -->") + len("<!-- SSOT-CONTEXT:END -->")
+        with open(agents_path, "w", encoding="utf-8") as handle:
+            handle.write(zh_text[zb:ze].replace("ENTRY", "INDEX.md") + "\n")
+        out = self.assert_clean()
+        self.assertNotIn("managed block differs", out)
+
 
 if __name__ == "__main__":
     unittest.main(verbosity=1)

@@ -12,7 +12,6 @@ fi
 # SSOT-CONTEXT bundle installer.
 
 REPO_OVERRIDE="${SSOT_CONTEXT_REPO_URL:-${SSOT_SKILL_REPO_URL:-}}"
-REPO_URL="${REPO_OVERRIDE:-https://github.com/huangpufan/SSOT-CONTEXT.git}"
 # Branch or tag to install from (--ref / SSOT_REF). Tags pin a protocol
 # generation, e.g. --ref v2-final keeps the v2 protocol after main moved on.
 REPO_REF="main"
@@ -73,6 +72,8 @@ BLOCK_PAYLOAD_TMP=""
 INSTALL_LOCK=""
 INSTALL_REPLACING=0
 INSTALL_ENTRIES=()
+UPGRADE_ROWS=()
+UPGRADE_SKIPPED_LINKS=()
 
 # Will be filled by detect_agents
 DETECTED_AGENTS=()
@@ -658,7 +659,7 @@ dexto	Dexto	.agents/skills	$HOME/.agents/skills	dir:$HOME/.dexto
 droid	Droid	.factory/skills	$HOME/.factory/skills	dir:$HOME/.factory
 firebender	Firebender	.agents/skills	$HOME/.firebender/skills	dir:$HOME/.firebender
 forgecode	ForgeCode	.forge/skills	$HOME/.forge/skills	dir:$HOME/.forge
-gemini-cli	Gemini CLI	.agents/skills	$HOME/.gemini/skills	dir:$HOME/.gemini
+gemini-cli	Gemini CLI	.agents/skills	$HOME/.gemini/skills	dir:$HOME/.gemini/skills;cmd:gemini;file:$HOME/.gemini/settings.json
 github-copilot	GitHub Copilot	.agents/skills	$HOME/.copilot/skills	dir:$HOME/.copilot
 goose	Goose	.goose/skills	$XDG/goose/skills	dir:$XDG/goose
 hermes-agent	Hermes Agent	.hermes/skills	$ENV:HERMES_HOME/skills;alt:$HOME/.hermes/skills	env:HERMES_HOME;dir:$HOME/.hermes
@@ -698,7 +699,7 @@ trae	Trae	.trae/skills	$HOME/.trae/skills	dir:$HOME/.trae
 trae-cn	Trae CN	.trae/skills	$HOME/.trae-cn/skills	dir:$HOME/.trae-cn
 warp	Warp	.agents/skills	$HOME/.agents/skills	dir:$HOME/.warp
 windsurf	Windsurf	.windsurf/skills	$HOME/.codeium/windsurf/skills	dir:$HOME/.codeium;cmd:windsurf
-zed	Zed	.agents/skills	$XDG/zed/skills	dir:$XDG/zed;env:APPDATA;env:FLATPAK_XDG_CONFIG_HOME
+zed	Zed	.agents/skills	$XDG/zed/skills	dir:$XDG/zed;dir:$ENV:APPDATA/Zed;dir:$ENV:FLATPAK_XDG_CONFIG_HOME/zed
 zencoder	Zencoder	.zencoder/skills	$HOME/.zencoder/skills	dir:$HOME/.zencoder
 zenflow	Zenflow	.zencoder/skills	$HOME/.zencoder/skills	dir:$HOME/.zencoder
 adal	AdaL	.adal/skills	$HOME/.adal/skills	dir:$HOME/.adal'
@@ -1099,6 +1100,7 @@ read_wire_block_from_file() {
   local template="$1" block skill
   [[ -f "$template" ]] || { err "missing SSOT instruction template: $template"; return 1; }
   block="$(awk '
+    { sub(/\r$/, "") }
     $0 ~ /^<!-- SSOT-(CONTEXT|SKILL):BEGIN -->$/ { starts++; active = 1; closing = $0; sub(/:BEGIN/, ":END", closing) }
     active { block = block $0 ORS }
     $0 ~ /^<!-- SSOT-(CONTEXT|SKILL):END -->$/ { ends++; if ($0 != closing) mismatch = 1; active = 0 }
@@ -1148,6 +1150,7 @@ resolve_block_target() {
 extract_file_block() {
   local file="$1"
   awk '
+    { sub(/\r$/, "") }
     $0 ~ /^<!-- SSOT-(CONTEXT|SKILL):BEGIN -->$/ {
       starts++
       if (starts == 1) {
@@ -1192,31 +1195,28 @@ extract_format5_entry() {
       sub(/[ \t]+$/, "", s)
       return s
     }
+    function between(line, pre, suf,    p, rest, q) {
+      p = index(line, pre)
+      if (p == 0) return ""
+      rest = substr(line, p + length(pre))
+      q = index(rest, suf)
+      if (q == 0) return ""
+      return trim(substr(rest, 1, q - 1))
+    }
     /ssot_format: 5/ {
       line = $0
-      if (index(line, "through ") > 0 && index(line, " (`ssot_format: 5`)") > 0) {
-        s = substr(line, index(line, "through ") + 8)
-        s = substr(s, 1, index(s, " (`ssot_format: 5`)") - 1)
-        print trim(s); found = 1; exit 0
+      sub(/\r$/, "", line)
+      if ((s = between(line, "through ", "(`ssot_format: 5`)")) != "" ||
+          (s = between(line, "through ", "（`ssot_format: 5`）")) != "" ||
+          (s = between(line, "本空间通过", "（`ssot_format: 5`）")) != "" ||
+          (s = between(line, "本空间通过", "(`ssot_format: 5`)")) != "" ||
+          (s = between(line, "本空间的入口为", "（`ssot_format: 5`）")) != "" ||
+          (s = between(line, "本空间的入口为", "(`ssot_format: 5`)")) != "") {
+        print s; found = 1; exit 0
       }
       if (index(line, " defines this space (`ssot_format: 5`)") > 0) {
-        s = substr(line, 1, index(line, " defines this space (`ssot_format: 5`)") - 1)
-        print trim(s); found = 1; exit 0
-      }
-      if (index(line, "本空间通过") > 0 && index(line, "（`ssot_format: 5`）") > 0) {
-        s = substr(line, index(line, "本空间通过") + length("本空间通过"))
-        s = substr(s, 1, index(s, "（`ssot_format: 5`）") - 1)
-        print trim(s); found = 1; exit 0
-      }
-      if (index(line, "本空间的入口为") > 0 && index(line, "（`ssot_format: 5`）") > 0) {
-        s = substr(line, index(line, "本空间的入口为") + length("本空间的入口为"))
-        s = substr(s, 1, index(s, "（`ssot_format: 5`）") - 1)
-        print trim(s); found = 1; exit 0
-      }
-      if (index(line, "本空间的入口为") > 0 && index(line, "(`ssot_format: 5`)") > 0) {
-        s = substr(line, index(line, "本空间的入口为") + length("本空间的入口为"))
-        s = substr(s, 1, index(s, "(`ssot_format: 5`)") - 1)
-        print trim(s); found = 1; exit 0
+        s = trim(substr(line, 1, index(line, " defines this space (`ssot_format: 5`)") - 1))
+        if (s != "") { print s; found = 1; exit 0 }
       }
     }
     END { if (!found) exit 1 }
@@ -1246,7 +1246,7 @@ substitute_entry_literal() {
 # Prints "<template_path>|<skill_base>" on success.
 find_local_installed_template() {
   local target_file="$1" lang="$2" template_name="$3"
-  local target_dir base tpl_root cand block_probe
+  local target_dir agent base proj glob tpl_root cand block_probe
   target_dir="$(dirname "$target_file")"
   local -a candidates=(
     "$target_dir/.agents/skills"
@@ -1256,11 +1256,21 @@ find_local_installed_template() {
     "$PWD/.claude/skills"
     "$PWD/.windsurf/skills"
   )
+  for agent in "${ALL_AGENTS[@]}"; do
+    proj="${AGENT_PROJECT_BASES[$agent]:-}"
+    if [[ -n "$proj" ]]; then
+      candidates+=("$target_dir/$proj" "$PWD/$proj")
+    fi
+  done
+  for agent in "${ALL_AGENTS[@]}"; do
+    glob="${AGENT_GLOBAL_BASES[$agent]:-}"
+    [[ -n "$glob" ]] && candidates+=("$glob")
+  done
   local -A seen=()
   for base in "${candidates[@]}"; do
-    [[ -d "$base/ssot-bootstrap/assets/templates" && -f "$base/$PRIMARY_SKILL/SKILL.md" ]] || continue
     [[ -z "${seen[$base]+x}" ]] || continue
     seen[$base]=1
+    [[ -d "$base/ssot-bootstrap/assets/templates" && -f "$base/$PRIMARY_SKILL/SKILL.md" ]] || continue
     tpl_root="$base/ssot-bootstrap/assets/templates"
     if [[ -f "$tpl_root/$lang/$template_name" ]]; then
       printf '%s|%s\n' "$tpl_root/$lang/$template_name" "$base"
@@ -1404,17 +1414,22 @@ run_sync_block() {
   printf '%s\n' "$BLOCK_EXPECTED" > "$BLOCK_PAYLOAD_TMP"
 
   awk -v payload="$BLOCK_PAYLOAD_TMP" '
-    $0 ~ /^<!-- SSOT-(CONTEXT|SKILL):BEGIN -->$/ {
+    {
+      clean = $0
+      sub(/\r$/, "", clean)
+    }
+    clean ~ /^<!-- SSOT-(CONTEXT|SKILL):BEGIN -->$/ {
       in_block = 1
       replaced = 1
+      eol = ($0 ~ /\r$/) ? "\r" : ""
       while ((getline pline < payload) > 0) {
-        print pline
+        print pline eol
       }
       close(payload)
       next
     }
     in_block {
-      if ($0 ~ /^<!-- SSOT-(CONTEXT|SKILL):END -->$/) {
+      if (clean ~ /^<!-- SSOT-(CONTEXT|SKILL):END -->$/) {
         in_block = 0
       }
       next
@@ -1675,7 +1690,7 @@ remove_bundle() {
 # -----------------------------------------------------------------------------
 bundle_location_exists() {
   local base="$1" journal
-  [[ ! -d "$base/$PRIMARY_SKILL" && ! -e "$base/.ssot-skill-lock" && ! -L "$base/.ssot-skill-lock" ]] || return 0
+  [[ ! -d "$base/$PRIMARY_SKILL" && ! -L "$base/$PRIMARY_SKILL" && ! -e "$base/.ssot-skill-lock" && ! -L "$base/.ssot-skill-lock" ]] || return 0
   # Quote the literal directory prefix: project names may contain glob tokens.
   for journal in "$base"/.ssot-skill-install.*/.ssot-transaction; do
     [[ ! -f "$journal" ]] || return 0
@@ -1702,9 +1717,12 @@ detect_installed_lang() {
 }
 
 scan_upgrade_targets() {
-  # Emits lines: "agent|scope|base|label"
-  # Skips bases that resolve to SOURCE_DIR/skills (would clobber the source repo).
+  # Emits lines: "agent|scope|base|label" in UPGRADE_ROWS and skipped symlinked
+  # skill installations ("agent|scope|base|label|live|target" or "dangling") in
+  # UPGRADE_SKIPPED_LINKS so --upgrade never silently converts linked checkouts
+  # back to copies. Skips bases that resolve to SOURCE_DIR/skills.
   UPGRADE_ROWS=()
+  UPGRADE_SKIPPED_LINKS=()
   local agent base scope
   local -A seen=()
   local -a agents=("${ALL_AGENTS[@]}")
@@ -1716,7 +1734,7 @@ scan_upgrade_targets() {
   if [[ -n "${SOURCE_DIR:-}" && -d "$SOURCE_DIR/skills" ]]; then
     source_skills="$(cd "$SOURCE_DIR/skills" && pwd -P)"
   fi
-  local probe
+  local probe link_target link_state
   for agent in "${agents[@]}"; do
     for scope in global project; do
       [[ -z "$ARG_SCOPE" || "$ARG_SCOPE" == "$scope" ]] || continue
@@ -1724,9 +1742,17 @@ scan_upgrade_targets() {
       [[ -n "$base" ]] || continue
       [[ "$scope" != "project" ]] || base="$PWD/$base"
       bundle_location_exists "$base" || continue
+      [[ -d "$base" ]] || continue
       probe="$(cd "$base" && pwd -P)"
       [[ "$probe" != "$source_skills" && -z "${seen[$probe]+x}" ]] || continue
       seen[$probe]=1
+      if [[ -L "$base/$PRIMARY_SKILL" ]]; then
+        link_target="$(readlink "$base/$PRIMARY_SKILL" 2>/dev/null || true)"
+        link_state="live"
+        [[ -d "$base/$PRIMARY_SKILL" ]] || link_state="dangling"
+        UPGRADE_SKIPPED_LINKS+=("${agent}|${scope}|${base}|${AGENT_LABELS[$agent]}|${link_state}|${link_target}")
+        continue
+      fi
       UPGRADE_ROWS+=("${agent}|${scope}|${base}|${AGENT_LABELS[$agent]}")
     done
   done
@@ -2098,17 +2124,46 @@ run_uninstall() {
   [[ -n "$ARG_AGENT" ]] || die "--uninstall requires --agent"
   [[ -n "$ARG_SCOPE" ]] || die "--uninstall requires --scope"
 
-  detect_agents
-  resolve_agent_list
-  dedup_targets "$ARG_SCOPE"
-  [[ ${#RESOLVED_AGENTS[@]} -gt 0 ]] || die "no uninstallable targets for scope: $ARG_SCOPE"
-
   local -a bases=()
   local agent base
-  for agent in "${RESOLVED_AGENTS[@]}"; do
-    base="$(agent_base_for "$agent" "$ARG_SCOPE")"
-    bases+=("$base")
-  done
+  if [[ "$ARG_AGENT" == "all" ]]; then
+    local -A seen=()
+    local source_skills="" probe skill has_any
+    if [[ -n "${SOURCE_DIR:-}" && -d "$SOURCE_DIR/skills" ]]; then
+      source_skills="$(cd "$SOURCE_DIR/skills" && pwd -P)"
+    fi
+    for agent in "${ALL_AGENTS[@]}"; do
+      base="$(agent_base_for "$agent" "$ARG_SCOPE")"
+      [[ -n "$base" ]] || continue
+      [[ "$ARG_SCOPE" != "project" ]] || base="$PWD/$base"
+      has_any=0
+      if bundle_location_exists "$base"; then
+        has_any=1
+      else
+        for skill in "${BUNDLE_SKILLS[@]}"; do
+          if [[ -e "$base/$skill" || -L "$base/$skill" ]]; then
+            has_any=1
+            break
+          fi
+        done
+      fi
+      [[ "$has_any" -eq 1 && -d "$base" ]] || continue
+      probe="$(cd "$base" && pwd -P)"
+      [[ "$probe" != "$source_skills" && -z "${seen[$probe]+x}" ]] || continue
+      seen[$probe]=1
+      bases+=("$base")
+    done
+    [[ ${#bases[@]} -gt 0 ]] || die "no installed SSOT-CONTEXT bundles found for scope: $ARG_SCOPE"
+  else
+    detect_agents
+    resolve_agent_list
+    dedup_targets "$ARG_SCOPE"
+    [[ ${#RESOLVED_AGENTS[@]} -gt 0 ]] || die "no uninstallable targets for scope: $ARG_SCOPE"
+    for agent in "${RESOLVED_AGENTS[@]}"; do
+      base="$(agent_base_for "$agent" "$ARG_SCOPE")"
+      bases+=("$base")
+    done
+  fi
 
   echo ""
   info "$(t UNINSTALL_HEADER)"
@@ -2148,7 +2203,24 @@ run_uninstall() {
 run_upgrade() {
   info "$(t UPGRADE_SCANNING)"
   scan_upgrade_targets
+
+  local srow sagent sscope sbase slabel sstate starget
+  for srow in "${UPGRADE_SKIPPED_LINKS[@]+"${UPGRADE_SKIPPED_LINKS[@]}"}"; do
+    IFS='|' read -r sagent sscope sbase slabel sstate starget <<< "$srow"
+    if [[ "$sstate" == "dangling" ]]; then
+      warn "skipping dangling symlink installation: ${slabel} [${sscope}] → ${sbase} (${PRIMARY_SKILL} -> ${starget})"
+      info "Repoint a moved checkout with: python3 tools/link-local.py --base \"${sbase}\" --apply --backup-root <dir> (or remove the broken symlinks and reinstall)."
+    else
+      warn "skipping symlink-linked installation: ${slabel} [${sscope}] → ${sbase} (${PRIMARY_SKILL} -> ${starget})"
+      info "Update that checkout with 'git pull', repoint with tools/link-local.py, or run 'install.sh --agent ${sagent} --scope ${sscope}' to convert back to copies."
+    fi
+  done
+
   if [[ ${#UPGRADE_ROWS[@]} -eq 0 ]]; then
+    if [[ ${#UPGRADE_SKIPPED_LINKS[@]} -gt 0 ]]; then
+      ok "all discovered SSOT-CONTEXT installations (${#UPGRADE_SKIPPED_LINKS[@]}) are symlink-linked and were left untouched; nothing to copy-upgrade"
+      return 0
+    fi
     die "$(t UPGRADE_NONE_FOUND)"
   fi
 

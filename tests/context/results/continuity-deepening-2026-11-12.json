@@ -806,13 +806,13 @@
     "Durable archive is a retained local copy, not an off-machine backup. Unsupported bwrap platforms may skip the corresponding integration probes."
   ],
   "archive": {
-    "archive": "/home/hpf/.local/state/ssot-context/evidence/benchmark-continuity-20261112/accepted/evidence.tar.gz",
+    "archive": "<local-home>/.local/state/ssot-context/evidence/benchmark-continuity-20261112/accepted/evidence.tar.gz",
     "sha256": "c5d53cc221652d74b28177a64a9f82076d167f4531e15ae3988bbb361b0c7f4c",
     "bytes": 19152217,
     "manifest_sha256": "8df62dafa5336893be8ea20283316ab7991567e64a0514b76814bf72d439fd17",
     "entries_verified": 7452,
     "readback_rebuild_returncode": 0,
-    "readback_log": "/home/hpf/.local/state/ssot-context/evidence/benchmark-continuity-20261112/accepted/readback.log",
+    "readback_log": "<local-home>/.local/state/ssot-context/evidence/benchmark-continuity-20261112/accepted/readback.log",
     "synthetic_git_audits": [
       {
         "input": "initial-cohort",
@@ -1288,7 +1288,7 @@
       "repaired-cohort/confirmation-chain"
     ],
     "status": "verified_local_and_independent_readback_accepted",
-    "account": "/home/hpf/.local/state/ssot-context/evidence/benchmark-continuity-20261112/accepted/archive-account.json",
+    "account": "<local-home>/.local/state/ssot-context/evidence/benchmark-continuity-20261112/accepted/archive-account.json",
     "account_sha256": "e8db30fc8143d4e40847e7cc36e23cc97e2b81e004cd5fd79f2f133faa030829",
     "readback_log_sha256": "498d68082c457dbc72e1d424d24b495f75f50b6808072e5e94ed4ef36f6fc572",
     "source_snapshot": "Source-final contains the frozen publication code/docs, distinct from immutable B2 native harnesses. This machine account and publication receipt are external authorities excluded from tar to avoid circular identities.",
@@ -1319,28 +1319,28 @@
         "evidence",
         "--rebuild"
       ],
-      "durable_tooling": "/home/hpf/.local/state/ssot-context/evidence/benchmark-continuity-20261112/tools",
+      "durable_tooling": "<local-home>/.local/state/ssot-context/evidence/benchmark-continuity-20261112/tools",
       "tool_sha256": "89f1ffb86fef0bc8037df21eae54f00032b6bbcfb3a76e5d79e58e6f6bd7e14a",
       "specification_sha256": "66ad639cd36d04f19050e9ff2500cc17de272c4f48d855c2b4c47baaf793d890",
       "matches_tar_payload": true,
-      "entrypoints_receipt": "/home/hpf/.local/state/ssot-context/evidence/benchmark-continuity-20261112/tooling-entrypoints.json",
+      "entrypoints_receipt": "<local-home>/.local/state/ssot-context/evidence/benchmark-continuity-20261112/tooling-entrypoints.json",
       "entrypoints_sha256": "91b5ee4ce33dc755cc12a6afa3e7845237d6f10142e21953c52c35e1b71a5112",
-      "readme": "/home/hpf/.local/state/ssot-context/evidence/benchmark-continuity-20261112/tools/README.md",
+      "readme": "<local-home>/.local/state/ssot-context/evidence/benchmark-continuity-20261112/tools/README.md",
       "requirements": "Python3/Git/Bash; full local integration checks need supported bwrap, unsupported probes may skip. Original historical source paths are not required for extracted verification.",
       "commands_are": "Offline manifest/report reconstruction and separate tests only; no native replay or model call."
     },
     "independent_readback": {
       "documents": {
         "readback-review.md": {
-          "path": "/home/hpf/.local/state/ssot-context/evidence/benchmark-continuity-20261112/readback-review.md",
+          "path": "<local-home>/.local/state/ssot-context/evidence/benchmark-continuity-20261112/readback-review.md",
           "sha256": "49a96786a66e8ef3f847fb24b82e5ebf8dac89e08558cff158d4908424d6b7d7"
         },
         "readback-review.json": {
-          "path": "/home/hpf/.local/state/ssot-context/evidence/benchmark-continuity-20261112/readback-review.json",
+          "path": "<local-home>/.local/state/ssot-context/evidence/benchmark-continuity-20261112/readback-review.json",
           "sha256": "b12f265d95c9b0ceaf9e8964da6ffca1151c99979868be5b6d6b2e5ee81ca9a0"
         },
         "readback-reviewer-receipt.json": {
-          "path": "/home/hpf/.local/state/ssot-context/evidence/benchmark-continuity-20261112/readback-reviewer-receipt.json",
+          "path": "<local-home>/.local/state/ssot-context/evidence/benchmark-continuity-20261112/readback-reviewer-receipt.json",
           "sha256": "92d8650a8a510a16f8312d878ca9618219d0cb6f3e1bf69c46958f9a9ac66c23"
         }
       },
@@ -1386,7 +1386,7 @@
     "adopt": "benchmark fixture/observer/oracle/report repairs and connected-path coverage",
     "protocol": "S0 5.3 unchanged; no S1 implemented or tested",
     "causal_limit": "No same-task writer-without-skills control, statistical repetition or S0/S1 comparison; no product-benefit/performance claim.",
-    "publication_authority": "/home/hpf/.local/state/ssot-context/evidence/benchmark-continuity-20261112/publication.json",
+    "publication_authority": "<local-home>/.local/state/ssot-context/evidence/benchmark-continuity-20261112/publication.json",
     "known_benchmark_repair_status": "Implemented and calibrated repairs accepted; raw native quality, final cost interpretation and durable independent readback complete. Publication status belongs to external receipt."
   },
   "cost_reanalysis": {
@@ -2357,13 +2357,13 @@
     "scope": "Observed token samples from incomplete native turns are lower bounds; full tokens remain unknown. Complete elapsed time does not imply complete token accounting. Raw artifacts/old costs are retained; no native behavior or review is replayed."
   },
   "publication": {
-    "authority": "/home/hpf/.local/state/ssot-context/evidence/benchmark-continuity-20261112/publication.json",
+    "authority": "<local-home>/.local/state/ssot-context/evidence/benchmark-continuity-20261112/publication.json",
     "scope": "Actual commit, ordinary push, remote readback and CI identity/status are owned by this external receipt, written after publication. This tracked account does not embed its own commit SHA or cache publication status."
   },
   "archive_attempts": {
     "status": "accepted_final_verified_superseded_candidates_retained",
     "first_candidate": {
-      "archive": "/home/hpf/.local/state/ssot-context/evidence/benchmark-continuity-20261112/evidence.tar.gz",
+      "archive": "<local-home>/.local/state/ssot-context/evidence/benchmark-continuity-20261112/evidence.tar.gz",
       "sha256": "931a9089bcd885bdfcaa6f7defd4516f0475d2c8f6962e820ad65411c14b93e3",
       "readback_returncode": 1,
       "failure": "format4-freeze-smoke frozen report did not reconstruct byte-identically",
@@ -2373,7 +2373,7 @@
     "producer_repair": "Derive required excluded-cache directory placeholders from hash-bound schema2 plans, retaining only empty directory type/mode while continuing to exclude cache payload. Alternate location/mode0750 calibrated.",
     "retention": "All four candidate paths/hashes and readback results are in producer calibration; only accepted is authoritative. Superseded archives retained externally, not recursively packed.",
     "producer_calibration": {
-      "receipt": "/home/hpf/.local/state/ssot-context/evidence/benchmark-continuity-20261112/archive-producer-calibration.json",
+      "receipt": "<local-home>/.local/state/ssot-context/evidence/benchmark-continuity-20261112/archive-producer-calibration.json",
       "sha256": "3b1d9d73dc9e778e5cbc72b6a9a921d02f2d179cd4363224a0cd1375a8f940c4",
       "details": {
         "producer_sha256": "89f1ffb86fef0bc8037df21eae54f00032b6bbcfb3a76e5d79e58e6f6bd7e14a",
@@ -2385,7 +2385,7 @@
           "--self-test"
         ],
         "exit_code": 0,
-        "persistent_distinct_location": "/home/hpf/.local/state/ssot-context/evidence/benchmark-continuity-20261112/pack-calibration",
+        "persistent_distinct_location": "<local-home>/.local/state/ssot-context/evidence/benchmark-continuity-20261112/pack-calibration",
         "plan_bound_inferred_directory_paths": [
           "different-depth/frozen-project/tools/__pycache__"
         ],
@@ -2395,25 +2395,25 @@
         "first_failure": "Frozen install-source directory identity missing after cache-directory pruning; repaired generically using hash-bound schema2 plan.tree_manifests; excluded contents stay excluded.",
         "candidates": [
           {
-            "candidate": "/home/hpf/.local/state/ssot-context/evidence/benchmark-continuity-20261112",
+            "candidate": "<local-home>/.local/state/ssot-context/evidence/benchmark-continuity-20261112",
             "sha256": "931a9089bcd885bdfcaa6f7defd4516f0475d2c8f6962e820ad65411c14b93e3",
             "readback_rc": 1,
             "authority": "retained superseded candidate"
           },
           {
-            "candidate": "/home/hpf/.local/state/ssot-context/evidence/benchmark-continuity-20261112/seal-v2",
+            "candidate": "<local-home>/.local/state/ssot-context/evidence/benchmark-continuity-20261112/seal-v2",
             "sha256": "a15f0b051ce76b9d251fc7c4b209b9bdcfa8d58205e471eb98e609af32bca838",
             "readback_rc": 0,
             "authority": "retained superseded candidate"
           },
           {
-            "candidate": "/home/hpf/.local/state/ssot-context/evidence/benchmark-continuity-20261112/final-seal",
+            "candidate": "<local-home>/.local/state/ssot-context/evidence/benchmark-continuity-20261112/final-seal",
             "sha256": "3be22fc301df7f005287c2303b8742c87d12c56300e70ba2cf7ca8efcfa0a4bf",
             "readback_rc": 0,
             "authority": "retained superseded candidate"
           },
           {
-            "candidate": "/home/hpf/.local/state/ssot-context/evidence/benchmark-continuity-20261112/accepted",
+            "candidate": "<local-home>/.local/state/ssot-context/evidence/benchmark-continuity-20261112/accepted",
             "sha256": "c5d53cc221652d74b28177a64a9f82076d167f4531e15ae3988bbb361b0c7f4c",
             "readback_rc": 0,
             "authority": "accepted final"

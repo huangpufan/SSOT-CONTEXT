@@ -53,34 +53,78 @@ done
 grep -q 'references/memory-model.md' "$SKILLS/ssot-preflight/SKILL.md" &&
   pass "ssot-preflight links the memory model" || fail "ssot-preflight does not link the memory model"
 
-# 4. Relative links in SKILL.md and references resolve (fenced examples skipped).
-check_links_in() {
-  local file="$1" file_dir stripped target clean resolved failed=0
-  file_dir="$(dirname "$file")"
-  stripped="$(awk 'BEGIN{f=0} /^```/{f=!f; next} !f' "$file" | sed 's/`[^`]*`//g')"
-  while IFS= read -r target; do
-    clean="${target%%#*}"; clean="${clean%%\?*}"
-    [[ -z "$clean" || "$clean" =~ ^[a-z]+:// ]] && continue
-    resolved="$(cd "$file_dir" 2>/dev/null && python3 -c 'import os,sys; print(os.path.realpath(sys.argv[1]))' "$clean" 2>/dev/null || true)"
-    if [[ -z "$resolved" || ! -e "$resolved" ]]; then
-      echo "  FAIL : link broken in ${file#"$PROJECT_ROOT"/}: $clean"
-      failed=1
-    fi
-  done < <(printf '%s\n' "$stripped" | grep -oE '\]\([^)]+\)' | sed -E 's/^\]\(([^)]+)\)$/\1/')
-  return "$failed"
+# 4. Relative links and heading anchors resolve across skills and repository docs
+# (fenced examples, inline code, consumer templates, and research/ skipped).
+check_links() {
+  python3 -B - "$PROJECT_ROOT" "$@" <<'PY'
+import importlib.util
+import os
+import subprocess
+import sys
+from urllib.parse import unquote
+
+root = sys.argv[1]
+mode = sys.argv[2]
+spec = importlib.util.spec_from_file_location("check", f"{root}/skills/ssot-doctor/assets/scripts/ssot-check.py")
+check = importlib.util.module_from_spec(spec)
+spec.loader.exec_module(check)
+
+if mode == "--repo":
+    base = root
+    raw = subprocess.run(
+        ["git", "-C", root, "ls-files", "-co", "--exclude-standard", "-z", "--",
+         "*.md", ":!:research/", ":!:skills/ssot-bootstrap/assets/templates/"],
+        capture_output=True, text=True, check=True,
+    ).stdout
+    paths = [os.path.join(root, rel) for rel in filter(None, raw.split("\0"))]
+else:
+    base = mode
+    paths = sys.argv[3:]
+
+failed = 0
+for path in paths:
+    rel = os.path.relpath(path, base)
+    with open(path, encoding="utf-8") as handle:
+        text = handle.read()
+    for number, raw_target in check.link_targets(text):
+        target = raw_target.strip()
+        if not target or check.SCHEME_RE.match(target):
+            continue
+        resolved, fragment = check.resolve(path, target)
+        if not os.path.exists(resolved):
+            print(f"  FAIL : broken link in {rel}:{number}: {target}")
+            failed += 1
+            continue
+        if fragment and os.path.isfile(resolved):
+            line_anchor = check.LINE_ANCHOR_RE.match(fragment)
+            if line_anchor:
+                with open(resolved, encoding="utf-8", errors="replace") as target_handle:
+                    length = sum(1 for _ in target_handle)
+                if int(line_anchor.group(1)) > length:
+                    print(f"  FAIL : line anchor past end of file in {rel}:{number}: {target}")
+                    failed += 1
+            elif resolved.lower().endswith(".md") and unquote(fragment) not in check.anchors(resolved):
+                print(f"  FAIL : missing heading anchor in {rel}:{number}: {target}")
+                failed += 1
+
+sys.exit(1 if failed else 0)
+PY
 }
 PROBE_DIR="$(mktemp -d)"
 trap 'rm -rf "$PROBE_DIR"' EXIT
-printf '[missing](missing.md#x)\n' > "$PROBE_DIR/probe.md"
-check_links_in "$PROBE_DIR/probe.md" >/dev/null && fail "link check accepted a missing target" || pass "link check rejects a missing target"
+mkdir -p "$PROBE_DIR/skills/s"
 printf '# E\n' > "$PROBE_DIR/e.md"
-printf '[e](e.md#e) [x](https://example.test/m.md)\n\n```\n[y](missing.md)\n```\n' > "$PROBE_DIR/probe.md"
-check_links_in "$PROBE_DIR/probe.md" >/dev/null && pass "link check accepts valid, external, and fenced links" || fail "link check rejected valid links"
-LINK_FAILS=0
-while IFS= read -r f; do
-  check_links_in "$f" || LINK_FAILS=$((LINK_FAILS+1))
-done < <(find "$SKILLS" -type f \( -name SKILL.md -o -path '*/references/*.md' \))
-[[ $LINK_FAILS -eq 0 ]] && pass "all skill and reference links resolve" || fail "$LINK_FAILS file(s) have broken links"
+printf '[missing](missing.md#x)\n' > "$PROBE_DIR/probe-doc.md"
+check_links "$PROBE_DIR" "$PROBE_DIR/probe-doc.md" >/dev/null && fail "link check accepted a broken relative link in a top-level doc" || pass "link check rejects a broken relative link in a top-level doc"
+printf '[bad](../../e.md#bad-anchor)\n' > "$PROBE_DIR/skills/s/SKILL.md"
+check_links "$PROBE_DIR" "$PROBE_DIR/skills/s/SKILL.md" >/dev/null && fail "link check accepted a broken heading anchor in a skill file" || pass "link check rejects a broken heading anchor in a skill file"
+printf '[e](e.md#e) [x](https://example.test/m.md) `[z](missing.md#bad)`\n\n```\n[y](missing.md#bad)\n```\n' > "$PROBE_DIR/probe.md"
+check_links "$PROBE_DIR" "$PROBE_DIR/probe.md" >/dev/null && pass "link check accepts valid anchors, external URLs, inline code, and fenced examples" || fail "link check rejected valid links"
+if check_links --repo; then
+  pass "all skill, reference, top-level, docs, and test Markdown links and anchors resolve"
+else
+  fail "one or more repository Markdown links or heading anchors are broken"
+fi
 
 # Repository documentation follows the filename convention in CONTRIBUTING.md.
 if python3 - <<'PY'
@@ -198,6 +242,7 @@ USERS_PATH_PATTERN="$(printf '/%s/[^\\\\`[:space:]]+' 'Users')"
 ORIGIN_NAME="$(printf 'sisy%s' 'phus')"
 COMMIT_SHA_PATTERN='(^|[^0-9a-f])[0-9a-f]{40}([^0-9a-f]|$)'
 HYGIENE_PATTERN="(${HOME_PATH_PATTERN}|${USERS_PATH_PATTERN}|${ORIGIN_NAME}|${COMMIT_SHA_PATTERN})"
+JSON_HYGIENE_PATTERN="(${HOME_PATH_PATTERN}|${USERS_PATH_PATTERN}|${ORIGIN_NAME})"
 COMMIT_SHA_40="$(printf '%040d' 0)"
 COMMIT_SHA_64="$(printf '%064d' 0)"
 COMMIT_SHA_TEST_ERRORS=0
@@ -212,6 +257,13 @@ for sample in "$COMMIT_SHA_64" "sha256=$COMMIT_SHA_64."; do
   fi
 done
 [[ "$COMMIT_SHA_TEST_ERRORS" -eq 0 ]] && pass "hygiene rejects complete 40-hex tokens and permits SHA-256, bare or in text" || fail "commit SHA hygiene calibration"
+printf '{"archive": "/%s/probe/x"}\n' 'home' > "$PROBE_DIR/leak.json"
+printf '{"commit": "%s", "archive": "<local-home>/x"}\n' "$COMMIT_SHA_40" > "$PROBE_DIR/clean.json"
+if grep -qE "$JSON_HYGIENE_PATTERN" "$PROBE_DIR/leak.json" && ! grep -qE "$JSON_HYGIENE_PATTERN" "$PROBE_DIR/clean.json"; then
+  pass "JSON hygiene rejects local-machine paths while permitting 40-hex commit IDs"
+else
+  fail "JSON hygiene calibration"
+fi
 HYGIENE_ERRORS=()
 while IFS= read -r -d '' f; do
   if grep -qE "$HYGIENE_PATTERN" "$PROJECT_ROOT/$f"; then
@@ -228,7 +280,20 @@ while IFS= read -r -d '' f; do
     HYGIENE_ERRORS+=("$f:${hit%%:*} ($reason)")
   fi
 done < <(git -C "$PROJECT_ROOT" ls-files -co --exclude-standard -z -- '*.md' '*.sh' '*.py' '*.yaml' '*.yml' '*.mjs' ':!:CHANGELOG.md')
-[[ ${#HYGIENE_ERRORS[@]} -eq 0 ]] && pass "no local or consumer-project leakage" || fail "hygiene leakage in: ${HYGIENE_ERRORS[*]}"
+while IFS= read -r -d '' f; do
+  if grep -qE "$JSON_HYGIENE_PATTERN" "$PROJECT_ROOT/$f"; then
+    # Report the location and reason without echoing private content.
+    hit="$(grep -anEm1 "$JSON_HYGIENE_PATTERN" "$PROJECT_ROOT/$f")"
+    content="${hit#*:}"
+    if [[ "$content" == *"$ORIGIN_NAME"* ]]; then
+      reason="consumer project name"
+    else
+      reason="local machine path"
+    fi
+    HYGIENE_ERRORS+=("$f:${hit%%:*} ($reason)")
+  fi
+done < <(git -C "$PROJECT_ROOT" ls-files -co --exclude-standard -z -- '*.json' ':!:research/')
+[[ ${#HYGIENE_ERRORS[@]} -eq 0 ]] && pass "no local or consumer-project leakage (including tracked JSON)" || fail "hygiene leakage in: ${HYGIENE_ERRORS[*]}"
 
 # 8b. Paragraphs are one line each. Editors wrap text; a paragraph broken
 # across short lines reads as ragged text, and agents copy the shape of the
@@ -253,6 +318,62 @@ elif [[ -n "$WRAPPED" ]]; then
   fail "paragraphs broken across short lines: $WRAPPED"
 else
   pass "Markdown paragraphs are one line each"
+fi
+
+# 8c. No duplicate unittest method names across tracked Python test files
+# (Python silently overwrites earlier same-named methods in a class).
+check_duplicate_tests() {
+  python3 -B - "$PROJECT_ROOT" "$@" <<'PY'
+import ast
+import os
+import subprocess
+import sys
+
+root = sys.argv[1]
+mode = sys.argv[2]
+if mode == "--repo":
+    base = root
+    raw = subprocess.run(
+        ["git", "-C", root, "ls-files", "-co", "--exclude-standard", "-z", "--", "tests/*.py"],
+        capture_output=True, text=True, check=True,
+    ).stdout
+    paths = [os.path.join(root, rel) for rel in filter(None, raw.split("\0"))]
+else:
+    base = mode
+    paths = sys.argv[3:]
+
+duplicates = []
+for path in paths:
+    rel = os.path.relpath(path, base)
+    with open(path, encoding="utf-8") as handle:
+        tree = ast.parse(handle.read(), filename=rel)
+    for node in ast.walk(tree):
+        if not isinstance(node, ast.ClassDef):
+            continue
+        seen = set()
+        for item in node.body:
+            if isinstance(item, (ast.FunctionDef, ast.AsyncFunctionDef)) and item.name.startswith("test_"):
+                if item.name in seen:
+                    duplicates.append(f"{rel}:{item.lineno} ({node.name}.{item.name})")
+                seen.add(item.name)
+
+if duplicates:
+    print("\n".join(duplicates))
+    sys.exit(1)
+PY
+}
+cat > "$PROBE_DIR/dup_test.py" <<'PY'
+class ProbeTest:
+    def test_same(self):
+        pass
+    def test_same(self):
+        pass
+PY
+check_duplicate_tests "$PROBE_DIR" "$PROBE_DIR/dup_test.py" >/dev/null && fail "duplicate-test check accepted duplicate test_ methods" || pass "duplicate-test check rejects duplicate test_ methods"
+if DUP_TESTS="$(check_duplicate_tests --repo)"; then
+  pass "all Python test classes under tests/ have unique test_* method names"
+else
+  fail "duplicate test_* method(s): $DUP_TESTS"
 fi
 
 # 9. Budgets. These guard the always-loaded cost surface (skill catalog and
@@ -360,7 +481,7 @@ budget "bundle scripts" "$SCRIPT_BYTES" 98304 bytes
 if TOTAL_BYTES="$(git -C "$PROJECT_ROOT" ls-files -co --exclude-standard -z -- skills | xargs -0 cat | wc -c)" && (( TOTAL_BYTES > 0 )); then
   RUNTIME_ASSET_BYTES=$((TOTAL_BYTES - SCRIPT_BYTES))
   budget "runtime assets (skills/ excluding scripts)" "$RUNTIME_ASSET_BYTES" 163840 bytes
-  budget "skills/ total" "$TOTAL_BYTES" 253952 bytes
+  budget "skills/ total" "$TOTAL_BYTES" 262144 bytes
 else
   fail "could not measure the runtime files in skills/"
 fi
