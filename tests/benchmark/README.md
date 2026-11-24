@@ -18,6 +18,8 @@ For routine software, research and creative queries, the [direct-lookup study](.
 
 For a single rule change, the [ordered-lookup study](../../docs/2026-11-20-ordered-lookup-cost.md) measures what a fresh reader recovered. Its [file-open records](results/ordered-lookup-cost.json) show when the agent requested a source before learning its permissions. These small trials leave broader savings and access reliability open.
 
+For mixed tasks that combine one approved prose edit with a read-only lookup in another owner, the [mixed-edit study](../../docs/2026-11-24-mixed-edit-study.md) pairs 5.15 against an isolated decoupling candidate on Codex across format 4 and format 5, with plain-docs controls, cold readers and kernel `inotify` file-open witnesses. Protocol 5.15 was kept after premature Closeout backtracking and API round-trip variance raised aggregate input by 7.4%; see its [frozen results](results/mixed-edit-study.json).
+
 ## What it runs
 
 The synthetic Parcel desk repository has a quotation module, compatibility tests, accepted delivery and eligibility owners, a superseded proposal, product/architecture entries and 24 adjacent operational documents by default. Arbitrary contract values vary deterministically by repetition and stay identical between paired arms. The agent implements express delivery while preserving standard quotes and the cross-service digital-goods exception. Policy files and supplied tests must remain unchanged. This explicit write scope keeps the experiment about reading and implementation; decision capture and documentation upkeep need separate trials.
