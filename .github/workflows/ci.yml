@@ -21,9 +21,9 @@ jobs:
         run: |
           BASH_BIN=bash
           [[ "${{ runner.os }}" == "macOS" ]] && BASH_BIN=/opt/homebrew/bin/bash
-          for f in install.sh tests/*.sh; do "$BASH_BIN" -n "$f"; done
+          for f in install.sh tests/*.sh tools/*.sh; do "$BASH_BIN" -n "$f"; done
       - name: Python compile
-        run: python3 -m py_compile skills/ssot-doctor/assets/scripts/*.py tests/test-ssot-check.py tests/test-context-source.py tests/test-installer-recovery.py tests/run-performance-trials.py tests/run-migration-trials.py tests/continuity_cases.py tests/test-migration-trials.py tests/benchmark/*.py tests/context/*.py
+        run: python3 -m py_compile skills/ssot-doctor/assets/scripts/*.py tests/test-ssot-check.py tests/test-context-source.py tests/test-installer-recovery.py tests/test-precommit-hook.py tests/run-performance-trials.py tests/run-migration-trials.py tests/continuity_cases.py tests/test-migration-trials.py tests/benchmark/*.py tests/context/*.py
 
   shellcheck:
     name: shellcheck
@@ -33,7 +33,7 @@ jobs:
       - name: Install shellcheck
         run: sudo apt-get update -qq && sudo apt-get install -y shellcheck
       - name: shellcheck
-        run: shellcheck -S warning -e SC2034 install.sh tests/*.sh
+        run: shellcheck -S warning -e SC2034 install.sh tests/*.sh tools/*.sh
 
   checker:
     name: ssot-check regression tests
@@ -65,6 +65,7 @@ jobs:
           python3 tests/context/test_queue_confirmation.py
           python3 tests/context/test_tiering.py
           python3 tests/test-local-links.py
+          python3 tests/test-precommit-hook.py
 
   mermaid-templates:
     name: parse template diagrams

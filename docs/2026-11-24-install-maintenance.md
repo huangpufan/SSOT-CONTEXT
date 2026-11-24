@@ -113,6 +113,16 @@ Version 4.0 uses `ssot_format: 4`: `SSOT/README.md` routes to maintained reposit
 bash "$ssot_install_dir/install.sh" --upgrade --agent "$ssot_agent" --scope "$ssot_scope" --ref v2-final
 ```
 
+## Optional zero-token Git pre-commit guard
+
+To run `ssot-check.py` deterministically at commit time across every agent and human contributor without spending model turns, wire the opt-in [`tools/ssot-precommit.sh`](../tools/ssot-precommit.sh) hook in a development repository:
+
+```bash
+ln -sf /path/to/SSOT-CONTEXT/tools/ssot-precommit.sh .git/hooks/pre-commit
+```
+
+When staged changes stay outside `SSOT/`, Markdown files, and file deletions/renames, the hook exits in a few milliseconds without starting Python. When `SSOT/`, any `.md` file, or a file deletion/rename is staged, it locates the installed `ssot-check.py` (or `SSOT_CHECKER`) and runs `ssot-check.py SSOT --since HEAD`, blocking unauthorized confirmed-invariant edits and broken links even if an agent skipped closeout. Set `SSOT_PRECOMMIT_STRICT=1` to fail when no checker installation is found, or `SSOT_DIR=<path>` for a custom entry.
+
 ## Project rename compatibility
 
 SSOT-CONTEXT was previously named SSOT-SKILL. Fresh installations copy only the four core lifecycle skills (`ssot-preflight`, `ssot-bootstrap`, `ssot-closeout`, `ssot-doctor`) to keep the always-loaded skill catalog small; pass `--with-legacy-shims` if legacy prompts invoke `$ssot-audit` or `$ssot-skill`, and `--upgrade` (as well as `tools/link-local.py` and `--ref v2-final`) preserves existing compatibility shims automatically while `--uninstall` cleans all six slots. `SSOT_CONTEXT_REPO_URL` overrides the installer source; the legacy `SSOT_SKILL_REPO_URL` remains a fallback, and the new variable takes precedence when both are set. Installer lock, staging and companion ownership names retain their legacy spelling so upgrades still detect interrupted transactions and remove only companions they own. Development memory keeps `SSOT/`; a general space can retain its explicitly wired entry and current owners.
