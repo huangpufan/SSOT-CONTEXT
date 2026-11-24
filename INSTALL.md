@@ -57,14 +57,14 @@ Read the actual target path from installer output and check that location:
 
 ```bash
 ssot_skills_dir='<installed-skills-directory>'
-for ssot_skill in ssot-preflight ssot-bootstrap ssot-closeout ssot-audit ssot-doctor ssot-skill; do
+for ssot_skill in ssot-preflight ssot-bootstrap ssot-closeout ssot-doctor; do
   test -f "$ssot_skills_dir/$ssot_skill/SKILL.md" || exit 1
   test -f "$ssot_skills_dir/$ssot_skill/agents/openai.yaml" || exit 1
 done
 python3 "$ssot_skills_dir/ssot-doctor/assets/scripts/ssot-check.py" --help >/dev/null
 ```
 
-Confirm templates are flattened into the selected language directly under `ssot-bootstrap/assets/templates/` (without `en/` and `zh/` subdirectories) and read `metadata.protocol_version` from the installed `ssot-preflight/SKILL.md`. Do not run an SSOT review or bootstrap as part of installation unless the user asked for it.
+Fresh installations copy only the four lifecycle skills above so new workspaces avoid always-loaded catalog overhead from legacy compatibility shims (`ssot-audit`, `ssot-skill`). Pass `--with-legacy-shims` if older prompts invoke those names; `--upgrade` preserves them automatically when already present. Confirm templates are flattened into the selected language directly under `ssot-bootstrap/assets/templates/` (without `en/` and `zh/` subdirectories) and read `metadata.protocol_version` from the installed `ssot-preflight/SKILL.md`. Do not run an SSOT review or bootstrap as part of installation unless the user asked for it.
 
 ## 4. Wire the skills into the repo's agent-instructions file
 
@@ -116,4 +116,4 @@ See [2.x / 3.x upgrade boundaries and `--ref v2-final`](docs/2026-11-24-install-
 
 ## Project rename compatibility
 
-SSOT-CONTEXT was previously named SSOT-SKILL; all six skill directory names and legacy installer markers remain compatible. See [rename compatibility details](docs/2026-11-24-install-maintenance.md#project-rename-compatibility).
+SSOT-CONTEXT was previously named SSOT-SKILL; existing installations and `--upgrade` preserve the `ssot-audit` and `ssot-skill` compatibility shims automatically (fresh installs omit them by default and accept `--with-legacy-shims` if needed), and legacy installer markers remain compatible. See [rename compatibility details](docs/2026-11-24-install-maintenance.md#project-rename-compatibility).

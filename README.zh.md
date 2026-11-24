@@ -17,7 +17,7 @@
 - **开发仓库。** 人定义不变量——必须持续守住的结果，例如接口兼容、重试不能重复扣款；Agent 在这些边界内修改代码。入口是 `SSOT/README.md`（`ssot_format: 4`）。
 - **你明确声明的通用 context 空间：** 一项研究、一部创作、一个人生领域或一个组织。Git 不是必需的，已有的文件夹和文档保持原位。入口是你指定的文档（`ssot_format: 5`）。
 
-本项目原名 SSOT-SKILL，旧的技能名称仍然可用（[详情](./INSTALL.md#project-rename-compatibility)）。
+本项目原名 SSOT-SKILL；新装默认只安装 4 个核心生命周期技能，旧安装升级自动保留原兼容名称（新装如需兼容旧提示词可加 `--with-legacy-shims`，[详情](./INSTALL.md#project-rename-compatibility)）。
 
 ## 原则
 

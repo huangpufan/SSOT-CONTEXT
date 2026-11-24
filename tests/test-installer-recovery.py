@@ -14,7 +14,7 @@ import unittest
 ROOT = Path(__file__).resolve().parent.parent
 INSTALLER = Path(os.environ.get("SSOT_TEST_INSTALLER", ROOT / "install.sh"))
 BASH = os.environ.get("SSOT_TEST_BASH", "bash")
-SKILLS = ("ssot-preflight", "ssot-bootstrap", "ssot-closeout", "ssot-audit", "ssot-doctor", "ssot-skill")
+SKILLS = ("ssot-preflight", "ssot-bootstrap", "ssot-closeout", "ssot-doctor")
 MARKER = '<!-- SSOT-SKILL bundle companion; owned by install.sh -->'
 
 
@@ -257,11 +257,11 @@ os.execv({real_mv!r} if tool == 'mv' else {real_rm!r}, [tool, *args])
 
     def test_directory_symlink_is_restored_without_touching_its_target(self):
         external = self.root / "external-skill"
-        (self.base / "ssot-doctor").rename(external)
-        (self.base / "ssot-doctor").symlink_to(external, target_is_directory=True)
+        (self.base / "ssot-closeout").rename(external)
+        (self.base / "ssot-closeout").symlink_to(external, target_is_directory=True)
         external_before = digest(external)
         self.old = digest(self.base)
-        self.assert_rolled_back("promotion", "ssot-skill")
+        self.assert_rolled_back("promotion", "ssot-doctor")
         self.assertEqual(external_before, digest(external))
 
     def test_backup_rename_failure_keeps_original_entry(self):

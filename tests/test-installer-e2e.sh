@@ -31,9 +31,12 @@ HOME="$SCENARIO1" SOURCE_DIR="$PROJECT_ROOT" \
 CLAUDE_BASE="$SCENARIO1/.claude/skills"
 assert_dir "scenario1: claude base created" "$CLAUDE_BASE"
 assert_no_file "scenario1: no bundle-level companion since 3.0" "$CLAUDE_BASE/SKILL_STYLE.md"
-for skill in ssot-preflight ssot-bootstrap ssot-closeout ssot-audit ssot-doctor ssot-skill; do
+for skill in ssot-preflight ssot-bootstrap ssot-closeout ssot-doctor; do
   assert_file "scenario1: $skill SKILL.md" "$CLAUDE_BASE/$skill/SKILL.md"
   assert_file "scenario1: $skill openai.yaml" "$CLAUDE_BASE/$skill/agents/openai.yaml"
+done
+for shim in ssot-audit ssot-skill; do
+  assert_no_dir "scenario1: $shim omitted on default fresh install" "$CLAUDE_BASE/$shim"
 done
 assert_dir "scenario1: templates dir flattened" "$CLAUDE_BASE/ssot-bootstrap/assets/templates"
 assert_no_dir "scenario1: no en/ subdir in installed templates" "$CLAUDE_BASE/ssot-bootstrap/assets/templates/en"
@@ -285,7 +288,7 @@ else
   fail "scenario14: --quickstart exit code ($SCEN14_RC); log: $SCEN14_LOG"
 fi
 assert_file "scenario14: project install landed at .claude/skills" "$SCENARIO14/project/.claude/skills/ssot-preflight/SKILL.md"
-assert_file "scenario14: ssot-skill shim installed too" "$SCENARIO14/project/.claude/skills/ssot-skill/SKILL.md"
+assert_no_dir "scenario14: legacy ssot-skill shim omitted on fresh quickstart" "$SCENARIO14/project/.claude/skills/ssot-skill"
 if echo "$SCEN14_LOG" | grep -q "also install globally"; then
   pass "scenario14: post-install prints global install hint"
 else
@@ -1038,6 +1041,39 @@ if [[ $? -eq 0 ]] && ! grep -q 'managed block outdated' <<< "$UPG30_CLEAN"; then
 else
   fail "scenario30: --upgrade still warned after sync (out=$UPG30_CLEAN)"
 fi
+
+# Scenario 31: legacy compatibility shims (ssot-audit, ssot-skill) are opt-in on fresh
+# installs, preserved automatically on upgrade when present, and cleaned up on uninstall.
+SCENARIO31="$WORK_ROOT/scenario31"
+mkdir -p "$SCENARIO31/fresh" "$SCENARIO31/legacy"
+HOME="$SCENARIO31" SOURCE_DIR="$PROJECT_ROOT" \
+  bash -c "cd '$SCENARIO31/fresh' && bash '$INSTALLER' --quickstart --agent codex --scope project --lang en" >/dev/null 2>&1 \
+  || fail "scenario31: fresh 4-skill install failed"
+assert_no_dir "scenario31: fresh install omits ssot-audit" "$SCENARIO31/fresh/.agents/skills/ssot-audit"
+assert_no_dir "scenario31: fresh install omits ssot-skill" "$SCENARIO31/fresh/.agents/skills/ssot-skill"
+HOME="$SCENARIO31" SOURCE_DIR="$PROJECT_ROOT" \
+  bash -c "cd '$SCENARIO31/fresh' && bash '$INSTALLER' --upgrade --agent codex --scope project" >/dev/null 2>&1 \
+  || fail "scenario31: upgrade of 4-skill install failed"
+assert_no_dir "scenario31: upgrade of 4-skill install does not inject ssot-audit" "$SCENARIO31/fresh/.agents/skills/ssot-audit"
+assert_no_dir "scenario31: upgrade of 4-skill install does not inject ssot-skill" "$SCENARIO31/fresh/.agents/skills/ssot-skill"
+
+HOME="$SCENARIO31" SOURCE_DIR="$PROJECT_ROOT" \
+  bash -c "cd '$SCENARIO31/legacy' && bash '$INSTALLER' --quickstart --agent codex --scope project --lang en --with-legacy-shims" >/dev/null 2>&1 \
+  || fail "scenario31: --with-legacy-shims install failed"
+assert_file "scenario31: --with-legacy-shims installs ssot-audit" "$SCENARIO31/legacy/.agents/skills/ssot-audit/SKILL.md"
+assert_file "scenario31: --with-legacy-shims installs ssot-skill" "$SCENARIO31/legacy/.agents/skills/ssot-skill/SKILL.md"
+echo "OLD" > "$SCENARIO31/legacy/.agents/skills/ssot-skill/SENTINEL"
+HOME="$SCENARIO31" SOURCE_DIR="$PROJECT_ROOT" \
+  bash -c "cd '$SCENARIO31/legacy' && bash '$INSTALLER' --upgrade --agent codex --scope project" >/dev/null 2>&1 \
+  || fail "scenario31: upgrade preserving existing shims failed"
+assert_file "scenario31: upgrade preserves existing ssot-audit" "$SCENARIO31/legacy/.agents/skills/ssot-audit/SKILL.md"
+assert_file "scenario31: upgrade preserves and refreshes existing ssot-skill" "$SCENARIO31/legacy/.agents/skills/ssot-skill/SKILL.md"
+assert_no_file "scenario31: upgrade refreshed existing ssot-skill contents" "$SCENARIO31/legacy/.agents/skills/ssot-skill/SENTINEL"
+HOME="$SCENARIO31" SOURCE_DIR="$PROJECT_ROOT" \
+  bash -c "cd '$SCENARIO31/legacy' && bash '$INSTALLER' --uninstall --agent codex --scope project --yes" >/dev/null 2>&1 \
+  || fail "scenario31: uninstall of 6-skill install failed"
+assert_no_dir "scenario31: uninstall removes ssot-audit" "$SCENARIO31/legacy/.agents/skills/ssot-audit"
+assert_no_dir "scenario31: uninstall removes ssot-skill" "$SCENARIO31/legacy/.agents/skills/ssot-skill"
 
 echo "=== RESULT: pass=$PASS fail=$FAIL ==="
 [[ $FAIL -eq 0 ]] && exit 0 || exit 1

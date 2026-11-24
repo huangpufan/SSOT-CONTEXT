@@ -17,13 +17,18 @@ REPO_URL="${REPO_OVERRIDE:-https://github.com/huangpufan/SSOT-CONTEXT.git}"
 # generation, e.g. --ref v2-final keeps the v2 protocol after main moved on.
 REPO_REF="main"
 PRIMARY_SKILL="ssot-preflight"
-BUNDLE_SKILLS=(
+CORE_SKILLS=(
   "ssot-preflight"
   "ssot-bootstrap"
   "ssot-closeout"
-  "ssot-audit"
   "ssot-doctor"
-  "ssot-skill"
+)
+# Compatibility names that route elsewhere; omitted on fresh installs unless
+# --with-legacy-shims is passed, preserved automatically when already installed.
+SHIM_SKILLS=("ssot-audit" "ssot-skill")
+BUNDLE_SKILLS=(
+  "${CORE_SKILLS[@]}"
+  "${SHIM_SKILLS[@]}"
 )
 # Bundle-level companion files, installed only when the source ships them.
 # Since 3.0 the bundle ships none (SKILL_STYLE.md moved into CONTRIBUTING.md);
@@ -32,9 +37,6 @@ BUNDLE_SKILLS=(
 BUNDLE_ROOT_FILES=(
   "SKILL_STYLE.md"
 )
-# Compatibility names that route elsewhere; the instruction block need not
-# mention them.
-SHIM_SKILLS=("ssot-skill" "ssot-audit")
 # Keep legacy ownership and transaction names so old installs remain recoverable.
 BUNDLE_COMPANION_MARKER='<!-- SSOT-SKILL bundle companion; owned by install.sh -->'
 
@@ -59,6 +61,7 @@ ARG_YES=0
 ARG_NONINTERACTIVE=0
 ARG_UI_LANG=""
 ARG_REF=""
+ARG_LEGACY_SHIMS=0
 ARG_BLOCK_FILE=""
 ARG_ENTRY=""
 SOURCE_DIR="${SOURCE_DIR:-}"
@@ -1547,8 +1550,17 @@ copy_bundle() {
   begin_install_stage "$base"
   stage="$INSTALL_STAGE"
 
+  local -a install_skills=("${CORE_SKILLS[@]}")
+  local new_ver_src shim
+  new_ver_src="$(skill_protocol_version "$SOURCE_DIR/skills/$PRIMARY_SKILL/SKILL.md")"
+  for shim in "${SHIM_SKILLS[@]}"; do
+    if [[ "$ARG_LEGACY_SHIMS" -eq 1 || "$new_ver_src" == 2.* || -e "$INSTALL_BASE/$shim" || -L "$INSTALL_BASE/$shim" ]]; then
+      install_skills+=("$shim")
+    fi
+  done
+
   local skill source companion
-  for skill in "${BUNDLE_SKILLS[@]}"; do
+  for skill in "${install_skills[@]}"; do
     source="$SOURCE_DIR/skills/$skill"
     cp -R "$source" "$stage/$skill"
   done
@@ -1579,7 +1591,7 @@ copy_bundle() {
 
   lock_install_stage
   guard_bundle_root_files "$INSTALL_BASE"
-  for skill in "${BUNDLE_SKILLS[@]}"; do
+  for skill in "${install_skills[@]}"; do
     if [[ -e "$INSTALL_BASE/$skill" || -L "$INSTALL_BASE/$skill" ]] && [[ ! -d "$INSTALL_BASE/$skill" ]]; then
       die "refusing to replace non-directory skill path: $INSTALL_BASE/$skill"
     fi
@@ -1610,10 +1622,10 @@ copy_bundle() {
     printf 'SSOT-CONTEXT installation transaction\nLocation: %s\nInstaller PID: %s\n' "$INSTALL_BASE" "$$"
     printf 'Old entries are in .backup; .had-old records prior presence; .touched records attempted slots.\n'
     printf 'Preserve this directory if rollback fails or the process is killed.\n'
-    printf 'Planned skill slots: %s\n' "${BUNDLE_SKILLS[*]}"
+    printf 'Planned skill slots: %s\n' "${install_skills[*]}"
   } > "$stage/.ssot-transaction"
   INSTALL_REPLACING=1
-  for skill in "${BUNDLE_SKILLS[@]}"; do
+  for skill in "${install_skills[@]}"; do
     replace_install_entry "$skill"
   done
   for companion in "${BUNDLE_ROOT_FILES[@]}"; do
@@ -1746,6 +1758,8 @@ OPTIONS:
   --lang <en|zh>            Template language (default: en)
   --ref <branch|tag>        Install from this branch or tag (default: main).
                             --ref v2-final keeps the frozen v2 protocol.
+  --with-legacy-shims       Also install ssot-audit and ssot-skill compatibility shims
+                            (omitted on fresh installs; preserved automatically on upgrade)
   --yes, -y                 Skip confirmation
   --non-interactive         Fail instead of prompting when args are missing
   --quickstart              Non-interactive project-local install with autodetect
@@ -1761,7 +1775,7 @@ OPTIONS:
 
 ENVIRONMENT:
   SSOT_AGENT, SSOT_SCOPE, SSOT_LANG, SSOT_UI_LANG, SSOT_REF
-  SSOT_YES=1, SSOT_NONINTERACTIVE=1
+  SSOT_YES=1, SSOT_NONINTERACTIVE=1, SSOT_LEGACY_SHIMS=1
   SOURCE_DIR                Local source checkout (skip git clone)
   SSOT_CONTEXT_REPO_URL     Source repository override
   SSOT_SKILL_REPO_URL       Legacy fallback for SSOT_CONTEXT_REPO_URL
@@ -1814,6 +1828,8 @@ parse_args() {
         ARG_REF="$2"; shift 2 ;;
       --ref=*)
         ARG_REF="${1#*=}"; shift ;;
+      --with-legacy-shims)
+        ARG_LEGACY_SHIMS=1; shift ;;
       --ui-lang)
         [[ $# -ge 2 ]] || die "--ui-lang requires a value"
         ARG_UI_LANG="$2"; shift 2 ;;
@@ -1873,6 +1889,7 @@ parse_args() {
   fi
   [[ "${SSOT_YES:-0}" == "1" ]] && ARG_YES=1
   [[ "${SSOT_NONINTERACTIVE:-0}" == "1" ]] && ARG_NONINTERACTIVE=1
+  [[ "${SSOT_LEGACY_SHIMS:-0}" == "1" ]] && ARG_LEGACY_SHIMS=1
 
   # Quickstart: fill defaults for fields the user did not pass.
   # Must run AFTER env merge so SSOT_* env values take precedence over autodetect.
@@ -2024,8 +2041,10 @@ run_install() {
 
   echo ""
   info "$(t WILL_INSTALL)"
+  local -a preview_skills=("${CORE_SKILLS[@]}")
+  [[ "$ARG_LEGACY_SHIMS" -eq 1 || "$REPO_REF" == "v2-final" ]] && preview_skills=("${BUNDLE_SKILLS[@]}")
   local skill
-  for skill in "${BUNDLE_SKILLS[@]}"; do
+  for skill in "${preview_skills[@]}"; do
     echo -e "      ${DIM}${skill}${NC}"
   done
   echo ""

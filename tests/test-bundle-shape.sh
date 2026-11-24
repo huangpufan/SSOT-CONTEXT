@@ -266,8 +266,58 @@ budget() { # $1=label $2=value $3=limit $4=unit
 mapfile -t ENTRY_FILES < <(find "$SKILLS" -name SKILL.md | sort)
 mapfile -t RUNTIME_FILES < <(find "$SKILLS" \( -name SKILL.md -o -path '*/references/*.md' \) -type f | sort)
 mapfile -t SCRIPT_FILES < <(find "$SKILLS" -path '*/assets/scripts/*.py' -type f | sort)
+HOT_RUNTIME_FILES=(
+  "$SKILLS/ssot-preflight/SKILL.md"
+  "$SKILLS/ssot-bootstrap/SKILL.md"
+  "$SKILLS/ssot-closeout/SKILL.md"
+  "$SKILLS/ssot-doctor/SKILL.md"
+  "$SKILLS/ssot-audit/SKILL.md"
+  "$SKILLS/ssot-skill/SKILL.md"
+  "$SKILLS/ssot-preflight/references/memory-model.md"
+  "$SKILLS/ssot-preflight/references/memory-layout.md"
+  "$SKILLS/ssot-preflight/references/writing-memory.md"
+  "$SKILLS/ssot-preflight/references/protection-departure.md"
+  "$SKILLS/ssot-closeout/references/decision-capture.md"
+  "$SKILLS/ssot-closeout/references/batch-closeout.md"
+)
+COLD_RUNTIME_FILES=(
+  "$SKILLS/ssot-bootstrap/references/area-mining.md"
+  "$SKILLS/ssot-bootstrap/references/bootstrap.md"
+  "$SKILLS/ssot-bootstrap/references/migration.md"
+  "$SKILLS/ssot-bootstrap/references/mining.md"
+  "$SKILLS/ssot-doctor/references/conversation-catchup.md"
+  "$SKILLS/ssot-doctor/references/source-integration.md"
+  "$SKILLS/ssot-doctor/references/structural-review.md"
+  "$SKILLS/ssot-preflight/references/context-spaces.md"
+  "$SKILLS/ssot-preflight/references/context-tiering.md"
+  "$SKILLS/ssot-preflight/references/source-retention.md"
+)
+if diff <(printf '%s\n' "${RUNTIME_FILES[@]}" | sort) <(printf '%s\n' "${HOT_RUNTIME_FILES[@]}" "${COLD_RUNTIME_FILES[@]}" | sort) >/dev/null; then
+  pass "hot/cold runtime file partition covers every SKILL.md and reference"
+else
+  fail "hot/cold runtime file partition is out of sync with skills/"
+fi
 budget "SKILL.md entrypoints" "$(words "${ENTRY_FILES[@]}")" 3600 words
-budget "runtime protocol (SKILL.md + references)" "$(words "${RUNTIME_FILES[@]}")" 18700 words
+budget "hot-path runtime protocol (SKILL.md + daily references)" "$(words "${HOT_RUNTIME_FILES[@]}")" 9200 words
+budget "conditional/cold runtime branches" "$(words "${COLD_RUNTIME_FILES[@]}")" 10400 words
+if CORE_CATALOG_BYTES="$(python3 -B - "$SKILLS" "${LIFECYCLE_SKILLS[@]}" <<'PY'
+import pathlib, re, sys
+root = pathlib.Path(sys.argv[1])
+total = 0
+for name in sys.argv[2:]:
+    txt = (root / name / "SKILL.md").read_text(encoding="utf-8")
+    m_name = re.search(r"^name:\s*(.+)$", txt, re.M)
+    m_desc = re.search(r"^description:\s*(.+)$", txt, re.M)
+    if not (m_name and m_desc):
+        sys.exit(1)
+    total += len(f"{m_name.group(1).strip()}: {m_desc.group(1).strip()}".encode("utf-8"))
+print(total)
+PY
+)" && (( CORE_CATALOG_BYTES > 0 )); then
+  budget "always-loaded core-4 skill catalog (name + description)" "$CORE_CATALOG_BYTES" 600 bytes
+else
+  fail "could not measure core-4 skill catalog"
+fi
 if CATALOG_BYTES="$(python3 -B - "$SKILLS" <<'PY'
 import pathlib, re, sys
 root = pathlib.Path(sys.argv[1])
@@ -282,7 +332,7 @@ for p in sorted(root.glob("*/SKILL.md")):
 print(total)
 PY
 )" && (( CATALOG_BYTES > 0 )); then
-  budget "always-loaded skill catalog (name + description)" "$CATALOG_BYTES" 768 bytes
+  budget "always-loaded full-6 skill catalog (with legacy shims)" "$CATALOG_BYTES" 768 bytes
 else
   fail "could not measure always-loaded skill catalog"
 fi

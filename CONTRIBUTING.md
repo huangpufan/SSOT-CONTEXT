@@ -44,10 +44,12 @@ Detailed shared material belongs in a reference, read at the point of use. `SKIL
 
 | What | Limit |
 |---|---|
-| Always-loaded skill catalog (`SKILL.md` frontmatter `name + description`) | 768 bytes |
+| Always-loaded core-4 skill catalog (`SKILL.md` frontmatter `name + description`) | 600 bytes |
+| Always-loaded full-6 skill catalog (including legacy compatibility shims) | 768 bytes |
 | Managed instruction block (`en`/`zh`, format 4/5, between markers) | 1,600 bytes each |
 | All `SKILL.md` files together | 3,600 words |
-| Everything an agent may read at runtime (`SKILL.md` + `references/`) | 18,700 words |
+| Hot-path runtime protocol (`SKILL.md` + daily core references) | 9,200 words |
+| Conditional/cold runtime branches (setup, migration, spaces, source, review) | 10,400 words |
 | Templates, per language | 16 KiB |
 | Runtime assets (`skills/` excluding Python scripts) | 160 KiB |
 | `ssot-check.py` | 64 KiB |
@@ -70,7 +72,7 @@ Version 5.10 allows 18,500 runtime words, 53 KiB for the checker and 227 KiB for
 
 Version 5.12 allows 18,700 runtime words and 232 KiB for the bundle. Version 5.11 had 139 words and 55 bytes of headroom. Conditional decision use, recovery of premise-dependent progress and metadata-only withdrawal use existing owners. The connector also protects a restricted withdrawal from older readers. The [release study](docs/2026-11-20-conditional-context-v5.12.md) accounts for behaviour and cost on both changed and ordinary tasks.
 
-On 2026-11-24, following the [Stage 5 real-session audit](docs/2026-11-24-real-session-stage5-audit.md), the CI budget ruler was decoupled without changing the protocol word ceilings (3,600 entrypoint words and 18,700 runtime words stay fixed): always-loaded surfaces gained explicit caps (768 bytes for skill discovery descriptions, 1,600 bytes per managed adapter block), model-read runtime assets are bounded separately at 160 KiB, and executable scripts (`ssot-check.py` at 64 KiB, all scripts at 96 KiB, overall `skills/` at 248 KiB) no longer compete with Markdown protocol headroom or force code-golfing at the former 10-byte checker cliff.
+On 2026-11-24, following the [Stage 5 real-session audit](docs/2026-11-24-real-session-stage5-audit.md), the CI budget ruler was decoupled in two steps: first separating always-loaded surfaces (768 B full catalog, 1,600 B per managed adapter block), model-read runtime assets (160 KiB), and executable scripts (`ssot-check.py` 64 KiB, all scripts 96 KiB, overall `skills/` 248 KiB); then separating the flat 18,700-word cliff (99.6% full after 5.17, with 4,178 words in low-frequency `migration.md`, `area-mining.md`, and `source-integration.md`) into explicit hot-path (9,200 words, covering all `SKILL.md` entrypoints plus daily preflight/departure/closeout references) and conditional/cold-branch (10,400 words) ceilings alongside a 600 B cap on the default core-4 skill discovery catalog. The total runtime-assets byte cap (160 KiB) stays unchanged, and an exhaustive partition check prevents any new reference file from bypassing the word caps.
 
 A budget is a reason to rethink responsibilities, never a reason to cut a recovery or authorization branch to fit, and never a reason to rewrite unrelated rule text to make room: such edits are untested changes. In 3.5 the owner raised the limits from 3,000 and 8,000 words, with room left on purpose, after a trial branch had tightened about 40 unrelated sentences to fit new rules into the old limits; in 3.7 the owner raised the runtime limit from 9,500 to 10,000 words for the mining changes, instead of cutting other rules; in 3.9 the owner raised the checker limit from 40 to 44 KiB for the check on confirmed invariants; in 3.10 the owner raised the runtime limit from 10,000 to 11,000 words for the row-fixing step in mining. A v2 word cap once rejected a complete entrypoint for being complete. Raising a limit requires the same evidence as adding a rule. Record the reason in `CHANGELOG.md`.
 

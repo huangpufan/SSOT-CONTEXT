@@ -17,7 +17,7 @@ It works in two kinds of place:
 - **Development repositories.** People define invariants—outcomes that must keep holding, such as API compatibility or never charging twice on a retry—and agents change code within them. The entry is `SSOT/README.md` (`ssot_format: 4`).
 - **General context spaces you explicitly declare:** a research project, creative work, personal life domain, or organization. Git is optional, and existing folders and documents stay where they are. The entry is the document you name (`ssot_format: 5`).
 
-The project was previously named SSOT-SKILL; old skill names still work ([details](./INSTALL.md#project-rename-compatibility)).
+The project was previously named SSOT-SKILL; fresh installs ship the four core lifecycle skills, while existing upgrades preserve the old compatibility shims (`--with-legacy-shims` for fresh opt-in; [details](./INSTALL.md#project-rename-compatibility)).
 
 ## Principles
 

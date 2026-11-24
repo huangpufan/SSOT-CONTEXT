@@ -7,8 +7,9 @@ import os
 from pathlib import Path
 import tempfile
 
-SKILLS = ('ssot-preflight', 'ssot-bootstrap', 'ssot-closeout',
-          'ssot-doctor', 'ssot-audit', 'ssot-skill')
+CORE_SKILLS = ('ssot-preflight', 'ssot-bootstrap', 'ssot-closeout', 'ssot-doctor')
+SHIM_SKILLS = ('ssot-audit', 'ssot-skill')
+SKILLS = CORE_SKILLS + SHIM_SKILLS
 
 
 def fingerprint(path):
@@ -35,7 +36,7 @@ def fingerprint(path):
     return result
 
 
-def plan(source, bases):
+def plan(source, bases, with_legacy_shims=False):
     source = Path(source).resolve(strict=True)
     skills = source / 'skills'
     for name in SKILLS:
@@ -46,7 +47,11 @@ def plan(source, bases):
         if base == skills or base in source.parents or source in base.parents:
             raise ValueError(f'Refusing to replace the source checkout: {base}')
         found = False
-        for name in SKILLS:
+        active = list(CORE_SKILLS) + [
+            name for name in SHIM_SKILLS
+            if with_legacy_shims or (base / name).exists() or (base / name).is_symlink()
+        ]
+        for name in active:
             target = base / name
             if target.exists() or target.is_symlink():
                 found = True
@@ -135,10 +140,12 @@ def main():
     parser.add_argument('--apply', action='store_true', help='Otherwise print a read-only plan')
     parser.add_argument('--backup-root', type=Path,
                         help='Required for apply; originals and manifest remain here')
+    parser.add_argument('--with-legacy-shims', action='store_true',
+                        help='Also link ssot-audit and ssot-skill even when absent from target')
     args = parser.parse_args()
     if args.apply and args.backup_root is None:
         parser.error('--apply requires --backup-root')
-    selected = plan(args.source, args.base)
+    selected = plan(args.source, args.base, with_legacy_shims=args.with_legacy_shims)
     result = apply(selected, args.backup_root) if args.apply else selected
     print(json.dumps(result, indent=2))
 

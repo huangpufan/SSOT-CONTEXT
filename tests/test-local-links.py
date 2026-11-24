@@ -87,6 +87,20 @@ class LocalLinks(unittest.TestCase):
         self.assertEqual(proc.returncode, 0, proc.stdout + proc.stderr)
         self.assertTrue((self.base / 'ssot-preflight').is_symlink())
 
+    def test_four_skill_install_links_only_core_unless_opt_in(self):
+        four = self.root / 'consumer4/skills'
+        for name in links.CORE_SKILLS:
+            (four / name).mkdir(parents=True)
+            (four / name / 'SKILL.md').write_text(f'---\nname: {name}\n---\n')
+        selected = links.plan(self.source, [four])
+        self.assertEqual(len(selected['actions']), 4)
+        res = links.apply(selected, self.backups)
+        self.assertEqual(res['linked_skills'], 4)
+        for shim in links.SHIM_SKILLS:
+            self.assertFalse((four / shim).exists() or (four / shim).is_symlink())
+        opt_in = links.plan(self.source, [four], with_legacy_shims=True)
+        self.assertEqual(len(opt_in['actions']), 2)
+
 
 if __name__ == '__main__':
     unittest.main()
