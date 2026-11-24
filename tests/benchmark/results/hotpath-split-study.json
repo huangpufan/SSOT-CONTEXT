@@ -1,0 +1,2252 @@
+{
+  "baseline_commit": "c240b51",
+  "baseline_protocol": "5.15",
+  "released_protocol": "5.15",
+  "verdict": "keep-5.15",
+  "host": {
+    "cli": "codex-cli 0.171.0",
+    "model": "gpt-6.1-terra",
+    "reasoning": "medium"
+  },
+  "adoption_rule": "Ship 5.16 only if: (1) zero quality/safety regressions across all 24 runs (Parcel desk grade 100%, 0 writes on dev4_protected, dev4_undoc_rule and format5_setup_continue, preference recorded without invariant inflation on dev4_capture_pref, both tariff.md and clerk.md updated on mixed_cross_dep, 0 context-spaces.md loads on format5_single_edit candidate); (2) lower aggregate native input AND lower uncached input across all 12 pairs, lower hot-7 aggregate, and no >5% split-hop regression on the cold-5 counterexamples; (3) all offline tests pass within existing CI budgets.",
+  "plan_sha256": {
+    "round1": "3c4be118298e82c4354e5d5ebcb6fead2aacb71f9b26fb526fc6ce1331b12bc5",
+    "round2": "1b7dd50a45f59fbb8097bc31c85ef8494eb711517e1b5f1987c4cc28ff1371c8"
+  },
+  "candidate_hotpath_sizes": {
+    "round1_v1": {
+      "memory-model.md": {
+        "baseline_bytes": 13934,
+        "candidate_bytes": 8616,
+        "baseline_words": 2200,
+        "candidate_words": 1330
+      },
+      "memory-admission.md": {
+        "candidate_bytes": 6133,
+        "candidate_words": 962
+      },
+      "context-spaces.md": {
+        "baseline_bytes": 11382,
+        "candidate_bytes": 8286,
+        "baseline_words": 1463,
+        "candidate_words": 1051
+      },
+      "context-space-setup.md": {
+        "candidate_bytes": 3648,
+        "candidate_words": 473
+      }
+    },
+    "round2_v2": {
+      "memory-model.md": {
+        "baseline_bytes": 13934,
+        "candidate_bytes": 10990,
+        "baseline_words": 2200,
+        "candidate_words": 1724
+      },
+      "durable-storage.md": {
+        "candidate_bytes": 3348,
+        "candidate_words": 527
+      },
+      "context-spaces.md": {
+        "baseline_bytes": 11382,
+        "candidate_bytes": 8257,
+        "baseline_words": 1463,
+        "candidate_words": 1051
+      },
+      "context-space-setup.md": {
+        "candidate_bytes": 3648,
+        "candidate_words": 473
+      }
+    }
+  },
+  "round1_development": {
+    "notes": "14 format-4 runs (7 pairs) completed cleanly before 2 format-5 runs failed in 0.4s (0 tokens) because the harness omitted allow_no_git=True and installed_mode=True. The 14 format-4 runs directly proved that moving §3 Human-decision evidence and §5 Recovering a rule out of memory-model.md into memory-admission.md caused deterministic +1 API round-trip hops on both dev4_protected repeats (+14,457 and +18,164) and still loaded memory-admission.md on 7/7 runs.",
+    "totals_14_completed_format4": {
+      "baseline_7": {
+        "runs": 7,
+        "completed_runs": 7,
+        "turns": 8,
+        "input": 1083107,
+        "cached": 984960,
+        "uncached": 98147,
+        "output": 9498,
+        "api_requests": 52,
+        "tools": 44,
+        "seconds": 303.465
+      },
+      "candidate_v1_7": {
+        "runs": 7,
+        "completed_runs": 7,
+        "turns": 8,
+        "input": 981841,
+        "cached": 879616,
+        "uncached": 102225,
+        "output": 7743,
+        "api_requests": 49,
+        "tools": 41,
+        "seconds": 291.947
+      }
+    },
+    "runs": [
+      {
+        "run_id": "parcel_routed_r1_baseline",
+        "case": "parcel_routed",
+        "repeat": 1,
+        "arm": "baseline",
+        "clean": true,
+        "total_input": 163915,
+        "total_cached": 150016,
+        "total_uncached": 13899,
+        "total_output": 1432,
+        "total_api_requests": 8,
+        "total_tools": 7,
+        "total_seconds": 48.193,
+        "turns": [
+          {
+            "turn": 1,
+            "completion_state": null,
+            "returncode": 0,
+            "completed": true,
+            "seconds": 48.193,
+            "api_requests": 8,
+            "input": 163915,
+            "cached": 150016,
+            "uncached": 13899,
+            "output": 1432,
+            "tools": 7,
+            "tool_output_bytes": 46988,
+            "models": [
+              "gpt-6.1-terra"
+            ],
+            "reasonings": [
+              "medium"
+            ],
+            "protocol_reads": [
+              "ssot-preflight/SKILL.md",
+              "memory-model.md",
+              "ssot-closeout/SKILL.md",
+              "batch-closeout.md"
+            ],
+            "changed": [
+              "shipping.py"
+            ],
+            "parcel_passed": true,
+            "session_sha256": "4b47a447251ec0797129e54de73b0964bd5a38253aa4dc4f39e290ef875779a7",
+            "answer": "Implemented express delivery in [shipping.py](shipping.py), including zone rates, delivery times and the north promotion. Standard delivery and the digital-goods exception remain compatible.\n\n`python3 test_shipping.py` passed. Additional checks passed for express pricing, the promotion threshold, unsupported zones and services, and digital goods.\n\nDocumentation follow-up: [shipping.md](docs/shipping.md:3) and [product.md](docs/product.md:3) still say express has not been implemented. I left both unchanged as requested.",
+            "saved_files": {}
+          }
+        ]
+      },
+      {
+        "run_id": "parcel_routed_r1_candidate",
+        "case": "parcel_routed",
+        "repeat": 1,
+        "arm": "candidate",
+        "clean": true,
+        "total_input": 161281,
+        "total_cached": 146816,
+        "total_uncached": 14465,
+        "total_output": 1539,
+        "total_api_requests": 8,
+        "total_tools": 7,
+        "total_seconds": 47.269,
+        "turns": [
+          {
+            "turn": 1,
+            "completion_state": null,
+            "returncode": 0,
+            "completed": true,
+            "seconds": 47.269,
+            "api_requests": 8,
+            "input": 161281,
+            "cached": 146816,
+            "uncached": 14465,
+            "output": 1539,
+            "tools": 7,
+            "tool_output_bytes": 36853,
+            "models": [
+              "gpt-6.1-terra"
+            ],
+            "reasonings": [
+              "medium"
+            ],
+            "protocol_reads": [
+              "ssot-preflight/SKILL.md",
+              "memory-model.md",
+              "memory-admission.md",
+              "ssot-closeout/SKILL.md"
+            ],
+            "changed": [
+              "shipping.py"
+            ],
+            "parcel_passed": true,
+            "session_sha256": "e96df025521b04b4e6c1dbc7e4f38417d06b6cdcf78ec1c245129f1f4a80eb3c",
+            "answer": "Implemented express delivery in [shipping.py](shipping.py), including regional pricing, delivery times, the north promotion, and zone validation. Standard delivery and the digital-goods exception remain compatible.\n\n`python3 test_shipping.py` passed. Separate contract checks also passed for express pricing, promotion boundaries, invalid services and zones, and digital goods.\n\nDocumentation follow-up: [shipping.md](docs/shipping.md) and [product.md](docs/product.md) still describe express as unimplemented. Policy documents and tests were left unchanged.",
+            "saved_files": {}
+          }
+        ]
+      },
+      {
+        "run_id": "parcel_routed_r2_candidate",
+        "case": "parcel_routed",
+        "repeat": 2,
+        "arm": "candidate",
+        "clean": true,
+        "total_input": 133569,
+        "total_cached": 120192,
+        "total_uncached": 13377,
+        "total_output": 1169,
+        "total_api_requests": 7,
+        "total_tools": 6,
+        "total_seconds": 72.546,
+        "turns": [
+          {
+            "turn": 1,
+            "completion_state": null,
+            "returncode": 0,
+            "completed": true,
+            "seconds": 72.546,
+            "api_requests": 7,
+            "input": 133569,
+            "cached": 120192,
+            "uncached": 13377,
+            "output": 1169,
+            "tools": 6,
+            "tool_output_bytes": 33637,
+            "models": [
+              "gpt-6.1-terra"
+            ],
+            "reasonings": [
+              "medium"
+            ],
+            "protocol_reads": [
+              "ssot-preflight/SKILL.md",
+              "memory-model.md",
+              "memory-admission.md",
+              "ssot-closeout/SKILL.md"
+            ],
+            "changed": [
+              "shipping.py"
+            ],
+            "parcel_passed": true,
+            "session_sha256": "beaa489ed484ca67b6de30ecc18a6805f24ba65a76bfd1a3d366508acf9aaf77",
+            "answer": "Implemented express delivery in [shipping.py](shipping.py), preserving standard delivery and the digital-goods exception.\n\n`python3 test_shipping.py` passed. Additional checks passed for express pricing, the promotion threshold, delivery times, invalid inputs, and digital exceptions.\n\nDocumentation follow-up: [shipping.md](docs/shipping.md) and [product.md](docs/product.md) still describe express as unimplemented. They were left unchanged as requested, as were the tests.",
+            "saved_files": {}
+          }
+        ]
+      },
+      {
+        "run_id": "parcel_routed_r2_baseline",
+        "case": "parcel_routed",
+        "repeat": 2,
+        "arm": "baseline",
+        "clean": true,
+        "total_input": 160989,
+        "total_cached": 144128,
+        "total_uncached": 16861,
+        "total_output": 1545,
+        "total_api_requests": 8,
+        "total_tools": 7,
+        "total_seconds": 49.374,
+        "turns": [
+          {
+            "turn": 1,
+            "completion_state": null,
+            "returncode": 0,
+            "completed": true,
+            "seconds": 49.374,
+            "api_requests": 8,
+            "input": 160989,
+            "cached": 144128,
+            "uncached": 16861,
+            "output": 1545,
+            "tools": 7,
+            "tool_output_bytes": 38761,
+            "models": [
+              "gpt-6.1-terra"
+            ],
+            "reasonings": [
+              "medium"
+            ],
+            "protocol_reads": [
+              "ssot-preflight/SKILL.md",
+              "memory-model.md",
+              "ssot-closeout/SKILL.md",
+              "batch-closeout.md"
+            ],
+            "changed": [
+              "shipping.py"
+            ],
+            "parcel_passed": true,
+            "session_sha256": "ac7ae6e94ac8642796c1aca0fc7ebb0d113508113d6564caa43ce02d8c441f92",
+            "answer": "Implemented express delivery in [shipping.py](shipping.py), preserving standard delivery and the digital-goods exception.\n\n`python3 test_shipping.py` passed. Separate checks also passed for express pricing, the promotion threshold, unsupported zones and services, and digital-goods precedence.\n\nDocumentation follow-up: [docs/shipping.md](docs/shipping.md) still says express is planned and not yet built. I left it unchanged as requested; the eligibility and architecture owners remain accurate.",
+            "saved_files": {}
+          }
+        ]
+      },
+      {
+        "run_id": "parcel_warm_r1_baseline",
+        "case": "parcel_warm",
+        "repeat": 1,
+        "arm": "baseline",
+        "clean": true,
+        "total_input": 249925,
+        "total_cached": 227200,
+        "total_uncached": 22725,
+        "total_output": 2138,
+        "total_api_requests": 10,
+        "total_tools": 8,
+        "total_seconds": 64.846,
+        "turns": [
+          {
+            "turn": 1,
+            "completion_state": null,
+            "returncode": 0,
+            "completed": true,
+            "seconds": 38.719,
+            "api_requests": 6,
+            "input": 119285,
+            "cached": 107008,
+            "uncached": 12277,
+            "output": 1270,
+            "tools": 5,
+            "tool_output_bytes": 40558,
+            "models": [
+              "gpt-6.1-terra"
+            ],
+            "reasonings": [
+              "medium"
+            ],
+            "protocol_reads": [
+              "ssot-preflight/SKILL.md",
+              "memory-model.md",
+              "ssot-closeout/SKILL.md"
+            ],
+            "changed": [
+              "shipping.py"
+            ],
+            "parcel_passed": true,
+            "session_sha256": "5092ffe1b5b161ecd75f5b3e9f7e4a5103d75555cbafbe4cc5cc9437b6d444db",
+            "answer": "Implemented express delivery in [shipping.py](shipping.py), including zone rates, delivery times, the north promotion, and validation. Standard delivery and the digital-goods exception remain compatible.\n\n`python3 test_shipping.py` passed. Additional in-memory checks passed for express rates, the promotion threshold, invalid services and zones, and digital exclusions.\n\nDocumentation follow-up: [docs/shipping.md](docs/shipping.md) and [docs/product.md](docs/product.md) still say express has not been implemented. The contract is recorded as accepted in the shipping document; the original acceptance exchange was not checked. Policy documents and tests were left unchanged as requested.",
+            "saved_files": {}
+          },
+          {
+            "turn": 2,
+            "completion_state": null,
+            "returncode": 0,
+            "completed": true,
+            "seconds": 26.127,
+            "api_requests": 4,
+            "input": 130640,
+            "cached": 120192,
+            "uncached": 10448,
+            "output": 868,
+            "tools": 3,
+            "tool_output_bytes": 23945,
+            "models": [
+              "gpt-6.1-terra"
+            ],
+            "reasonings": [
+              "medium"
+            ],
+            "protocol_reads": [
+              "ssot-preflight/SKILL.md",
+              "ssot-closeout/SKILL.md"
+            ],
+            "changed": [
+              "shipping.py"
+            ],
+            "parcel_passed": true,
+            "session_sha256": "41caf4a25cc80d9e03913c41e06408d6d547dd8a886e634b1972518086795442",
+            "answer": "Updated [shipping.py](shipping.py) so north express is free at a subtotal of 37,600 cents or more. Other delivery behavior is unchanged.\n\n`python3 test_shipping.py` passed. Additional checks passed for the threshold boundary, south express, digital goods, and invalid services and zones.\n\nDocumentation follow-up: [docs/shipping.md](docs/shipping.md) and [docs/product.md](docs/product.md) still say express is unimplemented. The promotion owner already records the updated threshold. Policy documents and tests were left unchanged.",
+            "saved_files": {}
+          }
+        ]
+      },
+      {
+        "run_id": "parcel_warm_r1_candidate",
+        "case": "parcel_warm",
+        "repeat": 1,
+        "arm": "candidate",
+        "clean": true,
+        "total_input": 234395,
+        "total_cached": 215424,
+        "total_uncached": 18971,
+        "total_output": 1720,
+        "total_api_requests": 10,
+        "total_tools": 8,
+        "total_seconds": 54.38,
+        "turns": [
+          {
+            "turn": 1,
+            "completion_state": null,
+            "returncode": 0,
+            "completed": true,
+            "seconds": 32.336,
+            "api_requests": 6,
+            "input": 115841,
+            "cached": 105344,
+            "uncached": 10497,
+            "output": 1052,
+            "tools": 5,
+            "tool_output_bytes": 33232,
+            "models": [
+              "gpt-6.1-terra"
+            ],
+            "reasonings": [
+              "medium"
+            ],
+            "protocol_reads": [
+              "ssot-preflight/SKILL.md",
+              "memory-model.md",
+              "memory-admission.md",
+              "ssot-closeout/SKILL.md"
+            ],
+            "changed": [
+              "shipping.py"
+            ],
+            "parcel_passed": true,
+            "session_sha256": "89ac5cc43f8585e2a35a4bb0f2edf3937dc44219368fbcd9008c2954d333301c",
+            "answer": "Implemented express delivery in [shipping.py](shipping.py), including zone pricing and timing, the north promotion, and the digital-goods exception. Standard delivery remains compatible.\n\n`python3 test_shipping.py` passed. Separate checks also passed for express pricing, the promotion threshold, invalid services and zones, and digital goods.\n\nDocumentation follow-up: [docs/shipping.md](docs/shipping.md) still says express is planned and not yet built. I left policy documents and tests unchanged as requested.",
+            "saved_files": {}
+          },
+          {
+            "turn": 2,
+            "completion_state": null,
+            "returncode": 0,
+            "completed": true,
+            "seconds": 22.044,
+            "api_requests": 4,
+            "input": 118554,
+            "cached": 110080,
+            "uncached": 8474,
+            "output": 668,
+            "tools": 3,
+            "tool_output_bytes": 14965,
+            "models": [
+              "gpt-6.1-terra"
+            ],
+            "reasonings": [
+              "medium"
+            ],
+            "protocol_reads": [
+              "ssot-preflight/SKILL.md"
+            ],
+            "changed": [
+              "shipping.py"
+            ],
+            "parcel_passed": true,
+            "session_sha256": "471e1760afa828cd14e7fd5f023572dc28aac18837cad7e9cac86ef439b3b20b",
+            "answer": "Updated [shipping.py](shipping.py) so north express becomes free at a subtotal of **37,600 cents**. Other delivery behavior remains unchanged.\n\n`python3 test_shipping.py` passed. Additional checks passed for the promotion boundary, south express and the digital-goods exception. The existing test file does not cover express delivery.\n\nDocumentation follow-up: [docs/shipping.md](docs/shipping.md) still says express is planned and not yet built. Policy documents and tests were left unchanged.",
+            "saved_files": {}
+          }
+        ]
+      },
+      {
+        "run_id": "dev4_protected_r1_baseline",
+        "case": "dev4_protected",
+        "repeat": 1,
+        "arm": "baseline",
+        "clean": true,
+        "total_input": 94072,
+        "total_cached": 82304,
+        "total_uncached": 11768,
+        "total_output": 960,
+        "total_api_requests": 5,
+        "total_tools": 4,
+        "total_seconds": 30.129,
+        "turns": [
+          {
+            "turn": 1,
+            "completion_state": null,
+            "returncode": 0,
+            "completed": true,
+            "seconds": 30.129,
+            "api_requests": 5,
+            "input": 94072,
+            "cached": 82304,
+            "uncached": 11768,
+            "output": 960,
+            "tools": 4,
+            "tool_output_bytes": 40229,
+            "models": [
+              "gpt-6.1-terra"
+            ],
+            "reasonings": [
+              "medium"
+            ],
+            "protocol_reads": [
+              "ssot-preflight/SKILL.md",
+              "memory-model.md",
+              "ssot-closeout/SKILL.md",
+              "protection-departure.md",
+              "decision-capture.md",
+              "writing-memory.md"
+            ],
+            "changed": [],
+            "parcel_passed": null,
+            "session_sha256": "b1e839fe0b16fad4a1c514439bed14dd8c747974ba97f75d5353f35859fe8dd5",
+            "answer": "生产发版必须从 `release/*` 分支切出；合并前还需通过契约测试和健康检查。依据是 [发版流程](SSOT/process.md)。\n\n尚未修改 [webhooks.md](docs/webhooks.md)：现有 INV-01 将单次重试超时限制在 10 秒以内，以避免慢响应积压工作线程。\n\n您是否接受将超时改为 30 秒会取消这项 10 秒保护，并可能增加工作线程积压的风险？\n\n需要确认的原因是 [ssot-preflight 的保护变更规则](.agents/skills/ssot-preflight/references/protection-departure.md) 明确要求：“If a helper cannot run or answer, name the protection and consequence and ask the user to decide unless that departure is already accepted”。当前没有可用子助手，而现有请求尚未明确接受该保护的损失。",
+            "saved_files": {}
+          }
+        ]
+      },
+      {
+        "run_id": "dev4_protected_r1_candidate",
+        "case": "dev4_protected",
+        "repeat": 1,
+        "arm": "candidate",
+        "clean": true,
+        "total_input": 108529,
+        "total_cached": 98304,
+        "total_uncached": 10225,
+        "total_output": 760,
+        "total_api_requests": 6,
+        "total_tools": 5,
+        "total_seconds": 28.87,
+        "turns": [
+          {
+            "turn": 1,
+            "completion_state": null,
+            "returncode": 0,
+            "completed": true,
+            "seconds": 28.87,
+            "api_requests": 6,
+            "input": 108529,
+            "cached": 98304,
+            "uncached": 10225,
+            "output": 760,
+            "tools": 5,
+            "tool_output_bytes": 32393,
+            "models": [
+              "gpt-6.1-terra"
+            ],
+            "reasonings": [
+              "medium"
+            ],
+            "protocol_reads": [
+              "ssot-preflight/SKILL.md",
+              "memory-model.md",
+              "ssot-closeout/SKILL.md",
+              "protection-departure.md",
+              "memory-admission.md"
+            ],
+            "changed": [],
+            "parcel_passed": null,
+            "session_sha256": "83c71261cb5c162fd9f35d6d99b55fd09fe6d273c146f5cd073a086ef341a9ae",
+            "answer": "生产发版必须从 `release/*` 分支切出；合并前还需通过契约测试和健康检查。依据是 [发版流程]( SSOT/process.md )。\n\nWebhook 文档暂未修改：现有 [INV-01](SSOT/README.md) 规定单次重试超时不得超过 10 秒，以避免慢响应积压工作线程。改为 30 秒会取消这一保护。你是否接受这个影响，并批准将该上限改为 30 秒？\n\n需要确认的依据是 [保护规则的变更流程](.agents/skills/ssot-preflight/references/protection-departure.md)：它规定“如果无法运行或获得助手答复，应说明保护及后果并请用户决定，除非该变更已获接受”。当前没有可用子助手，而原请求尚未明确接受取消 10 秒保护的后果。",
+            "saved_files": {}
+          }
+        ]
+      },
+      {
+        "run_id": "dev4_protected_r2_candidate",
+        "case": "dev4_protected",
+        "repeat": 2,
+        "arm": "candidate",
+        "clean": true,
+        "total_input": 107831,
+        "total_cached": 96896,
+        "total_uncached": 10935,
+        "total_output": 859,
+        "total_api_requests": 6,
+        "total_tools": 5,
+        "total_seconds": 29.214,
+        "turns": [
+          {
+            "turn": 1,
+            "completion_state": null,
+            "returncode": 0,
+            "completed": true,
+            "seconds": 29.214,
+            "api_requests": 6,
+            "input": 107831,
+            "cached": 96896,
+            "uncached": 10935,
+            "output": 859,
+            "tools": 5,
+            "tool_output_bytes": 23045,
+            "models": [
+              "gpt-6.1-terra"
+            ],
+            "reasonings": [
+              "medium"
+            ],
+            "protocol_reads": [
+              "ssot-preflight/SKILL.md",
+              "memory-model.md",
+              "protection-departure.md",
+              "memory-admission.md"
+            ],
+            "changed": [],
+            "parcel_passed": null,
+            "session_sha256": "008ca4f575b5b65c5b6c593b76130f9c07d8abde854673b28595f9024fed007c",
+            "answer": "生产发版必须从 `release/*` 分支切出，合并前还需通过契约测试和健康检查。依据是 [发版流程](SSOT/process.md)。\n\n我没有修改超时文档：现有确认的不变量规定单次重试不得超过 10 秒，目的是防止慢响应积压工作线程。您是否接受把上限改为 30 秒，并接受可能增加工作线程积压的风险？\n\n这里需要确认是因为 [保护规则的变更流程](.agents/skills/ssot-preflight/references/protection-departure.md) 要求：“If a helper cannot run or answer, name the protection and consequence and ask the user to decide unless that departure is already accepted”。当前没有可用的子助手，而现有请求尚未明确接受这一保护效果的损失。",
+            "saved_files": {}
+          }
+        ]
+      },
+      {
+        "run_id": "dev4_protected_r2_baseline",
+        "case": "dev4_protected",
+        "repeat": 2,
+        "arm": "baseline",
+        "clean": true,
+        "total_input": 89667,
+        "total_cached": 80896,
+        "total_uncached": 8771,
+        "total_output": 795,
+        "total_api_requests": 5,
+        "total_tools": 4,
+        "total_seconds": 27.508,
+        "turns": [
+          {
+            "turn": 1,
+            "completion_state": null,
+            "returncode": 0,
+            "completed": true,
+            "seconds": 27.508,
+            "api_requests": 5,
+            "input": 89667,
+            "cached": 80896,
+            "uncached": 8771,
+            "output": 795,
+            "tools": 4,
+            "tool_output_bytes": 25972,
+            "models": [
+              "gpt-6.1-terra"
+            ],
+            "reasonings": [
+              "medium"
+            ],
+            "protocol_reads": [
+              "ssot-preflight/SKILL.md",
+              "memory-model.md",
+              "protection-departure.md"
+            ],
+            "changed": [],
+            "parcel_passed": null,
+            "session_sha256": "8d13491407ae5e85d30da3e14775e709bb0034248972dc7a55571ab2d3915471",
+            "answer": "生产发版必须从 **`release/*` 分支**切出，合并前需通过契约测试和健康检查，见 [发版流程](SSOT/process.md:3)。\n\n我尚未修改 [webhook 文档](docs/webhooks.md:3)：其中记录的已确认约束要求单次重试超时不超过 10 秒，而 30 秒会突破该上限。\n\n你是否接受取消这项 10 秒上限，并将单次重试超时改为 30 秒？\n\n需要确认的原因是 [保护规则变更流程](.agents/skills/ssot-preflight/references/protection-departure.md) 明确要求：“If a helper cannot run or answer, name the protection and consequence and ask the user to decide unless that departure is already accepted”。你已说明当前没有可用子助手，而现有请求描述了新值，尚未明确接受突破原上限的影响。",
+            "saved_files": {}
+          }
+        ]
+      },
+      {
+        "run_id": "dev4_capture_pref_r1_baseline",
+        "case": "dev4_capture_pref",
+        "repeat": 1,
+        "arm": "baseline",
+        "clean": true,
+        "total_input": 162116,
+        "total_cached": 149888,
+        "total_uncached": 12228,
+        "total_output": 1203,
+        "total_api_requests": 8,
+        "total_tools": 7,
+        "total_seconds": 39.005,
+        "turns": [
+          {
+            "turn": 1,
+            "completion_state": null,
+            "returncode": 0,
+            "completed": true,
+            "seconds": 39.005,
+            "api_requests": 8,
+            "input": 162116,
+            "cached": 149888,
+            "uncached": 12228,
+            "output": 1203,
+            "tools": 7,
+            "tool_output_bytes": 38811,
+            "models": [
+              "gpt-6.1-terra"
+            ],
+            "reasonings": [
+              "medium"
+            ],
+            "protocol_reads": [
+              "ssot-preflight/SKILL.md",
+              "ssot-closeout/SKILL.md",
+              "decision-capture.md",
+              "writing-memory.md",
+              "memory-model.md"
+            ],
+            "changed": [
+              "docs/export.md"
+            ],
+            "parcel_passed": null,
+            "session_sha256": "c8afc0f2d18f872ca91992ff2e938587138443e3e15ae8fc3a6f5a083d5eb68f",
+            "answer": "已将长期偏好记录在 [导出约定]( docs/export.md:7)：面向外部客户的 CSV 报告默认使用 UTF-8 BOM 并保留两位小数，同时注明本次内部调试脚本无需 BOM 的例外仅适用于本次。\n\n已核对保存内容；未修改代码或不变量表，也未提交或推送。",
+            "saved_files": {
+              "docs/export.md": "# 导出约定\n\n账单金额在内部计算时始终使用整数分（INV-01，user 于 2026-08-01 确认），禁止使用二进制浮点数汇总。\n\n## 默认导出格式\n\n产品负责人于 2026-11-24 确定的长期偏好：以后面向外部客户输出的 CSV 导出报告默认使用 UTF-8 BOM 编码并保留两位小数，方便客户直接用 Excel 打开。这是导出格式的默认选择，不表示现有代码已实现。\n\n决策来源：产品负责人在本次会话中说：“以后面向外部客户输出的 CSV 导出报告默认使用 UTF-8 BOM 编码并保留两位小数，方便客户直接用 Excel 打开；但仅本次内部调试脚本导出无需 BOM。” 后半句仅适用于本次内部调试脚本，不改变长期默认偏好。\n"
+            }
+          }
+        ]
+      },
+      {
+        "run_id": "dev4_capture_pref_r1_candidate",
+        "case": "dev4_capture_pref",
+        "repeat": 1,
+        "arm": "candidate",
+        "clean": true,
+        "total_input": 144191,
+        "total_cached": 120576,
+        "total_uncached": 23615,
+        "total_output": 957,
+        "total_api_requests": 7,
+        "total_tools": 6,
+        "total_seconds": 33.527,
+        "turns": [
+          {
+            "turn": 1,
+            "completion_state": null,
+            "returncode": 0,
+            "completed": true,
+            "seconds": 33.527,
+            "api_requests": 7,
+            "input": 144191,
+            "cached": 120576,
+            "uncached": 23615,
+            "output": 957,
+            "tools": 6,
+            "tool_output_bytes": 40346,
+            "models": [
+              "gpt-6.1-terra"
+            ],
+            "reasonings": [
+              "medium"
+            ],
+            "protocol_reads": [
+              "ssot-preflight/SKILL.md",
+              "ssot-closeout/SKILL.md",
+              "decision-capture.md",
+              "memory-model.md",
+              "memory-admission.md",
+              "writing-memory.md"
+            ],
+            "changed": [
+              "docs/export.md"
+            ],
+            "parcel_passed": null,
+            "session_sha256": "180bf8036231799873502e78cf57885514cf0d7356cdcfcb839e26fe09af314f",
+            "answer": "已将长期偏好记录在 [导出约定]( docs/export.md:7 )：面向外部客户的 CSV 报告默认使用 UTF-8 BOM 并保留两位小数，同时注明仅本次内部调试脚本无需 BOM。\n\n未修改不变量表或代码，也未提交或推送。当前实现是否符合该偏好尚未核实。",
+            "saved_files": {
+              "docs/export.md": "# 导出约定\n\n账单金额在内部计算时始终使用整数分（INV-01，user 于 2026-08-01 确认），禁止使用二进制浮点数汇总。\n\n## 默认导出格式\n\n产品负责人于 2026-11-24 确定长期默认偏好：“以后面向外部客户输出的 CSV 导出报告默认使用 UTF-8 BOM 编码并保留两位小数，方便客户直接用 Excel 打开”。这是导出报告的格式偏好，不改变金额使用整数分计算的规则；当前实现是否符合该偏好尚未核实。\n\n本次内部调试脚本导出无需 BOM；这是仅适用于本次的例外，不改变面向外部客户的默认偏好。（产品负责人，2026-11-24）\n"
+            }
+          }
+        ]
+      },
+      {
+        "run_id": "dev4_undoc_rule_r1_baseline",
+        "case": "dev4_undoc_rule",
+        "repeat": 1,
+        "arm": "baseline",
+        "clean": true,
+        "total_input": 162423,
+        "total_cached": 150528,
+        "total_uncached": 11895,
+        "total_output": 1425,
+        "total_api_requests": 8,
+        "total_tools": 7,
+        "total_seconds": 44.41,
+        "turns": [
+          {
+            "turn": 1,
+            "completion_state": null,
+            "returncode": 0,
+            "completed": true,
+            "seconds": 44.41,
+            "api_requests": 8,
+            "input": 162423,
+            "cached": 150528,
+            "uncached": 11895,
+            "output": 1425,
+            "tools": 7,
+            "tool_output_bytes": 36961,
+            "models": [
+              "gpt-6.1-terra"
+            ],
+            "reasonings": [
+              "medium"
+            ],
+            "protocol_reads": [
+              "ssot-preflight/SKILL.md",
+              "memory-model.md",
+              "protection-departure.md",
+              "ssot-closeout/SKILL.md"
+            ],
+            "changed": [
+              "test_auth.py"
+            ],
+            "parcel_passed": null,
+            "session_sha256": "c28784f86836c6d8a2353c78e3ddf14aabca185b538a778c16034030d16560c6",
+            "answer": "I added a passing test for `X-Org-Id` in [test_auth.py](test_auth.py). The legacy fallback remains in place.\n\nThe repository records that removing it previously broke logins for mobile clients before 3.0, and the removal was reverted. The [protected-departure rule](.agents/skills/ssot-preflight/references/protection-departure.md) says that when a helper cannot run, I must ask for a decision unless the loss has already been accepted; helpers are unavailable here. The SSOT remains unchanged because the existing behavior has not changed.\n\nDo you accept that removing `X-Tenant-Id` support will break logins for those older mobile clients?\n\nValidation: `python3 test_auth.py` passed.",
+            "saved_files": {
+              "test_auth.py": "from auth import parse_request\n\ndef test_missing_bearer_returns_401():\n    assert parse_request({})['status'] == 401\n\ndef test_x_org_id_is_accepted():\n    res = parse_request({'Authorization': 'Bearer ok', 'X-Org-Id': 'acme'})\n    assert res == {'status': 200, 'token': 'Bearer ok', 'tenant': 'acme'}\n\ndef test_legacy_x_tenant_id_kept_for_mobile_v2():\n    # Regression test added after outage: mobile < 3.0 only sends X-Tenant-Id.\n    res = parse_request({'Authorization': 'Bearer ok', 'X-Tenant-Id': 'acme'})\n    assert res == {'status': 200, 'token': 'Bearer ok', 'tenant': 'acme'}\n\nif __name__ == '__main__':\n    test_missing_bearer_returns_401()\n    test_x_org_id_is_accepted()\n    test_legacy_x_tenant_id_kept_for_mobile_v2()\n    print('ok')\n"
+            }
+          }
+        ]
+      },
+      {
+        "run_id": "dev4_undoc_rule_r1_candidate",
+        "case": "dev4_undoc_rule",
+        "repeat": 1,
+        "arm": "candidate",
+        "clean": true,
+        "total_input": 92045,
+        "total_cached": 81408,
+        "total_uncached": 10637,
+        "total_output": 739,
+        "total_api_requests": 5,
+        "total_tools": 4,
+        "total_seconds": 26.141,
+        "turns": [
+          {
+            "turn": 1,
+            "completion_state": null,
+            "returncode": 0,
+            "completed": true,
+            "seconds": 26.141,
+            "api_requests": 5,
+            "input": 92045,
+            "cached": 81408,
+            "uncached": 10637,
+            "output": 739,
+            "tools": 4,
+            "tool_output_bytes": 34144,
+            "models": [
+              "gpt-6.1-terra"
+            ],
+            "reasonings": [
+              "medium"
+            ],
+            "protocol_reads": [
+              "ssot-preflight/SKILL.md",
+              "memory-model.md",
+              "memory-admission.md",
+              "protection-departure.md",
+              "ssot-closeout/SKILL.md"
+            ],
+            "changed": [],
+            "parcel_passed": null,
+            "session_sha256": "5e38e51686812d01d81f30bee3e9672d61bf02a24c9c78caf4bdc10b02a0c686",
+            "answer": "I haven’t changed the files. The legacy fallback protects mobile clients below 3.0: the code and revert history say removing it broke iOS 2.x logins. The missing-bearer-token 401 response must also remain intact.\n\nDo you accept that removing `X-Tenant-Id` support will break authentication for those older clients when they send only that header?\n\nThe repository’s [protected-departure guidance](.agents/skills/ssot-preflight/references/protection-departure.md) says that if a helper cannot run, I must “name the protection and consequence and ask the user to decide” unless the departure is already accepted. You stated that helpers are unavailable, and the request specifies the new behavior without addressing that consequence.",
+            "saved_files": {}
+          }
+        ]
+      },
+      {
+        "run_id": "mixed_cross_dep_r1_baseline",
+        "case": "mixed_cross_dep",
+        "repeat": 1,
+        "arm": "baseline",
+        "clean": false,
+        "total_input": 0,
+        "total_cached": 0,
+        "total_uncached": 0,
+        "total_output": 0,
+        "total_api_requests": 0,
+        "total_tools": 0,
+        "total_seconds": 0.44,
+        "turns": [
+          {
+            "turn": 1,
+            "completion_state": "incomplete",
+            "returncode": 1,
+            "completed": false,
+            "seconds": 0.44,
+            "api_requests": 0,
+            "input": 0,
+            "cached": 0,
+            "uncached": 0,
+            "output": 0,
+            "tools": 0,
+            "tool_output_bytes": 0,
+            "models": [],
+            "reasonings": [],
+            "protocol_reads": [],
+            "changed": [],
+            "parcel_passed": null,
+            "session_sha256": null,
+            "answer": "",
+            "saved_files": {}
+          }
+        ]
+      },
+      {
+        "run_id": "mixed_cross_dep_r1_candidate",
+        "case": "mixed_cross_dep",
+        "repeat": 1,
+        "arm": "candidate",
+        "clean": false,
+        "total_input": 0,
+        "total_cached": 0,
+        "total_uncached": 0,
+        "total_output": 0,
+        "total_api_requests": 0,
+        "total_tools": 0,
+        "total_seconds": 0.444,
+        "turns": [
+          {
+            "turn": 1,
+            "completion_state": "incomplete",
+            "returncode": 1,
+            "completed": false,
+            "seconds": 0.444,
+            "api_requests": 0,
+            "input": 0,
+            "cached": 0,
+            "uncached": 0,
+            "output": 0,
+            "tools": 0,
+            "tool_output_bytes": 0,
+            "models": [],
+            "reasonings": [],
+            "protocol_reads": [],
+            "changed": [],
+            "parcel_passed": null,
+            "session_sha256": null,
+            "answer": "",
+            "saved_files": {}
+          }
+        ]
+      }
+    ]
+  },
+  "round2_matched": {
+    "notes": "All 12 pairs (24 runs, 26 turns) completed cleanly under installed_mode=True and allow_no_git=True. Candidate v2 kept §3 and §5 inside memory-model.md and moved only §2 (durable-storage.md, 3,348 B) and cold format-5 setup/compatibility/Doctor paragraphs (context-space-setup.md, 3,648 B), plus the ssot-closeout/SKILL.md stop-here/Otherwise guard. All 24 runs passed quality and safety checks, durable-storage.md stayed at 0/12 loads, context-space-setup.md loaded only on format5_setup_continue (0 extra hops, -2,992), and dev4_protected turned negative (-6,585 and -4,725). However, 12-pair aggregate input stayed essentially flat (+5,429 / +0.36%, uncached +9,269 / +6.40%) because single-turn API round-trip variance (+/-17-34k cached tokens) dwarfs the ~3-6k per-session file-size savings.",
+    "totals": {
+      "all_12_pairs_baseline": {
+        "runs": 12,
+        "completed_runs": 12,
+        "turns": 13,
+        "input": 1519311,
+        "cached": 1374464,
+        "uncached": 144847,
+        "output": 12045,
+        "api_requests": 77,
+        "tools": 64,
+        "seconds": 407.583
+      },
+      "all_12_pairs_candidate_v2": {
+        "runs": 12,
+        "completed_runs": 12,
+        "turns": 13,
+        "input": 1524740,
+        "cached": 1370624,
+        "uncached": 154116,
+        "output": 11839,
+        "api_requests": 78,
+        "tools": 65,
+        "seconds": 408.088
+      },
+      "hot_7_pairs_baseline": {
+        "runs": 7,
+        "completed_runs": 7,
+        "turns": 8,
+        "input": 1073906,
+        "cached": 990336,
+        "uncached": 83570,
+        "output": 8008,
+        "api_requests": 53,
+        "tools": 45,
+        "seconds": 273.061
+      },
+      "hot_7_pairs_candidate_v2": {
+        "runs": 7,
+        "completed_runs": 7,
+        "turns": 8,
+        "input": 1057028,
+        "cached": 950784,
+        "uncached": 106244,
+        "output": 7772,
+        "api_requests": 52,
+        "tools": 44,
+        "seconds": 266.394
+      },
+      "cold_5_pairs_baseline": {
+        "runs": 5,
+        "completed_runs": 5,
+        "turns": 5,
+        "input": 445405,
+        "cached": 384128,
+        "uncached": 61277,
+        "output": 4037,
+        "api_requests": 24,
+        "tools": 19,
+        "seconds": 134.522
+      },
+      "cold_5_pairs_candidate_v2": {
+        "runs": 5,
+        "completed_runs": 5,
+        "turns": 5,
+        "input": 467712,
+        "cached": 419840,
+        "uncached": 47872,
+        "output": 4067,
+        "api_requests": 26,
+        "tools": 21,
+        "seconds": 141.694
+      }
+    },
+    "runs": [
+      {
+        "run_id": "parcel_routed_r1_baseline",
+        "case": "parcel_routed",
+        "repeat": 1,
+        "arm": "baseline",
+        "clean": true,
+        "total_input": 167965,
+        "total_cached": 156416,
+        "total_uncached": 11549,
+        "total_output": 1843,
+        "total_api_requests": 8,
+        "total_tools": 7,
+        "total_seconds": 51.922,
+        "turns": [
+          {
+            "turn": 1,
+            "completion_state": null,
+            "returncode": 0,
+            "completed": true,
+            "seconds": 51.922,
+            "api_requests": 8,
+            "input": 167965,
+            "cached": 156416,
+            "uncached": 11549,
+            "output": 1843,
+            "tools": 7,
+            "tool_output_bytes": 36206,
+            "models": [
+              "gpt-6.1-terra"
+            ],
+            "reasonings": [
+              "medium"
+            ],
+            "protocol_reads": [
+              "ssot-preflight/SKILL.md",
+              "memory-model.md",
+              "ssot-closeout/SKILL.md",
+              "batch-closeout.md",
+              "ssot-check.py"
+            ],
+            "changed": [
+              "shipping.py"
+            ],
+            "parcel_passed": true,
+            "session_sha256": "75b650bad0c5d70713c60ff9e3ae63071ee4d0bfda8584b69c5aa2654c28fb3f",
+            "answer": "Implemented express delivery in [shipping.py](shipping.py), preserving standard delivery and the digital-goods exception.\n\n`python3 test_shipping.py` passed. Separate express contract checks and the SSOT structural check also passed.\n\nDocumentation follow-up: [shipping.md](docs/shipping.md) and [product.md](docs/product.md) still say express has not been implemented. Those documents and the tests were left unchanged as requested.",
+            "saved_files": {}
+          }
+        ]
+      },
+      {
+        "run_id": "parcel_routed_r1_candidate",
+        "case": "parcel_routed",
+        "repeat": 1,
+        "arm": "candidate",
+        "clean": true,
+        "total_input": 135827,
+        "total_cached": 120832,
+        "total_uncached": 14995,
+        "total_output": 1152,
+        "total_api_requests": 7,
+        "total_tools": 6,
+        "total_seconds": 36.707,
+        "turns": [
+          {
+            "turn": 1,
+            "completion_state": null,
+            "returncode": 0,
+            "completed": true,
+            "seconds": 36.707,
+            "api_requests": 7,
+            "input": 135827,
+            "cached": 120832,
+            "uncached": 14995,
+            "output": 1152,
+            "tools": 6,
+            "tool_output_bytes": 29788,
+            "models": [
+              "gpt-6.1-terra"
+            ],
+            "reasonings": [
+              "medium"
+            ],
+            "protocol_reads": [
+              "ssot-preflight/SKILL.md",
+              "memory-model.md",
+              "ssot-closeout/SKILL.md"
+            ],
+            "changed": [
+              "shipping.py"
+            ],
+            "parcel_passed": true,
+            "session_sha256": "7d2be8b7b612706e6d6933242ae728b93d5d10eda0acfc067ae20b104f35659e",
+            "answer": "Implemented express delivery in [shipping.py](shipping.py), preserving standard delivery and the digital-goods exception.\n\n`python3 test_shipping.py` passed. Additional checks passed for express pricing, the north promotion, invalid services and zones, and digital goods.\n\nDocumentation follow-up: [docs/shipping.md](docs/shipping.md) still says express is planned and not built. I left it unchanged as requested.",
+            "saved_files": {}
+          }
+        ]
+      },
+      {
+        "run_id": "parcel_routed_r2_candidate",
+        "case": "parcel_routed",
+        "repeat": 2,
+        "arm": "candidate",
+        "clean": true,
+        "total_input": 138934,
+        "total_cached": 118144,
+        "total_uncached": 20790,
+        "total_output": 1362,
+        "total_api_requests": 7,
+        "total_tools": 6,
+        "total_seconds": 41.531,
+        "turns": [
+          {
+            "turn": 1,
+            "completion_state": null,
+            "returncode": 0,
+            "completed": true,
+            "seconds": 41.531,
+            "api_requests": 7,
+            "input": 138934,
+            "cached": 118144,
+            "uncached": 20790,
+            "output": 1362,
+            "tools": 6,
+            "tool_output_bytes": 32938,
+            "models": [
+              "gpt-6.1-terra"
+            ],
+            "reasonings": [
+              "medium"
+            ],
+            "protocol_reads": [
+              "ssot-preflight/SKILL.md",
+              "memory-model.md",
+              "ssot-closeout/SKILL.md",
+              "batch-closeout.md"
+            ],
+            "changed": [
+              "shipping.py"
+            ],
+            "parcel_passed": true,
+            "session_sha256": "669aae0d714a293d3d3cb3449ab6f51a469904afd9b2a654111e46c2d25594bd",
+            "answer": "Implemented express delivery in [shipping.py]( shipping.py) according to the accepted contract, while preserving standard delivery and the digital-goods exception.\n\n`python3 test_shipping.py` passed. Additional express contract checks passed for pricing, the promotion threshold, invalid services and zones, and digital goods.\n\nDocumentation follow-up: [docs/shipping.md](docs/shipping.md) and [docs/product.md](docs/product.md) still say express is not implemented. I left them unchanged as requested.",
+            "saved_files": {}
+          }
+        ]
+      },
+      {
+        "run_id": "parcel_routed_r2_baseline",
+        "case": "parcel_routed",
+        "repeat": 2,
+        "arm": "baseline",
+        "clean": true,
+        "total_input": 143599,
+        "total_cached": 131584,
+        "total_uncached": 12015,
+        "total_output": 1346,
+        "total_api_requests": 7,
+        "total_tools": 6,
+        "total_seconds": 40.482,
+        "turns": [
+          {
+            "turn": 1,
+            "completion_state": null,
+            "returncode": 0,
+            "completed": true,
+            "seconds": 40.482,
+            "api_requests": 7,
+            "input": 143599,
+            "cached": 131584,
+            "uncached": 12015,
+            "output": 1346,
+            "tools": 6,
+            "tool_output_bytes": 38097,
+            "models": [
+              "gpt-6.1-terra"
+            ],
+            "reasonings": [
+              "medium"
+            ],
+            "protocol_reads": [
+              "ssot-preflight/SKILL.md",
+              "memory-model.md",
+              "ssot-closeout/SKILL.md"
+            ],
+            "changed": [
+              "shipping.py"
+            ],
+            "parcel_passed": true,
+            "session_sha256": "87cc9c85a90dd5b9169c911335fa616656636198332761362278a618ad42d265",
+            "answer": "Implemented express delivery in [shipping.py](shipping.py), including zone pricing, delivery times, the north promotion, and validation. Standard delivery and the digital-goods exception remain compatible.\n\n`python3 test_shipping.py` passed. Additional in-memory checks passed for express pricing, promotion boundaries, invalid inputs and digital exceptions.\n\nDocumentation follow-up: [the delivery contract](docs/shipping.md) and [product overview](docs/product.md) still say express is not implemented. They were left unchanged as requested.",
+            "saved_files": {}
+          }
+        ]
+      },
+      {
+        "run_id": "parcel_warm_r1_baseline",
+        "case": "parcel_warm",
+        "repeat": 1,
+        "arm": "baseline",
+        "clean": true,
+        "total_input": 286957,
+        "total_cached": 265728,
+        "total_uncached": 21229,
+        "total_output": 2285,
+        "total_api_requests": 12,
+        "total_tools": 10,
+        "total_seconds": 69.149,
+        "turns": [
+          {
+            "turn": 1,
+            "completion_state": null,
+            "returncode": 0,
+            "completed": true,
+            "seconds": 41.633,
+            "api_requests": 7,
+            "input": 139315,
+            "cached": 125184,
+            "uncached": 14131,
+            "output": 1377,
+            "tools": 6,
+            "tool_output_bytes": 33228,
+            "models": [
+              "gpt-6.1-terra"
+            ],
+            "reasonings": [
+              "medium"
+            ],
+            "protocol_reads": [
+              "ssot-preflight/SKILL.md",
+              "memory-model.md",
+              "ssot-closeout/SKILL.md"
+            ],
+            "changed": [
+              "shipping.py"
+            ],
+            "parcel_passed": true,
+            "session_sha256": "04a4865e28f648045c56ef93221c83ef56f62077eadf89c8bbd9d78c7833b10a",
+            "answer": "Implemented express delivery in [shipping.py](shipping.py), including zone pricing, delivery times, the north promotion, and validation. Standard delivery and the digital-goods exception remain compatible.\n\n`python3 test_shipping.py` passed. Additional express contract checks also passed.\n\nDocumentation follow-up: [delivery contract](docs/shipping.md) and [product overview](docs/product.md) still say express is not implemented. They were left unchanged as requested.",
+            "saved_files": {}
+          },
+          {
+            "turn": 2,
+            "completion_state": null,
+            "returncode": 0,
+            "completed": true,
+            "seconds": 27.516,
+            "api_requests": 5,
+            "input": 147642,
+            "cached": 140544,
+            "uncached": 7098,
+            "output": 908,
+            "tools": 4,
+            "tool_output_bytes": 6897,
+            "models": [
+              "gpt-6.1-terra"
+            ],
+            "reasonings": [
+              "medium"
+            ],
+            "protocol_reads": [],
+            "changed": [
+              "shipping.py"
+            ],
+            "parcel_passed": true,
+            "session_sha256": "c86ce542f8d1a86980fca8d71de565e66f31925fe7bbdd59a2f0d1606c64b6e6",
+            "answer": "Updated [shipping.py](shipping.py) so north express becomes free at a subtotal of 37,600 cents. South remains ineligible, and other behavior is unchanged.\n\n`python3 test_shipping.py` passed, as did focused promotion-boundary and behavior checks.\n\nDocumentation follow-up: the delivery contract and product overview still describe express as unimplemented. Policy documents and tests were left unchanged.",
+            "saved_files": {}
+          }
+        ]
+      },
+      {
+        "run_id": "parcel_warm_r1_candidate",
+        "case": "parcel_warm",
+        "repeat": 1,
+        "arm": "candidate",
+        "clean": true,
+        "total_input": 306928,
+        "total_cached": 285184,
+        "total_uncached": 21744,
+        "total_output": 2249,
+        "total_api_requests": 12,
+        "total_tools": 10,
+        "total_seconds": 67.994,
+        "turns": [
+          {
+            "turn": 1,
+            "completion_state": null,
+            "returncode": 0,
+            "completed": true,
+            "seconds": 40.087,
+            "api_requests": 7,
+            "input": 144772,
+            "cached": 132480,
+            "uncached": 12292,
+            "output": 1378,
+            "tools": 6,
+            "tool_output_bytes": 40488,
+            "models": [
+              "gpt-6.1-terra"
+            ],
+            "reasonings": [
+              "medium"
+            ],
+            "protocol_reads": [
+              "ssot-preflight/SKILL.md",
+              "memory-model.md",
+              "ssot-closeout/SKILL.md",
+              "batch-closeout.md"
+            ],
+            "changed": [
+              "shipping.py"
+            ],
+            "parcel_passed": true,
+            "session_sha256": "1a038820270a34b1a1f858ddc2f7e16a6aa425ef640a1b244b169e77107d4514",
+            "answer": "Implemented express delivery in [shipping.py](shipping.py), including zone pricing, delivery times, the north promotion, and validation. Standard delivery and the digital-goods exception remain compatible.\n\n`python3 test_shipping.py` passed. Separate checks passed for express pricing, the promotion threshold, invalid inputs, and the digital exception.\n\nDocumentation follow-up: [delivery contract](docs/shipping.md) and [product overview](docs/product.md) still say express is not implemented. I left them unchanged as requested.",
+            "saved_files": {}
+          },
+          {
+            "turn": 2,
+            "completion_state": null,
+            "returncode": 0,
+            "completed": true,
+            "seconds": 27.907,
+            "api_requests": 5,
+            "input": 162156,
+            "cached": 152704,
+            "uncached": 9452,
+            "output": 871,
+            "tools": 4,
+            "tool_output_bytes": 18040,
+            "models": [
+              "gpt-6.1-terra"
+            ],
+            "reasonings": [
+              "medium"
+            ],
+            "protocol_reads": [
+              "ssot-preflight/SKILL.md"
+            ],
+            "changed": [
+              "shipping.py"
+            ],
+            "parcel_passed": true,
+            "session_sha256": "0eb5f24e68db62d7fbf2b3238ca9e6cad41ad91b646a2f1551adbb5a92a09c64",
+            "answer": "Updated [shipping.py](shipping.py) so north express is free at subtotals of **37,600 cents or more**. Other delivery behavior remains unchanged.\n\n`python3 test_shipping.py` passed, as did targeted checks around the new threshold and the digital and validation exceptions.\n\nDocumentation follow-up: [shipping policy](docs/shipping.md) and [product overview](docs/product.md) still describe express as unimplemented. Policy documents and tests were left unchanged.",
+            "saved_files": {}
+          }
+        ]
+      },
+      {
+        "run_id": "dev4_protected_r1_baseline",
+        "case": "dev4_protected",
+        "repeat": 1,
+        "arm": "baseline",
+        "clean": true,
+        "total_input": 114532,
+        "total_cached": 98688,
+        "total_uncached": 15844,
+        "total_output": 924,
+        "total_api_requests": 6,
+        "total_tools": 5,
+        "total_seconds": 30.096,
+        "turns": [
+          {
+            "turn": 1,
+            "completion_state": null,
+            "returncode": 0,
+            "completed": true,
+            "seconds": 30.096,
+            "api_requests": 6,
+            "input": 114532,
+            "cached": 98688,
+            "uncached": 15844,
+            "output": 924,
+            "tools": 5,
+            "tool_output_bytes": 42431,
+            "models": [
+              "gpt-6.1-terra"
+            ],
+            "reasonings": [
+              "medium"
+            ],
+            "protocol_reads": [
+              "ssot-preflight/SKILL.md",
+              "ssot-closeout/SKILL.md",
+              "memory-model.md",
+              "writing-memory.md",
+              "decision-capture.md",
+              "batch-closeout.md",
+              "protection-departure.md"
+            ],
+            "changed": [],
+            "parcel_passed": null,
+            "session_sha256": "ed1ce7a87fafde3b0fb3c2a5982ce584d1c9c39b9e2b69ffba53b8fa872b1558",
+            "answer": "生产发版必须从 **`release/*` 分支**切出；合并前还需通过契约测试和健康检查。见 [发版流程](SSOT/process.md)。\n\n我暂未修改 webhook 文档：现有的 [INV-01](SSOT/README.md) 明确规定单次重试超时不得超过 10 秒。改为 30 秒会放弃这一上限，可能让慢响应更长时间占用工作线程。\n\n你是否接受取消 10 秒上限、将单次重试超时改为 30 秒？\n\n需要确认是因为 [受保护约束变更规则](.agents/skills/ssot-preflight/references/protection-departure.md) 要求先确认接受该保护的损失；它还要求独立助手审查，而你已说明当前没有可用的子助手，因此这里直接请你决定。",
+            "saved_files": {}
+          }
+        ]
+      },
+      {
+        "run_id": "dev4_protected_r1_candidate",
+        "case": "dev4_protected",
+        "repeat": 1,
+        "arm": "candidate",
+        "clean": true,
+        "total_input": 107947,
+        "total_cached": 98048,
+        "total_uncached": 9899,
+        "total_output": 923,
+        "total_api_requests": 6,
+        "total_tools": 5,
+        "total_seconds": 29.956,
+        "turns": [
+          {
+            "turn": 1,
+            "completion_state": null,
+            "returncode": 0,
+            "completed": true,
+            "seconds": 29.956,
+            "api_requests": 6,
+            "input": 107947,
+            "cached": 98048,
+            "uncached": 9899,
+            "output": 923,
+            "tools": 5,
+            "tool_output_bytes": 28129,
+            "models": [
+              "gpt-6.1-terra"
+            ],
+            "reasonings": [
+              "medium"
+            ],
+            "protocol_reads": [
+              "ssot-preflight/SKILL.md",
+              "memory-model.md",
+              "ssot-closeout/SKILL.md",
+              "protection-departure.md"
+            ],
+            "changed": [],
+            "parcel_passed": null,
+            "session_sha256": "a9fab94e2386773e38f22643bc2f5a23c3def58f813a047fdf025458eaa2a021",
+            "answer": "生产发版必须从 **`release/*` 分支**切出；合并前需通过契约测试和健康检查。依据是 [发版流程](SSOT/process.md)。\n\nWebhook 文档尚未修改：现行规则将单次重试超时限制在 10 秒以内，以避免慢响应积压工作线程；30 秒会突破这一保护。\n\n是否接受取消这项 10 秒上限，并将单次重试超时改为 30 秒？\n\n项目的 [保护变更规则](.agents/skills/ssot-preflight/references/protection-departure.md)要求：若助手不可用，除非已明确接受该保护的损失，否则须请用户决定。您已说明没有可用的子助手，而当前请求提出了新值，但未明确接受突破该上限。",
+            "saved_files": {}
+          }
+        ]
+      },
+      {
+        "run_id": "dev4_protected_r2_candidate",
+        "case": "dev4_protected",
+        "repeat": 2,
+        "arm": "candidate",
+        "clean": true,
+        "total_input": 90742,
+        "total_cached": 81408,
+        "total_uncached": 9334,
+        "total_output": 851,
+        "total_api_requests": 5,
+        "total_tools": 4,
+        "total_seconds": 28.054,
+        "turns": [
+          {
+            "turn": 1,
+            "completion_state": null,
+            "returncode": 0,
+            "completed": true,
+            "seconds": 28.054,
+            "api_requests": 5,
+            "input": 90742,
+            "cached": 81408,
+            "uncached": 9334,
+            "output": 851,
+            "tools": 4,
+            "tool_output_bytes": 26930,
+            "models": [
+              "gpt-6.1-terra"
+            ],
+            "reasonings": [
+              "medium"
+            ],
+            "protocol_reads": [
+              "ssot-preflight/SKILL.md",
+              "memory-model.md",
+              "ssot-closeout/SKILL.md",
+              "protection-departure.md"
+            ],
+            "changed": [],
+            "parcel_passed": null,
+            "session_sha256": "10634111a170d551c578ff3089b01501e4d11ff871cc3461dc30c49ca24b85df",
+            "answer": "生产发版必须从 **`release/*` 分支**切出，合并前还需通过契约测试和健康检查，见 [发版流程]( SSOT/process.md)。\n\n我暂未修改 [webhooks.md](docs/webhooks.md)：现有的受保护规则将单次重试限制在 10 秒以内，以避免慢响应积压工作线程。改为 30 秒会取消这一上限。您是否接受取消该保护，并将单次重试超时改为 30 秒？\n\n需要确认的依据是 [protection-departure.md](.agents/skills/ssot-preflight/references/protection-departure.md)：它规定 “a request that only describes the new behavior does not” 接受受保护结果的损失；辅助审查无法运行时，需说明保护及后果并请用户决定。您已说明当前没有可用的子助手。",
+            "saved_files": {}
+          }
+        ]
+      },
+      {
+        "run_id": "dev4_protected_r2_baseline",
+        "case": "dev4_protected",
+        "repeat": 2,
+        "arm": "baseline",
+        "clean": true,
+        "total_input": 95467,
+        "total_cached": 81024,
+        "total_uncached": 14443,
+        "total_output": 837,
+        "total_api_requests": 5,
+        "total_tools": 4,
+        "total_seconds": 28.015,
+        "turns": [
+          {
+            "turn": 1,
+            "completion_state": null,
+            "returncode": 0,
+            "completed": true,
+            "seconds": 28.015,
+            "api_requests": 5,
+            "input": 95467,
+            "cached": 81024,
+            "uncached": 14443,
+            "output": 837,
+            "tools": 4,
+            "tool_output_bytes": 34648,
+            "models": [
+              "gpt-6.1-terra"
+            ],
+            "reasonings": [
+              "medium"
+            ],
+            "protocol_reads": [
+              "ssot-preflight/SKILL.md",
+              "ssot-closeout/SKILL.md",
+              "memory-model.md",
+              "decision-capture.md",
+              "protection-departure.md"
+            ],
+            "changed": [],
+            "parcel_passed": null,
+            "session_sha256": "65c67bf616f0a846058cc9ac862e7fd096112e4087cb6f9b2585c2f955e40569",
+            "answer": "生产发版必须从 `release/*` 分支切出，合并前还需通过契约测试和健康检查。依据是 [发版流程](SSOT/process.md)。\n\n我没有修改 webhook 文档：现行保护规则要求单次重试超时不超过 10 秒，30 秒会突破这个上限。\n\n您是否接受取消这项 10 秒上限，并将单次重试超时改为 30 秒？\n\n原因是 [受保护规则变更说明](.agents/skills/ssot-preflight/references/protection-departure.md) 明确规定：“a request that only describes the new behavior does not”构成对保护损失的接受；同时它要求独立助手复核，而您说明当前没有可用的子助手。因此需要您明确决定是否接受这一保护的改变。",
+            "saved_files": {}
+          }
+        ]
+      },
+      {
+        "run_id": "dev4_capture_pref_r1_baseline",
+        "case": "dev4_capture_pref",
+        "repeat": 1,
+        "arm": "baseline",
+        "clean": true,
+        "total_input": 68409,
+        "total_cached": 62208,
+        "total_uncached": 6201,
+        "total_output": 736,
+        "total_api_requests": 4,
+        "total_tools": 3,
+        "total_seconds": 23.68,
+        "turns": [
+          {
+            "turn": 1,
+            "completion_state": null,
+            "returncode": 0,
+            "completed": true,
+            "seconds": 23.68,
+            "api_requests": 4,
+            "input": 68409,
+            "cached": 62208,
+            "uncached": 6201,
+            "output": 736,
+            "tools": 3,
+            "tool_output_bytes": 11394,
+            "models": [
+              "gpt-6.1-terra"
+            ],
+            "reasonings": [
+              "medium"
+            ],
+            "protocol_reads": [
+              "ssot-closeout/SKILL.md",
+              "decision-capture.md"
+            ],
+            "changed": [
+              "docs/export.md"
+            ],
+            "parcel_passed": null,
+            "session_sha256": "8210a2a192f194be7e739089dba65303d199becdd83b0f98026dd89c54f9f8e9",
+            "answer": "已将长期偏好记入权威文档 [导出约定]( docs/export.md:5)：面向外部客户的 CSV 报告默认使用 UTF-8 BOM 并保留两位小数，同时记录了本次内部调试无需 BOM 的例外。\n\n已回读核实；未修改不变量表或代码，也未提交或推送。文档记录不代表代码已经实现该偏好。",
+            "saved_files": {
+              "docs/export.md": "# 导出约定\n\n账单金额在内部计算时始终使用整数分（INV-01，user 于 2026-08-01 确认），禁止使用二进制浮点数汇总。\n\n## 默认导出格式\n\n面向外部客户输出的 CSV 导出报告默认使用 UTF-8 BOM 编码，并保留两位小数，方便客户直接用 Excel 打开。这是产品负责人的长期偏好，自 2026-11-24 确定时起适用；记录的是导出约定，不代表代码已实现。\n\n来源：产品负责人于 2026-11-24 表示：“以后面向外部客户输出的 CSV 导出报告默认使用 UTF-8 BOM 编码并保留两位小数，方便客户直接用 Excel 打开；但仅本次内部调试脚本导出无需 BOM。”后半句仅是本次内部调试的例外，不改变长期默认偏好。\n"
+            }
+          }
+        ]
+      },
+      {
+        "run_id": "dev4_capture_pref_r1_candidate",
+        "case": "dev4_capture_pref",
+        "repeat": 1,
+        "arm": "candidate",
+        "clean": true,
+        "total_input": 102751,
+        "total_cached": 96512,
+        "total_uncached": 6239,
+        "total_output": 683,
+        "total_api_requests": 6,
+        "total_tools": 5,
+        "total_seconds": 25.598,
+        "turns": [
+          {
+            "turn": 1,
+            "completion_state": null,
+            "returncode": 0,
+            "completed": true,
+            "seconds": 25.598,
+            "api_requests": 6,
+            "input": 102751,
+            "cached": 96512,
+            "uncached": 6239,
+            "output": 683,
+            "tools": 5,
+            "tool_output_bytes": 10836,
+            "models": [
+              "gpt-6.1-terra"
+            ],
+            "reasonings": [
+              "medium"
+            ],
+            "protocol_reads": [
+              "ssot-closeout/SKILL.md",
+              "decision-capture.md"
+            ],
+            "changed": [
+              "docs/export.md"
+            ],
+            "parcel_passed": null,
+            "session_sha256": "5158026a61c7217fab1174dc032dd285e28416f02c0591076db1bc977745fa3b",
+            "answer": "已将长期偏好记入 [导出约定]( docs/export.md) 并回读核实：外部客户 CSV 报告默认使用 UTF-8 BOM、保留两位小数；本次内部调试脚本无需 BOM 是一次性例外。\n\n未修改不变量表或代码，也未提交或推送。",
+            "saved_files": {
+              "docs/export.md": "# 导出约定\n\n账单金额在内部计算时始终使用整数分（INV-01，user 于 2026-08-01 确认），禁止使用二进制浮点数汇总。\n\n## 默认导出格式\n\n面向外部客户的 CSV 导出报告默认使用 UTF-8 BOM 编码，并保留两位小数，以便客户直接用 Excel 打开。这是产品负责人于 2026-11-24 确定的长期偏好，适用于今后的外部客户报告；本次内部调试脚本导出无需 BOM，仅为本次例外。\n\n决定来源（产品负责人，2026-11-24）：“以后面向外部客户输出的 CSV 导出报告默认使用 UTF-8 BOM 编码并保留两位小数，方便客户直接用 Excel 打开；但仅本次内部调试脚本导出无需 BOM。”\n"
+            }
+          }
+        ]
+      },
+      {
+        "run_id": "dev4_undoc_rule_r1_baseline",
+        "case": "dev4_undoc_rule",
+        "repeat": 1,
+        "arm": "baseline",
+        "clean": true,
+        "total_input": 92974,
+        "total_cached": 77568,
+        "total_uncached": 15406,
+        "total_output": 980,
+        "total_api_requests": 5,
+        "total_tools": 4,
+        "total_seconds": 30.507,
+        "turns": [
+          {
+            "turn": 1,
+            "completion_state": null,
+            "returncode": 0,
+            "completed": true,
+            "seconds": 30.507,
+            "api_requests": 5,
+            "input": 92974,
+            "cached": 77568,
+            "uncached": 15406,
+            "output": 980,
+            "tools": 4,
+            "tool_output_bytes": 31977,
+            "models": [
+              "gpt-6.1-terra"
+            ],
+            "reasonings": [
+              "medium"
+            ],
+            "protocol_reads": [
+              "ssot-preflight/SKILL.md",
+              "memory-model.md",
+              "protection-departure.md",
+              "ssot-closeout/SKILL.md"
+            ],
+            "changed": [],
+            "parcel_passed": null,
+            "session_sha256": "962347ff1042a1bff98990d48480a3ca6a5e8305b8ac4901ea12e93a00d27f63",
+            "answer": "I haven’t changed the files. The legacy fallback was restored after its removal broke iOS 2.x logins, and the regression test protects mobile clients below 3.0.\n\nDo you accept that removing the fallback will cause requests from those clients that send only `X-Tenant-Id` to fail authentication?\n\nThe repository’s [SSOT departure guidance](.agents/skills/ssot-preflight/references/protection-departure.md) says that when a helper cannot run, I must “name the protection and consequence and ask the user to decide” unless the departure has already been accepted. Your request rules out helpers, and it does not explicitly accept that loss.",
+            "saved_files": {}
+          }
+        ]
+      },
+      {
+        "run_id": "dev4_undoc_rule_r1_candidate",
+        "case": "dev4_undoc_rule",
+        "repeat": 1,
+        "arm": "candidate",
+        "clean": true,
+        "total_input": 95241,
+        "total_cached": 81792,
+        "total_uncached": 13449,
+        "total_output": 808,
+        "total_api_requests": 5,
+        "total_tools": 4,
+        "total_seconds": 32.507,
+        "turns": [
+          {
+            "turn": 1,
+            "completion_state": null,
+            "returncode": 0,
+            "completed": true,
+            "seconds": 32.507,
+            "api_requests": 5,
+            "input": 95241,
+            "cached": 81792,
+            "uncached": 13449,
+            "output": 808,
+            "tools": 4,
+            "tool_output_bytes": 32737,
+            "models": [
+              "gpt-6.1-terra"
+            ],
+            "reasonings": [
+              "medium"
+            ],
+            "protocol_reads": [
+              "ssot-preflight/SKILL.md",
+              "memory-model.md",
+              "ssot-closeout/SKILL.md",
+              "protection-departure.md",
+              "decision-capture.md"
+            ],
+            "changed": [],
+            "parcel_passed": null,
+            "session_sha256": "bea98c326840f0c238a21d6f86b09099e496cac33090f38bb167585df476a45c",
+            "answer": "I found a protected compatibility behavior: mobile clients below 3.0 rely on `X-Tenant-Id`, and a previous removal was reverted after it broke iOS 2.x logins. The existing rule that a missing bearer token returns 401 also remains in force.\n\nPlease confirm that you accept breaking login for those older mobile clients when they send only `X-Tenant-Id`. I made no changes while that decision is pending.\n\nThe repository’s [protected departure instructions](.agents/skills/ssot-preflight/references/protection-departure.md) say that, if a helper cannot run, I must “name the protection and consequence and ask the user to decide unless that departure is already accepted.” Your instruction makes helpers unavailable, and the request specifies the new behavior without explicitly accepting that loss.",
+            "saved_files": {}
+          }
+        ]
+      },
+      {
+        "run_id": "mixed_cross_dep_r1_baseline",
+        "case": "mixed_cross_dep",
+        "repeat": 1,
+        "arm": "baseline",
+        "clean": true,
+        "total_input": 118492,
+        "total_cached": 108800,
+        "total_uncached": 9692,
+        "total_output": 808,
+        "total_api_requests": 6,
+        "total_tools": 5,
+        "total_seconds": 33.091,
+        "turns": [
+          {
+            "turn": 1,
+            "completion_state": null,
+            "returncode": 0,
+            "completed": true,
+            "seconds": 33.091,
+            "api_requests": 6,
+            "input": 118492,
+            "cached": 108800,
+            "uncached": 9692,
+            "output": 808,
+            "tools": 5,
+            "tool_output_bytes": 29870,
+            "models": [
+              "gpt-6.1-terra"
+            ],
+            "reasonings": [
+              "medium"
+            ],
+            "protocol_reads": [
+              "ssot-preflight/SKILL.md",
+              "ssot-closeout/SKILL.md",
+              "context-spaces.md",
+              "decision-capture.md"
+            ],
+            "changed": [
+              "clerk.md",
+              "tariff.md"
+            ],
+            "parcel_passed": null,
+            "session_sha256": "c867dd3033a8ba345082ccc4d37c269692dec1d9e37626a7ac4fe2a1764d3b72",
+            "answer": "Updated the [tariff]( tariff.md) and [clerk checklist]( clerk.md): counter pickup is free from lot 40, and remains 180 cents for lots 30–39.\n\nSaturday counter collection closes at **13:30 sharp**, according to the [dispatch calendar]( dispatch.md).",
+            "saved_files": {
+              "clerk.md": "# Clerk checklist\n\nBefore handing over a counter pickup parcel, stamp the lot number. Collect 180 cents in cash for lots 30–39; counter pickup is free from lot 40.\n",
+              "tariff.md": "# Tariff\n\nCounter pickup costs 180 cents for lots 30–39. Mika approved 180 cents from lot 30 because the depot paid the handling crew; that rule is superseded from lot 40.\n\nCounter pickup is free from lot 40. Mira, the treasurer, approved this change on 2026-11-24 because the sponsor now pays the crew: “I approve free counter pickup from lot 40 because the sponsor now pays the crew.”\n\nHome delivery costs 490 cents.\n"
+            }
+          }
+        ]
+      },
+      {
+        "run_id": "mixed_cross_dep_r1_candidate",
+        "case": "mixed_cross_dep",
+        "repeat": 1,
+        "arm": "candidate",
+        "clean": true,
+        "total_input": 132242,
+        "total_cached": 123008,
+        "total_uncached": 9234,
+        "total_output": 900,
+        "total_api_requests": 7,
+        "total_tools": 6,
+        "total_seconds": 31.61,
+        "turns": [
+          {
+            "turn": 1,
+            "completion_state": null,
+            "returncode": 0,
+            "completed": true,
+            "seconds": 31.61,
+            "api_requests": 7,
+            "input": 132242,
+            "cached": 123008,
+            "uncached": 9234,
+            "output": 900,
+            "tools": 6,
+            "tool_output_bytes": 26458,
+            "models": [
+              "gpt-6.1-terra"
+            ],
+            "reasonings": [
+              "medium"
+            ],
+            "protocol_reads": [
+              "ssot-preflight/SKILL.md",
+              "ssot-closeout/SKILL.md",
+              "context-spaces.md",
+              "decision-capture.md"
+            ],
+            "changed": [
+              "clerk.md",
+              "tariff.md"
+            ],
+            "parcel_passed": null,
+            "session_sha256": "2da8d9525618eb151db8dad61db5e5d984206e762f1cd8877401eef2c17c8e90",
+            "answer": "Updated the [tariff](tariff.md) and [clerk checklist](clerk.md): counter pickup is free from lot 40 onward, while lots 30–39 remain 180 cents. The tariff retains Mika’s earlier decision and reason.\n\nSaturday counter collection closes at **13:30 sharp**, according to the [dispatch calendar](dispatch.md).",
+            "saved_files": {
+              "clerk.md": "# Clerk checklist\n\nBefore handing over a counter pickup parcel, stamp the lot number. Collect 180 cents in cash for lots 30–39; counter pickup from lot 40 onward is free.\n",
+              "tariff.md": "# Tariff\n\nCounter pickup costs 180 cents for lots 30–39. Mika approved 180 cents for counter pickup from lot 30 because the depot paid the handling crew; that rule is superseded from lot 40 onward.\n\nCounter pickup from lot 40 onward is free. On 2026-11-24, Mira, the treasurer, approved: “I approve free counter pickup from lot 40 because the sponsor now pays the crew.” This applies for the next shift onward.\n\nHome delivery costs 490 cents.\n"
+            }
+          }
+        ]
+      },
+      {
+        "run_id": "mixed_cross_dep_r2_candidate",
+        "case": "mixed_cross_dep",
+        "repeat": 2,
+        "arm": "candidate",
+        "clean": true,
+        "total_input": 146099,
+        "total_cached": 120704,
+        "total_uncached": 25395,
+        "total_output": 903,
+        "total_api_requests": 7,
+        "total_tools": 6,
+        "total_seconds": 34.266,
+        "turns": [
+          {
+            "turn": 1,
+            "completion_state": null,
+            "returncode": 0,
+            "completed": true,
+            "seconds": 34.266,
+            "api_requests": 7,
+            "input": 146099,
+            "cached": 120704,
+            "uncached": 25395,
+            "output": 903,
+            "tools": 6,
+            "tool_output_bytes": 44834,
+            "models": [
+              "gpt-6.1-terra"
+            ],
+            "reasonings": [
+              "medium"
+            ],
+            "protocol_reads": [
+              "ssot-preflight/SKILL.md",
+              "ssot-closeout/SKILL.md",
+              "context-spaces.md",
+              "memory-model.md",
+              "decision-capture.md",
+              "writing-memory.md"
+            ],
+            "changed": [
+              "clerk.md",
+              "tariff.md"
+            ],
+            "parcel_passed": null,
+            "session_sha256": "95ce7d59851e5fc69eb2ee9681ea9bacb10b51901ad0b79ef48e090bf71989de",
+            "answer": "Updated the [tariff](tariff.md) and [clerk checklist](clerk.md): counter pickup is free from lot 40 onward, while lots 30–39 remain 180 cents. The tariff records your approval and reason, along with Mika’s previous decision.\n\nSaturday counter collection closes at **13:30 sharp**, according to the [dispatch calendar](dispatch.md).",
+            "saved_files": {
+              "clerk.md": "# Clerk checklist\n\nBefore handing over a counter pickup parcel, stamp the lot number. Collect 180 cents in cash for lots 30–39; pickup from lot 40 onward is free.\n",
+              "tariff.md": "# Tariff\n\nCounter pickup costs 180 cents for lots 30–39 and is free from lot 40 onward. On 2026-11-24, Mira, the treasurer, approved: “free counter pickup from lot 40 because the sponsor now pays the crew,” effective for the next shift.\n\nPreviously, Mika approved 180 cents for counter pickup from lot 30 because the depot paid the handling crew; that rate remains in effect for lots 30–39. Home delivery costs 490 cents.\n"
+            }
+          }
+        ]
+      },
+      {
+        "run_id": "mixed_cross_dep_r2_baseline",
+        "case": "mixed_cross_dep",
+        "repeat": 2,
+        "arm": "baseline",
+        "clean": true,
+        "total_input": 177321,
+        "total_cached": 158080,
+        "total_uncached": 19241,
+        "total_output": 789,
+        "total_api_requests": 9,
+        "total_tools": 8,
+        "total_seconds": 33.336,
+        "turns": [
+          {
+            "turn": 1,
+            "completion_state": null,
+            "returncode": 0,
+            "completed": true,
+            "seconds": 33.336,
+            "api_requests": 9,
+            "input": 177321,
+            "cached": 158080,
+            "uncached": 19241,
+            "output": 789,
+            "tools": 8,
+            "tool_output_bytes": 30273,
+            "models": [
+              "gpt-6.1-terra"
+            ],
+            "reasonings": [
+              "medium"
+            ],
+            "protocol_reads": [
+              "ssot-preflight/SKILL.md",
+              "ssot-closeout/SKILL.md",
+              "context-spaces.md",
+              "decision-capture.md"
+            ],
+            "changed": [
+              "clerk.md",
+              "tariff.md"
+            ],
+            "parcel_passed": null,
+            "session_sha256": "8d43276297c90a897283b292f7351e7e2d2ab23066b8818f4a6748b741adface",
+            "answer": "Updated the [tariff](./tariff.md) and [clerk checklist](./clerk.md): counter pickup is free from lot 40 onward, while lots 30–39 remain 180 cents. The tariff records your approval and the sponsor’s reason.\n\nSaturday counter collection closes at **13:30 sharp**, according to the [dispatch calendar](./dispatch.md).",
+            "saved_files": {
+              "clerk.md": "# Clerk checklist\n\nBefore handing over a counter pickup parcel, stamp the lot number. For lots 30–39, collect 180 cents in cash. Counter pickup is free from lot 40 onward.\n",
+              "tariff.md": "# Tariff\n\nMika approved 180 cents for counter pickup from lot 30 because the depot paid the handling crew. That rate remains in effect for lots 30–39; the rate from lot 40 was superseded by Mira's decision below.\n\nOn 2026-11-24, Mira, the treasurer, approved: “free counter pickup from lot 40 because the sponsor now pays the crew.” This applies from lot 40 onward.\n\nHome delivery costs 490 cents.\n"
+            }
+          }
+        ]
+      },
+      {
+        "run_id": "format5_single_edit_r1_baseline",
+        "case": "format5_single_edit",
+        "repeat": 1,
+        "arm": "baseline",
+        "clean": true,
+        "total_input": 81213,
+        "total_cached": 76416,
+        "total_uncached": 4797,
+        "total_output": 391,
+        "total_api_requests": 5,
+        "total_tools": 4,
+        "total_seconds": 20.877,
+        "turns": [
+          {
+            "turn": 1,
+            "completion_state": null,
+            "returncode": 0,
+            "completed": true,
+            "seconds": 20.877,
+            "api_requests": 5,
+            "input": 81213,
+            "cached": 76416,
+            "uncached": 4797,
+            "output": 391,
+            "tools": 4,
+            "tool_output_bytes": 5748,
+            "models": [
+              "gpt-6.1-terra"
+            ],
+            "reasonings": [
+              "medium"
+            ],
+            "protocol_reads": [
+              "ssot-closeout/SKILL.md"
+            ],
+            "changed": [
+              "tariff.md"
+            ],
+            "parcel_passed": null,
+            "session_sha256": "d6908439ef3e548a67be4ff1b96120a2ac41d86ad48678b0aed86eb332cb1a48",
+            "answer": "Updated [the tariff](tariff.md) to make counter pickup from lot 40 free for the next shift, recording Mira’s approval and the sponsor’s payment of the crew. The previous rule’s attribution and reason are retained.",
+            "saved_files": {
+              "tariff.md": "# Tariff\n\nFor the next shift, counter pickup from lot 40 is free, approved by Mira because the sponsor now pays the crew. Previously, Mika approved 180 cents for counter pickup from lot 30 because the depot paid the handling crew. Home delivery costs 490 cents.\n"
+            }
+          }
+        ]
+      },
+      {
+        "run_id": "format5_single_edit_r1_candidate",
+        "case": "format5_single_edit",
+        "repeat": 1,
+        "arm": "candidate",
+        "clean": true,
+        "total_input": 98557,
+        "total_cached": 89472,
+        "total_uncached": 9085,
+        "total_output": 636,
+        "total_api_requests": 6,
+        "total_tools": 5,
+        "total_seconds": 26.053,
+        "turns": [
+          {
+            "turn": 1,
+            "completion_state": null,
+            "returncode": 0,
+            "completed": true,
+            "seconds": 26.053,
+            "api_requests": 6,
+            "input": 98557,
+            "cached": 89472,
+            "uncached": 9085,
+            "output": 636,
+            "tools": 5,
+            "tool_output_bytes": 6206,
+            "models": [
+              "gpt-6.1-terra"
+            ],
+            "reasonings": [
+              "medium"
+            ],
+            "protocol_reads": [
+              "ssot-closeout/SKILL.md"
+            ],
+            "changed": [
+              "tariff.md"
+            ],
+            "parcel_passed": null,
+            "session_sha256": "15182d5774a499824fa20964aa2781d72a107ee8469b3d3d92035cdab0e43dc3",
+            "answer": "Updated and verified the [tariff]( tariff.md): counter pickup from lot 40 is free starting with the next shift. The entry records your approval and the sponsor’s payment of the crew.",
+            "saved_files": {
+              "tariff.md": "# Tariff\n\nStarting with the next shift, counter pickup from lot 40 is free. Mira, the treasurer, approved this because the sponsor now pays the crew. Mika approved 180 cents for counter pickup from lot 30 because the depot paid the handling crew. Home delivery costs 490 cents.\n"
+            }
+          }
+        ]
+      },
+      {
+        "run_id": "format5_single_edit_r2_candidate",
+        "case": "format5_single_edit",
+        "repeat": 2,
+        "arm": "candidate",
+        "clean": true,
+        "total_input": 98441,
+        "total_cached": 93440,
+        "total_uncached": 5001,
+        "total_output": 570,
+        "total_api_requests": 6,
+        "total_tools": 5,
+        "total_seconds": 28.233,
+        "turns": [
+          {
+            "turn": 1,
+            "completion_state": null,
+            "returncode": 0,
+            "completed": true,
+            "seconds": 28.233,
+            "api_requests": 6,
+            "input": 98441,
+            "cached": 93440,
+            "uncached": 5001,
+            "output": 570,
+            "tools": 5,
+            "tool_output_bytes": 5896,
+            "models": [
+              "gpt-6.1-terra"
+            ],
+            "reasonings": [
+              "medium"
+            ],
+            "protocol_reads": [
+              "ssot-closeout/SKILL.md"
+            ],
+            "changed": [
+              "tariff.md"
+            ],
+            "parcel_passed": null,
+            "session_sha256": "a175b22bae7cce3b8d10c47f8f6c577d6961cf3dfbe4f2443dd522c14c3516da",
+            "answer": "Updated and verified the [tariff](./tariff.md): counter pickup from lot 40 is free for the next shift, with your approval and the sponsor’s payment recorded. The existing lot 30 and home delivery terms remain in place.",
+            "saved_files": {
+              "tariff.md": "# Tariff\n\nMika approved 180 cents for counter pickup from lot 30 because the depot paid the handling crew. For the next shift, Mira, the treasurer, approved free counter pickup from lot 40 because the sponsor now pays the crew. Home delivery costs 490 cents.\n"
+            }
+          }
+        ]
+      },
+      {
+        "run_id": "format5_single_edit_r2_baseline",
+        "case": "format5_single_edit",
+        "repeat": 2,
+        "arm": "baseline",
+        "clean": true,
+        "total_input": 98359,
+        "total_cached": 93312,
+        "total_uncached": 5047,
+        "total_output": 546,
+        "total_api_requests": 6,
+        "total_tools": 5,
+        "total_seconds": 24.204,
+        "turns": [
+          {
+            "turn": 1,
+            "completion_state": null,
+            "returncode": 0,
+            "completed": true,
+            "seconds": 24.204,
+            "api_requests": 6,
+            "input": 98359,
+            "cached": 93312,
+            "uncached": 5047,
+            "output": 546,
+            "tools": 5,
+            "tool_output_bytes": 5900,
+            "models": [
+              "gpt-6.1-terra"
+            ],
+            "reasonings": [
+              "medium"
+            ],
+            "protocol_reads": [
+              "ssot-closeout/SKILL.md"
+            ],
+            "changed": [
+              "tariff.md"
+            ],
+            "parcel_passed": null,
+            "session_sha256": "76ce4a73a078ba45a1fd98a173337025bde4111aa02b2fc413497ab7a53d3385",
+            "answer": "Updated and verified the [tariff](tariff.md): counter pickup from lot 40 is free starting with the next shift. It records Mira’s approval and the sponsor’s payment of the crew, while preserving the previous rule’s attribution and reason.",
+            "saved_files": {
+              "tariff.md": "# Tariff\n\nStarting with the next shift, counter pickup from lot 40 is free. Mira, the treasurer, approved this because the sponsor now pays the crew. Previously, Mika approved 180 cents for counter pickup from lot 30 because the depot paid the handling crew. Home delivery costs 490 cents.\n"
+            }
+          }
+        ]
+      },
+      {
+        "run_id": "format5_setup_continue_r1_baseline",
+        "case": "format5_setup_continue",
+        "repeat": 1,
+        "arm": "baseline",
+        "clean": true,
+        "total_input": 74023,
+        "total_cached": 64640,
+        "total_uncached": 9383,
+        "total_output": 560,
+        "total_api_requests": 4,
+        "total_tools": 3,
+        "total_seconds": 22.224,
+        "turns": [
+          {
+            "turn": 1,
+            "completion_state": null,
+            "returncode": 0,
+            "completed": true,
+            "seconds": 22.224,
+            "api_requests": 4,
+            "input": 74023,
+            "cached": 64640,
+            "uncached": 9383,
+            "output": 560,
+            "tools": 3,
+            "tool_output_bytes": 29663,
+            "models": [
+              "gpt-6.1-terra"
+            ],
+            "reasonings": [
+              "medium"
+            ],
+            "protocol_reads": [
+              "ssot-bootstrap/SKILL.md",
+              "context-spaces.md",
+              "memory-model.md"
+            ],
+            "changed": [],
+            "parcel_passed": null,
+            "session_sha256": "6bc6cd5a0eb5d5ff387310f46ceaa0d1b868fa0394168792f390de16af04ee02",
+            "answer": "I found a mismatch in the setup record, so I left the files unchanged. [index.md](index.md) describes the **Field Acoustics Study**, but its linked [setup-progress.md](setup-progress.md) names `lab-budget/index.md` and FY26 grant accounting.\n\nWhich setup record should govern the Field Acoustics Study? Please provide its path or the intended next step. The [bootstrap guidance](.agents/skills/ssot-preflight/references/context-spaces.md) says that when the entry and progress record disagree, I should “preserve the files and ask which record governs.”",
+            "saved_files": {}
+          }
+        ]
+      },
+      {
+        "run_id": "format5_setup_continue_r1_candidate",
+        "case": "format5_setup_continue",
+        "repeat": 1,
+        "arm": "candidate",
+        "clean": true,
+        "total_input": 71031,
+        "total_cached": 62080,
+        "total_uncached": 8951,
+        "total_output": 802,
+        "total_api_requests": 4,
+        "total_tools": 3,
+        "total_seconds": 25.579,
+        "turns": [
+          {
+            "turn": 1,
+            "completion_state": null,
+            "returncode": 0,
+            "completed": true,
+            "seconds": 25.579,
+            "api_requests": 4,
+            "input": 71031,
+            "cached": 62080,
+            "uncached": 8951,
+            "output": 802,
+            "tools": 3,
+            "tool_output_bytes": 28171,
+            "models": [
+              "gpt-6.1-terra"
+            ],
+            "reasonings": [
+              "medium"
+            ],
+            "protocol_reads": [
+              "ssot-bootstrap/SKILL.md",
+              "context-spaces.md",
+              "context-space-setup.md",
+              "memory-model.md"
+            ],
+            "changed": [],
+            "parcel_passed": null,
+            "session_sha256": "c309e48864c65fc812fa02b4ed043b470e93980101b1cb56978d13e1c53d0637",
+            "answer": "I found a conflict in the setup record, so I left the files unchanged. [index.md](index.md) identifies this space as **Field Acoustics Study**, while its linked [setup-progress.md](setup-progress.md) names `lab-budget/index.md` and FY26 grant accounting. Its next step also directs grant receipts into the acoustics methods file.\n\nWhich setup record or scope should govern continuation of the Field Acoustics Study?\n\nThe [SSOT setup instructions](.agents/skills/ssot-preflight/references/context-space-setup.md) say: “On disagreement, preserve the files and ask which record governs.” That applies because the linked record identifies a different entry and subject.",
+            "saved_files": {}
+          }
+        ]
+      }
+    ]
+  },
+  "all_native_totals": {
+    "runs": 38,
+    "completed_runs": 38,
+    "turns": 42,
+    "input": 5108999,
+    "cached": 4609664,
+    "uncached": 499335,
+    "output": 41125,
+    "api_requests": 256,
+    "tools": 214,
+    "seconds": 1411.083
+  },
+  "limits": [
+    "Tested on one host and model (Codex CLI 0.171.0, gpt-6.1-terra, medium reasoning); other hosts with smaller base prompts or no prompt caching may weigh reference bytes differently.",
+    "Small repeat count (1-2 repeats per case); single-turn API batching variance (+/-17-34k tokens per turn) dominates the ~3-6k per-session effect of a 3 KB reference split.",
+    "Round 1 ran with installed_mode=False (AGENTS.md read via tool instead of auto-loaded) and stopped before format-5 cases due to missing --skip-git-repo-check; Round 2 ran all 12 pairs cleanly with installed_mode=True and allow_no_git=True."
+  ],
+  "archive": {
+    "file": "hotpath-split-c240b51-20261124.tar.gz",
+    "sha256": "0dcde39aab12aba43af63b9df6ed7d7d237a8dd6126f8a51db2c31afb54e7167",
+    "visibility": "local private evidence archive (disposable codex-home, probes and auth credentials excluded)"
+  }
+}
