@@ -85,7 +85,7 @@ In a development repository only `SSOT/README.md` is required; the other files a
  ├── product.md       Who uses it, what it promises, what it does not do
  ├── architecture.md  The parts, who owns which state, key flows, failure and recovery
  ├── process.md       How to build, test, release, and deploy
- ├── decisions/       Why things are the way they are, including rejected options
+ ├── decisions/       Cold history of choices, superseded rules, and rejected options (skipped on routine reads)
  ├── gotchas.md       Traps that have already cost time
  ├── glossary.md      Project terms a newcomer would misread
  └── research/        Investigations whose conclusions still guide decisions
@@ -93,7 +93,7 @@ In a development repository only `SSOT/README.md` is required; the other files a
 
 Existing maintained documents can stay the owners and are linked from the entry. A general space has no fixed layout: its entry states purpose, scope and protected rules, and links the documents that already own each topic. An unfinished general space links its own setup record. Several spaces can share a directory. Details are in the [memory model](./skills/ssot-preflight/references/memory-model.md) and the [space model](./skills/ssot-preflight/references/context-spaces.md).
 
-A reader can answer bounded lookups from one authorized owner and apply an approved single-owner prose edit in place with on-disk readback. When an invariants register grows large, topic groups can move into optional shards (`SSOT/invariants/<topic>.md`) checked across files by `ssot-check.py`. For deterministic commit-time checks across every agent without spending model tokens, wire the opt-in [`tools/ssot-precommit.sh`](./tools/ssot-precommit.sh) guard ([setup](./docs/2026-11-24-install-maintenance.md#optional-zero-token-git-pre-commit-guard)).
+A reader can answer bounded lookups from one authorized owner and apply an approved single-owner prose edit in place with on-disk readback. When decisions supersede earlier guidance, warm topic owners consolidate current behavior while superseded wording, rejected trials, and lengthy quotes move to cold history (`decisions/` or topic history files) skipped on routine reads; older rules that still govern stay active. When an invariants register grows large, topic groups can move into optional shards (`SSOT/invariants/<topic>.md`, plus optional cold `invariants/retired.md`) checked across files by `ssot-check.py`. For deterministic commit-time checks across every agent without spending model tokens, wire the opt-in [`tools/ssot-precommit.sh`](./tools/ssot-precommit.sh) guard ([setup](./docs/2026-11-24-install-maintenance.md#optional-zero-token-git-pre-commit-guard)).
 
 ## Limits
 

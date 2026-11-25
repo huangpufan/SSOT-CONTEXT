@@ -1,0 +1,2405 @@
+{
+  "study": "2026-11-26-semantic-tiering-v5.22",
+  "date": "2026-11-26",
+  "baseline_protocol": "5.21",
+  "baseline_commit_short": "eb2524a",
+  "adopted_protocol": "5.22",
+  "verdict": {
+    "round1_T1_explicit_prompt_small_fixture": "refined_into_T1b_after_diagnosing_prompt_and_scale_confounds",
+    "round2_T1b_unprompted_real_scale": "adopted_as_v5.22"
+  },
+  "host": {
+    "cli": "codex-cli 0.172.0",
+    "model": "gpt-6.1-terra",
+    "reasoning": "medium",
+    "isolation": "linux bwrap + isolated CODEX_HOME + official install.sh --quickstart --agent codex --scope project"
+  },
+  "zero_model_probes": {
+    "baseline_f4": {
+      "ok": true,
+      "prompt_bytes": 66813,
+      "skills": [
+        "ssot-bootstrap",
+        "ssot-closeout",
+        "ssot-doctor",
+        "ssot-preflight"
+      ]
+    },
+    "baseline_f5": {
+      "ok": true,
+      "prompt_bytes": 66525,
+      "skills": [
+        "ssot-bootstrap",
+        "ssot-closeout",
+        "ssot-doctor",
+        "ssot-preflight"
+      ]
+    },
+    "candidate_f4": {
+      "ok": true,
+      "prompt_bytes": 66828,
+      "skills": [
+        "ssot-bootstrap",
+        "ssot-closeout",
+        "ssot-doctor",
+        "ssot-preflight"
+      ]
+    },
+    "candidate_f5": {
+      "ok": true,
+      "prompt_bytes": 66539,
+      "skills": [
+        "ssot-bootstrap",
+        "ssot-closeout",
+        "ssot-doctor",
+        "ssot-preflight"
+      ]
+    }
+  },
+  "round1_T1": {
+    "bundle_tree_sha256": {
+      "baseline": "55b103d6b42ed9596a3c022d047a0f5f7fa2068dd8a32f643a16f10cb49b6840",
+      "candidate_t1": "08169a35f7e9c2b6a6104c346a9bb459569735141f372df15a76add12bead1f1"
+    },
+    "pairs": [
+      {
+        "pair": "T1_S1_f4_supersede_zh",
+        "order": [
+          "baseline",
+          "candidate_t1"
+        ],
+        "arms": {
+          "baseline": {
+            "writer_metrics": {
+              "checker_pass": true,
+              "design_bytes_before": 3825,
+              "design_bytes_after": 1906,
+              "design_reduced_pct": -50.2,
+              "cold_files": [
+                "SSOT/decisions/0001-initial-ui.md"
+              ],
+              "old_quotes_preserved_anywhere": true,
+              "old_quotes_offloaded_to_cold": true,
+              "rejected_trial_wall_removed_from_warm": true,
+              "inv01_old_active_intact": false,
+              "inv03_retired": true,
+              "inv02_row_chars": 188
+            },
+            "phase2_pass": true,
+            "phase2_read_cold": false,
+            "phase3_pass": true,
+            "phases": [
+              {
+                "phase": "phase1_writer",
+                "returncode": 0,
+                "completed": true,
+                "seconds": 49.479,
+                "native_models": [
+                  "gpt-6.1-terra"
+                ],
+                "native_reasoning": [
+                  "medium"
+                ],
+                "input_tokens": 150417,
+                "cached_input_tokens": 126464,
+                "uncached_input_tokens": 23953,
+                "output_tokens": 1802,
+                "api_roundtrips": 6,
+                "tool_items": 5,
+                "tool_output_bytes": 71947,
+                "proto_files": [
+                  "SKILL.md",
+                  "batch-closeout.md",
+                  "context-tiering.md",
+                  "decision-capture.md",
+                  "memory-layout.md",
+                  "memory-model.md",
+                  "ssot-check.py",
+                  "writing-memory.md"
+                ],
+                "repo_files_touched_or_read": [
+                  "../../docs/design.md",
+                  "../SSOT/decisions/0001-initial-ui.md",
+                  "../docs/design.md",
+                  "AGENTS.md",
+                  "SSOT/README.md",
+                  "SSOT/decisions/0001-initial-ui.md",
+                  "decisions/0001-initial-ui.md",
+                  "docs/design.md"
+                ]
+              },
+              {
+                "phase": "phase2_routine_reader",
+                "returncode": 0,
+                "completed": true,
+                "seconds": 26.982,
+                "native_models": [
+                  "gpt-6.1-terra"
+                ],
+                "native_reasoning": [
+                  "medium"
+                ],
+                "input_tokens": 91413,
+                "cached_input_tokens": 77440,
+                "uncached_input_tokens": 13973,
+                "output_tokens": 777,
+                "api_roundtrips": 5,
+                "tool_items": 4,
+                "tool_output_bytes": 16787,
+                "proto_files": [
+                  "SKILL.md"
+                ],
+                "repo_files_touched_or_read": [
+                  "SSOT/README.md",
+                  "deliverables/ui_spec.json",
+                  "docs/design.md"
+                ]
+              },
+              {
+                "phase": "phase3_cold_recall",
+                "returncode": 0,
+                "completed": true,
+                "seconds": 38.482,
+                "native_models": [
+                  "gpt-6.1-terra"
+                ],
+                "native_reasoning": [
+                  "medium"
+                ],
+                "input_tokens": 103539,
+                "cached_input_tokens": 91648,
+                "uncached_input_tokens": 11891,
+                "output_tokens": 1081,
+                "api_roundtrips": 5,
+                "tool_items": 7,
+                "tool_output_bytes": 35427,
+                "proto_files": [
+                  "SKILL.md",
+                  "memory-model.md"
+                ],
+                "repo_files_touched_or_read": [
+                  "SSOT/README.md",
+                  "SSOT/decisions/0001-initial-ui.md",
+                  "deliverables/history_check.json",
+                  "docs/design.md"
+                ]
+              }
+            ]
+          },
+          "candidate_t1": {
+            "writer_metrics": {
+              "checker_pass": true,
+              "design_bytes_before": 3825,
+              "design_bytes_after": 1337,
+              "design_reduced_pct": -65.0,
+              "cold_files": [
+                "SSOT/decisions/0001-initial-ui.md",
+                "SSOT/decisions/0002-conversation-skins.md"
+              ],
+              "old_quotes_preserved_anywhere": true,
+              "old_quotes_offloaded_to_cold": true,
+              "rejected_trial_wall_removed_from_warm": true,
+              "inv01_old_active_intact": false,
+              "inv03_retired": true,
+              "inv02_row_chars": 175
+            },
+            "phase2_pass": true,
+            "phase2_read_cold": false,
+            "phase3_pass": true,
+            "phases": [
+              {
+                "phase": "phase1_writer",
+                "returncode": 0,
+                "completed": true,
+                "seconds": 61.1,
+                "native_models": [
+                  "gpt-6.1-terra"
+                ],
+                "native_reasoning": [
+                  "medium"
+                ],
+                "input_tokens": 179591,
+                "cached_input_tokens": 159232,
+                "uncached_input_tokens": 20359,
+                "output_tokens": 2352,
+                "api_roundtrips": 7,
+                "tool_items": 18,
+                "tool_output_bytes": 68371,
+                "proto_files": [
+                  "SKILL.md",
+                  "batch-closeout.md",
+                  "decision-capture.md",
+                  "memory-layout.md",
+                  "memory-model.md",
+                  "protection-departure.md",
+                  "ssot-check.py",
+                  "writing-memory.md"
+                ],
+                "repo_files_touched_or_read": [
+                  "../SSOT/decisions/0001-initial-ui.md",
+                  "../SSOT/decisions/0002-conversation-skins.md",
+                  "../docs/design.md",
+                  "0001-initial-ui.md",
+                  "0002-conversation-skins.md",
+                  "SSOT/README.md",
+                  "SSOT/decisions/0001-initial-ui.md",
+                  "SSOT/decisions/0002-conversation-skins.md",
+                  "decisions/0002-conversation-skins.md",
+                  "docs/design.md"
+                ]
+              },
+              {
+                "phase": "phase2_routine_reader",
+                "returncode": 0,
+                "completed": true,
+                "seconds": 29.41,
+                "native_models": [
+                  "gpt-6.1-terra"
+                ],
+                "native_reasoning": [
+                  "medium"
+                ],
+                "input_tokens": 72502,
+                "cached_input_tokens": 61952,
+                "uncached_input_tokens": 10550,
+                "output_tokens": 750,
+                "api_roundtrips": 4,
+                "tool_items": 3,
+                "tool_output_bytes": 16300,
+                "proto_files": [
+                  "SKILL.md"
+                ],
+                "repo_files_touched_or_read": [
+                  "SSOT/README.md",
+                  "deliverables/ui_spec.json",
+                  "docs/design.md"
+                ]
+              },
+              {
+                "phase": "phase3_cold_recall",
+                "returncode": 0,
+                "completed": true,
+                "seconds": 29.681,
+                "native_models": [
+                  "gpt-6.1-terra"
+                ],
+                "native_reasoning": [
+                  "medium"
+                ],
+                "input_tokens": 93949,
+                "cached_input_tokens": 73216,
+                "uncached_input_tokens": 20733,
+                "output_tokens": 819,
+                "api_roundtrips": 5,
+                "tool_items": 4,
+                "tool_output_bytes": 20729,
+                "proto_files": [
+                  "SKILL.md"
+                ],
+                "repo_files_touched_or_read": [
+                  "SSOT/README.md",
+                  "SSOT/decisions/0001-initial-ui.md",
+                  "SSOT/decisions/0002-conversation-skins.md",
+                  "deliverables/history_check.json",
+                  "docs/design.md"
+                ]
+              }
+            ]
+          }
+        }
+      },
+      {
+        "pair": "T1_S1_r2_f4_supersede_en",
+        "order": [
+          "candidate_t1",
+          "baseline"
+        ],
+        "arms": {
+          "candidate_t1": {
+            "writer_metrics": {
+              "checker_pass": true,
+              "policy_bytes_before": 2409,
+              "policy_bytes_after": 1222,
+              "policy_reduced_pct": -49.3,
+              "cold_files": [
+                "SSOT/decisions/0001-initial-ratelimit.md",
+                "SSOT/decisions/0002-rate-limit-history.md"
+              ],
+              "old_quotes_preserved_anywhere": true,
+              "old_quotes_offloaded_to_cold": true,
+              "rejected_trial_wall_removed_from_warm": true,
+              "inv01_old_active_intact": true,
+              "inv03_retired": true,
+              "inv02_row_chars": 328
+            },
+            "phase2_pass": true,
+            "phase2_read_cold": false,
+            "phase3_pass": true,
+            "phases": [
+              {
+                "phase": "phase1_writer",
+                "returncode": 0,
+                "completed": true,
+                "seconds": 52.469,
+                "native_models": [
+                  "gpt-6.1-terra"
+                ],
+                "native_reasoning": [
+                  "medium"
+                ],
+                "input_tokens": 153907,
+                "cached_input_tokens": 120320,
+                "uncached_input_tokens": 33587,
+                "output_tokens": 1967,
+                "api_roundtrips": 6,
+                "tool_items": 14,
+                "tool_output_bytes": 81268,
+                "proto_files": [
+                  "SKILL.md",
+                  "batch-closeout.md",
+                  "context-tiering.md",
+                  "decision-capture.md",
+                  "memory-layout.md",
+                  "memory-model.md",
+                  "protection-departure.md",
+                  "ssot-check.py",
+                  "writing-memory.md"
+                ],
+                "repo_files_touched_or_read": [
+                  "../SSOT/decisions/0002-rate-limit-history.md",
+                  "../docs/policy.md",
+                  "0002-rate-limit-history.md",
+                  "SSOT/README.md",
+                  "SSOT/decisions/0001-initial-ratelimit.md",
+                  "SSOT/decisions/0002-rate-limit-history.md",
+                  "decisions/0002-rate-limit-history.md",
+                  "docs/policy.md"
+                ]
+              },
+              {
+                "phase": "phase2_routine_reader",
+                "returncode": 0,
+                "completed": true,
+                "seconds": 33.843,
+                "native_models": [
+                  "gpt-6.1-terra"
+                ],
+                "native_reasoning": [
+                  "medium"
+                ],
+                "input_tokens": 100342,
+                "cached_input_tokens": 86656,
+                "uncached_input_tokens": 13686,
+                "output_tokens": 1142,
+                "api_roundtrips": 5,
+                "tool_items": 8,
+                "tool_output_bytes": 31763,
+                "proto_files": [
+                  "SKILL.md",
+                  "memory-model.md"
+                ],
+                "repo_files_touched_or_read": [
+                  "SSOT/README.md",
+                  "deliverables/gateway_spec.json",
+                  "docs/policy.md",
+                  "src/gateway.py"
+                ]
+              },
+              {
+                "phase": "phase3_cold_recall",
+                "returncode": 0,
+                "completed": true,
+                "seconds": 29.676,
+                "native_models": [
+                  "gpt-6.1-terra"
+                ],
+                "native_reasoning": [
+                  "medium"
+                ],
+                "input_tokens": 92982,
+                "cached_input_tokens": 84992,
+                "uncached_input_tokens": 7990,
+                "output_tokens": 755,
+                "api_roundtrips": 5,
+                "tool_items": 4,
+                "tool_output_bytes": 19210,
+                "proto_files": [
+                  "SKILL.md"
+                ],
+                "repo_files_touched_or_read": [
+                  "SSOT/README.md",
+                  "SSOT/decisions/0002-rate-limit-history.md",
+                  "deliverables/gateway_history.json",
+                  "docs/policy.md"
+                ]
+              }
+            ]
+          },
+          "baseline": {
+            "writer_metrics": {
+              "checker_pass": true,
+              "policy_bytes_before": 2409,
+              "policy_bytes_after": 1711,
+              "policy_reduced_pct": -29.0,
+              "cold_files": [
+                "SSOT/decisions/0001-initial-ratelimit.md"
+              ],
+              "old_quotes_preserved_anywhere": true,
+              "old_quotes_offloaded_to_cold": true,
+              "rejected_trial_wall_removed_from_warm": true,
+              "inv01_old_active_intact": true,
+              "inv03_retired": true,
+              "inv02_row_chars": 355
+            },
+            "phase2_pass": true,
+            "phase2_read_cold": false,
+            "phase3_pass": true,
+            "phases": [
+              {
+                "phase": "phase1_writer",
+                "returncode": 0,
+                "completed": true,
+                "seconds": 60.814,
+                "native_models": [
+                  "gpt-6.1-terra"
+                ],
+                "native_reasoning": [
+                  "medium"
+                ],
+                "input_tokens": 145200,
+                "cached_input_tokens": 121088,
+                "uncached_input_tokens": 24112,
+                "output_tokens": 2628,
+                "api_roundtrips": 6,
+                "tool_items": 10,
+                "tool_output_bytes": 67516,
+                "proto_files": [
+                  "SKILL.md",
+                  "batch-closeout.md",
+                  "context-tiering.md",
+                  "decision-capture.md",
+                  "memory-layout.md",
+                  "memory-model.md",
+                  "ssot-check.py",
+                  "writing-memory.md"
+                ],
+                "repo_files_touched_or_read": [
+                  "../../docs/policy.md",
+                  "../SSOT/decisions/0001-initial-ratelimit.md",
+                  "../docs/policy.md",
+                  "SSOT/README.md",
+                  "SSOT/decisions/0001-initial-ratelimit.md",
+                  "docs/policy.md",
+                  "src/gateway.py"
+                ]
+              },
+              {
+                "phase": "phase2_routine_reader",
+                "returncode": 0,
+                "completed": true,
+                "seconds": 29.387,
+                "native_models": [
+                  "gpt-6.1-terra"
+                ],
+                "native_reasoning": [
+                  "medium"
+                ],
+                "input_tokens": 90313,
+                "cached_input_tokens": 76800,
+                "uncached_input_tokens": 13513,
+                "output_tokens": 823,
+                "api_roundtrips": 5,
+                "tool_items": 4,
+                "tool_output_bytes": 16748,
+                "proto_files": [
+                  "SKILL.md"
+                ],
+                "repo_files_touched_or_read": [
+                  "SSOT/README.md",
+                  "deliverables/gateway_spec.json",
+                  "docs/policy.md"
+                ]
+              },
+              {
+                "phase": "phase3_cold_recall",
+                "returncode": 0,
+                "completed": true,
+                "seconds": 28.001,
+                "native_models": [
+                  "gpt-6.1-terra"
+                ],
+                "native_reasoning": [
+                  "medium"
+                ],
+                "input_tokens": 93003,
+                "cached_input_tokens": 79232,
+                "uncached_input_tokens": 13771,
+                "output_tokens": 785,
+                "api_roundtrips": 5,
+                "tool_items": 4,
+                "tool_output_bytes": 21342,
+                "proto_files": [
+                  "SKILL.md"
+                ],
+                "repo_files_touched_or_read": [
+                  "SSOT/README.md",
+                  "SSOT/decisions/0001-initial-ratelimit.md",
+                  "deliverables/gateway_history.json",
+                  "docs/policy.md"
+                ]
+              }
+            ]
+          }
+        }
+      },
+      {
+        "pair": "T1_S2_f5_startup_log_zh",
+        "order": [
+          "baseline",
+          "candidate_t1"
+        ],
+        "arms": {
+          "baseline": {
+            "writer_metrics": {
+              "checker_pass": true,
+              "decisions_bytes_before": 4505,
+              "decisions_bytes_after": 5156,
+              "md_files": [
+                "README.md",
+                "decisions.md",
+                "now.md",
+                "rules.md",
+                "security.md"
+              ],
+              "ctx01_old_active_intact": true,
+              "history_preserved_anywhere": true,
+              "cold_file_separated": true
+            },
+            "phase2_pass": true,
+            "phase3_pass": true,
+            "phases": [
+              {
+                "phase": "phase1_writer",
+                "returncode": 0,
+                "completed": true,
+                "seconds": 68.415,
+                "native_models": [
+                  "gpt-6.1-terra"
+                ],
+                "native_reasoning": [
+                  "medium"
+                ],
+                "input_tokens": 274779,
+                "cached_input_tokens": 253440,
+                "uncached_input_tokens": 21339,
+                "output_tokens": 2767,
+                "api_roundtrips": 10,
+                "tool_items": 13,
+                "tool_output_bytes": 69979,
+                "proto_files": [
+                  "SKILL.md",
+                  "batch-closeout.md",
+                  "context-spaces.md",
+                  "context-tiering.md",
+                  "decision-capture.md",
+                  "memory-layout.md",
+                  "ssot-check.py",
+                  "writing-memory.md"
+                ],
+                "repo_files_touched_or_read": [
+                  "README.md",
+                  "decisions.md",
+                  "now.md",
+                  "rules.md",
+                  "security.md"
+                ]
+              },
+              {
+                "phase": "phase2_routine_reader",
+                "returncode": 0,
+                "completed": true,
+                "seconds": 32.379,
+                "native_models": [
+                  "gpt-6.1-terra"
+                ],
+                "native_reasoning": [
+                  "medium"
+                ],
+                "input_tokens": 87629,
+                "cached_input_tokens": 83072,
+                "uncached_input_tokens": 4557,
+                "output_tokens": 790,
+                "api_roundtrips": 5,
+                "tool_items": 7,
+                "tool_output_bytes": 15181,
+                "proto_files": [
+                  "SKILL.md"
+                ],
+                "repo_files_touched_or_read": [
+                  "README.md",
+                  "deliverables/ops_plan.json",
+                  "now.md",
+                  "rules.md",
+                  "security.md"
+                ]
+              },
+              {
+                "phase": "phase3_cold_recall",
+                "returncode": 0,
+                "completed": true,
+                "seconds": 26.935,
+                "native_models": [
+                  "gpt-6.1-terra"
+                ],
+                "native_reasoning": [
+                  "medium"
+                ],
+                "input_tokens": 100886,
+                "cached_input_tokens": 79104,
+                "uncached_input_tokens": 21782,
+                "output_tokens": 672,
+                "api_roundtrips": 5,
+                "tool_items": 4,
+                "tool_output_bytes": 32336,
+                "proto_files": [
+                  "SKILL.md",
+                  "context-spaces.md"
+                ],
+                "repo_files_touched_or_read": [
+                  "README.md",
+                  "decisions.md",
+                  "deliverables/ops_history.json",
+                  "now.md",
+                  "rules.md"
+                ]
+              }
+            ]
+          },
+          "candidate_t1": {
+            "writer_metrics": {
+              "checker_pass": true,
+              "decisions_bytes_before": 4505,
+              "decisions_bytes_after": 4718,
+              "md_files": [
+                "README.md",
+                "decisions.md",
+                "now.md",
+                "rules.md",
+                "security.md"
+              ],
+              "ctx01_old_active_intact": true,
+              "history_preserved_anywhere": true,
+              "cold_file_separated": true
+            },
+            "phase2_pass": true,
+            "phase3_pass": true,
+            "phases": [
+              {
+                "phase": "phase1_writer",
+                "returncode": 0,
+                "completed": true,
+                "seconds": 59.462,
+                "native_models": [
+                  "gpt-6.1-terra"
+                ],
+                "native_reasoning": [
+                  "medium"
+                ],
+                "input_tokens": 155716,
+                "cached_input_tokens": 134656,
+                "uncached_input_tokens": 21060,
+                "output_tokens": 2586,
+                "api_roundtrips": 6,
+                "tool_items": 11,
+                "tool_output_bytes": 81484,
+                "proto_files": [
+                  "SKILL.md",
+                  "context-spaces.md",
+                  "context-tiering.md",
+                  "decision-capture.md",
+                  "memory-model.md",
+                  "ssot-check.py",
+                  "writing-memory.md"
+                ],
+                "repo_files_touched_or_read": [
+                  "README.md",
+                  "decisions.md",
+                  "now.md",
+                  "rules.md",
+                  "security.md"
+                ]
+              },
+              {
+                "phase": "phase2_routine_reader",
+                "returncode": 0,
+                "completed": true,
+                "seconds": 32.723,
+                "native_models": [
+                  "gpt-6.1-terra"
+                ],
+                "native_reasoning": [
+                  "medium"
+                ],
+                "input_tokens": 98156,
+                "cached_input_tokens": 79872,
+                "uncached_input_tokens": 18284,
+                "output_tokens": 826,
+                "api_roundtrips": 5,
+                "tool_items": 7,
+                "tool_output_bytes": 28563,
+                "proto_files": [
+                  "SKILL.md",
+                  "context-spaces.md"
+                ],
+                "repo_files_touched_or_read": [
+                  "README.md",
+                  "deliverables/ops_plan.json",
+                  "now.md",
+                  "rules.md",
+                  "security.md"
+                ]
+              },
+              {
+                "phase": "phase3_cold_recall",
+                "returncode": 0,
+                "completed": true,
+                "seconds": 24.197,
+                "native_models": [
+                  "gpt-6.1-terra"
+                ],
+                "native_reasoning": [
+                  "medium"
+                ],
+                "input_tokens": 99214,
+                "cached_input_tokens": 87936,
+                "uncached_input_tokens": 11278,
+                "output_tokens": 727,
+                "api_roundtrips": 5,
+                "tool_items": 4,
+                "tool_output_bytes": 33088,
+                "proto_files": [
+                  "SKILL.md",
+                  "context-spaces.md"
+                ],
+                "repo_files_touched_or_read": [
+                  "README.md",
+                  "decisions.md",
+                  "deliverables/ops_history.json",
+                  "now.md",
+                  "rules.md"
+                ]
+              }
+            ]
+          }
+        }
+      },
+      {
+        "pair": "T1_S3_f4_sharded_retired_routine",
+        "order": [
+          "candidate_t1",
+          "baseline"
+        ],
+        "arms": {
+          "candidate_t1": {
+            "pass": true,
+            "read_retired_shard": false,
+            "read_decisions": false,
+            "read_auth_shard": false,
+            "phases": [
+              {
+                "phase": "phase1_code",
+                "returncode": 0,
+                "completed": true,
+                "seconds": 45.35,
+                "native_models": [
+                  "gpt-6.1-terra"
+                ],
+                "native_reasoning": [
+                  "medium"
+                ],
+                "input_tokens": 154671,
+                "cached_input_tokens": 140544,
+                "uncached_input_tokens": 14127,
+                "output_tokens": 1661,
+                "api_roundtrips": 7,
+                "tool_items": 12,
+                "tool_output_bytes": 45424,
+                "proto_files": [
+                  "SKILL.md",
+                  "decision-capture.md",
+                  "memory-model.md",
+                  "ssot-check.py",
+                  "writing-memory.md"
+                ],
+                "repo_files_touched_or_read": [
+                  "SSOT/README.md",
+                  "SSOT/invariants/billing.md",
+                  "docs/billing.md",
+                  "src/pricing.py",
+                  "test_pricing.py"
+                ]
+              }
+            ]
+          },
+          "baseline": {
+            "pass": true,
+            "read_retired_shard": false,
+            "read_decisions": false,
+            "read_auth_shard": false,
+            "phases": [
+              {
+                "phase": "phase1_code",
+                "returncode": 0,
+                "completed": true,
+                "seconds": 35.274,
+                "native_models": [
+                  "gpt-6.1-terra"
+                ],
+                "native_reasoning": [
+                  "medium"
+                ],
+                "input_tokens": 120478,
+                "cached_input_tokens": 109184,
+                "uncached_input_tokens": 11294,
+                "output_tokens": 1088,
+                "api_roundtrips": 6,
+                "tool_items": 10,
+                "tool_output_bytes": 33687,
+                "proto_files": [
+                  "SKILL.md",
+                  "memory-model.md"
+                ],
+                "repo_files_touched_or_read": [
+                  "SSOT/README.md",
+                  "SSOT/invariants/billing.md",
+                  "docs/billing.md",
+                  "src/pricing.py",
+                  "test_pricing.py"
+                ]
+              }
+            ]
+          }
+        }
+      },
+      {
+        "pair": "T1_C1_cold_recall_counterexample",
+        "order": [
+          "baseline",
+          "candidate_t1"
+        ],
+        "arms": {
+          "baseline": {
+            "pass": true,
+            "read_retired_shard": true,
+            "read_dec_0004": true,
+            "phases": [
+              {
+                "phase": "phase1_recall",
+                "returncode": 0,
+                "completed": true,
+                "seconds": 27.36,
+                "native_models": [
+                  "gpt-6.1-terra"
+                ],
+                "native_reasoning": [
+                  "medium"
+                ],
+                "input_tokens": 118816,
+                "cached_input_tokens": 105088,
+                "uncached_input_tokens": 13728,
+                "output_tokens": 775,
+                "api_roundtrips": 6,
+                "tool_items": 5,
+                "tool_output_bytes": 29597,
+                "proto_files": [
+                  "SKILL.md"
+                ],
+                "repo_files_touched_or_read": [
+                  "SSOT/README.md",
+                  "SSOT/decisions/0004-retire-flat-fee.md",
+                  "SSOT/invariants/retired.md",
+                  "deliverables/recall.json"
+                ]
+              }
+            ]
+          },
+          "candidate_t1": {
+            "pass": true,
+            "read_retired_shard": true,
+            "read_dec_0004": true,
+            "phases": [
+              {
+                "phase": "phase1_recall",
+                "returncode": 0,
+                "completed": true,
+                "seconds": 30.571,
+                "native_models": [
+                  "gpt-6.1-terra"
+                ],
+                "native_reasoning": [
+                  "medium"
+                ],
+                "input_tokens": 158129,
+                "cached_input_tokens": 143744,
+                "uncached_input_tokens": 14385,
+                "output_tokens": 809,
+                "api_roundtrips": 7,
+                "tool_items": 7,
+                "tool_output_bytes": 45973,
+                "proto_files": [
+                  "SKILL.md",
+                  "memory-model.md"
+                ],
+                "repo_files_touched_or_read": [
+                  "SSOT/README.md",
+                  "SSOT/decisions/0004-retire-flat-fee.md",
+                  "SSOT/invariants/retired.md",
+                  "deliverables/recall.json",
+                  "docs/billing.md"
+                ]
+              }
+            ]
+          }
+        }
+      },
+      {
+        "pair": "T1_C2_small_simple_capture",
+        "order": [
+          "candidate_t1",
+          "baseline"
+        ],
+        "arms": {
+          "candidate_t1": {
+            "pass": false,
+            "checker_pass": true,
+            "spurious_extra_md_files": [],
+            "inv02_row_chars": 0,
+            "phases": [
+              {
+                "phase": "phase1_capture",
+                "returncode": 0,
+                "completed": true,
+                "seconds": 28.359,
+                "native_models": [
+                  "gpt-6.1-terra"
+                ],
+                "native_reasoning": [
+                  "medium"
+                ],
+                "input_tokens": 105264,
+                "cached_input_tokens": 98560,
+                "uncached_input_tokens": 6704,
+                "output_tokens": 771,
+                "api_roundtrips": 6,
+                "tool_items": 6,
+                "tool_output_bytes": 12542,
+                "proto_files": [
+                  "SKILL.md",
+                  "decision-capture.md",
+                  "ssot-check.py"
+                ],
+                "repo_files_touched_or_read": [
+                  "AGENTS.md",
+                  "SSOT/README.md",
+                  "checker.py",
+                  "docs/maintenance.md"
+                ]
+              }
+            ]
+          },
+          "baseline": {
+            "pass": false,
+            "checker_pass": true,
+            "spurious_extra_md_files": [],
+            "inv02_row_chars": 0,
+            "phases": [
+              {
+                "phase": "phase1_capture",
+                "returncode": 0,
+                "completed": true,
+                "seconds": 27.334,
+                "native_models": [
+                  "gpt-6.1-terra"
+                ],
+                "native_reasoning": [
+                  "medium"
+                ],
+                "input_tokens": 82620,
+                "cached_input_tokens": 64768,
+                "uncached_input_tokens": 17852,
+                "output_tokens": 751,
+                "api_roundtrips": 5,
+                "tool_items": 5,
+                "tool_output_bytes": 6723,
+                "proto_files": [
+                  "SKILL.md"
+                ],
+                "repo_files_touched_or_read": [
+                  "SSOT/README.md",
+                  "checker.py",
+                  "docs/maintenance.md"
+                ]
+              }
+            ]
+          }
+        }
+      },
+      {
+        "pair": "T1_C3_old_confirmed_conflict",
+        "order": [
+          "baseline",
+          "candidate_t1"
+        ],
+        "arms": {
+          "baseline": {
+            "pass": true,
+            "checker_unchanged": true,
+            "phases": [
+              {
+                "phase": "phase1_conflict",
+                "returncode": 0,
+                "completed": true,
+                "seconds": 26.608,
+                "native_models": [
+                  "gpt-6.1-terra"
+                ],
+                "native_reasoning": [
+                  "medium"
+                ],
+                "input_tokens": 74611,
+                "cached_input_tokens": 65408,
+                "uncached_input_tokens": 9203,
+                "output_tokens": 640,
+                "api_roundtrips": 4,
+                "tool_items": 3,
+                "tool_output_bytes": 27611,
+                "proto_files": [
+                  "SKILL.md",
+                  "memory-model.md",
+                  "protection-departure.md"
+                ],
+                "repo_files_touched_or_read": [
+                  "SSOT/README.md",
+                  "checker.py",
+                  "docs/maintenance.md",
+                  "note.txt"
+                ]
+              }
+            ]
+          },
+          "candidate_t1": {
+            "pass": true,
+            "checker_unchanged": true,
+            "phases": [
+              {
+                "phase": "phase1_conflict",
+                "returncode": 0,
+                "completed": true,
+                "seconds": 24.783,
+                "native_models": [
+                  "gpt-6.1-terra"
+                ],
+                "native_reasoning": [
+                  "medium"
+                ],
+                "input_tokens": 75092,
+                "cached_input_tokens": 60672,
+                "uncached_input_tokens": 14420,
+                "output_tokens": 741,
+                "api_roundtrips": 4,
+                "tool_items": 3,
+                "tool_output_bytes": 28045,
+                "proto_files": [
+                  "SKILL.md",
+                  "memory-model.md",
+                  "protection-departure.md"
+                ],
+                "repo_files_touched_or_read": [
+                  "AGENTS.md",
+                  "SSOT/README.md",
+                  "checker.py",
+                  "docs/maintenance.md"
+                ]
+              }
+            ]
+          }
+        }
+      },
+      {
+        "pair": "T1_C4_unrelated_typo",
+        "order": [
+          "candidate_t1",
+          "baseline"
+        ],
+        "arms": {
+          "candidate_t1": {
+            "pass": true,
+            "note_ok": true,
+            "ssot_reads": [],
+            "proto_files": [],
+            "phases": [
+              {
+                "phase": "phase1_typo",
+                "returncode": 0,
+                "completed": true,
+                "seconds": 17.626,
+                "native_models": [
+                  "gpt-6.1-terra"
+                ],
+                "native_reasoning": [
+                  "medium"
+                ],
+                "input_tokens": 61728,
+                "cached_input_tokens": 58112,
+                "uncached_input_tokens": 3616,
+                "output_tokens": 280,
+                "api_roundtrips": 4,
+                "tool_items": 3,
+                "tool_output_bytes": 145,
+                "proto_files": [],
+                "repo_files_touched_or_read": [
+                  "note.txt"
+                ]
+              }
+            ]
+          },
+          "baseline": {
+            "pass": true,
+            "note_ok": true,
+            "ssot_reads": [],
+            "proto_files": [],
+            "phases": [
+              {
+                "phase": "phase1_typo",
+                "returncode": 0,
+                "completed": true,
+                "seconds": 14.033,
+                "native_models": [
+                  "gpt-6.1-terra"
+                ],
+                "native_reasoning": [
+                  "medium"
+                ],
+                "input_tokens": 46195,
+                "cached_input_tokens": 42880,
+                "uncached_input_tokens": 3315,
+                "output_tokens": 244,
+                "api_roundtrips": 3,
+                "tool_items": 2,
+                "tool_output_bytes": 157,
+                "proto_files": [],
+                "repo_files_touched_or_read": [
+                  "note.txt"
+                ]
+              }
+            ]
+          }
+        }
+      }
+    ],
+    "aggregates": {
+      "all_sessions": {
+        "sessions_per_arm": 14,
+        "baseline": {
+          "input": 1579899,
+          "cached": 1375616,
+          "uncached": 204283,
+          "output": 15623,
+          "turns": 76,
+          "tools": 83,
+          "tool_bytes": 445038,
+          "sessions": 14
+        },
+        "candidate": {
+          "input": 1601243,
+          "cached": 1390464,
+          "uncached": 210779,
+          "output": 16186,
+          "turns": 76,
+          "tools": 104,
+          "tool_bytes": 512905,
+          "sessions": 14
+        },
+        "delta_pct": {
+          "input": 1.35,
+          "uncached": 3.18,
+          "output": 3.6,
+          "turns": 0.0,
+          "tool_bytes": 15.25
+        }
+      },
+      "writer_phases": {
+        "sessions_per_arm": 3,
+        "baseline": {
+          "input": 570396,
+          "cached": 500992,
+          "uncached": 69404,
+          "output": 7197,
+          "turns": 22,
+          "tools": 28,
+          "tool_bytes": 209442,
+          "sessions": 3
+        },
+        "candidate": {
+          "input": 489214,
+          "cached": 414208,
+          "uncached": 75006,
+          "output": 6905,
+          "turns": 19,
+          "tools": 43,
+          "tool_bytes": 231123,
+          "sessions": 3
+        },
+        "delta_pct": {
+          "input": -14.23,
+          "uncached": 8.07,
+          "output": -4.06,
+          "turns": -13.64,
+          "tool_bytes": 10.35
+        }
+      },
+      "routine_readers": {
+        "sessions_per_arm": 4,
+        "baseline": {
+          "input": 389833,
+          "cached": 346496,
+          "uncached": 43337,
+          "output": 3478,
+          "turns": 21,
+          "tools": 25,
+          "tool_bytes": 82403,
+          "sessions": 4
+        },
+        "candidate": {
+          "input": 425671,
+          "cached": 369024,
+          "uncached": 56647,
+          "output": 4379,
+          "turns": 21,
+          "tools": 30,
+          "tool_bytes": 122050,
+          "sessions": 4
+        },
+        "delta_pct": {
+          "input": 9.19,
+          "uncached": 30.71,
+          "output": 25.91,
+          "turns": 0.0,
+          "tool_bytes": 48.11
+        }
+      },
+      "cold_recall": {
+        "sessions_per_arm": 4,
+        "baseline": {
+          "input": 416244,
+          "cached": 355072,
+          "uncached": 61172,
+          "output": 3313,
+          "turns": 21,
+          "tools": 20,
+          "tool_bytes": 118702,
+          "sessions": 4
+        },
+        "candidate": {
+          "input": 444274,
+          "cached": 389888,
+          "uncached": 54386,
+          "output": 3110,
+          "turns": 22,
+          "tools": 19,
+          "tool_bytes": 119000,
+          "sessions": 4
+        },
+        "delta_pct": {
+          "input": 6.73,
+          "uncached": -11.09,
+          "output": -6.13,
+          "turns": 4.76,
+          "tool_bytes": 0.25
+        }
+      }
+    }
+  },
+  "round2_T1b": {
+    "bundle_tree_sha256": {
+      "baseline": "55b103d6b42ed9596a3c022d047a0f5f7fa2068dd8a32f643a16f10cb49b6840",
+      "candidate_t1b": "7d51762d456931acea3832bb562bcecc0b0f79efa280ed89fd0a36ee7660f05d"
+    },
+    "pairs": [
+      {
+        "pair": "R2_U1_unprompted_f4_zh",
+        "order": [
+          "baseline",
+          "candidate_t1b"
+        ],
+        "arms": {
+          "baseline": {
+            "writer_metrics": {
+              "checker_pass": true,
+              "design_bytes_before": 10379,
+              "design_bytes_after": 11356,
+              "design_delta_pct": 9.4,
+              "cold_files": [
+                "SSOT/decisions/0001-initial-ui.md"
+              ],
+              "warm_cleaned_rejected_wall": false,
+              "warm_cleaned_v1_debug_logs": false,
+              "old_quotes_preserved_anywhere": true,
+              "old_quotes_offloaded_to_cold": false,
+              "inv01_intact": true,
+              "inv03_retired": true,
+              "inv02_row_chars": 190
+            },
+            "phase2_pass": true,
+            "phase2_read_cold": false,
+            "phase3_pass": true,
+            "phases": [
+              {
+                "phase": "phase1_writer",
+                "returncode": 0,
+                "completed": true,
+                "seconds": 46.794,
+                "native_models": [
+                  "gpt-6.1-terra"
+                ],
+                "native_reasoning": [
+                  "medium"
+                ],
+                "input_tokens": 156206,
+                "cached_input_tokens": 134016,
+                "uncached_input_tokens": 22190,
+                "output_tokens": 1745,
+                "api_roundtrips": 7,
+                "tool_items": 6,
+                "tool_output_bytes": 52945,
+                "proto_files": [
+                  "SKILL.md",
+                  "decision-capture.md",
+                  "memory-model.md",
+                  "ssot-check.py",
+                  "writing-memory.md"
+                ],
+                "repo_files_touched_or_read": [
+                  "../../docs/design.md",
+                  "../docs/design.md",
+                  "AGENTS.md",
+                  "SSOT/README.md",
+                  "SSOT/decisions/0001-initial-ui.md",
+                  "docs/design.md"
+                ]
+              },
+              {
+                "phase": "phase2_routine_reader",
+                "returncode": 0,
+                "completed": true,
+                "seconds": 21.569,
+                "native_models": [
+                  "gpt-6.1-terra"
+                ],
+                "native_reasoning": [
+                  "medium"
+                ],
+                "input_tokens": 100139,
+                "cached_input_tokens": 89216,
+                "uncached_input_tokens": 10923,
+                "output_tokens": 491,
+                "api_roundtrips": 5,
+                "tool_items": 4,
+                "tool_output_bytes": 26160,
+                "proto_files": [
+                  "SKILL.md"
+                ],
+                "repo_files_touched_or_read": [
+                  "SSOT/README.md",
+                  "deliverables/ui_spec.json",
+                  "docs/design.md"
+                ]
+              },
+              {
+                "phase": "phase3_cold_recall",
+                "returncode": 0,
+                "completed": true,
+                "seconds": 35.646,
+                "native_models": [
+                  "gpt-6.1-terra"
+                ],
+                "native_reasoning": [
+                  "medium"
+                ],
+                "input_tokens": 101016,
+                "cached_input_tokens": 89856,
+                "uncached_input_tokens": 11160,
+                "output_tokens": 873,
+                "api_roundtrips": 5,
+                "tool_items": 4,
+                "tool_output_bytes": 26440,
+                "proto_files": [
+                  "SKILL.md"
+                ],
+                "repo_files_touched_or_read": [
+                  "SSOT/README.md",
+                  "deliverables/history_check.json",
+                  "docs/design.md"
+                ]
+              }
+            ]
+          },
+          "candidate_t1b": {
+            "writer_metrics": {
+              "checker_pass": true,
+              "design_bytes_before": 10379,
+              "design_bytes_after": 1970,
+              "design_delta_pct": -81.0,
+              "cold_files": [
+                "SSOT/decisions/0001-initial-ui.md",
+                "SSOT/decisions/0002-ui-history.md"
+              ],
+              "warm_cleaned_rejected_wall": true,
+              "warm_cleaned_v1_debug_logs": true,
+              "old_quotes_preserved_anywhere": true,
+              "old_quotes_offloaded_to_cold": true,
+              "inv01_intact": true,
+              "inv03_retired": true,
+              "inv02_row_chars": 176
+            },
+            "phase2_pass": true,
+            "phase2_read_cold": false,
+            "phase3_pass": true,
+            "phases": [
+              {
+                "phase": "phase1_writer",
+                "returncode": 0,
+                "completed": true,
+                "seconds": 47.157,
+                "native_models": [
+                  "gpt-6.1-terra"
+                ],
+                "native_reasoning": [
+                  "medium"
+                ],
+                "input_tokens": 113332,
+                "cached_input_tokens": 97408,
+                "uncached_input_tokens": 15924,
+                "output_tokens": 1626,
+                "api_roundtrips": 5,
+                "tool_items": 4,
+                "tool_output_bytes": 43277,
+                "proto_files": [
+                  "SKILL.md",
+                  "decision-capture.md",
+                  "memory-layout.md",
+                  "ssot-check.py"
+                ],
+                "repo_files_touched_or_read": [
+                  "../../docs/design.md",
+                  "../SSOT/decisions/0002-ui-history.md",
+                  "../docs/design.md",
+                  "0002-ui-history.md",
+                  "SSOT/README.md",
+                  "SSOT/decisions/0001-initial-ui.md",
+                  "SSOT/decisions/0002-ui-history.md",
+                  "docs/design.md"
+                ]
+              },
+              {
+                "phase": "phase2_routine_reader",
+                "returncode": 0,
+                "completed": true,
+                "seconds": 25.783,
+                "native_models": [
+                  "gpt-6.1-terra"
+                ],
+                "native_reasoning": [
+                  "medium"
+                ],
+                "input_tokens": 71518,
+                "cached_input_tokens": 60800,
+                "uncached_input_tokens": 10718,
+                "output_tokens": 596,
+                "api_roundtrips": 4,
+                "tool_items": 3,
+                "tool_output_bytes": 16942,
+                "proto_files": [
+                  "SKILL.md"
+                ],
+                "repo_files_touched_or_read": [
+                  "SSOT/README.md",
+                  "deliverables/ui_spec.json",
+                  "docs/design.md"
+                ]
+              },
+              {
+                "phase": "phase3_cold_recall",
+                "returncode": 0,
+                "completed": true,
+                "seconds": 34.622,
+                "native_models": [
+                  "gpt-6.1-terra"
+                ],
+                "native_reasoning": [
+                  "medium"
+                ],
+                "input_tokens": 126506,
+                "cached_input_tokens": 117248,
+                "uncached_input_tokens": 9258,
+                "output_tokens": 789,
+                "api_roundtrips": 7,
+                "tool_items": 6,
+                "tool_output_bytes": 14314,
+                "proto_files": [],
+                "repo_files_touched_or_read": [
+                  "AGENTS.md",
+                  "SSOT/README.md",
+                  "SSOT/decisions/0002-ui-history.md",
+                  "deliverables/history_check.json",
+                  "docs/design.md"
+                ]
+              }
+            ]
+          }
+        }
+      },
+      {
+        "pair": "R2_U2_unprompted_f4_en",
+        "order": [
+          "candidate_t1b",
+          "baseline"
+        ],
+        "arms": {
+          "candidate_t1b": {
+            "writer_metrics": {
+              "checker_pass": true,
+              "policy_bytes_before": 8645,
+              "policy_bytes_after": 1903,
+              "policy_delta_pct": -78.0,
+              "cold_files": [
+                "SSOT/decisions/0001-initial-ratelimit.md",
+                "SSOT/decisions/rate-limiting-history.md"
+              ],
+              "warm_cleaned_rejected_wall": true,
+              "warm_cleaned_v1_receipts": true,
+              "old_quotes_preserved_anywhere": true,
+              "old_quotes_offloaded_to_cold": true,
+              "inv01_intact": true,
+              "inv03_retired": true,
+              "inv02_row_chars": 325
+            },
+            "phase2_pass": true,
+            "phase2_read_cold": false,
+            "phase3_pass": true,
+            "phases": [
+              {
+                "phase": "phase1_writer",
+                "returncode": 0,
+                "completed": true,
+                "seconds": 65.785,
+                "native_models": [
+                  "gpt-6.1-terra"
+                ],
+                "native_reasoning": [
+                  "medium"
+                ],
+                "input_tokens": 195217,
+                "cached_input_tokens": 174720,
+                "uncached_input_tokens": 20497,
+                "output_tokens": 2166,
+                "api_roundtrips": 8,
+                "tool_items": 14,
+                "tool_output_bytes": 74211,
+                "proto_files": [
+                  "SKILL.md",
+                  "decision-capture.md",
+                  "memory-layout.md",
+                  "memory-model.md",
+                  "protection-departure.md",
+                  "ssot-check.py",
+                  "writing-memory.md"
+                ],
+                "repo_files_touched_or_read": [
+                  "../../docs/policy.md",
+                  "../SSOT/decisions/rate-limiting-history.md",
+                  "../docs/policy.md",
+                  "AGENTS.md",
+                  "SSOT/README.md",
+                  "SSOT/decisions/0001-initial-ratelimit.md",
+                  "SSOT/decisions/rate-limiting-history.md",
+                  "docs/policy.md",
+                  "rate-limiting-history.md"
+                ]
+              },
+              {
+                "phase": "phase2_routine_reader",
+                "returncode": 0,
+                "completed": true,
+                "seconds": 27.093,
+                "native_models": [
+                  "gpt-6.1-terra"
+                ],
+                "native_reasoning": [
+                  "medium"
+                ],
+                "input_tokens": 90069,
+                "cached_input_tokens": 77184,
+                "uncached_input_tokens": 12885,
+                "output_tokens": 629,
+                "api_roundtrips": 5,
+                "tool_items": 4,
+                "tool_output_bytes": 16985,
+                "proto_files": [
+                  "SKILL.md"
+                ],
+                "repo_files_touched_or_read": [
+                  "SSOT/README.md",
+                  "deliverables/gateway_spec.json",
+                  "docs/policy.md"
+                ]
+              },
+              {
+                "phase": "phase3_cold_recall",
+                "returncode": 0,
+                "completed": true,
+                "seconds": 23.694,
+                "native_models": [
+                  "gpt-6.1-terra"
+                ],
+                "native_reasoning": [
+                  "medium"
+                ],
+                "input_tokens": 92090,
+                "cached_input_tokens": 82560,
+                "uncached_input_tokens": 9530,
+                "output_tokens": 665,
+                "api_roundtrips": 5,
+                "tool_items": 4,
+                "tool_output_bytes": 24641,
+                "proto_files": [
+                  "SKILL.md"
+                ],
+                "repo_files_touched_or_read": [
+                  "SSOT/README.md",
+                  "deliverables/gateway_history.json",
+                  "docs/policy.md"
+                ]
+              }
+            ]
+          },
+          "baseline": {
+            "writer_metrics": {
+              "checker_pass": true,
+              "policy_bytes_before": 8645,
+              "policy_bytes_after": 9492,
+              "policy_delta_pct": 9.8,
+              "cold_files": [
+                "SSOT/decisions/0001-initial-ratelimit.md"
+              ],
+              "warm_cleaned_rejected_wall": false,
+              "warm_cleaned_v1_receipts": false,
+              "old_quotes_preserved_anywhere": true,
+              "old_quotes_offloaded_to_cold": false,
+              "inv01_intact": true,
+              "inv03_retired": true,
+              "inv02_row_chars": 359
+            },
+            "phase2_pass": true,
+            "phase2_read_cold": false,
+            "phase3_pass": true,
+            "phases": [
+              {
+                "phase": "phase1_writer",
+                "returncode": 0,
+                "completed": true,
+                "seconds": 49.52,
+                "native_models": [
+                  "gpt-6.1-terra"
+                ],
+                "native_reasoning": [
+                  "medium"
+                ],
+                "input_tokens": 185028,
+                "cached_input_tokens": 160256,
+                "uncached_input_tokens": 24772,
+                "output_tokens": 1947,
+                "api_roundtrips": 8,
+                "tool_items": 15,
+                "tool_output_bytes": 70679,
+                "proto_files": [
+                  "SKILL.md",
+                  "batch-closeout.md",
+                  "decision-capture.md",
+                  "memory-model.md",
+                  "protection-departure.md",
+                  "ssot-check.py",
+                  "writing-memory.md"
+                ],
+                "repo_files_touched_or_read": [
+                  "../docs/policy.md",
+                  "AGENTS.md",
+                  "SSOT/README.md",
+                  "docs/policy.md"
+                ]
+              },
+              {
+                "phase": "phase2_routine_reader",
+                "returncode": 0,
+                "completed": true,
+                "seconds": 27.669,
+                "native_models": [
+                  "gpt-6.1-terra"
+                ],
+                "native_reasoning": [
+                  "medium"
+                ],
+                "input_tokens": 95643,
+                "cached_input_tokens": 86400,
+                "uncached_input_tokens": 9243,
+                "output_tokens": 752,
+                "api_roundtrips": 5,
+                "tool_items": 4,
+                "tool_output_bytes": 24535,
+                "proto_files": [
+                  "SKILL.md"
+                ],
+                "repo_files_touched_or_read": [
+                  "SSOT/README.md",
+                  "deliverables/gateway_spec.json",
+                  "docs/policy.md"
+                ]
+              },
+              {
+                "phase": "phase3_cold_recall",
+                "returncode": 0,
+                "completed": true,
+                "seconds": 27.815,
+                "native_models": [
+                  "gpt-6.1-terra"
+                ],
+                "native_reasoning": [
+                  "medium"
+                ],
+                "input_tokens": 96720,
+                "cached_input_tokens": 86912,
+                "uncached_input_tokens": 9808,
+                "output_tokens": 903,
+                "api_roundtrips": 5,
+                "tool_items": 5,
+                "tool_output_bytes": 26515,
+                "proto_files": [
+                  "SKILL.md"
+                ],
+                "repo_files_touched_or_read": [
+                  "SSOT/README.md",
+                  "deliverables/gateway_history.json",
+                  "deliverables/gateway_spec.json",
+                  "docs/policy.md"
+                ]
+              }
+            ]
+          }
+        }
+      },
+      {
+        "pair": "R2_U3_unprompted_f5_zh",
+        "order": [
+          "baseline",
+          "candidate_t1b"
+        ],
+        "arms": {
+          "baseline": {
+            "writer_metrics": {
+              "checker_pass": true,
+              "decisions_bytes_before": 12587,
+              "decisions_bytes_after": 13157,
+              "md_files": [
+                "README.md",
+                "decisions.md",
+                "now.md",
+                "security.md"
+              ],
+              "cold_file_separated": false,
+              "ctx01_intact": true,
+              "history_preserved_anywhere": true
+            },
+            "phase2_pass": true,
+            "phase3_pass": true,
+            "phases": [
+              {
+                "phase": "phase1_writer",
+                "returncode": 0,
+                "completed": true,
+                "seconds": 38.194,
+                "native_models": [
+                  "gpt-6.1-terra"
+                ],
+                "native_reasoning": [
+                  "medium"
+                ],
+                "input_tokens": 139420,
+                "cached_input_tokens": 122752,
+                "uncached_input_tokens": 16668,
+                "output_tokens": 1290,
+                "api_roundtrips": 6,
+                "tool_items": 7,
+                "tool_output_bytes": 50826,
+                "proto_files": [
+                  "SKILL.md",
+                  "batch-closeout.md",
+                  "context-spaces.md",
+                  "decision-capture.md",
+                  "ssot-check.py"
+                ],
+                "repo_files_touched_or_read": [
+                  "README.md",
+                  "decisions.md",
+                  "now.md"
+                ]
+              },
+              {
+                "phase": "phase2_routine_reader",
+                "returncode": 0,
+                "completed": true,
+                "seconds": 36.25,
+                "native_models": [
+                  "gpt-6.1-terra"
+                ],
+                "native_reasoning": [
+                  "medium"
+                ],
+                "input_tokens": 167812,
+                "cached_input_tokens": 153728,
+                "uncached_input_tokens": 14084,
+                "output_tokens": 1026,
+                "api_roundtrips": 8,
+                "tool_items": 8,
+                "tool_output_bytes": 39296,
+                "proto_files": [
+                  "SKILL.md",
+                  "context-spaces.md"
+                ],
+                "repo_files_touched_or_read": [
+                  "README.md",
+                  "decisions.md",
+                  "deliverables/ops_plan.json",
+                  "now.md",
+                  "security.md"
+                ]
+              },
+              {
+                "phase": "phase3_cold_recall",
+                "returncode": 0,
+                "completed": true,
+                "seconds": 29.012,
+                "native_models": [
+                  "gpt-6.1-terra"
+                ],
+                "native_reasoning": [
+                  "medium"
+                ],
+                "input_tokens": 81129,
+                "cached_input_tokens": 68992,
+                "uncached_input_tokens": 12137,
+                "output_tokens": 475,
+                "api_roundtrips": 4,
+                "tool_items": 3,
+                "tool_output_bytes": 34006,
+                "proto_files": [
+                  "SKILL.md",
+                  "context-spaces.md"
+                ],
+                "repo_files_touched_or_read": [
+                  "README.md",
+                  "decisions.md",
+                  "deliverables/ops_history.json",
+                  "now.md"
+                ]
+              }
+            ]
+          },
+          "candidate_t1b": {
+            "writer_metrics": {
+              "checker_pass": true,
+              "decisions_bytes_before": 12587,
+              "decisions_bytes_after": 13000,
+              "md_files": [
+                "README.md",
+                "decisions.md",
+                "now.md",
+                "security.md"
+              ],
+              "cold_file_separated": false,
+              "ctx01_intact": true,
+              "history_preserved_anywhere": true
+            },
+            "phase2_pass": true,
+            "phase3_pass": true,
+            "phases": [
+              {
+                "phase": "phase1_writer",
+                "returncode": 0,
+                "completed": true,
+                "seconds": 25.887,
+                "native_models": [
+                  "gpt-6.1-terra"
+                ],
+                "native_reasoning": [
+                  "medium"
+                ],
+                "input_tokens": 81957,
+                "cached_input_tokens": 64384,
+                "uncached_input_tokens": 17573,
+                "output_tokens": 752,
+                "api_roundtrips": 4,
+                "tool_items": 3,
+                "tool_output_bytes": 37854,
+                "proto_files": [
+                  "SKILL.md",
+                  "context-spaces.md",
+                  "decision-capture.md"
+                ],
+                "repo_files_touched_or_read": [
+                  "README.md",
+                  "decisions.md",
+                  "now.md"
+                ]
+              },
+              {
+                "phase": "phase2_routine_reader",
+                "returncode": 0,
+                "completed": true,
+                "seconds": 37.81,
+                "native_models": [
+                  "gpt-6.1-terra"
+                ],
+                "native_reasoning": [
+                  "medium"
+                ],
+                "input_tokens": 169161,
+                "cached_input_tokens": 155136,
+                "uncached_input_tokens": 14025,
+                "output_tokens": 1043,
+                "api_roundtrips": 8,
+                "tool_items": 7,
+                "tool_output_bytes": 39500,
+                "proto_files": [
+                  "SKILL.md",
+                  "context-spaces.md"
+                ],
+                "repo_files_touched_or_read": [
+                  "README.md",
+                  "decisions.md",
+                  "deliverables/ops_plan.json",
+                  "now.md",
+                  "security.md"
+                ]
+              },
+              {
+                "phase": "phase3_cold_recall",
+                "returncode": 0,
+                "completed": true,
+                "seconds": 23.109,
+                "native_models": [
+                  "gpt-6.1-terra"
+                ],
+                "native_reasoning": [
+                  "medium"
+                ],
+                "input_tokens": 107697,
+                "cached_input_tokens": 94208,
+                "uncached_input_tokens": 13489,
+                "output_tokens": 517,
+                "api_roundtrips": 5,
+                "tool_items": 4,
+                "tool_output_bytes": 39544,
+                "proto_files": [
+                  "SKILL.md",
+                  "context-spaces.md"
+                ],
+                "repo_files_touched_or_read": [
+                  "README.md",
+                  "decisions.md",
+                  "deliverables/ops_history.json",
+                  "now.md",
+                  "security.md"
+                ]
+              }
+            ]
+          }
+        }
+      },
+      {
+        "pair": "R2_R1_neutral_sharded_routine",
+        "order": [
+          "candidate_t1b",
+          "baseline"
+        ],
+        "arms": {
+          "candidate_t1b": {
+            "pass": true,
+            "read_retired_shard": false,
+            "read_decisions": false,
+            "read_auth_shard": false,
+            "phases": [
+              {
+                "phase": "phase1_code",
+                "returncode": 0,
+                "completed": true,
+                "seconds": 35.019,
+                "native_models": [
+                  "gpt-6.1-terra"
+                ],
+                "native_reasoning": [
+                  "medium"
+                ],
+                "input_tokens": 100268,
+                "cached_input_tokens": 79488,
+                "uncached_input_tokens": 20780,
+                "output_tokens": 1056,
+                "api_roundtrips": 5,
+                "tool_items": 4,
+                "tool_output_bytes": 34035,
+                "proto_files": [
+                  "SKILL.md",
+                  "memory-model.md"
+                ],
+                "repo_files_touched_or_read": [
+                  "SSOT/README.md",
+                  "SSOT/invariants/billing.md",
+                  "docs/billing.md",
+                  "src/pricing.py",
+                  "test_pricing.py"
+                ]
+              }
+            ]
+          },
+          "baseline": {
+            "pass": true,
+            "read_retired_shard": false,
+            "read_decisions": false,
+            "read_auth_shard": false,
+            "phases": [
+              {
+                "phase": "phase1_code",
+                "returncode": 0,
+                "completed": true,
+                "seconds": 30.681,
+                "native_models": [
+                  "gpt-6.1-terra"
+                ],
+                "native_reasoning": [
+                  "medium"
+                ],
+                "input_tokens": 99175,
+                "cached_input_tokens": 88192,
+                "uncached_input_tokens": 10983,
+                "output_tokens": 905,
+                "api_roundtrips": 5,
+                "tool_items": 5,
+                "tool_output_bytes": 33492,
+                "proto_files": [
+                  "SKILL.md",
+                  "memory-model.md"
+                ],
+                "repo_files_touched_or_read": [
+                  "SSOT/README.md",
+                  "SSOT/invariants/billing.md",
+                  "docs/billing.md",
+                  "src/pricing.py",
+                  "test_pricing.py"
+                ]
+              }
+            ]
+          }
+        }
+      },
+      {
+        "pair": "R2_C1_neutral_cold_recall",
+        "order": [
+          "baseline",
+          "candidate_t1b"
+        ],
+        "arms": {
+          "baseline": {
+            "pass": true,
+            "read_retired_shard": true,
+            "read_dec_0004": true,
+            "phases": [
+              {
+                "phase": "phase1_recall",
+                "returncode": 0,
+                "completed": true,
+                "seconds": 23.652,
+                "native_models": [
+                  "gpt-6.1-terra"
+                ],
+                "native_reasoning": [
+                  "medium"
+                ],
+                "input_tokens": 124926,
+                "cached_input_tokens": 112896,
+                "uncached_input_tokens": 12030,
+                "output_tokens": 525,
+                "api_roundtrips": 6,
+                "tool_items": 5,
+                "tool_output_bytes": 34833,
+                "proto_files": [
+                  "SKILL.md"
+                ],
+                "repo_files_touched_or_read": [
+                  "SSOT/README.md",
+                  "SSOT/decisions/0004-retire-flat-fee.md",
+                  "SSOT/invariants/retired.md",
+                  "deliverables/recall.json"
+                ]
+              }
+            ]
+          },
+          "candidate_t1b": {
+            "pass": true,
+            "read_retired_shard": true,
+            "read_dec_0004": true,
+            "phases": [
+              {
+                "phase": "phase1_recall",
+                "returncode": 0,
+                "completed": true,
+                "seconds": 24.609,
+                "native_models": [
+                  "gpt-6.1-terra"
+                ],
+                "native_reasoning": [
+                  "medium"
+                ],
+                "input_tokens": 116997,
+                "cached_input_tokens": 103040,
+                "uncached_input_tokens": 13957,
+                "output_tokens": 457,
+                "api_roundtrips": 6,
+                "tool_items": 5,
+                "tool_output_bytes": 27215,
+                "proto_files": [],
+                "repo_files_touched_or_read": [
+                  "SSOT/README.md",
+                  "SSOT/decisions/0004-retire-flat-fee.md",
+                  "SSOT/invariants/retired.md",
+                  "deliverables/recall.json"
+                ]
+              }
+            ]
+          }
+        }
+      },
+      {
+        "pair": "R2_C2_small_simple_invariant",
+        "order": [
+          "candidate_t1b",
+          "baseline"
+        ],
+        "arms": {
+          "candidate_t1b": {
+            "pass": true,
+            "checker_pass": true,
+            "spurious_extra_md_files": [],
+            "inv02_row_chars": 172,
+            "phases": [
+              {
+                "phase": "phase1_capture",
+                "returncode": 0,
+                "completed": true,
+                "seconds": 28.843,
+                "native_models": [
+                  "gpt-6.1-terra"
+                ],
+                "native_reasoning": [
+                  "medium"
+                ],
+                "input_tokens": 104072,
+                "cached_input_tokens": 88192,
+                "uncached_input_tokens": 15880,
+                "output_tokens": 872,
+                "api_roundtrips": 5,
+                "tool_items": 6,
+                "tool_output_bytes": 44061,
+                "proto_files": [
+                  "SKILL.md",
+                  "batch-closeout.md",
+                  "decision-capture.md",
+                  "memory-model.md",
+                  "ssot-check.py",
+                  "writing-memory.md"
+                ],
+                "repo_files_touched_or_read": [
+                  "../docs/maintenance.md",
+                  "SSOT/README.md",
+                  "checker.py",
+                  "docs/maintenance.md"
+                ]
+              }
+            ]
+          },
+          "baseline": {
+            "pass": true,
+            "checker_pass": true,
+            "spurious_extra_md_files": [],
+            "inv02_row_chars": 172,
+            "phases": [
+              {
+                "phase": "phase1_capture",
+                "returncode": 0,
+                "completed": true,
+                "seconds": 28.044,
+                "native_models": [
+                  "gpt-6.1-terra"
+                ],
+                "native_reasoning": [
+                  "medium"
+                ],
+                "input_tokens": 82748,
+                "cached_input_tokens": 70144,
+                "uncached_input_tokens": 12604,
+                "output_tokens": 818,
+                "api_roundtrips": 4,
+                "tool_items": 6,
+                "tool_output_bytes": 42902,
+                "proto_files": [
+                  "SKILL.md",
+                  "batch-closeout.md",
+                  "decision-capture.md",
+                  "memory-model.md",
+                  "ssot-check.py",
+                  "writing-memory.md"
+                ],
+                "repo_files_touched_or_read": [
+                  "../docs/maintenance.md",
+                  "SSOT/README.md",
+                  "checker.py",
+                  "docs/maintenance.md"
+                ]
+              }
+            ]
+          }
+        }
+      }
+    ],
+    "aggregates": {
+      "all_sessions": {
+        "sessions_per_arm": 12,
+        "baseline": {
+          "input": 1429962,
+          "cached": 1263360,
+          "uncached": 166602,
+          "output": 11750,
+          "turns": 68,
+          "tools": 72,
+          "tool_bytes": 462629,
+          "sessions": 12
+        },
+        "candidate": {
+          "input": 1368884,
+          "cached": 1194368,
+          "uncached": 174516,
+          "output": 11168,
+          "turns": 67,
+          "tools": 64,
+          "tool_bytes": 412579,
+          "sessions": 12
+        },
+        "delta_pct": {
+          "input": -4.27,
+          "uncached": 4.75,
+          "output": -4.95,
+          "turns": -1.47,
+          "tool_bytes": -10.82
+        }
+      },
+      "writer_phases": {
+        "sessions_per_arm": 3,
+        "baseline": {
+          "input": 480654,
+          "cached": 417024,
+          "uncached": 63630,
+          "output": 4982,
+          "turns": 21,
+          "tools": 28,
+          "tool_bytes": 174450,
+          "sessions": 3
+        },
+        "candidate": {
+          "input": 390506,
+          "cached": 336512,
+          "uncached": 53994,
+          "output": 4544,
+          "turns": 17,
+          "tools": 21,
+          "tool_bytes": 155342,
+          "sessions": 3
+        },
+        "delta_pct": {
+          "input": -18.76,
+          "uncached": -15.14,
+          "output": -8.79,
+          "turns": -19.05,
+          "tool_bytes": -10.95
+        }
+      },
+      "routine_readers": {
+        "sessions_per_arm": 4,
+        "baseline": {
+          "input": 462769,
+          "cached": 417536,
+          "uncached": 45233,
+          "output": 3174,
+          "turns": 23,
+          "tools": 21,
+          "tool_bytes": 123483,
+          "sessions": 4
+        },
+        "candidate": {
+          "input": 431016,
+          "cached": 372608,
+          "uncached": 58408,
+          "output": 3324,
+          "turns": 22,
+          "tools": 18,
+          "tool_bytes": 107462,
+          "sessions": 4
+        },
+        "delta_pct": {
+          "input": -6.86,
+          "uncached": 29.13,
+          "output": 4.73,
+          "turns": -4.35,
+          "tool_bytes": -12.97
+        }
+      },
+      "cold_recall": {
+        "sessions_per_arm": 4,
+        "baseline": {
+          "input": 403791,
+          "cached": 358656,
+          "uncached": 45135,
+          "output": 2776,
+          "turns": 20,
+          "tools": 17,
+          "tool_bytes": 121794,
+          "sessions": 4
+        },
+        "candidate": {
+          "input": 443290,
+          "cached": 397056,
+          "uncached": 46234,
+          "output": 2428,
+          "turns": 23,
+          "tools": 19,
+          "tool_bytes": 105714,
+          "sessions": 4
+        },
+        "delta_pct": {
+          "input": 9.78,
+          "uncached": 2.43,
+          "output": -12.54,
+          "turns": 15.0,
+          "tool_bytes": -13.2
+        }
+      }
+    }
+  }
+}

@@ -11,7 +11,7 @@ Writer requirement: SSOT-CONTEXT 5.0 or newer. Older writers read only; upgrade 
 
 ## Owners and task routes
 
-<!-- Link each relevant owner, the question it answers, and when to read related constraints. State sensitive boundaries and any applicable parent-space route. Top-level goals and tradeoffs have their own owner; child detail stays in its child. Routes do not grant write authority. -->
+<!-- Link each relevant owner, the question it answers, and when to read related constraints; mark cold history so routine tasks skip it. State sensitive boundaries and any applicable parent-space route. Top-level goals and tradeoffs have their own owner; child detail stays in its child. Routes do not grant write authority. -->
 
 ## Invariants
 

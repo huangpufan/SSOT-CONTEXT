@@ -55,6 +55,9 @@ SHARD_INFO_CHARS = 16000
 SHARD_INFO_ROWS = 50
 ROW_INFO_CHARS = 500
 REVIEWED_LAG_INFO_COMMITS = 100
+DATED_HISTORY_INFO_HEADINGS = 5
+RETIRED_INLINE_INFO_ROWS = 3
+COLD_SHARD_NAMES = ("retired", "archive", "history")
 INSTRUCTION_FILES = (
     "AGENTS.md", "CLAUDE.md", "GEMINI.md",
     ".cursor/rules/ssot.mdc", ".cursorrules",
@@ -577,6 +580,7 @@ def validate_register_tables(report, doc, lines, body, tables, seen, shard_lines
     line_lengths = {number: len(line) for number, line in lines}
     row_count = 0
     long_rows = []
+    retired_rows = []
     if not tables:
         for number, line in body:
             if number in shard_lines:
@@ -638,6 +642,8 @@ def validate_register_tables(report, doc, lines, body, tables, seen, shard_lines
             if status.lower() not in INVARIANT_STATUSES:
                 report.add("ERROR", doc, number,
                            f"invariant {ident} status '{status}' must be confirmed, candidate, or retired")
+            elif status.lower() == "retired":
+                retired_rows.append((number, ident))
             if not source:
                 report.add("ERROR", doc, number,
                            f"invariant {ident} needs a source (user directive, decision, or date)")
@@ -649,6 +655,12 @@ def validate_register_tables(report, doc, lines, body, tables, seen, shard_lines
                    f"{len(long_rows)} register row(s) exceed {ROW_INFO_CHARS} characters "
                    f"(longest: {max_id} at {max_len} chars{extra}); "
                    "keep each row to a concise constraint and move prose/history to Explained in")
+    base_stem = os.path.splitext(os.path.basename(doc))[0].lower()
+    is_cold_retired_shard = any(tok in base_stem for tok in COLD_SHARD_NAMES) or (row_count > 0 and len(retired_rows) == row_count)
+    if len(retired_rows) >= RETIRED_INLINE_INFO_ROWS and not is_cold_retired_shard:
+        report.add("INFO", doc, retired_rows[0][0],
+                   f"{len(retired_rows)} retired invariant row(s) inline in {os.path.basename(doc)}; "
+                   "consider moving retired rows to a cold shard (such as invariants/retired.md) so active reads stay concise")
     return row_count
 
 
@@ -1540,10 +1552,17 @@ def main(argv):
                                   if not re.match(rf"^\s*\|\s*[`*]*{ID_PAT}", line))
         is_ssot_owned = doc == readme or (inside(doc, ssot_dir) and (not GENERAL[0] or doc in shard_paths))
         if len(measured) > limit and "/.bootstrap/" not in doc and not legacy:
-            report.add("WARN" if is_ssot_owned else "INFO", doc, None,
-                       f"{len(measured)} characters is past the {limit}-character reading budget"
-                       f"{' (invariant rows not counted)' if is_register_doc else ''}; "
-                       "split it by topic or move detail out")
+            dated_headings = sum(1 for _, _, raw in headings(text) if DATE_RE.search(raw)) if doc != readme else 0
+            if dated_headings >= DATED_HISTORY_INFO_HEADINGS:
+                report.add("WARN" if is_ssot_owned else "INFO", doc, None,
+                           f"{len(measured)} characters is past the {limit}-character reading budget "
+                           f"and has {dated_headings} dated headings; consolidate current behavior and "
+                           "move superseded history to a cold archive (or split by topic)")
+            else:
+                report.add("WARN" if is_ssot_owned else "INFO", doc, None,
+                           f"{len(measured)} characters is past the {limit}-character reading budget"
+                           f"{' (invariant rows not counted)' if is_register_doc else ''}; "
+                           "split it by topic or move detail out")
         if doc == readme and len(text) > TOTAL_ENTRY_INFO_CHARS and not legacy:
             report.add("INFO", doc, None,
                        f"total {os.path.basename(readme)} size is {len(text)} characters "

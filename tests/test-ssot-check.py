@@ -2509,6 +2509,82 @@ class CheckerTest(unittest.TestCase):
         self.assertIn("invalid line anchor: architecture.md#L4-L2", err_out)
         self.assertIn("line anchors drift when the file changes; link a heading: architecture.md#L1-L3", err_out)
 
+    def test_dated_history_pileup_and_inline_retired_info_and_cold_retired_shard_protection(self):
+        # 1. Oversized owner with >=5 dated headings gets enriched chronological-consolidation hint;
+        #    small owner with >=5 dated headings stays quiet; oversized owner with <5 keeps standard hint.
+        self.valid()
+        dated_small = "# Design\n\n" + "\n\n".join(f"## 2026-10-{d:02d} Note {d}\n\nShort note {d}." for d in range(1, 7)) + "\n"
+        dated_big = "# Design\n\n" + "\n\n".join(
+            f"## 2026-10-{d:02d} Revision {d}\n\n" + ("Superseded narrative detail for revision history. " * 70)
+            for d in range(1, 7)
+        ) + "\n"
+        plain_big = "# Spec\n\n## Overview\n\n" + ("Current architecture explanation without dated pileup. " * 340) + "\n"
+        self.write("README.md", README.replace(
+            "- [Architecture](architecture.md)",
+            "- [Architecture](architecture.md)\n- [SmallDated](small-dated.md)\n- [BigDated](../docs/big-dated.md)\n- [PlainBig](../docs/plain-big.md)",
+        ))
+        self.write("small-dated.md", dated_small)
+        self.write("../docs/big-dated.md", dated_big)
+        self.write("../docs/plain-big.md", plain_big)
+        out_hist = self.assert_clean()
+        self.assertNotIn("small-dated.md", out_hist)
+        self.assertIn("big-dated.md", out_hist)
+        self.assertIn("and has 6 dated headings; consolidate current behavior and move superseded history to a cold archive", out_hist)
+        self.assertIn("plain-big.md", out_hist)
+        self.assertIn("plain-big.md  ", out_hist)
+        self.assertNotIn("plain-big.md  1", out_hist.split("dated headings")[0][-40:])
+
+        # 2. Active register with >=3 inline retired rows emits non-blocking INFO; <3 stays quiet.
+        self.valid()
+        rows_2 = "\n".join([
+            "| INV-01 | product promise | A retry never charges twice | [Retries](architecture.md#failure-and-recovery) | confirmed | user, 2026-05-02 |",
+            "| INV-02 | product promise | Old rule 2 | [Retries](architecture.md#failure-and-recovery) | retired | user, 2026-06-01 |",
+            "| INV-03 | product promise | Old rule 3 | [Retries](architecture.md#failure-and-recovery) | retired | user, 2026-06-02 |",
+        ])
+        self.invariant_row(rows_2)
+        self.assertNotIn("retired invariant row(s) inline", self.assert_clean())
+        rows_3 = rows_2 + "\n| INV-04 | product promise | Old rule 4 | [Retries](architecture.md#failure-and-recovery) | retired | user, 2026-06-03 |"
+        self.invariant_row(rows_3)
+        out_ret = self.assert_clean()
+        self.assertIn("3 retired invariant row(s) inline in README.md", out_ret)
+        self.assertNotIn("WARN", out_ret)
+
+        # 3. Cold invariants/retired.md shard stays quiet on inline-retired INFO and preserves Git confirmed tamper checks.
+        self.valid()
+        base_rows = "\n".join([
+            "| INV-01 | product promise | A retry never charges twice | [Retries](architecture.md#failure-and-recovery) | confirmed | user, 2026-05-02 |",
+            "| INV-02 | product promise | Keep legacy CSV export | [Retries](architecture.md#failure-and-recovery) | confirmed | user, 2026-05-03 |",
+            "| INV-03 | product promise | Old rule 3 | [Retries](architecture.md#failure-and-recovery) | retired | user, 2026-06-01 |",
+        ])
+        self.invariant_row(base_rows)
+        self.git("init", "-q")
+        self.commit("base before retiring to cold shard")
+        # Retiring INV-02 with a new dated source AND moving both INV-02 and INV-03 to invariants/retired.md passes cleanly.
+        self.write("README.md", README.replace(
+            "| INV-01 | product promise | A retry never charges twice | [Retries](architecture.md#failure-and-recovery) | confirmed | user, 2026-05-02 |",
+            "| INV-01 | product promise | A retry never charges twice | [Retries](architecture.md#failure-and-recovery) | confirmed | user, 2026-05-02 |\n\n- [Retired invariants](invariants/retired.md)",
+        ))
+        retired_shard = textwrap.dedent("""\
+            # Retired Invariants
+
+            | ID | Kind | Rule | Explained in | Status | Source |
+            |---|---|---|---|---|---|
+            | INV-02 | product promise | Keep legacy CSV export | [Retries](../architecture.md#failure-and-recovery) | retired | user, 2026-05-03; retired 2026-11-26 |
+            | INV-03 | product promise | Old rule 3 | [Retries](../architecture.md#failure-and-recovery) | retired | user, 2026-06-01 |
+            | INV-04 | product promise | Old rule 4 | [Retries](../architecture.md#failure-and-recovery) | retired | user, 2026-06-02 |
+            | INV-05 | product promise | Old rule 5 | [Retries](../architecture.md#failure-and-recovery) | retired | user, 2026-06-03 |
+            """)
+        self.write("invariants/retired.md", retired_shard)
+        out_ok = self.assert_clean()
+        self.assertIn("confirmed invariant(s) INV-02 changed", out_ok)
+        self.assertNotIn("retired invariant row(s) inline", out_ok)
+        # Moving confirmed INV-02 to retired.md as retired WITHOUT a newly dated source MUST FAIL.
+        self.write("invariants/retired.md", retired_shard.replace("user, 2026-05-03; retired 2026-11-26", "user, 2026-05-03"))
+        self.assert_error("confirmed invariant INV-02 changed its status")
+        # Duplicate ID between README.md and invariants/retired.md MUST FAIL.
+        self.write("invariants/retired.md", retired_shard + "| INV-01 | product promise | Dup | [Retries](../architecture.md#failure-and-recovery) | retired | user, 2026-11-26 |\n")
+        self.assert_error("duplicate invariant ID INV-01")
+
 
 if __name__ == "__main__":
     unittest.main(verbosity=1)

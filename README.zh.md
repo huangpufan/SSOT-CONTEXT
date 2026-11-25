@@ -85,7 +85,7 @@ curl -fsSL https://raw.githubusercontent.com/huangpufan/SSOT-CONTEXT/main/instal
  ├── product.md       谁在用、承诺了什么、不做什么
  ├── architecture.md  由哪些部分组成、谁掌管哪些状态、关键流程、出错与恢复
  ├── process.md       怎样构建、测试、发布和部署
- ├── decisions/       事情为什么是现在这样，包括被否决的方案
+ ├── decisions/       冷读历史：决策来由、被替代的旧规则与否决方案（常规任务跳过）
  ├── gotchas.md       已经让人栽过跟头的坑
  ├── glossary.md      新人容易误解的项目用语
  └── research/        结论仍在指导决定的调查
@@ -93,7 +93,7 @@ curl -fsSL https://raw.githubusercontent.com/huangpufan/SSOT-CONTEXT/main/instal
 
 已有且持续维护的文档可以继续当 owner，由入口链接。通用空间没有固定目录：入口说明目的、范围和受保护的规则，并链接已经负责各个主题的文档。同目录可以有多个空间。搭建尚未完成时，每个入口链接自己的进度记录。详见[记忆模型](./skills/ssot-preflight/references/memory-model.md)和[空间模型](./skills/ssot-preflight/references/context-spaces.md)。
 
-日常限定查询可直接依据单一获准读取的权威文档作答，已批准的单文档正文修订也可原地更新并从磁盘回读。不变量表长大后，可按主题拆分为由 `ssot-check.py` 跨文件校验的可选分片（`SSOT/invariants/<topic>.md`）。如需在所有 Agent 上零模型 token 做提交前机械校验，可选用 [`tools/ssot-precommit.sh`](./tools/ssot-precommit.sh) 钩子（[配置说明](./docs/2026-11-24-install-maintenance.md#optional-zero-token-git-pre-commit-guard)）。
+日常限定查询可直接依据单一获准读取的权威文档作答，已批准的单文档正文修订也可原地更新并从磁盘回读。新决定替代旧指引时，温层主题文档原地归并现行生效说明，将被替代旧文、被拒收试跑与长篇原话无损迁入冷历史（`decisions/` 或主题历史文件）供追溯查阅，而仍在生效的旧规则继续留在活跃层。不变量表长大后，可按主题拆分为由 `ssot-check.py` 跨文件校验的可选分片（`SSOT/invariants/<topic>.md`，以及可选的冷分片 `invariants/retired.md`）。如需在所有 Agent 上零模型 token 做提交前机械校验，可选用 [`tools/ssot-precommit.sh`](./tools/ssot-precommit.sh) 钩子（[配置说明](./docs/2026-11-24-install-maintenance.md#optional-zero-token-git-pre-commit-guard)）。
 
 ## 限度
 

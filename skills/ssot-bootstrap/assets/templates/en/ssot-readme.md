@@ -15,7 +15,7 @@ reviewed_through: <commit you explored>
 - [Product](product.md): who uses it, what it promises, and what it does not do.
 - [Architecture](architecture.md): the parts, who owns which state, the key flows, and failure handling.
 - [Process](process.md): how to build, test, release, and deploy.
-- [Decisions](decisions/): why things are the way they are, including the options we rejected.
+- [Decisions](decisions/): cold history of choices, superseded rules, and rejected options (skip on routine tasks unless tracing reasons or conflicts).
 - [Gotchas](gotchas.md): traps that have already cost time.
 - [Glossary](glossary.md): project terms a newcomer would misread.
 
@@ -36,7 +36,7 @@ These are rules people decided and the implementation must preserve. An agent ne
 
 <!-- Example row:
 | INV-01 | product promise | A retry never charges twice | [Retries](architecture.md#failure-and-recovery) | confirmed | user, 2026-05-02 |
-Kind: product promise, architecture invariant, or process rule. Status: confirmed = set by a person; candidate = inferred protection, binds until a task needs to depart from it; retired = no longer applies (link the decision). If there are none yet, keep the empty table and say so in one sentence. When the register grows large (~50+ rows), keep cross-cutting rules here and move topic groups into `invariants/<topic>.md` shards linked from a bullet list (never a table). -->
+Kind: product promise, architecture invariant, or process rule. Status: confirmed = set by a person; candidate = inferred protection, binds until a task needs to depart from it; retired = no longer applies (link the decision). If there are none yet, keep the empty table and say so in one sentence. Keep rows concise (quotes/history belong in the linked owner or cold decisions). When large (~50+ rows), keep cross-cutting rules here and move topic groups into `invariants/<topic>.md` shards (optionally retired rows into `invariants/retired.md`) linked from a bullet list (never a table). -->
 
 ## Open questions
 
