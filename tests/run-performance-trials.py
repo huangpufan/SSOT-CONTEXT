@@ -437,7 +437,7 @@ def execute_turn(root, run_dir, repo, prompt, turn, cap, sandbox_command=None,
     return summary
 
 
-def main():
+def main(argv=None):
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--baseline", type=Path, required=True)
     parser.add_argument("--candidate", type=Path, required=True)
@@ -446,7 +446,13 @@ def main():
     parser.add_argument("--arm", choices=("baseline", "candidate"))
     parser.add_argument("--cap", type=int, default=240)
     parser.add_argument("--model", help="explicit authorized experiment model; default: %(default)s", default=MODEL)
-    args = parser.parse_args()
+    parser.add_argument("--run-models", action="store_true",
+                        help="explicitly opt in to billable model execution; refused when CI is set")
+    args = parser.parse_args(argv)
+    if os.environ.get("CI"):
+        raise ValueError("Billable model runs are disabled in CI")
+    if not args.run_models:
+        raise ValueError("Pass --run-models to execute billable model trials")
     model = requested_model(args.model)
     root = args.output.resolve()
     root.mkdir(parents=True, exist_ok=True)

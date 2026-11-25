@@ -3,7 +3,6 @@
 - Status: accepted <!-- or: superseded by NNNN / retired -->
 - Date: YYYY-MM-DD
 - Decided by: <who accepted this choice; for a handover, the basis and scope of their authority>
-
 - Source and scope: <necessary user words, the question they answer, source ID/link, and where this applies>
 - Implementation: <current / planned / unknown; acceptance does not prove implementation>
 

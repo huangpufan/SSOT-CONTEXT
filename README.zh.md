@@ -120,14 +120,14 @@ curl -fsSL https://raw.githubusercontent.com/huangpufan/SSOT-CONTEXT/main/instal
 请阅读 https://raw.githubusercontent.com/huangpufan/SSOT-CONTEXT/main/INSTALL.md，为当前 Agent 更新本项目的 SSOT-CONTEXT，保留原模板语言。
 ```
 
-更新技能文件（或拉取软链接源码）后，可用 `curl -fsSL https://raw.githubusercontent.com/huangpufan/SSOT-CONTEXT/main/install.sh | bash -s -- --check-block <AGENTS.md|CLAUDE.md>` 与 `--sync-block <文件>`（或在本地源码仓直接运行 `bash install.sh ...`）仅检查并刷新受管指令块，再重启 Agent。更新不会改写你的 context 文档，也不强制 format 4 仓库转为 format 5。手动命令、卸载、安装中断恢复及 2.x/3.x 迁移见[维护指南](./INSTALL.md#update-or-remove-an-existing-installation)。
+更新技能文件（或拉取软链接源码）后，可用 `curl -fsSL https://raw.githubusercontent.com/huangpufan/SSOT-CONTEXT/main/install.sh | bash -s -- --check-block <AGENTS.md|CLAUDE.md>` 与 `--sync-block <文件>`（或在本地源码仓直接运行 `bash install.sh ...`；离线同步会按文件对应的 Agent 安装匹配，不会把较新的受管块静默降级）仅检查并刷新受支持指令文件的受管块，再重启 Agent。更新会保留软链接安装的技能，不会改写你的 context 文档，也不强制 format 4 仓库转为 format 5。手动命令、卸载、安装中断恢复及 2.x/3.x 迁移见[维护指南](./INSTALL.md#update-or-remove-an-existing-installation)。
 
 ## 文档
 
 - [安装指南](./INSTALL.md)与[维护与恢复参考](./docs/2026-11-24-install-maintenance.md)：新装、指令块同步、升级、卸载、软链接与中断恢复。
 - [设计说明](./DESIGN.md)：Skill 包为什么是现在这个形态，以及 v3 移除了什么。
 - [Stage 5 真实会话审计](./docs/2026-11-24-real-session-stage5-audit.md)与[长期路线审视](./docs/2026-11-20-context-evolution-route.md)：386 条真实消费会话分布、当前阶段与后续优先级。
-- [5.19 即时采集检查](./docs/2026-11-25-bounded-shard-and-capture-v5.19.md)、[5.18 收尾与分片采集](./docs/2026-11-24-closeout-sharding-v5.18.md)、[5.17 主题分片](./docs/2026-11-24-register-sharding-v5.17.md)、[5.16 合批与落盘回读](./docs/2026-11-24-batching-readback-v5.16.md)、[跨领域架构研究](./docs/2026-11-20-context-paths-study.md)与[日常查改成本对照](./docs/2026-11-20-ordered-lookup-cost.md)：原生配对试验与整任务成本。
+- [5.20 批量收尾](./docs/2026-11-25-closeout-delegation-concurrency-v5.20.md)、[5.19 即时采集检查](./docs/2026-11-25-bounded-shard-and-capture-v5.19.md)、[5.18 收尾与分片采集](./docs/2026-11-24-closeout-sharding-v5.18.md)、[5.17 主题分片](./docs/2026-11-24-register-sharding-v5.17.md)、[5.16 合批与落盘回读](./docs/2026-11-24-batching-readback-v5.16.md)、[跨领域架构研究](./docs/2026-11-20-context-paths-study.md)与[日常查改成本对照](./docs/2026-11-20-ordered-lookup-cost.md)：原生配对试验与整任务成本。
 - [持续修改的研究和创作项目](./docs/2026-11-14-evolving-research-and-creative-projects.md)：格式 5 通用空间的实用示例。
 - [评测指南](./tests/benchmark/README.md)：任务结果、冷接续、普通文档对照与证据边界。
 - [更新日志](./CHANGELOG.md)、[贡献指南](./CONTRIBUTING.md)、[AGENTS.md](./AGENTS.md)与[安全政策](./SECURITY.md)。

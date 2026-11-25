@@ -4,11 +4,10 @@ These opt-in trials compare observable user outcomes against frozen inputs and a
 
 The completed experiment and its limits are in [the native report](trials-5.0.md) and [versioned machine inventory](results/context-evolution-5.0-2026-11-10.json). The report owns semantic conclusions; the inventory owns attempt usage, elapsed durations, manifests and receipt hashes. Both retain failed and interrupted observations.
 
-Run offline checks without models:
+Run offline checks without models (all nine test modules, matching CI):
 
 ```bash
-python3 tests/context/test_context.py
-python3 tests/context/test_source_contract.py
+python3 -m unittest discover -s tests/context -p 'test_*.py'
 ```
 
 Prepare from an exported baseline. Preparation freezes tasks, fixtures, oracle, harness and baseline bundle before billable calls. It refuses existing output directories and requires an explicit authorized model. The commands below use the standing authorized `gpt-6.1-terra` model. The historical November 10 experiment used `gpt-6.1-sol` under its separate task authorization; that exception does not apply to new runs. Both arms use the frozen model and medium reasoning, and record actual native model/usage receipts. CI refuses billable calls.

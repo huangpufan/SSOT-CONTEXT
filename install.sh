@@ -11,6 +11,9 @@ fi
 
 # SSOT-CONTEXT bundle installer.
 
+# Capture script path at top level: empty when piped from stdin (`curl | bash`).
+SCRIPT_FILE="${BASH_SOURCE[0]:-}"
+
 REPO_OVERRIDE="${SSOT_CONTEXT_REPO_URL:-${SSOT_SKILL_REPO_URL:-}}"
 # Branch or tag to install from (--ref / SSOT_REF). Tags pin a protocol
 # generation, e.g. --ref v2-final keeps the v2 protocol after main moved on.
@@ -69,6 +72,26 @@ INSTALL_STAGE=""
 INSTALL_BASE=""
 BLOCK_SYNC_TMP=""
 BLOCK_PAYLOAD_TMP=""
+BLOCK_OFFLINE_ONLY=0
+BLOCK_NEWER_MATCH_VER=""
+BLOCK_NEWER_MATCH_BASE=""
+LOCAL_BLOCK_SKEW_MSG=""
+LOCAL_BLOCK_BASE=""
+LOCAL_BLOCK_TPL=""
+LOCAL_BLOCK_VER=""
+LOCAL_BLOCK_ALT_TPLS=()
+LOCAL_BLOCK_ALT_BASES=()
+LOCAL_BLOCK_ALT_VERS=()
+BLOCK_INSTRUCTION_FILES=(
+  "AGENTS.md"
+  "CLAUDE.md"
+  "GEMINI.md"
+  ".cursor/rules/ssot.mdc"
+  ".cursorrules"
+  ".windsurf/rules/ssot.md"
+  ".windsurfrules"
+  ".github/copilot-instructions.md"
+)
 INSTALL_LOCK=""
 INSTALL_REPLACING=0
 INSTALL_ENTRIES=()
@@ -84,8 +107,8 @@ read_version_file() {
   local candidate
   if [[ -n "${SOURCE_DIR:-}" && -f "$SOURCE_DIR/VERSION" ]]; then
     candidate="$SOURCE_DIR/VERSION"
-  elif [[ -f "$(dirname "${BASH_SOURCE[0]}")/VERSION" ]]; then
-    candidate="$(dirname "${BASH_SOURCE[0]}")/VERSION"
+  elif [[ -n "$SCRIPT_FILE" && -f "$SCRIPT_FILE" && -f "$(dirname "$SCRIPT_FILE")/VERSION" ]]; then
+    candidate="$(dirname "$SCRIPT_FILE")/VERSION"
   else
     echo "unknown"
     return
@@ -822,32 +845,38 @@ detect_agents() {
 }
 
 # Quickstart helper: pick a single canonical agent key.
-# Priority: signature env vars → one detected agent; ambiguous detection fails.
+# Priority: active session env vars → persistent config env vars → one detected agent;
+# ambiguous detection fails.
 autodetect_agent() {
   # (i) skip — caller already merged $SSOT_AGENT into ARG_AGENT earlier.
-  # (ii) signature env detection (canonical keys, not aliases)
+  # (ii) active session signature env detection (canonical keys, not aliases)
   if [[ -n "${CLAUDECODE:-}" ]]; then echo "claude-code"; return; fi
   local v
   for v in $(compgen -e | grep -E '^CLAUDE_CODE_' || true); do
-    echo "claude-code"; return
-  done
-  if [[ -n "${CODEX_HOME:-}" ]]; then echo "codex"; return; fi
-  for v in $(compgen -e | grep -E '^CODEX_' || true); do
-    echo "codex"; return
+    [[ -n "${!v:-}" ]] && { echo "claude-code"; return; }
   done
   if [[ -n "${CURSOR_TRACE_ID:-}" || "${TERM_PROGRAM:-}" == "cursor" ]]; then echo "cursor"; return; fi
   for v in $(compgen -e | grep -E '^WINDSURF_' || true); do
-    echo "windsurf"; return
+    [[ -n "${!v:-}" ]] && { echo "windsurf"; return; }
   done
   for v in $(compgen -e | grep -E '^GEMINI_CLI_' || true); do
-    echo "gemini-cli"; return
+    [[ -n "${!v:-}" ]] && { echo "gemini-cli"; return; }
   done
   for v in $(compgen -e | grep -E '^GITHUB_COPILOT_' || true); do
-    echo "github-copilot"; return
+    [[ -n "${!v:-}" ]] && { echo "github-copilot"; return; }
   done
   for v in $(compgen -e | grep -E '^AIDER_' || true); do
-    echo "aider-desk"; return
+    [[ -n "${!v:-}" ]] && { echo "aider-desk"; return; }
   done
+  for v in $(compgen -e | grep -E '^CODEX_' || true); do
+    [[ "$v" == "CODEX_HOME" ]] && continue
+    [[ -n "${!v:-}" ]] && { echo "codex"; return; }
+  done
+  if [[ -n "${ANTIGRAVITY_AGENT:-}" || -n "${ANTIGRAVITY_CONVERSATION_ID:-}" ]]; then
+    echo "antigravity-app"; return
+  fi
+  # (ii-b) persistent config-directory env vars (lower precedence than active sessions)
+  if [[ -n "${CODEX_HOME:-}" ]]; then echo "codex"; return; fi
   # (iii) fs-based fallback via existing detect_agents
   if [[ ${#DETECTED_AGENTS[@]} -eq 1 ]]; then
     echo "${DETECTED_AGENTS[0]}"
@@ -948,13 +977,18 @@ ensure_source() {
   if [[ -n "$ARG_REF" && -n "${SOURCE_DIR:-}" ]]; then
     die "--ref cannot be combined with SOURCE_DIR; check out the ref in SOURCE_DIR instead"
   fi
-  if [[ -n "${SOURCE_DIR:-}" ]] && [[ -f "$SOURCE_DIR/skills/$PRIMARY_SKILL/SKILL.md" ]]; then
+  if [[ -n "${SOURCE_DIR:-}" ]]; then
+    [[ -d "$SOURCE_DIR" ]] || die "SOURCE_DIR does not exist: $SOURCE_DIR"
+    [[ -f "$SOURCE_DIR/skills/$PRIMARY_SKILL/SKILL.md" ]] ||
+      die "invalid SOURCE_DIR (missing skills/$PRIMARY_SKILL/SKILL.md): $SOURCE_DIR"
     return 0
   fi
 
-  local script_dir
-  script_dir="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-  if [[ -z "$ARG_REF" && -f "$script_dir/skills/$PRIMARY_SKILL/SKILL.md" ]]; then
+  local script_dir=""
+  if [[ -n "$SCRIPT_FILE" && -f "$SCRIPT_FILE" ]]; then
+    script_dir="$(cd "$(dirname "$SCRIPT_FILE")" && pwd)"
+  fi
+  if [[ -z "$ARG_REF" && -n "$script_dir" && -f "$script_dir/skills/$PRIMARY_SKILL/SKILL.md" ]]; then
     SOURCE_DIR="$script_dir"
     # refresh VERSION from local source if available
     if [[ -f "$SOURCE_DIR/VERSION" ]]; then
@@ -1242,50 +1276,227 @@ substitute_entry_literal() {
   ' <<< "$block"
 }
 
-# Try resolving an already-installed local template matching lang without network access.
-# Prints "<template_path>|<skill_base>" on success.
-find_local_installed_template() {
-  local target_file="$1" lang="$2" template_name="$3"
-  local target_dir agent base proj glob tpl_root cand block_probe
-  target_dir="$(dirname "$target_file")"
-  local -a candidates=(
-    "$target_dir/.agents/skills"
-    "$target_dir/.claude/skills"
-    "$target_dir/.windsurf/skills"
-    "$PWD/.agents/skills"
-    "$PWD/.claude/skills"
-    "$PWD/.windsurf/skills"
-  )
-  for agent in "${ALL_AGENTS[@]}"; do
-    proj="${AGENT_PROJECT_BASES[$agent]:-}"
-    if [[ -n "$proj" ]]; then
-      candidates+=("$target_dir/$proj" "$PWD/$proj")
-    fi
-  done
-  for agent in "${ALL_AGENTS[@]}"; do
-    glob="${AGENT_GLOBAL_BASES[$agent]:-}"
-    [[ -n "$glob" ]] && candidates+=("$glob")
-  done
-  local -A seen=()
-  for base in "${candidates[@]}"; do
-    [[ -z "${seen[$base]+x}" ]] || continue
-    seen[$base]=1
-    [[ -d "$base/ssot-bootstrap/assets/templates" && -f "$base/$PRIMARY_SKILL/SKILL.md" ]] || continue
-    tpl_root="$base/ssot-bootstrap/assets/templates"
-    if [[ -f "$tpl_root/$lang/$template_name" ]]; then
-      printf '%s|%s\n' "$tpl_root/$lang/$template_name" "$base"
-      return 0
-    fi
-    cand="$tpl_root/$template_name"
-    if [[ -f "$cand" ]]; then
-      block_probe="$(extract_file_block "$cand" 2>/dev/null || true)"
-      if [[ -n "$block_probe" && "$(detect_block_lang "$block_probe")" == "$lang" ]]; then
-        printf '%s|%s\n' "$cand" "$base"
-        return 0
-      fi
-    fi
+# Return 0 iff version $1 is strictly greater than version $2 (dot-separated integers).
+version_gt() {
+  local a="$1" b="$2"
+  [[ "$a" =~ ^[0-9]+(\.[0-9]+)*$ && "$b" =~ ^[0-9]+(\.[0-9]+)*$ ]] || return 1
+  local -a pa pb
+  local IFS='.'
+  read -ra pa <<< "$a"
+  read -ra pb <<< "$b"
+  IFS=$' \t\n'
+  local i max=${#pa[@]}
+  (( ${#pb[@]} > max )) && max=${#pb[@]}
+  for ((i = 0; i < max; i++)); do
+    local va=$((10#${pa[i]:-0})) vb=$((10#${pb[i]:-0}))
+    if (( va > vb )); then return 0; fi
+    if (( va < vb )); then return 1; fi
   done
   return 1
+}
+
+# Infer the project root containing an instruction file (handles .cursor/rules/*, .windsurf/rules/*, .github/*).
+infer_instruction_root() {
+  local path="$1" dir
+  dir="$(dirname "$path")"
+  case "$path" in
+    */.cursor/rules/*|*/.windsurf/rules/*)
+      dirname "$(dirname "$dir")" ;;
+    */.github/copilot-instructions.md)
+      dirname "$dir" ;;
+    *)
+      printf '%s\n' "$dir" ;;
+  esac
+}
+
+# Populate LOCAL_BLOCK_TPL, LOCAL_BLOCK_BASE, LOCAL_BLOCK_VER, LOCAL_BLOCK_SKEW_MSG,
+# and LOCAL_BLOCK_ALT_TPLS/BASES/VERS without network access.
+# Honors explicit --agent / --scope, uses file-to-agent affinity before generic fallback,
+# detects version skew across installed agents, and avoids stale-copy downgrades.
+find_local_installed_template() {
+  local target_file="$1" requested_file="$2" lang="$3" template_name="$4"
+  LOCAL_BLOCK_TPL=""
+  LOCAL_BLOCK_BASE=""
+  LOCAL_BLOCK_VER=""
+  LOCAL_BLOCK_SKEW_MSG=""
+  LOCAL_BLOCK_ALT_TPLS=()
+  LOCAL_BLOCK_ALT_BASES=()
+  LOCAL_BLOCK_ALT_VERS=()
+
+  local repo_root agent base proj glob tpl_root cand block_probe
+  repo_root="$(infer_instruction_root "$target_file")"
+
+  # Determine file-to-agent affinity from requested filename first, then canonical target.
+  local -a aff_proj=() aff_agents=()
+  local probe_name
+  for probe_name in "$requested_file" "$target_file"; do
+    case "$probe_name" in
+      CLAUDE.md|*/CLAUDE.md)
+        aff_proj+=(".claude/skills")
+        aff_agents+=("claude-code")
+        break ;;
+      GEMINI.md|*/GEMINI.md)
+        aff_proj+=(".gemini/skills" ".agents/skills")
+        aff_agents+=("gemini-cli" "antigravity-app")
+        break ;;
+      .cursor/rules/*|*/.cursor/rules/*|.cursorrules|*/.cursorrules)
+        aff_proj+=(".cursor/skills" ".agents/skills")
+        aff_agents+=("cursor")
+        break ;;
+      .windsurf/rules/*|*/.windsurf/rules/*|.windsurfrules|*/.windsurfrules)
+        aff_proj+=(".windsurf/skills")
+        aff_agents+=("windsurf")
+        break ;;
+      .github/copilot-instructions.md|*/.github/copilot-instructions.md)
+        aff_proj+=(".github/skills" ".agents/skills")
+        aff_agents+=("github-copilot")
+        break ;;
+    esac
+  done
+  if [[ ${#aff_agents[@]} -eq 0 ]]; then
+    aff_proj+=(".agents/skills" ".claude/skills" ".windsurf/skills")
+    aff_agents+=("codex" "claude-code" "antigravity-app" "cursor" "gemini-cli" "github-copilot" "windsurf")
+  fi
+
+  local -a scoped_proj=() scoped_glob=() all_proj=() all_glob=()
+  if [[ -n "$ARG_AGENT" && "$ARG_AGENT" != "all" ]]; then
+    resolve_agent_list
+    for agent in "${RESOLVED_AGENTS[@]}"; do
+      proj="${AGENT_PROJECT_BASES[$agent]:-}"
+      glob="${AGENT_GLOBAL_BASES[$agent]:-}"
+      if [[ -n "$proj" && "$ARG_SCOPE" != "global" ]]; then
+        scoped_proj+=("$repo_root/$proj" "$PWD/$proj")
+      fi
+      if [[ -n "$glob" && "$ARG_SCOPE" != "project" ]]; then
+        scoped_glob+=("$glob")
+      fi
+    done
+  else
+    if [[ "$ARG_SCOPE" != "global" ]]; then
+      for proj in "${aff_proj[@]}"; do
+        scoped_proj+=("$repo_root/$proj" "$PWD/$proj")
+      done
+      scoped_proj+=("$repo_root/.agents/skills" "$repo_root/.claude/skills" "$repo_root/.windsurf/skills"
+                    "$PWD/.agents/skills" "$PWD/.claude/skills" "$PWD/.windsurf/skills")
+      for agent in "${ALL_AGENTS[@]}"; do
+        proj="${AGENT_PROJECT_BASES[$agent]:-}"
+        [[ -n "$proj" ]] && scoped_proj+=("$repo_root/$proj" "$PWD/$proj")
+      done
+    fi
+    if [[ "$ARG_SCOPE" != "project" ]]; then
+      for agent in "${aff_agents[@]}"; do
+        glob="${AGENT_GLOBAL_BASES[$agent]:-}"
+        [[ -n "$glob" ]] && scoped_glob+=("$glob")
+      done
+      for agent in "${ALL_AGENTS[@]}"; do
+        glob="${AGENT_GLOBAL_BASES[$agent]:-}"
+        [[ -n "$glob" ]] && scoped_glob+=("$glob")
+      done
+    fi
+  fi
+
+  # Also scan all project/global installations for version-skew detection and anti-downgrade.
+  for proj in "${aff_proj[@]}" ".agents/skills" ".claude/skills" ".windsurf/skills"; do
+    all_proj+=("$repo_root/$proj" "$PWD/$proj")
+  done
+  for agent in "${ALL_AGENTS[@]}"; do
+    proj="${AGENT_PROJECT_BASES[$agent]:-}"
+    glob="${AGENT_GLOBAL_BASES[$agent]:-}"
+    [[ -n "$proj" ]] && all_proj+=("$repo_root/$proj" "$PWD/$proj")
+    [[ -n "$glob" ]] && all_glob+=("$glob")
+  done
+
+  local -A seen_scoped=() seen_all=()
+  local -a hit_tpl=() hit_base=() hit_ver=() hit_tier=() hit_scoped=()
+
+  _probe_base() {
+    local b="$1" tier="$2" is_scoped="$3" real_b found_tpl ver
+    [[ -d "$b/ssot-bootstrap/assets/templates" && -f "$b/$PRIMARY_SKILL/SKILL.md" ]] || return 0
+    real_b="$(cd "$b" 2>/dev/null && pwd -P)" || return 0
+    if [[ "$is_scoped" -eq 1 ]]; then
+      [[ -z "${seen_scoped[$real_b]+x}" ]] || return 0
+      seen_scoped[$real_b]=1
+    fi
+    if [[ -n "${seen_all[$real_b]+x}" ]]; then
+      return 0
+    fi
+    seen_all[$real_b]=1
+    tpl_root="$b/ssot-bootstrap/assets/templates"
+    found_tpl=""
+    if [[ -f "$tpl_root/$lang/$template_name" ]]; then
+      found_tpl="$tpl_root/$lang/$template_name"
+    else
+      cand="$tpl_root/$template_name"
+      if [[ -f "$cand" ]]; then
+        block_probe="$(extract_file_block "$cand" 2>/dev/null || true)"
+        if [[ -n "$block_probe" && "$(detect_block_lang "$block_probe")" == "$lang" ]]; then
+          found_tpl="$cand"
+        fi
+      fi
+    fi
+    [[ -n "$found_tpl" ]] || return 0
+    ver="$(skill_protocol_version "$b/$PRIMARY_SKILL/SKILL.md")"
+    hit_tpl+=("$found_tpl")
+    hit_base+=("$b")
+    hit_ver+=("${ver:-unknown}")
+    hit_tier+=("$tier")
+    hit_scoped+=("$is_scoped")
+  }
+
+  for base in "${scoped_proj[@]+"${scoped_proj[@]}"}"; do _probe_base "$base" 0 1; done
+  for base in "${scoped_glob[@]+"${scoped_glob[@]}"}"; do _probe_base "$base" 1 1; done
+  for base in "${all_proj[@]+"${all_proj[@]}"}"; do _probe_base "$base" 0 0; done
+  for base in "${all_glob[@]+"${all_glob[@]}"}"; do _probe_base "$base" 1 0; done
+
+  local n=${#hit_tpl[@]} i
+  [[ $n -gt 0 ]] || return 1
+
+  # Detect version skew across discovered local installations.
+  local -A distinct_vers=()
+  local skew_parts=""
+  for ((i = 0; i < n; i++)); do
+    distinct_vers["${hit_ver[$i]}"]=1
+    [[ -n "$skew_parts" ]] && skew_parts+=", "
+    skew_parts+="${hit_base[$i]}=v${hit_ver[$i]}"
+  done
+  if (( ${#distinct_vers[@]} > 1 )); then
+    LOCAL_BLOCK_SKEW_MSG="version skew across installed SSOT-CONTEXT copies (${skew_parts})"
+  fi
+
+  # Pick the best scoped hit: prefer project tier over global tier (unless only global hits exist);
+  # within the chosen tier, prefer the highest protocol_version, breaking ties by affinity order.
+  local best_idx=-1 has_scoped_proj=0
+  for ((i = 0; i < n; i++)); do
+    if [[ "${hit_scoped[$i]}" -eq 1 && "${hit_tier[$i]}" -eq 0 ]]; then
+      has_scoped_proj=1
+      break
+    fi
+  done
+  for ((i = 0; i < n; i++)); do
+    [[ "${hit_scoped[$i]}" -eq 1 ]] || continue
+    if [[ "$has_scoped_proj" -eq 1 && "${hit_tier[$i]}" -ne 0 ]]; then
+      continue
+    fi
+    if [[ "$best_idx" -lt 0 ]]; then
+      best_idx=$i
+    elif version_gt "${hit_ver[$i]}" "${hit_ver[$best_idx]}"; then
+      best_idx=$i
+    fi
+  done
+
+  [[ "$best_idx" -ge 0 ]] || return 1
+
+  LOCAL_BLOCK_TPL="${hit_tpl[$best_idx]}"
+  LOCAL_BLOCK_BASE="${hit_base[$best_idx]}"
+  LOCAL_BLOCK_VER="${hit_ver[$best_idx]}"
+  for ((i = 0; i < n; i++)); do
+    if [[ "$i" -ne "$best_idx" ]] && version_gt "${hit_ver[$i]}" "$LOCAL_BLOCK_VER"; then
+      LOCAL_BLOCK_ALT_TPLS+=("${hit_tpl[$i]}")
+      LOCAL_BLOCK_ALT_BASES+=("${hit_base[$i]}")
+      LOCAL_BLOCK_ALT_VERS+=("${hit_ver[$i]}")
+    fi
+  done
+  return 0
 }
 
 # Populate BLOCK_REAL_TARGET, BLOCK_CURRENT, BLOCK_EXPECTED, BLOCK_FMT, BLOCK_LANG, BLOCK_LEGACY.
@@ -1294,6 +1505,15 @@ prepare_block_check() {
   if [[ -n "$ARG_ENTRY" && "$ARG_ENTRY" == *$'\n'* ]]; then
     die "--entry must be a single line"
   fi
+  BLOCK_NEWER_MATCH_VER=""
+  BLOCK_NEWER_MATCH_BASE=""
+  LOCAL_BLOCK_SKEW_MSG=""
+  LOCAL_BLOCK_BASE=""
+  LOCAL_BLOCK_TPL=""
+  LOCAL_BLOCK_VER=""
+  LOCAL_BLOCK_ALT_TPLS=()
+  LOCAL_BLOCK_ALT_BASES=()
+  LOCAL_BLOCK_ALT_VERS=()
   BLOCK_REAL_TARGET="$(resolve_block_target "$ARG_BLOCK_FILE")"
 
   if ! BLOCK_CURRENT="$(extract_file_block "$BLOCK_REAL_TARGET")"; then
@@ -1326,17 +1546,20 @@ prepare_block_check() {
     BLOCK_FMT="4"
   fi
 
-  local expected_raw="" script_dir="" local_hit="" local_tpl="" local_base="" local_ver=""
-  script_dir="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-  if [[ -z "$ARG_REF" && -z "${SOURCE_DIR:-}" && ! -f "$script_dir/skills/$PRIMARY_SKILL/SKILL.md" ]]; then
-    if local_hit="$(find_local_installed_template "$BLOCK_REAL_TARGET" "$BLOCK_LANG" "$template_name")"; then
-      IFS='|' read -r local_tpl local_base <<< "$local_hit"
-      expected_raw="$(read_wire_block_from_file "$local_tpl")" || return 1
-      local_ver="$(skill_protocol_version "$local_base/$PRIMARY_SKILL/SKILL.md")"
-      [[ -n "$local_ver" ]] && VERSION="$local_ver"
+  local expected_raw="" script_dir=""
+  if [[ -n "$SCRIPT_FILE" && -f "$SCRIPT_FILE" ]]; then
+    script_dir="$(cd "$(dirname "$SCRIPT_FILE")" && pwd)"
+  fi
+  if [[ -z "$ARG_REF" && -z "${SOURCE_DIR:-}" && ( -z "$script_dir" || ! -f "$script_dir/skills/$PRIMARY_SKILL/SKILL.md" ) ]]; then
+    if find_local_installed_template "$BLOCK_REAL_TARGET" "$ARG_BLOCK_FILE" "$BLOCK_LANG" "$template_name"; then
+      expected_raw="$(read_wire_block_from_file "$LOCAL_BLOCK_TPL")" || return 1
+      [[ -n "$LOCAL_BLOCK_VER" && "$LOCAL_BLOCK_VER" != "unknown" ]] && VERSION="$LOCAL_BLOCK_VER"
     fi
   fi
   if [[ -z "$expected_raw" ]]; then
+    if [[ "$BLOCK_OFFLINE_ONLY" -eq 1 && -z "${SOURCE_DIR:-}" && ( -z "$script_dir" || ! -f "$script_dir/skills/$PRIMARY_SKILL/SKILL.md" ) ]]; then
+      return 1
+    fi
     ensure_source
     if [[ -f "$SOURCE_DIR/VERSION" ]]; then
       local src_ver
@@ -1354,6 +1577,27 @@ prepare_block_check() {
   else
     BLOCK_EXPECTED="$expected_raw"
   fi
+
+  # Guard against silent downgrades: if BLOCK_CURRENT already matches a newer installed copy
+  # while a stale agent copy was selected, record the newer match so callers never downgrade it.
+  if [[ "$BLOCK_CURRENT" != "$BLOCK_EXPECTED" && ${#LOCAL_BLOCK_ALT_TPLS[@]} -gt 0 ]]; then
+    local alt_i alt_raw alt_exp
+    for ((alt_i = 0; alt_i < ${#LOCAL_BLOCK_ALT_TPLS[@]}; alt_i++)); do
+      alt_raw="$(read_wire_block_from_file "${LOCAL_BLOCK_ALT_TPLS[$alt_i]}" 2>/dev/null || true)"
+      [[ -n "$alt_raw" ]] || continue
+      if [[ "$BLOCK_FMT" == "5" ]]; then
+        alt_exp="$(substitute_entry_literal "$alt_raw" "$entry" 2>/dev/null || true)"
+      else
+        alt_exp="$alt_raw"
+      fi
+      if [[ -n "$alt_exp" && "$BLOCK_CURRENT" == "$alt_exp" ]]; then
+        if [[ -z "$BLOCK_NEWER_MATCH_VER" ]] || version_gt "${LOCAL_BLOCK_ALT_VERS[$alt_i]}" "$BLOCK_NEWER_MATCH_VER"; then
+          BLOCK_NEWER_MATCH_VER="${LOCAL_BLOCK_ALT_VERS[$alt_i]}"
+          BLOCK_NEWER_MATCH_BASE="${LOCAL_BLOCK_ALT_BASES[$alt_i]}"
+        fi
+      fi
+    done
+  fi
   return 0
 }
 
@@ -1361,10 +1605,14 @@ prepare_block_check() {
 report_project_block_drift() {
   local fname real note
   local saved_file="$ARG_BLOCK_FILE" saved_entry="$ARG_ENTRY" saved_lang="$ARG_LANG" saved_ref="$ARG_REF"
+  local saved_agent="$ARG_AGENT" saved_scope="$ARG_SCOPE" saved_offline="$BLOCK_OFFLINE_ONLY"
   local -A seen=()
-  # Reuse the SOURCE_DIR already resolved by run_upgrade (even when --ref was passed).
+  # Reuse SOURCE_DIR or live local templates offline; never trigger a network fetch for a read-only hint.
   ARG_REF=""
-  for fname in AGENTS.md CLAUDE.md GEMINI.md; do
+  ARG_AGENT=""
+  ARG_SCOPE=""
+  BLOCK_OFFLINE_ONLY=1
+  for fname in "${BLOCK_INSTRUCTION_FILES[@]}"; do
     [[ -f "$PWD/$fname" ]] || continue
     real="$(resolve_block_target "$PWD/$fname" 2>/dev/null)" || continue
     [[ -z "${seen[$real]+x}" ]] || continue
@@ -1373,7 +1621,7 @@ report_project_block_drift() {
     ARG_BLOCK_FILE="$PWD/$fname"
     ARG_ENTRY=""
     ARG_LANG=""
-    if prepare_block_check >/dev/null 2>&1 && [[ "$BLOCK_CURRENT" != "$BLOCK_EXPECTED" ]]; then
+    if prepare_block_check >/dev/null 2>&1 && [[ -z "$BLOCK_NEWER_MATCH_VER" && "$BLOCK_CURRENT" != "$BLOCK_EXPECTED" ]]; then
       note=""
       [[ "$BLOCK_LEGACY" -eq 1 ]] && note=" (uses legacy SSOT-SKILL markers)"
       warn "managed block outdated: $fname (format ${BLOCK_FMT}, lang=${BLOCK_LANG}; expected v${VERSION})${note}"
@@ -1384,10 +1632,18 @@ report_project_block_drift() {
   ARG_ENTRY="$saved_entry"
   ARG_LANG="$saved_lang"
   ARG_REF="$saved_ref"
+  ARG_AGENT="$saved_agent"
+  ARG_SCOPE="$saved_scope"
+  BLOCK_OFFLINE_ONLY="$saved_offline"
 }
 
 run_check_block() {
   prepare_block_check || return 1
+  [[ -n "$LOCAL_BLOCK_SKEW_MSG" ]] && warn "$LOCAL_BLOCK_SKEW_MSG"
+  if [[ -n "$BLOCK_NEWER_MATCH_VER" ]]; then
+    warn "managed block already matches newer installed v${BLOCK_NEWER_MATCH_VER} (${BLOCK_NEWER_MATCH_BASE}); selected ${LOCAL_BLOCK_BASE} is older v${VERSION} — upgrade the stale agent instead of downgrading $ARG_BLOCK_FILE"
+    return 0
+  fi
   if [[ "$BLOCK_CURRENT" == "$BLOCK_EXPECTED" ]]; then
     ok "managed block up-to-date: $ARG_BLOCK_FILE (format ${BLOCK_FMT}, lang=${BLOCK_LANG}, v${VERSION})"
     return 0
@@ -1401,6 +1657,11 @@ run_check_block() {
 
 run_sync_block() {
   prepare_block_check || return 1
+  [[ -n "$LOCAL_BLOCK_SKEW_MSG" ]] && warn "$LOCAL_BLOCK_SKEW_MSG"
+  if [[ -n "$BLOCK_NEWER_MATCH_VER" ]]; then
+    err "refusing to downgrade $ARG_BLOCK_FILE from v${BLOCK_NEWER_MATCH_VER} (${BLOCK_NEWER_MATCH_BASE}) to older v${VERSION} (${LOCAL_BLOCK_BASE}); upgrade the stale installation or pass --ref / SOURCE_DIR explicitly"
+    return 1
+  fi
   if [[ "$BLOCK_CURRENT" == "$BLOCK_EXPECTED" ]]; then
     ok "managed block already up-to-date: $ARG_BLOCK_FILE (format ${BLOCK_FMT}, lang=${BLOCK_LANG}, v${VERSION})"
     return 0
@@ -1556,6 +1817,13 @@ finish_install_stage() {
   INSTALL_ENTRIES=()
 }
 
+is_dangling_ssot_skill_link() {
+  local target="$1" skill="$2" link_dest
+  [[ -L "$target" && ! -e "$target" ]] || return 1
+  link_dest="$(readlink "$target" 2>/dev/null || true)"
+  [[ "$link_dest" == */skills/"$skill" || "$link_dest" == "skills/$skill" ]]
+}
+
 copy_bundle() {
   local base="$1"
   local lang="$2"
@@ -1608,7 +1876,9 @@ copy_bundle() {
   guard_bundle_root_files "$INSTALL_BASE"
   for skill in "${install_skills[@]}"; do
     if [[ -e "$INSTALL_BASE/$skill" || -L "$INSTALL_BASE/$skill" ]] && [[ ! -d "$INSTALL_BASE/$skill" ]]; then
-      die "refusing to replace non-directory skill path: $INSTALL_BASE/$skill"
+      if ! is_dangling_ssot_skill_link "$INSTALL_BASE/$skill" "$skill"; then
+        die "refusing to replace non-directory skill path: $INSTALL_BASE/$skill"
+      fi
     fi
   done
 
@@ -1734,7 +2004,7 @@ scan_upgrade_targets() {
   if [[ -n "${SOURCE_DIR:-}" && -d "$SOURCE_DIR/skills" ]]; then
     source_skills="$(cd "$SOURCE_DIR/skills" && pwd -P)"
   fi
-  local probe link_target link_state
+  local probe link_target link_state sk linked_skill linked_count copy_count any_dangling
   for agent in "${agents[@]}"; do
     for scope in global project; do
       [[ -z "$ARG_SCOPE" || "$ARG_SCOPE" == "$scope" ]] || continue
@@ -1746,11 +2016,32 @@ scan_upgrade_targets() {
       probe="$(cd "$base" && pwd -P)"
       [[ "$probe" != "$source_skills" && -z "${seen[$probe]+x}" ]] || continue
       seen[$probe]=1
-      if [[ -L "$base/$PRIMARY_SKILL" ]]; then
-        link_target="$(readlink "$base/$PRIMARY_SKILL" 2>/dev/null || true)"
-        link_state="live"
-        [[ -d "$base/$PRIMARY_SKILL" ]] || link_state="dangling"
-        UPGRADE_SKIPPED_LINKS+=("${agent}|${scope}|${base}|${AGENT_LABELS[$agent]}|${link_state}|${link_target}")
+      linked_skill=""
+      linked_count=0
+      copy_count=0
+      any_dangling=0
+      for sk in "${BUNDLE_SKILLS[@]}"; do
+        if [[ -L "$base/$sk" ]]; then
+          linked_count=$((linked_count + 1))
+          [[ -z "$linked_skill" ]] && linked_skill="$sk"
+          if [[ ! -d "$base/$sk" ]]; then
+            any_dangling=1
+            linked_skill="$sk"
+          fi
+        elif [[ -d "$base/$sk" ]]; then
+          copy_count=$((copy_count + 1))
+        fi
+      done
+      if [[ "$linked_count" -gt 0 ]]; then
+        link_target="$(readlink "$base/$linked_skill" 2>/dev/null || true)"
+        if [[ "$any_dangling" -eq 1 ]]; then
+          link_state="dangling"
+        elif [[ "$copy_count" -gt 0 ]]; then
+          link_state="partial"
+        else
+          link_state="live"
+        fi
+        UPGRADE_SKIPPED_LINKS+=("${agent}|${scope}|${base}|${AGENT_LABELS[$agent]}|${link_state}|${linked_skill} -> ${link_target}")
         continue
       fi
       UPGRADE_ROWS+=("${agent}|${scope}|${base}|${AGENT_LABELS[$agent]}")
@@ -1769,8 +2060,8 @@ USAGE:
   install.sh [OPTIONS]
   install.sh --uninstall [OPTIONS]
   install.sh --upgrade [--agent <list>] [--scope <global|project>]
-  install.sh --check-block <file> [--lang <en|zh>] [--entry <path>]
-  install.sh --sync-block <file> [--lang <en|zh>] [--entry <path>]
+  install.sh --check-block <file> [--agent <key>] [--scope <global|project>] [--lang <en|zh>] [--entry <path>]
+  install.sh --sync-block <file> [--agent <key>] [--scope <global|project>] [--lang <en|zh>] [--entry <path>]
   install.sh --list-agents
 
 OPTIONS:
@@ -2159,10 +2450,33 @@ run_uninstall() {
     resolve_agent_list
     dedup_targets "$ARG_SCOPE"
     [[ ${#RESOLVED_AGENTS[@]} -gt 0 ]] || die "no uninstallable targets for scope: $ARG_SCOPE"
+    local skill has_any
     for agent in "${RESOLVED_AGENTS[@]}"; do
       base="$(agent_base_for "$agent" "$ARG_SCOPE")"
+      [[ "$ARG_SCOPE" != "project" ]] || base="$PWD/$base"
+      has_any=0
+      if bundle_location_exists "$base"; then
+        has_any=1
+      else
+        for skill in "${BUNDLE_SKILLS[@]}"; do
+          if [[ -e "$base/$skill" || -L "$base/$skill" ]]; then
+            has_any=1
+            break
+          fi
+        done
+      fi
+      if [[ "$has_any" -eq 0 ]]; then
+        for skill in "${BUNDLE_ROOT_FILES[@]}"; do
+          if bundle_companion_is_owned "$base/$skill"; then
+            has_any=1
+            break
+          fi
+        done
+      fi
+      [[ "$has_any" -eq 1 && -d "$base" ]] || continue
       bases+=("$base")
     done
+    [[ ${#bases[@]} -gt 0 ]] || die "no installed SSOT-CONTEXT bundles found for agent(s) '${ARG_AGENT}' in scope: $ARG_SCOPE"
   fi
 
   echo ""
@@ -2204,14 +2518,18 @@ run_upgrade() {
   info "$(t UPGRADE_SCANNING)"
   scan_upgrade_targets
 
-  local srow sagent sscope sbase slabel sstate starget
+  local srow sagent sscope sbase slabel sstate starget skipped_project=0
   for srow in "${UPGRADE_SKIPPED_LINKS[@]+"${UPGRADE_SKIPPED_LINKS[@]}"}"; do
     IFS='|' read -r sagent sscope sbase slabel sstate starget <<< "$srow"
+    [[ "$sscope" == "project" ]] && skipped_project=1
     if [[ "$sstate" == "dangling" ]]; then
-      warn "skipping dangling symlink installation: ${slabel} [${sscope}] → ${sbase} (${PRIMARY_SKILL} -> ${starget})"
-      info "Repoint a moved checkout with: python3 tools/link-local.py --base \"${sbase}\" --apply --backup-root <dir> (or remove the broken symlinks and reinstall)."
+      warn "skipping dangling symlink installation: ${slabel} [${sscope}] → ${sbase} (${starget})"
+      info "Repoint a moved checkout with: python3 tools/link-local.py --base \"${sbase}\" --apply --backup-root <dir> (or run 'install.sh --agent ${sagent} --scope ${sscope}' to replace dangling SSOT symlinks with copies)."
+    elif [[ "$sstate" == "partial" ]]; then
+      warn "skipping partially symlink-linked installation: ${slabel} [${sscope}] → ${sbase} (${starget})"
+      info "Complete linking with tools/link-local.py, or run 'install.sh --agent ${sagent} --scope ${sscope}' to convert back to copies."
     else
-      warn "skipping symlink-linked installation: ${slabel} [${sscope}] → ${sbase} (${PRIMARY_SKILL} -> ${starget})"
+      warn "skipping symlink-linked installation: ${slabel} [${sscope}] → ${sbase} (${starget})"
       info "Update that checkout with 'git pull', repoint with tools/link-local.py, or run 'install.sh --agent ${sagent} --scope ${sscope}' to convert back to copies."
     fi
   done
@@ -2219,6 +2537,9 @@ run_upgrade() {
   if [[ ${#UPGRADE_ROWS[@]} -eq 0 ]]; then
     if [[ ${#UPGRADE_SKIPPED_LINKS[@]} -gt 0 ]]; then
       ok "all discovered SSOT-CONTEXT installations (${#UPGRADE_SKIPPED_LINKS[@]}) are symlink-linked and were left untouched; nothing to copy-upgrade"
+      if [[ "$skipped_project" -eq 1 ]]; then
+        report_project_block_drift
+      fi
       return 0
     fi
     die "$(t UPGRADE_NONE_FOUND)"
@@ -2253,7 +2574,7 @@ run_upgrade() {
   echo -e "  ${DIM}  $(t RESTART_TIP)${NC}"
   echo -e "  ${GREEN}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${NC}"
   print_wire_block "${lang:-en}"
-  if [[ "$upgraded_project" -eq 1 ]]; then
+  if [[ "$upgraded_project" -eq 1 || "$skipped_project" -eq 1 ]]; then
     report_project_block_drift
   fi
   echo ""

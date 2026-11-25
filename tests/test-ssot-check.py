@@ -2157,6 +2157,136 @@ class CheckerTest(unittest.TestCase):
         out = self.assert_clean()
         self.assertNotIn("managed block differs", out)
 
+    def test_inline_triple_backtick_at_line_start_does_not_swallow_following_markdown(self):
+        self.valid()
+        # Inline ```token``` at start of line in an area doc must not hide a broken link below it.
+        self.write("architecture.md", ARCHITECTURE + "\n```--strict``` enables strict mode.\n\nSee [Missing](nope.md).\n")
+        self.assert_error("broken link: nope.md")
+        # Same in README.md.
+        self.valid()
+        self.write("README.md", README + "\n```--strict``` enables strict mode.\n\nSee [Missing](nope.md).\n")
+        self.assert_error("broken link: nope.md")
+        # Tilde fence with backticks in info string still opens a real fence per CommonMark §4.5.
+        self.valid()
+        self.write("architecture.md", ARCHITECTURE + "\n~~~foo ```bar```\n[ignored](nope.md)\n~~~\n")
+        self.assert_clean()
+
+    def test_pipe_in_invariants_bullet_and_shard_context_table_preserve_confirmed_guard(self):
+        self.sharded_setup(
+            readme_invariants="- [Shipping invariants](invariants/shipping.md) — checkout | refunds | idempotency\n"
+                              "- [Webhooks invariants](invariants/webhooks.md) — signing | retries\n",
+        )
+        # Put a 2-col helper context table (even using a common header word like Status)
+        # before the 6-col invariants table in a shard without ## Invariants heading.
+        self.write("invariants/shipping.md", textwrap.dedent("""\
+            # Shipping invariants
+
+            | Service | Status |
+            |---|---|
+            | Parcel pricing | active |
+
+            | ID | Kind | Rule | Explained in | Status | Source |
+            |---|---|---|---|---|---|
+            | SHP-01 | architecture invariant | Never drop parcel manifests | [Retries](../architecture.md#failure-and-recovery) | confirmed | user, 2026-05-02 |
+            """))
+        self.git("init", "-q")
+        self.commit("sharded bullets with pipes and shard helper table")
+        out = self.assert_clean()
+        self.assertNotIn("WARN", out)
+
+        # Mutating confirmed SHP-01 inside the shard linked by a pipe-containing bullet must still fail.
+        self.write("invariants/shipping.md", textwrap.dedent("""\
+            # Shipping invariants
+
+            | Service | Owner |
+            |---|---|
+            | Parcel pricing | `shipping.py` |
+
+            | ID | Kind | Rule | Explained in | Status | Source |
+            |---|---|---|---|---|---|
+            | SHP-01 | architecture invariant | Drop manifests freely | [Retries](../architecture.md#failure-and-recovery) | confirmed | user, 2026-05-02 |
+            """))
+        self.assert_error("confirmed invariant SHP-01 changed its rule")
+
+        # Malformed 5-col invariants table after the helper table must still fail.
+        self.write("invariants/shipping.md", textwrap.dedent("""\
+            # Shipping invariants
+
+            | Service | Owner |
+            |---|---|
+            | Parcel pricing | `shipping.py` |
+
+            | ID | Kind | Rule | Status | Source |
+            |---|---|---|---|---|
+            | SHP-01 | architecture invariant | Never drop parcel manifests | confirmed | user, 2026-05-02 |
+            """))
+        self.assert_error("needs 6 columns")
+
+    def test_symlinked_repo_path_still_warns_on_relative_removed_path_mentions(self):
+        self.valid()
+        os.makedirs(os.path.join(self.repo, "src"))
+        with open(os.path.join(self.repo, "src", "old.py"), "w", encoding="utf-8") as handle:
+            handle.write("x = 1\n")
+        self.write("architecture.md", ARCHITECTURE + "\nUses `../src/old.py`.\n")
+        self.git("init", "-q")
+        self.commit("add old.py")
+        self.git("rm", "-q", "src/old.py")
+        self.commit("remove old.py")
+        with tempfile.TemporaryDirectory() as outer:
+            alias = os.path.join(outer, "repo-alias")
+            os.symlink(self.repo, alias)
+            code, out = self.run_checker(os.path.join(alias, "SSOT"))
+            self.assertEqual(code, 0, out)
+            self.assertIn("`src/old.py` was removed", out)
+
+    def test_gitignored_symlink_to_tracked_file_warns(self):
+        self.valid()
+        with open(os.path.join(self.repo, ".gitignore"), "w", encoding="utf-8") as handle:
+            handle.write("ignored_link.md\nignored_dir\n")
+        with open(os.path.join(self.repo, "real_tracked.md"), "w", encoding="utf-8") as handle:
+            handle.write("# Tracked\n")
+        os.makedirs(os.path.join(self.repo, "real_docs"))
+        with open(os.path.join(self.repo, "real_docs", "guide.md"), "w", encoding="utf-8") as handle:
+            handle.write("# Guide\n")
+        os.symlink("real_tracked.md", os.path.join(self.repo, "ignored_link.md"))
+        os.symlink("real_docs", os.path.join(self.repo, "ignored_dir"))
+        self.write("README.md", README + "\n- [Ignored symlink](../ignored_link.md)\n- [Ignored dir symlink](../ignored_dir/guide.md)\n")
+        self.git("init", "-q")
+        self.git("add", ".gitignore", "real_tracked.md", "real_docs", "SSOT")
+        self.git("commit", "-q", "-m", "baseline")
+        out = self.assert_clean()
+        self.assertEqual(out.count("link targets gitignored path"), 2, out)
+        self.assertIn("../ignored_link.md", out)
+        self.assertIn("../ignored_dir/guide.md", out)
+
+    def test_instruction_block_drift_covers_cursor_windsurf_copilot_and_flattened_lang_mismatch(self):
+        self.valid()
+        stale = "<!-- SSOT-CONTEXT:BEGIN -->\n## SSOT workflow\nStale.\n<!-- SSOT-CONTEXT:END -->\n"
+        for rel in (".cursor/rules/ssot.mdc", ".windsurf/rules/ssot.md", ".github/copilot-instructions.md"):
+            full = os.path.join(self.repo, rel)
+            os.makedirs(os.path.dirname(full), exist_ok=True)
+            with open(full, "w", encoding="utf-8") as handle:
+                handle.write(stale)
+        out = self.assert_clean()
+        self.assertEqual(out.count("managed block differs from installed templates"), 3, out)
+        for rel in (".cursor/rules/ssot.mdc", ".windsurf/rules/ssot.md", ".github/copilot-instructions.md"):
+            self.assertIn(rel, out)
+
+        # Flattened single-language EN install inspecting a ZH managed block emits a clear INFO note.
+        import shutil
+        with tempfile.TemporaryDirectory() as inst:
+            chk_dst = os.path.join(inst, "ssot-doctor/assets/scripts/ssot-check.py")
+            tpl_dst = os.path.join(inst, "ssot-bootstrap/assets/templates/adapter-thin.md")
+            os.makedirs(os.path.dirname(chk_dst), exist_ok=True)
+            os.makedirs(os.path.dirname(tpl_dst), exist_ok=True)
+            shutil.copy2(CHECKER, chk_dst)
+            shutil.copy2(os.path.join(os.path.dirname(CHECKER), "../../../ssot-bootstrap/assets/templates/en/adapter-thin.md"), tpl_dst)
+            with open(os.path.join(self.repo, "AGENTS.md"), "w", encoding="utf-8") as handle:
+                handle.write("<!-- SSOT-CONTEXT:BEGIN -->\n## SSOT 工作流\n旧版保护规则。\n<!-- SSOT-CONTEXT:END -->\n")
+            proc = subprocess.run([sys.executable, chk_dst, self.ssot], capture_output=True, text=True, check=False)
+            self.assertEqual(proc.returncode, 0, proc.stdout + proc.stderr)
+            self.assertIn("managed block is zh while installed templates are en", proc.stdout)
+
 
 if __name__ == "__main__":
     unittest.main(verbosity=1)

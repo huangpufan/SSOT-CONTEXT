@@ -376,6 +376,129 @@ class PrecommitHookTest(unittest.TestCase):
         self.assertEqual(r_unborn.returncode, 1, r_unborn.stdout + r_unborn.stderr)
         self.assertIn("broken link: missing.md", r_unborn.stdout + r_unborn.stderr)
 
+    def test_blocks_staged_link_to_untracked_external_owner_and_non_md_file(self):
+        # 1. Untracked Format-4 external owner linked from staged SSOT/README.md must fail before commit.
+        (self.repo / "docs/new-owner.md").write_text("# New Owner\n\n## Details\n\nBody.\n", encoding="utf-8")
+        readme = self.repo / "SSOT/README.md"
+        orig = readme.read_text(encoding="utf-8")
+        readme.write_text(orig + "\n- [New Owner](../docs/new-owner.md#details)\n", encoding="utf-8")
+        self.git("add", "SSOT/README.md")
+        res_md = self.git("commit", "-m", "link untracked owner")
+        self.assertEqual(res_md.returncode, 1, res_md.stdout + res_md.stderr)
+        self.assertIn("broken link: ../docs/new-owner.md#details", res_md.stdout + res_md.stderr)
+
+        # 2. Untracked non-Markdown file linked from staged SSOT/README.md must also fail.
+        (self.repo / "src/new_helper.txt").write_text("helper\n", encoding="utf-8")
+        readme.write_text(orig + "\n- [Helper](../src/new_helper.txt)\n", encoding="utf-8")
+        self.git("add", "SSOT/README.md")
+        res_txt = self.git("commit", "-m", "link untracked non-md")
+        self.assertEqual(res_txt.returncode, 1, res_txt.stdout + res_txt.stderr)
+        self.assertIn("broken link: ../src/new_helper.txt", res_txt.stdout + res_txt.stderr)
+
+        # 3. Once both targets are staged, targeted snapshot checks them out and commit succeeds.
+        readme.write_text(orig + "\n- [New Owner](../docs/new-owner.md#details)\n- [Helper](../src/new_helper.txt)\n", encoding="utf-8")
+        self.git("add", "SSOT/README.md", "docs/new-owner.md", "src/new_helper.txt")
+        res_ok = self.git("commit", "-m", "commit owner and helper together")
+        self.assertEqual(res_ok.returncode, 0, res_ok.stdout + res_ok.stderr)
+
+    def test_canonicalizes_absolute_ssot_dir_handles_format4_readme_and_rejects_outside(self):
+        readme = self.repo / "SSOT/README.md"
+        orig = readme.read_text(encoding="utf-8")
+        readme.write_text(orig.replace("Never charge twice", "Tampered via abs SSOT_DIR"), encoding="utf-8")
+        self.git("add", "SSOT/README.md")
+        # Force snapshot mode via an unstaged edit to docs/api.md.
+        (self.repo / "docs/api.md").write_text("# API\n\n## Retries\n\nUnstaged.\n", encoding="utf-8")
+
+        # 1. Absolute SSOT_DIR inside repo must block tampered confirmed invariant (never silent exit 0).
+        res_abs = self.git("commit", "-m", "abs ssot dir", env={**self.env, "SSOT_DIR": str(self.repo / "SSOT")})
+        self.assertEqual(res_abs.returncode, 1, res_abs.stdout + res_abs.stderr)
+        self.assertIn("confirmed invariant INV-01 changed its rule", res_abs.stdout + res_abs.stderr)
+
+        # 2. Format-4 SSOT_DIR=SSOT/README.md resolves to its containing SSOT directory and blocks tamper.
+        res_f4_file = self.git("commit", "-m", "f4 readme file", env={**self.env, "SSOT_DIR": "SSOT/README.md"})
+        self.assertEqual(res_f4_file.returncode, 1, res_f4_file.stdout + res_f4_file.stderr)
+        self.assertIn("confirmed invariant INV-01 changed its rule", res_f4_file.stdout + res_f4_file.stderr)
+
+        # 3. SSOT_DIR outside repo fails loudly with exit 2.
+        direct_out = subprocess.run([str(self.standalone)], cwd=self.repo,
+                                    env={**self.env, "SSOT_DIR": str(self.home)}, capture_output=True, text=True)
+        self.assertEqual(direct_out.returncode, 2, direct_out.stdout + direct_out.stderr)
+        self.assertIn("outside repository root", direct_out.stderr)
+
+        # 4. Clean edit with SSOT_DIR=SSOT/README.md passes.
+        readme.write_text(orig + "\nExtra note.\n", encoding="utf-8")
+        self.git("add", "SSOT/README.md")
+        res_clean = self.git("commit", "-m", "clean f4 readme", env={**self.env, "SSOT_DIR": "SSOT/README.md"})
+        self.assertEqual(res_clean.returncode, 0, res_clean.stdout + res_clean.stderr)
+
+    def test_triggers_on_mixed_case_markdown_extension(self):
+        (self.repo / "docs/Guide.Md").write_text("# Guide\n\n## Sec\n\nText.\n", encoding="utf-8")
+        readme = self.repo / "SSOT/README.md"
+        readme.write_text(readme.read_text(encoding="utf-8") + "\n- [Guide](../docs/Guide.Md#sec)\n", encoding="utf-8")
+        self.git("add", "docs/Guide.Md", "SSOT/README.md")
+        self.assertEqual(self.git("commit", "-m", "add Guide.Md").returncode, 0)
+
+        (self.repo / "docs/Guide.Md").write_text("# Guide\n\n## Renamed\n\nText.\n", encoding="utf-8")
+        self.git("add", "docs/Guide.Md")
+        res = self.git("commit", "-m", "break mixed-case md anchor")
+        self.assertEqual(res.returncode, 1, res.stdout + res.stderr)
+        self.assertIn("missing heading anchor: ../docs/Guide.Md#sec", res.stdout + res.stderr)
+
+    def test_targeted_snapshot_preserves_linked_non_md_symlinks_and_skip_worktree_mentions(self):
+        # Link a non-md file with line anchor, a symlink to a non-md file, and keep a non-linked file mentioned in backticks.
+        (self.repo / "docs/app-link.py").symlink_to("../src/app.py")
+        readme = self.repo / "SSOT/README.md"
+        orig = readme.read_text(encoding="utf-8")
+        readme.write_text(orig + "\n- [App](../src/app.py#L1)\n- [Link](../docs/app-link.py)\n", encoding="utf-8")
+        self.git("add", "docs/app-link.py", "SSOT/README.md")
+        # Force snapshot mode with an unstaged edit to docs/api.md.
+        (self.repo / "docs/api.md").write_text("# API\n\n## Retries\n\nUnstaged.\n", encoding="utf-8")
+        res_ok = self.git("commit", "-m", "linked non-md and symlink in snapshot")
+        self.assertEqual(res_ok.returncode, 0, res_ok.stdout + res_ok.stderr)
+        self.assertNotIn("`src/app.py` was removed", res_ok.stdout + res_ok.stderr)
+        self.assertNotIn("`src/legacy.py` was removed", res_ok.stdout + res_ok.stderr)
+
+        # Line anchor past EOF in non-md file must still be caught in targeted snapshot mode.
+        readme.write_text(orig + "\n- [App](../src/app.py#L999)\n", encoding="utf-8")
+        self.git("add", "SSOT/README.md")
+        res_bad = self.git("commit", "-m", "bad line anchor in snapshot")
+        self.assertEqual(res_bad.returncode, 1, res_bad.stdout + res_bad.stderr)
+        self.assertIn("line anchor past end of file", res_bad.stdout + res_bad.stderr)
+
+    def test_custom_sentinel_checker_with_module_level_exit_falls_back_in_snapshot_mode(self):
+        # A custom SSOT_CHECKER calling sys.exit(0) at module level must not execute during
+        # stage_targeted_snapshot import; hook must fall back to full checkout-index -a and run it once.
+        log_file = Path(self.tmp.name) / "sentinel-calls.log"
+        sentinel = Path(self.tmp.name) / "exit-sentinel.py"
+        sentinel.write_text(
+            f"import os, pathlib, sys\n"
+            f"p = pathlib.Path({str(log_file)!r})\n"
+            f"target = sys.argv[1] if len(sys.argv) > 1 else ''\n"
+            f"p.open('a', encoding='utf-8').write(f'{{target}}|{{os.path.isdir(target)}}\\n')\n"
+            f"sys.exit(0)\n",
+            encoding="utf-8",
+        )
+        (self.repo / "untracked.txt").write_text("forces snapshot mode\n", encoding="utf-8")
+        (self.repo / "SSOT/architecture.md").write_text("# Architecture\n\nSentinel snapshot check.\n", encoding="utf-8")
+        self.git("add", "SSOT/architecture.md")
+        res = self.git("commit", "-m", "sentinel in snapshot mode", env={**self.env, "SSOT_CHECKER": str(sentinel)})
+        self.assertEqual(res.returncode, 0, res.stdout + res.stderr)
+        calls = log_file.read_text(encoding="utf-8").splitlines()
+        self.assertEqual(len(calls), 1, f"expected checker to execute once, got: {calls}")
+        self.assertTrue(calls[0].endswith("/SSOT|True"), calls[0])
+
+    def test_format4_readme_ssot_dir_in_snapshot_mode_preserves_non_md_ssot_files(self):
+        # Tracked non-.md files inside SSOT/ (e.g. .bootstrap/state.json) must still be materialized
+        # in targeted snapshot mode when SSOT_DIR=SSOT/README.md.
+        (self.repo / "SSOT/.bootstrap").mkdir()
+        (self.repo / "SSOT/.bootstrap/state.json").write_text('{"legacy": true}\n', encoding="utf-8")
+        self.git("add", "SSOT/.bootstrap/state.json")
+        (self.repo / "untracked.txt").write_text("forces snapshot mode\n", encoding="utf-8")
+        res = self.git("commit", "-m", "f4 readme snapshot preserves non-md ssot files",
+                       env={**self.env, "SSOT_DIR": "SSOT/README.md"})
+        self.assertEqual(res.returncode, 0, res.stdout + res.stderr)
+        self.assertIn("v2 ledger left after migration", res.stdout + res.stderr)
+
 
 if __name__ == "__main__":
     unittest.main(verbosity=1)

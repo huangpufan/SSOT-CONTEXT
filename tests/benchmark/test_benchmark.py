@@ -351,6 +351,45 @@ class BenchmarkTest(unittest.TestCase):
                 run.run_models(Namespace(output=self.root/'does-not-exist'))
             start.assert_not_called()
 
+    def test_historical_performance_runner_requires_opt_in_and_refuses_ci(self):
+        out = self.root / 'perf-guarded'
+        base_argv = ['--baseline', str(self.root), '--candidate', str(self.root),
+                     '--output', str(out), '--case', 'typo']
+        with patch.dict(run.transport.os.environ, {'CI': ''}), patch.object(run.transport.subprocess, 'Popen') as start:
+            with self.assertRaisesRegex(ValueError, '--run-models'):
+                run.transport.main(base_argv)
+            start.assert_not_called()
+            self.assertFalse(out.exists())
+        with patch.dict(run.transport.os.environ, {'CI': 'true'}), patch.object(run.transport.subprocess, 'Popen') as start:
+            with self.assertRaisesRegex(ValueError, 'disabled in CI'):
+                run.transport.main([*base_argv, '--run-models'])
+            start.assert_not_called()
+            self.assertFalse(out.exists())
+
+    def test_historical_memory_runner_defaults_cheap_sanitized_and_refuses_ci(self):
+        import importlib.util
+        path = run.HERE.parent / 'run-memory-trials.py'
+        source = path.read_text(encoding='utf-8')
+        self.assertNotIn('agent-proxy-bin', source)
+        self.assertNotIn('gpt-6.1-sol', source)
+        spec = importlib.util.spec_from_file_location('memory_trials', path)
+        mod = importlib.util.module_from_spec(spec)
+        spec.loader.exec_module(mod)
+        self.assertEqual(mod.MODEL, 'gpt-6.1-terra')
+        self.assertEqual(mod.REASONING, 'medium')
+        out = self.root / 'mem-guarded'
+        base_argv = [str(out), '--arm', 'baseline', '--case', 'typo']
+        with patch.dict(mod.os.environ, {'CI': ''}), patch.object(mod.subprocess, 'Popen') as start:
+            with self.assertRaisesRegex(ValueError, '--run-models'):
+                mod.main(base_argv)
+            start.assert_not_called()
+            self.assertFalse(out.exists())
+        with patch.dict(mod.os.environ, {'CI': 'true'}), patch.object(mod.subprocess, 'Popen') as start:
+            with self.assertRaisesRegex(ValueError, 'disabled in CI'):
+                mod.main([*base_argv, '--run-models'])
+            start.assert_not_called()
+            self.assertFalse(out.exists())
+
     def test_generated_memory_is_clean_except_the_intentional_broken_route(self):
         checker = run.HERE.parents[1]/'skills/ssot-doctor/assets/scripts/ssot-check.py'
         for case in cases.CASES:

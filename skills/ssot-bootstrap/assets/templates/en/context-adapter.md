@@ -1,6 +1,6 @@
 # General context instruction block
 
-Use only after agreement on this space and its instruction owner. Replace ENTRY with the actual entry path. Preserve existing instruction ownership and unrelated text.
+Use only after agreement on this space and its instruction owner. Replace both `ENTRY` placeholders with the actual entry path. Preserve existing instruction ownership and unrelated text.
 
 <!-- SSOT-CONTEXT:BEGIN -->
 ## Maintained context

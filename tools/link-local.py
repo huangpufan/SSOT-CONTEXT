@@ -40,6 +40,21 @@ def is_dangling_ssot_link(target, name):
     return target.is_symlink() and not target.exists() and Path(os.readlink(target)).parts[-2:] == ('skills', name)
 
 
+def check_no_installer_lock(base):
+    lock = base / '.ssot-skill-lock'
+    if lock.exists() or lock.is_symlink():
+        raise ValueError(
+            f'Refusing to link while installer lock exists: {lock}; '
+            'wait for the active installer or recover the interrupted installation first'
+        )
+    for journal in sorted(base.glob('.ssot-skill-install.*/.ssot-transaction')):
+        if journal.is_file() or journal.is_symlink():
+            raise ValueError(
+                f'Refusing to link while unfinished installer transaction exists: {journal.parent}; '
+                'recover the interrupted installation before linking'
+            )
+
+
 def plan(source, bases, with_legacy_shims=False):
     source = Path(source).resolve(strict=True)
     skills = source / 'skills'
@@ -50,6 +65,7 @@ def plan(source, bases, with_legacy_shims=False):
     for base in sorted({Path(b).resolve(strict=True) for b in bases}):
         if base == skills or base in source.parents or source in base.parents:
             raise ValueError(f'Refusing to replace the source checkout: {base}')
+        check_no_installer_lock(base)
         found = False
         active = list(CORE_SKILLS) + [
             name for name in SHIM_SKILLS
@@ -80,6 +96,8 @@ def apply(selected, backup_root):
     source = Path(selected['source'])
     if backup_root == source or source in backup_root.parents:
         raise ValueError('Backups must be outside the source checkout')
+    for base in sorted({Path(action['path']).parent for action in selected['actions']}):
+        check_no_installer_lock(base)
     for action in selected['actions']:
         target = Path(action['path'])
         if target == backup_root or target in backup_root.parents:
@@ -108,6 +126,7 @@ def apply(selected, backup_root):
     try:
         for action in record['actions']:
             target = Path(action['path'])
+            check_no_installer_lock(target.parent)
             if fingerprint(target) != action['before']:
                 raise ValueError(f'Installation changed during application: {target}')
             if action['before'] is not None:

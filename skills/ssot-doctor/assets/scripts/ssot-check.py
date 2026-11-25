@@ -50,7 +50,12 @@ FORMAT = "4"
 README_WARN_CHARS = 8000
 DOC_WARN_CHARS = 16000
 INLINE_SHARD_INFO_ROWS = 50
-INSTRUCTION_FILES = ("AGENTS.md", "CLAUDE.md", "GEMINI.md")
+INSTRUCTION_FILES = (
+    "AGENTS.md", "CLAUDE.md", "GEMINI.md",
+    ".cursor/rules/ssot.mdc", ".cursorrules",
+    ".windsurf/rules/ssot.md", ".windsurfrules",
+    ".github/copilot-instructions.md",
+)
 INVARIANT_STATUSES = {"confirmed", "candidate", "retired"}
 INVARIANT_HEADINGS = ("invariants", "不变量", "保护规则")
 INVARIANT_COLUMNS = "ID | Kind | Rule | Explained in | Status | Source"
@@ -156,7 +161,8 @@ def markdown_lines(text):
         line = lines[index]
         if fence is None and not in_comment:
             match = FENCE_RE.match(line)
-            if match:
+            # CommonMark §4.5: backtick fence info strings cannot contain backticks.
+            if match and (match.group(1)[0] != "`" or "`" not in line[match.end():]):
                 fence = match.group(1)
                 continue
         elif fence is not None:
@@ -423,6 +429,8 @@ def hard_wrapped_paragraphs(text):
 def table_cells(line):
     """Split a pipe-table row into cells; outer pipes are optional in GFM."""
     stripped = line.strip()
+    if stripped.startswith(("#", ">", "- ", "* ", "+ ")) or re.match(r"^\d+[.)]\s", stripped):
+        return None
     if not re.search(r"(?<!\\)\|", blank_inline_code(stripped)):
         return None
     if stripped.startswith("|"):
@@ -439,16 +447,18 @@ def inside(path, root):
 
 def pipe_tables(lines):
     """Group consecutive Markdown pipe-table lines into lists of (line number, cells)."""
-    tables, current = [], []
+    tables, current, first_piped = [], [], False
     for number, line in lines:
         cells = table_cells(line)
         if cells is None:
-            if current:
+            if len(current) >= 2 or (current and first_piped):
                 tables.append(current)
-            current = []
+            current, first_piped = [], False
         else:
+            if not current:
+                first_piped = line.lstrip().startswith("|")
             current.append((number, cells))
-    if current:
+    if len(current) >= 2 or (current and first_piped):
         tables.append(current)
     return tables
 
@@ -496,17 +506,18 @@ def line_links(line, refdefs):
     return targets
 
 
-def non_table_invariants_links(lines, body):
+def non_table_invariants_links(lines, body, tables=None):
     """Return local link targets on non-table lines inside ## Invariants."""
     refdefs = refdef_map(lines)
-    return [(number, target) for number, line in body if table_cells(line) is None
+    table_lines = {num for tbl in (pipe_tables(body) if tables is None else tables) for num, _ in tbl}
+    return [(number, target) for number, line in body if number not in table_lines
             for target in line_links(line, refdefs)]
 
 
-def linked_shards(readme, lines, body, ssot_dir, selection=None):
+def linked_shards(readme, lines, body, ssot_dir, selection=None, tables=None):
     """Return ([(shard_path, shard_text), ...], set_of_shard_link_lines) for linked register shards."""
     shards, seen_paths, shard_lines = [], set(), set()
-    for number, target in non_table_invariants_links(lines, body):
+    for number, target in non_table_invariants_links(lines, body, tables):
         if not is_local_link(target):
             continue
         path, _ = resolve(readme, target)
@@ -613,9 +624,21 @@ def validate_register_tables(report, doc, lines, body, tables, seen, shard_lines
                            f"invariant {ident} needs a source (user directive, decision, or date)")
 
 
+def looks_like_invariants_table(table):
+    header = {cell.strip("`* ").lower() for cell in table[0][1]}
+    matched_cols = sum(1 for names in INVARIANT_HEADERS if any(name in header for name in names))
+    if matched_cols >= 2 or len(table[0][1]) == 6:
+        return True
+    return any(INVARIANT_ID_RE.match(cells[0].strip("`* ")) for _, cells in table[1:] if cells)
+
+
 def shard_register_tables(lines, text):
     found = register_tables(lines, text)
-    return found if found is not None else (lines, pipe_tables(lines))
+    if found is not None:
+        return found
+    all_tables = pipe_tables(lines)
+    inv_tables = [table for table in all_tables if looks_like_invariants_table(table)]
+    return lines, (inv_tables if inv_tables else all_tables)
 
 
 def check_invariants(report, readme, text, ssot_dir):
@@ -625,7 +648,7 @@ def check_invariants(report, readme, text, ssot_dir):
         report.add("WARN", readme, None, "no Invariants section; add one (it may say there are none yet)")
         return []
     body, tables = found
-    shards, shard_lines = linked_shards(readme, lines, body, ssot_dir, report.documents)
+    shards, shard_lines = linked_shards(readme, lines, body, ssot_dir, report.documents, tables)
     seen = {}
     validate_register_tables(report, readme, lines, body, tables, seen, shard_lines)
     if len(seen) >= INLINE_SHARD_INFO_ROWS:
@@ -824,7 +847,7 @@ def check_removed_paths(report, ssot_dir, mentions, since):
     if not mentions and not since:
         return
     try:
-        top = git_output(ssot_dir, "rev-parse", "--show-toplevel").rstrip("\n")
+        top = os.path.realpath(git_output(ssot_dir, "rev-parse", "--show-toplevel").rstrip("\n"))
     except FileNotFoundError:
         if since:
             report.unchecked.append(f"--since {since}: git is not available")
@@ -859,7 +882,7 @@ def check_removed_paths(report, ssot_dir, mentions, since):
             full = os.path.normpath(os.path.join(os.path.dirname(doc), written))
             if os.path.lexists(full) or not inside(full, top):
                 continue
-            key = (os.path.relpath(full, top).replace(os.sep, "/"), True)
+            key = (os.path.relpath(os.path.realpath(full), top).replace(os.sep, "/"), True)
         elif os.path.lexists(os.path.join(top, written)):
             continue
         else:
@@ -1046,19 +1069,42 @@ def check_gitignored_links(report, ssot_dir, local_links, entry=None):
         top = os.path.realpath(git_output(ssot_dir, "rev-parse", "--show-toplevel").rstrip("\n"))
     except (FileNotFoundError, GitError):
         return
-    def rel_in_top(path):
-        real = os.path.realpath(path)
-        if not inside(real, top):
+    def rel_in_top(path, dereference=True):
+        if dereference:
+            target_path = os.path.realpath(path)
+            if os.path.commonpath([target_path, top]) != top:
+                return None
+            rel = os.path.relpath(target_path, top).replace(os.sep, "/")
+            return None if rel in (".", "") or rel.startswith("../") else rel
+        # Preserve in-repo symlinks (both intermediate dirs and leaf) while handling
+        # symlinked repo roots; stop at the first in-repo symlink so git check-ignore
+        # never fails with "beyond a symbolic link".
+        cur = os.path.normpath(os.path.abspath(path))
+        tail, parts = [], None
+        while True:
+            if os.path.realpath(cur) == top:
+                parts = list(reversed(tail)) if tail else None
+            parent, name = os.path.split(cur)
+            if parent == cur:
+                break
+            tail.append(name)
+            cur = parent
+        if not parts:
             return None
-        rel = os.path.relpath(real, top).replace(os.sep, "/")
-        return None if rel in (".", "") or rel.startswith("../") else rel
+        prefix = top
+        for idx, part in enumerate(parts):
+            prefix = os.path.join(prefix, part)
+            if os.path.islink(prefix):
+                return "/".join(parts[:idx + 1])
+        return "/".join(parts)
 
     entries, unique = [], {}
     for doc, num, target, resolved in local_links:
-        rel = rel_in_top(resolved)
-        if rel:
-            entries.append((doc, num, target, rel))
-            unique[rel] = None
+        rels = tuple(dict.fromkeys(r for r in (rel_in_top(resolved, False), rel_in_top(resolved, True)) if r))
+        if rels:
+            entries.append((doc, num, target, rels))
+            for rel in rels:
+                unique[rel] = None
     if not unique:
         return
     entry_rel = rel_in_top(entry) if GENERAL[0] and entry else None
@@ -1075,8 +1121,8 @@ def check_gitignored_links(report, ssot_dir, local_links, entry=None):
     ignored = set(filter(None, res.stdout.decode("utf-8", "surrogateescape").split("\0")))
     if entry_rel and entry_rel in ignored:
         return
-    for doc, num, target, rel in entries:
-        if rel in ignored:
+    for doc, num, target, rels in entries:
+        if any(rel in ignored for rel in rels):
             report.add("WARN", doc, num, f"link targets gitignored path (may break after cleanup/clone): {target}")
 
 
@@ -1114,7 +1160,13 @@ def check_instruction_blocks(report, root):
         if not tpl_path:
             continue
         exp, _ = extract_managed_block(read_text(tpl_path))
-        if not exp or (tpl_path == ft and ("zh" if is_zh(exp) else "en") != lang):
+        if not exp:
+            continue
+        if tpl_path == ft and ("zh" if is_zh(exp) else "en") != lang:
+            exp_lang = "zh" if is_zh(exp) else "en"
+            report.add("INFO", path, None,
+                       f"managed block is {lang} while installed templates are {exp_lang}; "
+                       f"run the SSOT-CONTEXT installer with --check-block --lang {lang} to verify against {lang} templates")
             continue
         if fmt5:
             hit = F5_ENTRY_RE.search(cur)
@@ -1332,7 +1384,9 @@ def main(argv):
                 report.add("INFO", readme, None, "format 5: selected entry and direct local owners; external routes are not read")
         selected_repo_readme = scoped and meta.get("ssot_format") == FORMAT and os.path.basename(readme) == "README.md"
         if named_entry and not (GENERAL[0] or selected_repo_readme):
-            report.add("ERROR", readme, 1, "a named entry file requires ssot_format: 5 or a format-4 README with --owners")
+            report.add("ERROR", readme, 1,
+                       "a named entry file requires ssot_format: 5 or a format-4 README with --owners "
+                       "(for format 4, pass the SSOT directory instead)")
             return report.finish(readme)
         if scoped:
             names = []

@@ -1256,5 +1256,169 @@ else
   fail "scenario34: ~/.gemini/config detection mismatch (out=$LIST34_AGY)"
 fi
 
+# Scenario 35: multi-agent --check-block/--sync-block affinity, --agent/--scope, anti-downgrade,
+# symlink-only --upgrade drift check, and Cursor/Windsurf/Copilot drift detection.
+SCENARIO35="$WORK_ROOT/scenario35"
+mkdir -p "$SCENARIO35/project/.cursor/rules" "$SCENARIO35/project/.windsurf/rules" "$SCENARIO35/project/.github" \
+         "$SCENARIO35/standalone" "$SCENARIO35/userhome" "$SCENARIO35/linked/.agents/skills" \
+         "$SCENARIO35/linked/.cursor/rules" "$SCENARIO35/linked/.windsurf/rules" "$SCENARIO35/linked/.github"
+cp "$INSTALLER" "$SCENARIO35/standalone/install.sh"
+HOME="$SCENARIO35/userhome" SOURCE_DIR="$PROJECT_ROOT" \
+  bash -c "cd '$SCENARIO35/project' && bash '$INSTALLER' --quickstart --agent claude-code,codex --scope project --lang en" >/dev/null 2>&1 \
+  || fail "scenario35: multi-agent project setup failed"
+# Backdate .agents/skills (codex) to stale v5.12 while .claude/skills stays current.
+cat > "$SCENARIO35/project/.agents/skills/ssot-bootstrap/assets/templates/adapter-thin.md" <<'EOF'
+<!-- SSOT-CONTEXT:BEGIN -->
+## SSOT workflow
+Old v5.12 block mentioning $ssot-preflight $ssot-bootstrap $ssot-closeout $ssot-doctor.
+<!-- SSOT-CONTEXT:END -->
+EOF
+sed -i.bak 's/protocol_version: "[^"]*"/protocol_version: "5.12"/' "$SCENARIO35/project/.agents/skills/ssot-preflight/SKILL.md"
+rm -f "$SCENARIO35/project/.agents/skills/ssot-preflight/SKILL.md.bak"
+# Put current managed block in CLAUDE.md.
+awk '/^<!-- SSOT-CONTEXT:BEGIN -->$/,/^<!-- SSOT-CONTEXT:END -->$/' \
+  "$PROJECT_ROOT/skills/ssot-bootstrap/assets/templates/en/adapter-thin.md" > "$SCENARIO35/project/CLAUDE.md"
+cp "$SCENARIO35/project/CLAUDE.md" "$SCENARIO35/project/CLAUDE.before"
+
+CHK35_CLAUDE="$(HOME="$SCENARIO35/userhome" SSOT_CONTEXT_REPO_URL="http://127.0.0.1:1/unreachable.git" \
+  bash -c "cd '$SCENARIO35/project' && bash '$SCENARIO35/standalone/install.sh' --check-block CLAUDE.md" 2>&1)"
+CHK35_CLAUDE_RC=$?
+if [[ $CHK35_CLAUDE_RC -eq 0 ]] && grep -q 'managed block up-to-date' <<< "$CHK35_CLAUDE" &&
+   grep -q 'version skew' <<< "$CHK35_CLAUDE"; then
+  pass "scenario35: --check-block CLAUDE.md uses .claude/skills affinity and warns on version skew"
+else
+  fail "scenario35: multi-agent --check-block CLAUDE.md failed (rc=$CHK35_CLAUDE_RC, out=$CHK35_CLAUDE)"
+fi
+
+if HOME="$SCENARIO35/userhome" SSOT_CONTEXT_REPO_URL="http://127.0.0.1:1/unreachable.git" \
+   bash -c "cd '$SCENARIO35/project' && bash '$SCENARIO35/standalone/install.sh' --sync-block CLAUDE.md --agent claude-code --scope project" >/dev/null 2>&1 &&
+   cmp -s "$SCENARIO35/project/CLAUDE.md" "$SCENARIO35/project/CLAUDE.before"; then
+  pass "scenario35: --sync-block CLAUDE.md --agent claude-code keeps current block untouched"
+else
+  fail "scenario35: --sync-block CLAUDE.md with --agent claude-code failed or altered file"
+fi
+
+# Explicitly targeting stale --agent codex must refuse to downgrade a current CLAUDE.md.
+SYNC35_DOWN="$(HOME="$SCENARIO35/userhome" SSOT_CONTEXT_REPO_URL="http://127.0.0.1:1/unreachable.git" \
+  bash -c "cd '$SCENARIO35/project' && bash '$SCENARIO35/standalone/install.sh' --sync-block CLAUDE.md --agent codex --scope project" 2>&1)"
+SYNC35_DOWN_RC=$?
+if [[ $SYNC35_DOWN_RC -ne 0 ]] && grep -q 'refusing to downgrade' <<< "$SYNC35_DOWN" &&
+   cmp -s "$SCENARIO35/project/CLAUDE.md" "$SCENARIO35/project/CLAUDE.before"; then
+  pass "scenario35: --sync-block refuses to downgrade newer block from stale agent copy"
+else
+  fail "scenario35: anti-downgrade guard failed (rc=$SYNC35_DOWN_RC, out=$SYNC35_DOWN)"
+fi
+
+# Symlink-only project --upgrade still reports drift across AGENTS.md, Cursor, Windsurf, and Copilot files.
+for skill in ssot-preflight ssot-bootstrap ssot-closeout ssot-doctor; do
+  ln -s "$PROJECT_ROOT/skills/$skill" "$SCENARIO35/linked/.agents/skills/$skill"
+done
+for f in AGENTS.md .cursor/rules/ssot.mdc .windsurf/rules/ssot.md .github/copilot-instructions.md; do
+  printf '<!-- SSOT-CONTEXT:BEGIN -->\n## SSOT workflow\nAncient block.\n<!-- SSOT-CONTEXT:END -->\n' > "$SCENARIO35/linked/$f"
+done
+UPG35_LINKED="$(HOME="$SCENARIO35/userhome" SOURCE_DIR="$PROJECT_ROOT" \
+  bash -c "cd '$SCENARIO35/linked' && bash '$INSTALLER' --upgrade --agent codex --scope project" 2>&1)"
+UPG35_LINKED_RC=$?
+if [[ $UPG35_LINKED_RC -eq 0 ]] &&
+   grep -q 'managed block outdated: AGENTS.md' <<< "$UPG35_LINKED" &&
+   grep -q 'managed block outdated: .cursor/rules/ssot.mdc' <<< "$UPG35_LINKED" &&
+   grep -q 'managed block outdated: .windsurf/rules/ssot.md' <<< "$UPG35_LINKED" &&
+   grep -q 'managed block outdated: .github/copilot-instructions.md' <<< "$UPG35_LINKED"; then
+  pass "scenario35: symlink-only --upgrade reports block drift across AGENTS/Cursor/Windsurf/Copilot"
+else
+  fail "scenario35: symlink-only --upgrade missed drift (rc=$UPG35_LINKED_RC, out=$UPG35_LINKED)"
+fi
+
+# Scenario 36: partial-symlink --upgrade protection and dangling SSOT symlink copy-reinstall.
+SCENARIO36="$WORK_ROOT/scenario36"
+mkdir -p "$SCENARIO36/partial" "$SCENARIO36/dangling/.agents/skills" "$SCENARIO36/badfile/.agents/skills" \
+         "$SCENARIO36/badlink/.agents/skills" "$SCENARIO36/userhome"
+HOME="$SCENARIO36/userhome" SOURCE_DIR="$PROJECT_ROOT" \
+  bash -c "cd '$SCENARIO36/partial' && bash '$INSTALLER' --quickstart --agent codex --scope project --lang en" >/dev/null 2>&1 \
+  || fail "scenario36: partial setup failed"
+rm -rf "$SCENARIO36/partial/.agents/skills/ssot-doctor"
+ln -s "$PROJECT_ROOT/skills/ssot-doctor" "$SCENARIO36/partial/.agents/skills/ssot-doctor"
+UPG36_PART="$(HOME="$SCENARIO36/userhome" SOURCE_DIR="$PROJECT_ROOT" \
+  bash -c "cd '$SCENARIO36/partial' && bash '$INSTALLER' --upgrade --agent codex --scope project" 2>&1)"
+if [[ $? -eq 0 ]] && [[ -L "$SCENARIO36/partial/.agents/skills/ssot-doctor" ]] &&
+   grep -q 'skipping partially symlink-linked installation' <<< "$UPG36_PART"; then
+  pass "scenario36: --upgrade warns and preserves partial symlink in non-primary slot"
+else
+  fail "scenario36: partial symlink upgrade failed (out=$UPG36_PART)"
+fi
+
+for skill in ssot-preflight ssot-bootstrap ssot-closeout ssot-doctor; do
+  ln -s "$SCENARIO36/moved-checkout/skills/$skill" "$SCENARIO36/dangling/.agents/skills/$skill"
+done
+if HOME="$SCENARIO36/userhome" SOURCE_DIR="$PROJECT_ROOT" \
+   bash -c "cd '$SCENARIO36/dangling' && bash '$INSTALLER' --agent codex --scope project --lang en --yes" >/dev/null 2>&1 &&
+   [[ ! -L "$SCENARIO36/dangling/.agents/skills/ssot-preflight" && -f "$SCENARIO36/dangling/.agents/skills/ssot-preflight/SKILL.md" ]]; then
+  pass "scenario36: explicit copy reinstall replaces dangling SSOT skill symlinks"
+else
+  fail "scenario36: explicit copy reinstall failed on dangling SSOT skill symlinks"
+fi
+
+printf 'not a dir\n' > "$SCENARIO36/badfile/.agents/skills/ssot-doctor"
+if HOME="$SCENARIO36/userhome" SOURCE_DIR="$PROJECT_ROOT" \
+   bash -c "cd '$SCENARIO36/badfile' && bash '$INSTALLER' --agent codex --scope project --lang en --yes" >/dev/null 2>&1; then
+  fail "scenario36: install should refuse replacing regular file at skill slot"
+else
+  pass "scenario36: install still refuses replacing regular file at skill slot"
+fi
+ln -s "$SCENARIO36/missing/unrelated" "$SCENARIO36/badlink/.agents/skills/ssot-doctor"
+if HOME="$SCENARIO36/userhome" SOURCE_DIR="$PROJECT_ROOT" \
+   bash -c "cd '$SCENARIO36/badlink' && bash '$INSTALLER' --agent codex --scope project --lang en --yes" >/dev/null 2>&1; then
+  fail "scenario36: install should refuse replacing arbitrary dangling symlink"
+else
+  pass "scenario36: install still refuses replacing arbitrary dangling symlink"
+fi
+
+# Scenario 37: fail-fast invalid SOURCE_DIR, stdin piped ./VERSION isolation,
+# empty --uninstall refusal, and autodetect_agent session-vs-config precedence.
+SCENARIO37="$WORK_ROOT/scenario37"
+mkdir -p "$SCENARIO37/consumer" "$SCENARIO37/empty" "$SCENARIO37/userhome"
+printf '99.88.77-consumer-app\n' > "$SCENARIO37/consumer/VERSION"
+
+BAD_SRC_OUT="$(HOME="$SCENARIO37/userhome" SOURCE_DIR="$SCENARIO37/does-not-exist" \
+  bash -c "cd '$SCENARIO37/empty' && bash '$INSTALLER' --quickstart --agent codex --scope project --lang en" 2>&1)"
+if [[ $? -ne 0 ]] && grep -q 'SOURCE_DIR does not exist' <<< "$BAD_SRC_OUT"; then
+  pass "scenario37: explicit missing SOURCE_DIR fails fast"
+else
+  fail "scenario37: invalid SOURCE_DIR did not fail fast (out=$BAD_SRC_OUT)"
+fi
+
+PIPE_VER="$(cd "$SCENARIO37/consumer" && bash -s -- --version < "$INSTALLER" 2>&1)"
+if [[ "$PIPE_VER" == "unknown" ]]; then
+  pass "scenario37: piped stdin --version ignores consumer ./VERSION"
+else
+  fail "scenario37: piped stdin --version leaked consumer VERSION ('$PIPE_VER')"
+fi
+
+EMPTY_UNINST="$(HOME="$SCENARIO37/userhome" \
+  bash -c "cd '$SCENARIO37/empty' && bash '$INSTALLER' --uninstall --agent codex --scope project --yes" 2>&1)"
+if [[ $? -ne 0 ]] && grep -q 'no installed SSOT-CONTEXT bundles found' <<< "$EMPTY_UNINST"; then
+  pass "scenario37: --uninstall on empty target fails cleanly instead of claiming Uninstalled"
+else
+  fail "scenario37: --uninstall on empty target should fail cleanly (out=$EMPTY_UNINST)"
+fi
+
+if env -i PATH="$PATH" SSOT_TEST_INSTALLER="$INSTALLER" bash <<'SH' >"$SCENARIO37/autodetect.log" 2>&1
+source <(sed '/^main "\$@"$/d' "$SSOT_TEST_INSTALLER")
+DETECTED_AGENTS=()
+CODEX_HOME="/tmp/codex-home"
+CURSOR_TRACE_ID="trace-123"
+[[ "$(autodetect_agent)" == "cursor" ]]
+unset CURSOR_TRACE_ID
+ANTIGRAVITY_AGENT=1
+[[ "$(autodetect_agent)" == "antigravity-app" ]]
+unset ANTIGRAVITY_AGENT
+[[ "$(autodetect_agent)" == "codex" ]]
+SH
+then
+  pass "scenario37: active session env markers precede persistent CODEX_HOME"
+else
+  fail "scenario37: autodetect_agent precedence check failed ($(cat "$SCENARIO37/autodetect.log"))"
+fi
+
 echo "=== RESULT: pass=$PASS fail=$FAIL ==="
 [[ $FAIL -eq 0 ]] && exit 0 || exit 1

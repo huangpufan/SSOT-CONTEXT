@@ -49,7 +49,7 @@ bash "$ssot_install_dir/install.sh" --quickstart \
   --agent "$ssot_agent" --scope "$ssot_scope" --lang "$ssot_template_lang"
 ```
 
-Check download and installer exit codes separately, preserve stderr, and report the specific failure. If download fails for network reasons, retry with `https://gh-proxy.com/https://raw.githubusercontent.com/huangpufan/SSOT-CONTEXT/main/install.sh`. If the user supplied a local checkout, run its `install.sh` with `SOURCE_DIR` set to that checkout (`SOURCE_DIR` and `--ref` cannot be combined). Installation does not create or migrate the target repository's `SSOT/`.
+Check download and installer exit codes separately, preserve stderr, and report the specific failure. If download fails for network reasons, retry with `https://gh-proxy.com/https://raw.githubusercontent.com/huangpufan/SSOT-CONTEXT/main/install.sh` (`gh-proxy.com` is a third-party mirror; inspect the downloaded script before executing it when supply-chain integrity matters, or fetch from a local GitHub checkout; see [SECURITY.md](SECURITY.md)). If the user supplied a local checkout, run its `install.sh` with `SOURCE_DIR` set to that checkout (`SOURCE_DIR` and `--ref` cannot be combined). Installation does not create or migrate the target repository's `SSOT/`.
 
 ## 3. Verify the installed bundle
 
@@ -68,7 +68,7 @@ Fresh installations copy only the four lifecycle skills above so new workspaces 
 
 ## 4. Wire the skills into the repo's agent-instructions file
 
-The installer prints the `SSOT-CONTEXT:BEGIN` / `SSOT-CONTEXT:END` block from the selected-language `adapter-thin.md` template without editing your files. Merge the block into the target repository's existing instructions; discovery alone does not establish when a skill should run. A global-only installation without a target repository stops after verification and does not edit global instructions. If the file already carries a managed `SSOT-CONTEXT` or legacy `SSOT-SKILL` block, you can check and refresh only that block with `bash "$ssot_install_dir/install.sh" --check-block <file>` and `--sync-block <file>`.
+The installer prints the `SSOT-CONTEXT:BEGIN` / `SSOT-CONTEXT:END` block from the selected-language `adapter-thin.md` template without editing your files. Merge the block into the target repository's existing instructions; discovery alone does not establish when a skill should run. A global-only installation without a target repository stops after verification and does not edit global instructions. If the file already carries a managed `SSOT-CONTEXT` or legacy `SSOT-SKILL` block, you can check and refresh only that block with `bash "$ssot_install_dir/install.sh" --check-block <file>` and `--sync-block <file>` (offline lookup follows file-to-agent affinity, honors optional `--agent <key>` / `--scope <project|global>`, warns on version skew across installed agents, and refuses to silently downgrade a block that already matches a newer installed copy).
 
 **Choose the block first** from what is already in the target (entry front matter, existing SSOT blocks, instruction files, top-level README and layout; do not search outside the target):
 
@@ -104,7 +104,7 @@ See [local symlink setup with `tools/link-local.py`](docs/2026-11-24-install-mai
 
 ## Update or remove an existing installation
 
-Run `install.sh --upgrade --agent <key> --scope <project|global>` (or `--uninstall ... --yes`), then check and refresh the repository's managed instruction block with `install.sh --check-block <file>` and `--sync-block <file>`—using a local checkout, a freshly downloaded copy as in step 2, or `curl -fsSL https://raw.githubusercontent.com/huangpufan/SSOT-CONTEXT/main/install.sh | bash -s -- <flags>`. Full procedures and transition rules are in [update, removal, and transitions](docs/2026-11-24-install-maintenance.md#update-or-remove-an-existing-installation).
+Run `install.sh --upgrade --agent <key> --scope <project|global>` (or `--uninstall ... --yes`), then check and refresh the repository's managed instruction block with `install.sh --check-block <file> [--agent <key> --scope <project|global>]` and `--sync-block <file>`—using a local checkout, a freshly downloaded copy as in step 2, or `curl -fsSL https://raw.githubusercontent.com/huangpufan/SSOT-CONTEXT/main/install.sh | bash -s -- <flags>`. Full procedures and transition rules are in [update, removal, and transitions](docs/2026-11-24-install-maintenance.md#update-or-remove-an-existing-installation).
 
 ## Failed or interrupted replacement
 

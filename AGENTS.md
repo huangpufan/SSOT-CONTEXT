@@ -29,7 +29,7 @@ For upgrade or uninstall, see `bash install.sh --help`.
 
 In consuming repositories, complete the instruction wiring in [`INSTALL.md`](./INSTALL.md), then restart the agent session. Users describe tasks normally; the agent selects the matching skills automatically.
 
-The consumer instruction block lives in the bootstrap adapter template ([English](./skills/ssot-bootstrap/assets/templates/en/adapter-thin.md), [中文](./skills/ssot-bootstrap/assets/templates/zh/adapter-thin.md)), between the `SSOT-CONTEXT:BEGIN` / `SSOT-CONTEXT:END` markers. The installer prints that same block; maintain its wording there. Each skill's `SKILL.md` owns the detailed protocol.
+The consumer instruction blocks live in the bootstrap adapter templates—format 4 ([English](./skills/ssot-bootstrap/assets/templates/en/adapter-thin.md), [中文](./skills/ssot-bootstrap/assets/templates/zh/adapter-thin.md)) and format 5 ([English](./skills/ssot-bootstrap/assets/templates/en/context-adapter.md), [中文](./skills/ssot-bootstrap/assets/templates/zh/context-adapter.md))—between the `SSOT-CONTEXT:BEGIN` / `SSOT-CONTEXT:END` markers. The installer prints the format-4 block and `--check-block` / `--sync-block` validate both formats; maintain their wording there. Each skill's `SKILL.md` owns the detailed protocol.
 
 ## Language
 

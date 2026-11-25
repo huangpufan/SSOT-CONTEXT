@@ -138,6 +138,30 @@ class LocalLinks(unittest.TestCase):
             with self.assertRaisesRegex(ValueError, 'Unrecognised or broken installation'):
                 links.plan(self.source, [base])
 
+    def test_refuses_plan_and_apply_when_installer_lock_or_transaction_exists(self):
+        # 1. Active .ssot-skill-lock refuses plan().
+        lock = self.base / '.ssot-skill-lock'
+        lock.write_text('Installer PID: 99999\n/tmp/stage\n', encoding='utf-8')
+        with self.assertRaisesRegex(ValueError, 'installer lock'):
+            links.plan(self.source, [self.base])
+        lock.unlink()
+
+        # 2. Unfinished .ssot-skill-install.*/.ssot-transaction refuses plan().
+        tx_dir = self.base / '.ssot-skill-install.CRASH1'
+        tx_dir.mkdir()
+        (tx_dir / '.ssot-transaction').write_text('SSOT-CONTEXT installation transaction\n', encoding='utf-8')
+        with self.assertRaisesRegex(ValueError, 'unfinished installer transaction'):
+            links.plan(self.source, [self.base])
+        (tx_dir / '.ssot-transaction').unlink()
+        tx_dir.rmdir()
+
+        # 3. Lock appearing between plan() and apply() refuses apply() without touching skills.
+        selected = links.plan(self.source, [self.base])
+        lock.write_text('Installer PID: 99999\n/tmp/stage\n', encoding='utf-8')
+        with self.assertRaisesRegex(ValueError, 'installer lock'):
+            links.apply(selected, self.backups)
+        self.assertFalse((self.base / 'ssot-preflight').is_symlink())
+
 
 if __name__ == '__main__':
     unittest.main()

@@ -37,6 +37,74 @@ ALWAYS="${SSOT_PRECOMMIT_ALWAYS:-0}"
 REPO_ROOT="$(git rev-parse --show-toplevel 2>/dev/null || true)"
 [[ -n "$REPO_ROOT" ]] || exit 0
 cd "$REPO_ROOT" || exit 0
+REPO_ROOT_REAL="$(pwd -P)"
+
+resolve_abs_path() {
+  local p="$1" d
+  if [[ "$p" == /* ]]; then
+    if [[ -d "$p" ]]; then
+      (cd "$p" 2>/dev/null && pwd -P) || printf '%s\n' "$p"
+      return 0
+    fi
+    d="$(cd "$(dirname "$p")" 2>/dev/null && pwd -P)" || { printf '%s\n' "$p"; return 0; }
+    printf '%s/%s\n' "$d" "$(basename "$p")"
+  else
+    if [[ -d "$REPO_ROOT/$p" ]]; then
+      (cd "$REPO_ROOT/$p" 2>/dev/null && pwd -P) || printf '%s/%s\n' "$REPO_ROOT" "$p"
+      return 0
+    fi
+    d="$(cd "$(dirname "$REPO_ROOT/$p")" 2>/dev/null && pwd -P)" || { printf '%s/%s\n' "$REPO_ROOT" "$p"; return 0; }
+    printf '%s/%s\n' "$d" "$(basename "$p")"
+  fi
+}
+
+# Canonicalize SSOT_TARGET relative to REPO_ROOT; fail loudly if it points outside the repo.
+if [[ "$SSOT_TARGET" == /* ]]; then
+  ssot_abs="$(resolve_abs_path "$SSOT_TARGET")"
+  if [[ "$ssot_abs" == "$REPO_ROOT_REAL" ]]; then
+    SSOT_TARGET="."
+  elif [[ "$ssot_abs" == "$REPO_ROOT_REAL/"* ]]; then
+    SSOT_TARGET="${ssot_abs#"$REPO_ROOT_REAL"/}"
+  elif [[ "$SSOT_TARGET" == "$REPO_ROOT" ]]; then
+    SSOT_TARGET="."
+  elif [[ "$SSOT_TARGET" == "$REPO_ROOT/"* ]]; then
+    SSOT_TARGET="${SSOT_TARGET#"$REPO_ROOT"/}"
+  else
+    echo "ssot-precommit: SSOT_DIR '$SSOT_TARGET' is outside repository root '$REPO_ROOT'" >&2
+    exit 2
+  fi
+fi
+if [[ "$SSOT_TARGET" == ".." || "$SSOT_TARGET" == ../* || "$SSOT_TARGET" == */../* || "$SSOT_TARGET" == */.. ]]; then
+  echo "ssot-precommit: SSOT_DIR '$SSOT_TARGET' must stay inside repository root '$REPO_ROOT'" >&2
+  exit 2
+fi
+
+is_format4_readme_stream() {
+  awk '
+    NR == 1 { sub(/\r$/, ""); if ($0 != "---") exit 1; next }
+    { sub(/\r$/, "") }
+    $0 == "---" { exit (found ? 0 : 1) }
+    /^ssot_format:[ \t]*["'\'']?4["'\'']?([ \t]+#.*)?[ \t]*$/ { found = 1 }
+    END { if (!found) exit 1 }
+  '
+}
+
+# If SSOT_DIR names a Format-4 README.md inside a subdirectory (e.g. SSOT/README.md),
+# normalize SSOT_TARGET to its containing SSOT directory before trigger/snapshot checks
+# so non-.md files inside SSOT/ (such as .bootstrap/) trigger and are materialized.
+if [[ "$(basename "$SSOT_TARGET")" == "README.md" && "$SSOT_TARGET" == */* ]]; then
+  f4_match=0
+  if git cat-file -e ":$SSOT_TARGET" 2>/dev/null && git cat-file -p ":$SSOT_TARGET" 2>/dev/null | is_format4_readme_stream; then
+    f4_match=1
+  elif [[ -f "$SSOT_TARGET" ]] && is_format4_readme_stream < "$SSOT_TARGET"; then
+    f4_match=1
+  elif git rev-parse --verify --quiet HEAD >/dev/null 2>&1 && git cat-file -e "HEAD:$SSOT_TARGET" 2>/dev/null && git cat-file -p "HEAD:$SSOT_TARGET" 2>/dev/null | is_format4_readme_stream; then
+    f4_match=1
+  fi
+  if [[ "$f4_match" -eq 1 ]]; then
+    SSOT_TARGET="$(dirname "$SSOT_TARGET")"
+  fi
+fi
 
 has_head=0
 if git rev-parse --verify --quiet HEAD >/dev/null 2>&1; then
@@ -79,7 +147,7 @@ while IFS= read -r -d '' status; do
   if [[ "$should_check" -eq 0 ]]; then
     for p in "$path1" "$path2"; do
       [[ -n "$p" ]] || continue
-      if [[ "$p" == "$SSOT_TARGET" || "$p" == "$SSOT_TARGET/"* || "$p" == *.md || "$p" == *.MD ]]; then
+      if [[ "$p" == "$SSOT_TARGET" || "$p" == "$SSOT_TARGET/"* || "$p" == *.[mM][dD] ]]; then
         should_check=1
         break
       fi
@@ -146,23 +214,12 @@ git_clean() {
       git "$@"
 }
 
-resolve_abs_path() {
-  local p="$1" d
-  if [[ "$p" == /* ]]; then
-    d="$(cd "$(dirname "$p")" 2>/dev/null && pwd -P)" || { printf '%s\n' "$p"; return 0; }
-    printf '%s/%s\n' "$d" "$(basename "$p")"
-  else
-    d="$(cd "$(dirname "$REPO_ROOT/$p")" 2>/dev/null && pwd -P)" || { printf '%s/%s\n' "$REPO_ROOT" "$p"; return 0; }
-    printf '%s/%s\n' "$d" "$(basename "$p")"
-  fi
-}
-
 is_relevant_wt_path() {
   local p="$1"
   [[ -n "$p" ]] || return 1
   case "$p" in
-    # *.md also covers AGENTS.md, CLAUDE.md, GEMINI.md, and .github/copilot-instructions.md.
-    "$SSOT_TARGET"|"$SSOT_TARGET/"*|*.md|*.MD|*.mdc|.cursorrules|.windsurfrules|.gitignore|*/.gitignore)
+    # *.[mM][dD] also covers AGENTS.md, CLAUDE.md, GEMINI.md, and .github/copilot-instructions.md.
+    "$SSOT_TARGET"|"$SSOT_TARGET/"*|*.[mM][dD]|*.[mM][dD][cC]|.cursorrules|.windsurfrules|.gitignore|*/.gitignore)
       return 0 ;;
   esac
   return 1
@@ -199,8 +256,9 @@ if [[ "$need_snapshot" -eq 0 ]]; then
   done < <(git diff --name-status -z -M -- 2>/dev/null || true)
 fi
 
+# Any untracked non-ignored file anywhere in the repo could satisfy a staged Format-4 external link.
 if [[ "$need_snapshot" -eq 0 ]]; then
-  if IFS= read -r -d '' _ < <(git ls-files --others --exclude-standard -z -- "$SSOT_TARGET" 2>/dev/null || true); then
+  if IFS= read -r -d '' _ < <(git ls-files --others --exclude-standard -z -- 2>/dev/null || true); then
     need_snapshot=1
   fi
 fi
@@ -210,6 +268,180 @@ cleanup() {
   [[ -z "$STAGE_DIR" ]] || rm -rf -- "$STAGE_DIR"
 }
 trap cleanup EXIT
+
+stage_targeted_snapshot() {
+  python3 - "$REPO_ROOT" "$STAGE_DIR" "$SSOT_TARGET" "$CHECKER" <<'PY'
+import ast
+import importlib.util
+import os
+import subprocess
+import sys
+
+repo, stage, ssot_target, checker = sys.argv[1:5]
+routing_env = {
+    "GIT_DIR", "GIT_WORK_TREE", "GIT_COMMON_DIR", "GIT_INDEX_FILE",
+    "GIT_OBJECT_DIRECTORY", "GIT_ALTERNATE_OBJECT_DIRECTORIES",
+    "GIT_SHALLOW_FILE", "GIT_PREFIX", "GIT_IMPLICIT_WORK_TREE",
+}
+clean_env = {k: v for k, v in os.environ.items() if k not in routing_env}
+
+
+def is_import_safe_checker(path):
+    with open(path, encoding="utf-8") as handle:
+        tree = ast.parse(handle.read(), filename=path)
+    defs = set()
+    assigns = set()
+    for node in tree.body:
+        if isinstance(node, (ast.Import, ast.ImportFrom, ast.ClassDef)):
+            continue
+        if isinstance(node, ast.FunctionDef):
+            defs.add(node.name)
+            continue
+        if isinstance(node, ast.Assign):
+            for target in node.targets:
+                if isinstance(target, ast.Name):
+                    assigns.add(target.id)
+            continue
+        if isinstance(node, ast.Expr):
+            if isinstance(node.value, ast.Constant):
+                continue
+            if (isinstance(node.value, ast.Call)
+                    and isinstance(node.value.func, ast.Attribute)
+                    and isinstance(node.value.func.value, ast.Name)
+                    and node.value.func.attr == "update"):
+                continue
+            return False
+        if isinstance(node, ast.If):
+            test = node.test
+            if (isinstance(test, ast.Compare)
+                    and isinstance(test.left, ast.Name) and test.left.id == "__name__"
+                    and len(test.ops) == 1 and isinstance(test.ops[0], ast.Eq)
+                    and len(test.comparators) == 1
+                    and isinstance(test.comparators[0], ast.Constant)
+                    and test.comparators[0].value == "__main__"):
+                continue
+            return False
+        return False
+    return {"link_targets", "resolve", "read_text", "front_matter"}.issubset(defs) and "SCHEME_RE" in assigns
+
+
+try:
+    if not is_import_safe_checker(checker):
+        sys.exit(10)
+    spec = importlib.util.spec_from_file_location("ssot_chk_helper", checker)
+    chk = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(chk)
+    if not all(hasattr(chk, attr) for attr in ("link_targets", "resolve", "read_text", "front_matter", "SCHEME_RE")):
+        sys.exit(10)
+except BaseException:
+    sys.exit(10)
+
+raw = subprocess.run(["git", "ls-files", "--stage", "-z"], cwd=repo, capture_output=True, check=True).stdout
+entries = []
+all_paths = set()
+all_dirs = set()
+initial = []
+ssot_prefix = "" if ssot_target == "." else ssot_target + "/"
+
+for rec in raw.split(b"\0"):
+    if not rec:
+        continue
+    meta, _, p_bytes = rec.partition(b"\t")
+    parts_meta = meta.split(b" ")
+    if len(parts_meta) < 3 or parts_meta[2] != b"0":
+        continue
+    mode = parts_meta[0].decode("ascii", "replace")
+    p = p_bytes.decode("utf-8", "surrogateescape")
+    entries.append((mode, p))
+    all_paths.add(p)
+    segs = p.split("/")
+    for i in range(1, len(segs)):
+        all_dirs.add("/".join(segs[:i]))
+    low = p.lower()
+    if (
+        mode in ("120000", "160000")
+        or ssot_target == "."
+        or p == ssot_target
+        or p.startswith(ssot_prefix)
+        or low.endswith((".md", ".mdc"))
+        or p in (".cursorrules", ".windsurfrules", ".gitignore")
+        or p.endswith("/.gitignore")
+    ):
+        initial.append(p)
+
+if initial:
+    inp = b"\0".join(p.encode("utf-8", "surrogateescape") for p in initial) + b"\0"
+    subprocess.run(
+        ["git", "checkout-index", "-f", "--prefix=" + stage + "/", "--stdin", "-z"],
+        cwd=repo, input=inp, check=True,
+    )
+
+stage_real = os.path.realpath(stage)
+checked_out = set(initial)
+extra_files = set()
+extra_dirs = set()
+
+
+def note_target(resolved):
+    for root_ref, candidate in ((stage, resolved), (stage_real, os.path.realpath(resolved))):
+        try:
+            rel_t = os.path.relpath(candidate, root_ref).replace(os.sep, "/")
+        except ValueError:
+            continue
+        if rel_t.startswith("..") or rel_t == ".":
+            continue
+        if rel_t in all_paths and rel_t not in checked_out:
+            extra_files.add(rel_t)
+        elif rel_t in all_dirs:
+            extra_dirs.add(rel_t)
+
+
+for rel in initial:
+    if not rel.lower().endswith(".md"):
+        continue
+    full = os.path.join(stage, rel)
+    if not os.path.isfile(full):
+        continue
+    try:
+        text = chk.read_text(full)
+    except OSError:
+        continue
+    for _, target in chk.link_targets(text):
+        t = target.strip()
+        if not t or chk.SCHEME_RE.match(t):
+            continue
+        resolved, _ = chk.resolve(full, t)
+        note_target(resolved)
+
+for mode, p in entries:
+    if mode != "120000":
+        continue
+    full = os.path.join(stage, p)
+    if os.path.islink(full):
+        link = os.readlink(full)
+        if not os.path.isabs(link):
+            note_target(os.path.normpath(os.path.join(os.path.dirname(full), link)))
+
+if extra_files:
+    inp = b"\0".join(p.encode("utf-8", "surrogateescape") for p in sorted(extra_files)) + b"\0"
+    subprocess.run(
+        ["git", "checkout-index", "-f", "--prefix=" + stage + "/", "--stdin", "-z"],
+        cwd=repo, input=inp, check=True,
+    )
+    checked_out |= extra_files
+
+for d in sorted(extra_dirs):
+    os.makedirs(os.path.join(stage, d), exist_ok=True)
+
+skip = [p for mode, p in entries if mode != "160000" and p not in checked_out]
+if skip:
+    inp = b"\0".join(p.encode("utf-8", "surrogateescape") for p in skip) + b"\0"
+    subprocess.run(
+        ["git", "-C", stage, "update-index", "--skip-worktree", "-z", "--stdin"],
+        env=clean_env, input=inp, check=True,
+    )
+PY
+}
 
 check_target="$SSOT_TARGET"
 if [[ "$need_snapshot" -eq 1 ]]; then
@@ -226,6 +458,12 @@ if [[ "$need_snapshot" -eq 1 ]]; then
     if [[ -n "${GIT_OBJECT_DIRECTORY:-}" ]]; then
       printf '%s\n' "$(cd "$GIT_OBJECT_DIRECTORY" && pwd -P)"
     fi
+    if [[ -n "${GIT_ALTERNATE_OBJECT_DIRECTORIES:-}" ]]; then
+      IFS=':' read -r -a alt_dirs <<< "$GIT_ALTERNATE_OBJECT_DIRECTORIES"
+      for alt_dir in "${alt_dirs[@]}"; do
+        [[ -n "$alt_dir" && -d "$alt_dir" ]] && printf '%s\n' "$(cd "$alt_dir" && pwd -P)"
+      done
+    fi
     printf '%s/objects\n' "$common_dir"
   } > "$STAGE_DIR/.git/objects/info/alternates"
   if [[ "$has_head" -eq 1 ]]; then
@@ -233,7 +471,9 @@ if [[ "$need_snapshot" -eq 1 ]]; then
     git_clean -C "$STAGE_DIR" update-ref HEAD "$head_sha"
   fi
   git ls-files --stage -z | git_clean -C "$STAGE_DIR" update-index -z --index-info
-  git checkout-index -a -f --prefix="$STAGE_DIR/"
+  if ! stage_targeted_snapshot; then
+    git checkout-index -a -f --prefix="$STAGE_DIR/"
+  fi
   check_target="$STAGE_DIR/$SSOT_TARGET"
 fi
 
