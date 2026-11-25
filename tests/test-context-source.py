@@ -426,6 +426,82 @@ class SourceContract(unittest.TestCase):
         self.complete([receipts[1], renewed], code=2)
         self.assertEqual(self.status(), saved_record | {"receipts": saved_record["receipts"] + [renewed]})
 
+    def test_upsert_replaces_null_is_ignored_and_non_null_replaces_rejected(self):
+        null_export = self.export("null-replaces.json", [self.item(replaces=None)])
+        self.acquire(null_export, f"one={self.one}")
+        rec = self.status()
+        self.assertEqual(rec["status"], "pending")
+        self.assertEqual(rec["conflicts"], [])
+        inspected = self.inspect()
+        self.targets(["one"])
+        self.one.write_text("# Account\n" + inspected["marker"])
+        self.complete([self.readback("one")])
+        self.assertEqual(self.status()["status"], "completed")
+
+        # Non-null replaces on upsert (including self-cycle) must be rejected with exit 2 without importing items.
+        for bad_name, bad_replaces in (("self-cycle.json", "1"), ("non-null.json", "0"), ("empty.json", "")):
+            bad_export = self.export(bad_name, [self.item(ident="bad", revision="1", replaces=bad_replaces)])
+            err = self.acquire(bad_export, code=2)
+            self.assertIn("upsert must not name replaces", err["error"])
+        self.assertEqual([(i["item_id"], i["status"]) for i in self.call("status")["items"]], [("a", "completed")])
+
+    def test_unreadable_non_target_bound_owner_blocks_no_update_and_complete(self):
+        path = self.export("original.json", [self.item()])
+        self.two.mkdir()  # Reading a directory fails with IsADirectoryError even under privileged users.
+        self.acquire(path, f"one={self.one}", f"two={self.two}")
+        inspected = self.inspect()
+        # Even without declaring 'two' in targets, no-update and complete must fail closed.
+        self.targets(["one"])
+        self.action("no-update", "a", "1", "--reason", "attempt no-update with unreadable owner", code=2)
+        self.inspect(retry=True)
+        self.one.write_text("# Account\n" + inspected["marker"])
+        receipt = self.readback("one")
+        self.complete([receipt], code=2)
+        self.assertNotEqual(self.status()["status"], "completed")
+        # Once 'two' is readable with no capture, retry and completion succeed.
+        self.two.rmdir()
+        self.two.write_text("# Unrelated owner\n")
+        self.inspect(retry=True)
+        self.complete([self.readback("one")])
+        self.assertEqual(self.status()["status"], "completed")
+
+    def test_withdrawn_state_and_readonly_history_inspect_do_not_mutate_state_on_error(self):
+        # 1. Withdrawn state must stay byte-identical when subsequent commands are rejected.
+        path = self.export("original.json", [self.item()])
+        self.acquire(path, f"one={self.one}")
+        inspected = self.inspect()
+        self.targets(["one"])
+        self.one.write_text("# Partial\n" + inspected["marker"])
+        self.readback("one")
+        self.assertEqual(self.status()["status"], "readback-ready")
+        self.call("withdraw-source", "--reason", "user withdrew permission")
+        withdrawn_bytes = self.state.read_bytes()
+        self.inspect(code=2)
+        self.acquire(path, code=2)
+        self.action("no-update", "a", "1", "--reason", "blocked", code=2)
+        self.assertEqual(self.state.read_bytes(), withdrawn_bytes)
+        self.assertEqual(self.status()["status"], "readback-ready")
+
+        # 2. Read-only inspect --history must never mutate state on failure or success.
+        self.state = self.root / "history-state.json"
+        v1 = self.export("v1.json", [self.item(revision="1")])
+        v2 = self.export("v2.json", [self.item(revision="2", operation="correction", replaces="1")])
+        self.acquire(v1, f"one={self.one}")
+        self.acquire(v2)
+        self.assertEqual(self.status(revision="1")["status"], "pending")
+        moved = self.root / "v1-moved.json"
+        v1.rename(moved)
+        self.originals.pop(v1)
+        before_fail = self.state.read_bytes()
+        self.action("inspect", "a", "1", "--history", code=2)
+        self.assertEqual(self.state.read_bytes(), before_fail)
+        self.assertEqual(self.status(revision="1")["status"], "pending")
+        moved.rename(v1)
+        before_ok = self.state.read_bytes()
+        hist = self.action("inspect", "a", "1", "--history")
+        self.assertTrue(hist["read_only_history"])
+        self.assertEqual(self.state.read_bytes(), before_ok)
+
 
 if __name__ == "__main__":
     unittest.main()

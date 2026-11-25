@@ -219,7 +219,7 @@ def impacts(state, record, snapshots, *, report_scans=None):
     for capture in owner_observations(snapshots, record):
         if capture.get("marker_count"):
             add(capture["owner"], capture["path"], "located-capture", marker_count=capture["marker_count"])
-        elif capture["owner"] in record.get("targets", []) and not capture.get("missing"):
+        elif "unavailable" in capture and not capture.get("missing"):
             add(capture["owner"], capture["path"], "unavailable", error=capture.get("unavailable"))
     return list(found.values())
 
@@ -285,11 +285,13 @@ def import_source(args, state):
             require_text(item.get("replaces"), "replaces")
             if item["replaces"] == item["revision"]:
                 raise ValueError("a revision cannot replace itself")
+        elif item.get("replaces") is not None:
+            raise ValueError("upsert must not name replaces; use correction or withdrawal")
     for index, item in enumerate(items):
         key = identity(source_id, item["item_id"], item["revision"])
         checksum = digest(encoded(item))
         metadata = {field: item[field] for field in ("item_id", "revision", "operation", "source_ref", "replaces")
-                    if field in item}
+                    if field in item and item[field] is not None}
         locator = {"path": str(args.export.resolve()), "index": index}
         if key not in state["items"]:
             state["items"][key] = {"key": key, "digest": checksum, "item": metadata,
@@ -506,6 +508,7 @@ def process(args, state):
 
 
 def update(args, state):
+    read_only_history = args.command == "inspect" and getattr(args, "history", False)
     original = json.loads(json.dumps(state))
     try:
         if args.command == "import":
@@ -513,7 +516,7 @@ def update(args, state):
         else:
             result = process(args, state)
     except OPERATION_ERRORS as error:
-        if original is not None:
+        if original is not None and original.get("source_status") != "withdrawn" and not read_only_history:
             original["last_error"] = {"operation": args.command, "reason": str(error)}
             if args.command not in {"import", "bind"}:
                 record = original["items"].get(identity(original["source_id"], args.item, args.revision))
@@ -521,7 +524,8 @@ def update(args, state):
                     record["status"], record["reason"] = "failed", str(error)
             write_state(args.state, original)
         raise
-    write_state(args.state, state)
+    if not read_only_history:
+        write_state(args.state, state)
     return result
 
 

@@ -416,9 +416,8 @@ if [[ -d "$TEMPLATES/en" && -d "$TEMPLATES/zh" ]]; then
     done
   done
 
-  # Structural & placeholder parity across en/ and zh/ templates (heading level
-  # outlines, GFM table column counts, and managed ENTRY placeholder counts in
-  # context-adapter.md), plus negative probes.
+  # Structural, frontmatter-key, skill-token, & placeholder parity across en/
+  # and zh/ templates, plus negative probes.
   check_template_parity() {
     python3 -B - "$1" "$2" <<'PY'
 import pathlib, re, sys
@@ -431,8 +430,25 @@ def strip_non_prose(text):
     text = re.sub(r"^```.*?^```", "", text, flags=re.S | re.M)
     return text
 
+def frontmatter_keys(text):
+    lines = text.splitlines()
+    if not lines or lines[0].strip() != "---":
+        return []
+    keys = []
+    for line in lines[1:]:
+        if line.strip() == "---":
+            return keys
+        m = re.match(r"^([A-Za-z_][\w-]*):[ \t]*", line)
+        if m:
+            keys.append(m.group(1))
+    return []
+
+def skill_tokens(text):
+    return sorted(set(re.findall(r"\$ssot-[a-z0-9-]+", text)))
+
 def structure(path):
-    clean = strip_non_prose(path.read_text(encoding="utf-8"))
+    raw = path.read_text(encoding="utf-8")
+    clean = strip_non_prose(raw)
     headings = [len(m.group(1)) for m in re.finditer(r"^(#{1,6})\s+\S", clean, re.M)]
     tables = []
     for line in clean.splitlines():
@@ -440,7 +456,7 @@ def structure(path):
         if s.startswith("|") and sep_re.match(s):
             cells = [c.strip() for c in s.strip("|").split("|")]
             tables.append(len(cells))
-    return headings, tables
+    return headings, tables, frontmatter_keys(raw), skill_tokens(raw)
 
 def managed_entry_count(path):
     text = path.read_text(encoding="utf-8")
@@ -457,12 +473,16 @@ if en_files != zh_files:
 for rel in en_files:
     if rel.suffix.lower() != ".md":
         continue
-    en_h, en_t = structure(en_dir / rel)
-    zh_h, zh_t = structure(zh_dir / rel)
+    en_h, en_t, en_fm, en_sk = structure(en_dir / rel)
+    zh_h, zh_t, zh_fm, zh_sk = structure(zh_dir / rel)
     if en_h != zh_h:
         errors.append(f"{rel}: heading levels en={en_h} != zh={zh_h}")
     if en_t != zh_t:
         errors.append(f"{rel}: table column counts en={en_t} != zh={zh_t}")
+    if en_fm != zh_fm:
+        errors.append(f"{rel}: frontmatter keys en={en_fm} != zh={zh_fm}")
+    if en_sk != zh_sk:
+        errors.append(f"{rel}: $ssot-* tokens en={en_sk} != zh={zh_sk}")
 if (en_dir / "context-adapter.md").is_file() and (zh_dir / "context-adapter.md").is_file():
     en_e = managed_entry_count(en_dir / "context-adapter.md")
     zh_e = managed_entry_count(zh_dir / "context-adapter.md")
@@ -482,6 +502,16 @@ PY
   check_template_parity "$PROBE_DIR/tpl-bad/en" "$PROBE_DIR/tpl-bad/zh" >/dev/null 2>&1 &&
     fail "template parity accepted mismatched en/zh table columns" ||
     pass "template parity rejects mismatched en/zh table columns"
+  printf -- '---\nssot_format: 4\nlanguage: en\n---\n# Title\n' > "$PROBE_DIR/tpl-bad/en/doc.md"
+  printf -- '---\nssot_format: 4\n---\n# 标题\n' > "$PROBE_DIR/tpl-bad/zh/doc.md"
+  check_template_parity "$PROBE_DIR/tpl-bad/en" "$PROBE_DIR/tpl-bad/zh" >/dev/null 2>&1 &&
+    fail "template parity accepted mismatched en/zh frontmatter keys" ||
+    pass "template parity rejects mismatched en/zh frontmatter keys"
+  printf '# Title\n\nUse `$ssot-preflight` and `$ssot-closeout`.\n' > "$PROBE_DIR/tpl-bad/en/doc.md"
+  printf '# 标题\n\n只用 `$ssot-preflight`。\n' > "$PROBE_DIR/tpl-bad/zh/doc.md"
+  check_template_parity "$PROBE_DIR/tpl-bad/en" "$PROBE_DIR/tpl-bad/zh" >/dev/null 2>&1 &&
+    fail "template parity accepted mismatched en/zh \$ssot-* tokens" ||
+    pass "template parity rejects mismatched en/zh \$ssot-* tokens"
   rm -f "$PROBE_DIR/tpl-bad/en/doc.md" "$PROBE_DIR/tpl-bad/zh/doc.md"
   printf '<!-- SSOT-CONTEXT:BEGIN -->\nENTRY defines ENTRY\n<!-- SSOT-CONTEXT:END -->\n' > "$PROBE_DIR/tpl-bad/en/context-adapter.md"
   printf '<!-- SSOT-CONTEXT:BEGIN -->\nENTRY defines space\n<!-- SSOT-CONTEXT:END -->\n' > "$PROBE_DIR/tpl-bad/zh/context-adapter.md"
@@ -489,36 +519,50 @@ PY
     fail "template parity accepted mismatched ENTRY placeholder counts" ||
     pass "template parity rejects mismatched ENTRY placeholder counts"
   if PARITY_ERR="$(check_template_parity "$TEMPLATES/en" "$TEMPLATES/zh" 2>&1)"; then
-    pass "templates en/zh match in heading outlines, table columns, and context-adapter ENTRY count"
+    pass "templates en/zh match in heading outlines, table columns, frontmatter keys, \$ssot-* tokens, and ENTRY count"
   else
     fail "templates en/zh structural parity failed: $PARITY_ERR"
   fi
 
   # 5b. Materialized template & flattened-bundle smoke checks:
-  # (a) Shipped en/ and zh/ Format-4 and Format-5 skeletons pass ssot-check.py with 0 errors.
+  # (a) Shipped en/ and zh/ Format-4 (with decisions/, research/, BOOTSTRAP.md,
+  #     and stripped reviewed_through placeholder) and Format-5 skeletons pass
+  #     ssot-check.py with 0 errors AND 0 warnings.
   # (b) Flattened core-4 skill bundles (matching install.sh --quickstart) have 0 broken links.
   CHECKER_SCRIPT="$SKILLS/ssot-doctor/assets/scripts/ssot-check.py"
+  check_smoke_clean() {
+    local out rc
+    out="$(python3 -B "$CHECKER_SCRIPT" "$1" 2>&1)"
+    rc=$?
+    if [[ $rc -ne 0 ]] || ! grep -q 'PASS - 0 error(s), 0 warning(s)' <<< "$out"; then
+      printf '%s\n' "$out"
+      return 1
+    fi
+  }
   for lang in en zh; do
     f4_dir="$PROBE_DIR/smoke-$lang/f4/SSOT"
-    mkdir -p "$f4_dir/decisions"
+    mkdir -p "$f4_dir/decisions" "$f4_dir/research"
     for tf in "$TEMPLATES/$lang"/*.md; do
       base="$(basename "$tf")"
       case "$base" in
-        ssot-readme.md) cp "$tf" "$f4_dir/README.md" ;;
+        ssot-readme.md) sed '/^reviewed_through:/d' "$tf" > "$f4_dir/README.md" ;;
+        decision.md) cp "$tf" "$f4_dir/decisions/0001-example.md" ;;
+        research.md) cp "$tf" "$f4_dir/research/example.md" ;;
+        bootstrap-progress.md) cp "$tf" "$f4_dir/BOOTSTRAP.md" ;;
         adapter-thin.md|context-adapter.md|context-readme.md) ;;
         *) cp "$tf" "$f4_dir/$base" ;;
       esac
     done
-    if f4_out="$(python3 -B "$CHECKER_SCRIPT" "$f4_dir" 2>&1)"; then
-      pass "$lang: materialized Format-4 template skeleton passes ssot-check.py (0 errors)"
+    if f4_out="$(check_smoke_clean "$f4_dir")"; then
+      pass "$lang: materialized Format-4 template skeleton passes ssot-check.py (0 errors, 0 warnings)"
     else
       fail "$lang: materialized Format-4 template skeleton failed ssot-check.py: $f4_out"
     fi
     f5_dir="$PROBE_DIR/smoke-$lang/f5"
     mkdir -p "$f5_dir"
     cp "$TEMPLATES/$lang/context-readme.md" "$f5_dir/CONTEXT.md"
-    if f5_out="$(python3 -B "$CHECKER_SCRIPT" "$f5_dir/CONTEXT.md" 2>&1)"; then
-      pass "$lang: materialized Format-5 context-readme.md passes ssot-check.py (0 errors)"
+    if f5_out="$(check_smoke_clean "$f5_dir/CONTEXT.md")"; then
+      pass "$lang: materialized Format-5 context-readme.md passes ssot-check.py (0 errors, 0 warnings)"
     else
       fail "$lang: materialized Format-5 context-readme.md failed ssot-check.py: $f5_out"
     fi
@@ -538,12 +582,109 @@ PY
       fail "$lang: flattened core-4 installed bundle has broken links"
     fi
   done
+  cp "$PROBE_DIR/smoke-en/f5/CONTEXT.md" "$PROBE_DIR/smoke-en/f5/WARN.md"
+  printf '\nLine one of a short wrapped paragraph.\nLine two of the same wrapped paragraph.\nLine three of the same wrapped paragraph.\n' >> "$PROBE_DIR/smoke-en/f5/WARN.md"
+  check_smoke_clean "$PROBE_DIR/smoke-en/f5/WARN.md" >/dev/null 2>&1 &&
+    fail "template smoke check accepted a warning in materialized template" ||
+    pass "template smoke check rejects warnings in materialized template"
   printf '\n- [Missing](missing.md)\n' >> "$PROBE_DIR/smoke-en/f5/CONTEXT.md"
-  python3 -B "$CHECKER_SCRIPT" "$PROBE_DIR/smoke-en/f5/CONTEXT.md" >/dev/null 2>&1 &&
+  check_smoke_clean "$PROBE_DIR/smoke-en/f5/CONTEXT.md" >/dev/null 2>&1 &&
     fail "template smoke check accepted a broken link in materialized template" ||
     pass "template smoke check rejects a broken link in materialized template"
 else
   fail "templates en/ and zh/ must both exist"
+fi
+
+# 5c. Cross-file mechanical sync gates (CHANGELOG version heading, installer vs
+# checker instruction-file tuple, and README.md vs README.zh.md structural/link parity).
+check_changelog_version() {
+  python3 -B - "$1" "$2" <<'PY'
+import pathlib, re, sys
+text = pathlib.Path(sys.argv[1]).read_text(encoding="utf-8")
+version = sys.argv[2].strip()
+if not re.search(r"^## \[" + re.escape(version) + r"\](?:[ \t]|$)", text, re.M):
+    sys.exit(f"missing '## [{version}]' heading in {sys.argv[1]}")
+PY
+}
+printf '# Changelog\n\n## [5.19] - 2026-11-25\n' > "$PROBE_DIR/CHANGELOG-missing.md"
+check_changelog_version "$PROBE_DIR/CHANGELOG-missing.md" "$VERSION_CONTENT" >/dev/null 2>&1 &&
+  fail "changelog check accepted missing VERSION heading" ||
+  pass "changelog check rejects missing VERSION heading"
+if CHANGELOG_ERR="$(check_changelog_version "$PROJECT_ROOT/CHANGELOG.md" "$VERSION_CONTENT" 2>&1)"; then
+  pass "CHANGELOG.md contains release heading for VERSION ($VERSION_CONTENT)"
+else
+  fail "CHANGELOG.md version check failed: $CHANGELOG_ERR"
+fi
+
+check_instruction_files_sync() {
+  python3 -B - "$1" "$2" <<'PY'
+import ast, pathlib, re, sys
+inst_text = pathlib.Path(sys.argv[1]).read_text(encoding="utf-8")
+chk_text = pathlib.Path(sys.argv[2]).read_text(encoding="utf-8")
+m = re.search(r"BLOCK_INSTRUCTION_FILES=\((.*?)\)", inst_text, re.S)
+if not m:
+    sys.exit("BLOCK_INSTRUCTION_FILES not found in install.sh")
+inst_files = re.findall(r'"([^"]+)"', m.group(1))
+tree = ast.parse(chk_text, filename=sys.argv[2])
+chk_files = None
+for node in tree.body:
+    if isinstance(node, ast.Assign):
+        for target in node.targets:
+            if isinstance(target, ast.Name) and target.id == "INSTRUCTION_FILES":
+                chk_files = list(ast.literal_eval(node.value))
+if not inst_files or not chk_files or inst_files != chk_files:
+    sys.exit(f"install.sh={inst_files} != ssot-check.py={chk_files}")
+PY
+}
+printf 'BLOCK_INSTRUCTION_FILES=(\n  "AGENTS.md"\n  "CLAUDE.md"\n)\n' > "$PROBE_DIR/install-drift.sh"
+printf 'INSTRUCTION_FILES = ("AGENTS.md", "CLAUDE.md", "GEMINI.md")\n' > "$PROBE_DIR/checker-drift.py"
+check_instruction_files_sync "$PROBE_DIR/install-drift.sh" "$PROBE_DIR/checker-drift.py" >/dev/null 2>&1 &&
+  fail "instruction-file sync accepted mismatched install.sh and ssot-check.py lists" ||
+  pass "instruction-file sync rejects mismatched install.sh and ssot-check.py lists"
+if SYNC_ERR="$(check_instruction_files_sync "$PROJECT_ROOT/install.sh" "$SKILLS/ssot-doctor/assets/scripts/ssot-check.py" 2>&1)"; then
+  pass "install.sh BLOCK_INSTRUCTION_FILES matches ssot-check.py INSTRUCTION_FILES"
+else
+  fail "instruction-file sync failed: $SYNC_ERR"
+fi
+
+check_readme_parity() {
+  python3 -B - "$PROJECT_ROOT" "$1" "$2" <<'PY'
+import importlib.util, pathlib, sys
+root, en_path, zh_path = sys.argv[1:4]
+spec = importlib.util.spec_from_file_location("check", f"{root}/skills/ssot-doctor/assets/scripts/ssot-check.py")
+check = importlib.util.module_from_spec(spec)
+spec.loader.exec_module(check)
+
+def summarize(path):
+    text = pathlib.Path(path).read_text(encoding="utf-8")
+    levels = [lvl for _, lvl, _ in check.headings(text)]
+    links = [t.strip() for _, t in check.link_targets(text) if t.strip() and not t.strip().startswith("#")]
+    return levels, links
+
+en_h, en_l = summarize(en_path)
+zh_h, zh_l = summarize(zh_path)
+errors = []
+if en_h != zh_h:
+    errors.append(f"heading levels en={en_h} != zh={zh_h}")
+if en_l != zh_l:
+    errors.append(f"non-local links differ (en={len(en_l)}, zh={len(zh_l)})")
+if errors:
+    sys.exit("; ".join(errors))
+PY
+}
+printf '# Title\n\n## Intro\n\n[Install](./INSTALL.md)\n' > "$PROBE_DIR/README-en.md"
+printf '# 标题\n\n## 简介\n\n### 多余\n\n[安装](./INSTALL.md)\n' > "$PROBE_DIR/README-zh-h.md"
+check_readme_parity "$PROBE_DIR/README-en.md" "$PROBE_DIR/README-zh-h.md" >/dev/null 2>&1 &&
+  fail "README parity accepted mismatched heading outline" ||
+  pass "README parity rejects mismatched heading outline"
+printf '# 标题\n\n## 简介\n\n无链接。\n' > "$PROBE_DIR/README-zh-l.md"
+check_readme_parity "$PROBE_DIR/README-en.md" "$PROBE_DIR/README-zh-l.md" >/dev/null 2>&1 &&
+  fail "README parity accepted missing non-local link" ||
+  pass "README parity rejects missing non-local link"
+if README_ERR="$(check_readme_parity "$PROJECT_ROOT/README.md" "$PROJECT_ROOT/README.zh.md" 2>&1)"; then
+  pass "README.md and README.zh.md match in heading outline and shared non-local links"
+else
+  fail "README.md / README.zh.md parity failed: $README_ERR"
 fi
 
 # 6. Protocol text read by agents stays in English (inline code may quote
@@ -556,13 +697,67 @@ while IFS= read -r f; do
 done < <(find "$SKILLS" -type f \( -name SKILL.md -o -path '*/references/*.md' \))
 [[ ${#CN_FILES[@]} -eq 0 ]] && pass "SKILL.md and references are English" || fail "Chinese prose in: ${CN_FILES[*]}"
 
-# 7. Every Markdown fence closes.
-FENCE_FAILS=()
-while IFS= read -r -d '' f; do
-  line="$(awk '/^```/{ if(!o){o=1;s=FNR} else {o=0} } END{ if(o) print s }' "$PROJECT_ROOT/$f")"
-  [[ -n "$line" ]] && FENCE_FAILS+=("$f:$line")
-done < <(git -C "$PROJECT_ROOT" ls-files -co --exclude-standard -z -- '*.md')
-[[ ${#FENCE_FAILS[@]} -eq 0 ]] && pass "all Markdown fences close" || fail "unclosed fences: ${FENCE_FAILS[*]}"
+# 7. Every Markdown fence closes (CommonMark §4.5: backtick & tilde fences,
+# up to 3-space indentation, backtick-free info strings, length-matched closers).
+check_fences() {
+  python3 -B - "$PROJECT_ROOT" "$@" <<'PY'
+import os, re, subprocess, sys
+
+root = sys.argv[1]
+mode = sys.argv[2]
+if mode == "--repo":
+    raw = subprocess.run(
+        ["git", "-C", root, "ls-files", "-co", "--exclude-standard", "-z", "--", "*.md"],
+        capture_output=True, text=True, check=True,
+    ).stdout
+    paths = [(rel, os.path.join(root, rel)) for rel in filter(None, raw.split("\0"))]
+else:
+    paths = [(os.path.basename(p), p) for p in sys.argv[2:]]
+
+fence_re = re.compile(r"^ {0,3}(`{3,}|~{3,})(.*)$")
+fails = []
+for label, path in paths:
+    with open(path, encoding="utf-8") as handle:
+        lines = handle.read().splitlines()
+    open_char = None
+    open_len = 0
+    open_line = 0
+    for lineno, line in enumerate(lines, 1):
+        m = fence_re.match(line)
+        if open_char is None:
+            if m:
+                marker, info = m.group(1), m.group(2)
+                if marker[0] == "`" and "`" in info:
+                    continue  # CommonMark §4.5: inline code span, not a fence opener
+                open_char, open_len, open_line = marker[0], len(marker), lineno
+        else:
+            if m and m.group(1)[0] == open_char and len(m.group(1)) >= open_len and not m.group(2).strip():
+                open_char, open_len, open_line = None, 0, 0
+    if open_char is not None:
+        fails.append(f"{label}:{open_line}")
+
+if fails:
+    print(" ".join(fails))
+    sys.exit(1)
+PY
+}
+printf '````markdown\n  ```py\n  x = 1\n  ```\n````\n\n~~~text\nok\n~~~\n\n```inline``` and prose\n' > "$PROBE_DIR/fences-ok.md"
+check_fences "$PROBE_DIR/fences-ok.md" >/dev/null 2>&1 &&
+  pass "fence check accepts nested backticks, tilde fences, indented fences, and line-start inline code" ||
+  fail "fence check rejected valid CommonMark fences or line-start inline code"
+printf '~~~\nunclosed tilde\n' > "$PROBE_DIR/fences-bad-tilde.md"
+check_fences "$PROBE_DIR/fences-bad-tilde.md" >/dev/null 2>&1 &&
+  fail "fence check accepted unclosed tilde fence" ||
+  pass "fence check rejects unclosed tilde fence"
+printf '  ```python\n  x = 1\n' > "$PROBE_DIR/fences-bad-indent.md"
+check_fences "$PROBE_DIR/fences-bad-indent.md" >/dev/null 2>&1 &&
+  fail "fence check accepted unclosed indented fence" ||
+  pass "fence check rejects unclosed indented fence"
+if FENCE_ERR="$(check_fences --repo)"; then
+  pass "all Markdown fences close"
+else
+  fail "unclosed fences: $FENCE_ERR"
+fi
 
 # 8. Public hygiene: no local-machine paths, consumer-project names (case-insensitive),
 # or real commit SHAs in shipped files, CHANGELOG, and tests.
@@ -747,16 +942,17 @@ HOT_RUNTIME_FILES=(
   "$SKILLS/ssot-bootstrap/SKILL.md"
   "$SKILLS/ssot-closeout/SKILL.md"
   "$SKILLS/ssot-doctor/SKILL.md"
-  "$SKILLS/ssot-audit/SKILL.md"
-  "$SKILLS/ssot-skill/SKILL.md"
   "$SKILLS/ssot-preflight/references/memory-model.md"
   "$SKILLS/ssot-preflight/references/memory-layout.md"
+  "$SKILLS/ssot-preflight/references/task-continuation.md"
   "$SKILLS/ssot-preflight/references/writing-memory.md"
   "$SKILLS/ssot-preflight/references/protection-departure.md"
   "$SKILLS/ssot-closeout/references/decision-capture.md"
   "$SKILLS/ssot-closeout/references/batch-closeout.md"
 )
 COLD_RUNTIME_FILES=(
+  "$SKILLS/ssot-audit/SKILL.md"
+  "$SKILLS/ssot-skill/SKILL.md"
   "$SKILLS/ssot-bootstrap/references/area-mining.md"
   "$SKILLS/ssot-bootstrap/references/bootstrap.md"
   "$SKILLS/ssot-bootstrap/references/migration.md"
@@ -774,8 +970,8 @@ else
   fail "hot/cold runtime file partition is out of sync with skills/"
 fi
 budget "SKILL.md entrypoints" "$(words "${ENTRY_FILES[@]}")" 3600 words
-budget "hot-path runtime protocol (SKILL.md + daily references)" "$(words "${HOT_RUNTIME_FILES[@]}")" 9200 words
-budget "conditional/cold runtime branches" "$(words "${COLD_RUNTIME_FILES[@]}")" 10400 words
+budget "hot-path runtime protocol (core-4 SKILL.md + daily references)" "$(words "${HOT_RUNTIME_FILES[@]}")" 9200 words
+budget "conditional/cold runtime branches (incl. legacy shims)" "$(words "${COLD_RUNTIME_FILES[@]}")" 10400 words
 measure_catalog_bytes() {
   local total=0 skill_file name desc entry
   for skill_file in "$@"; do

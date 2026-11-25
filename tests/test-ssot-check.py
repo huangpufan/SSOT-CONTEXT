@@ -494,16 +494,22 @@ class CheckerTest(unittest.TestCase):
         self.invariant_row("| INV-01 | process rule | Rule | [R](../docs/settings.json) | confirmed | user |")
         self.assert_error("needs a Markdown explanation in the same repository")
 
-    def test_existing_large_external_owner_warns_without_rewriting(self):
+    def test_existing_large_external_owner_emits_info_while_ssot_doc_warns(self):
         self.external_owner(ARCHITECTURE + "\n" + "Canonical context. " * 1000 + "\n")
         owner = os.path.join(self.repo, "docs", "owner.md")
         with open(owner, "rb") as handle:
             before = hashlib.sha256(handle.read()).hexdigest()
         out = self.assert_clean()
-        self.assertIn("WARN  ../docs/owner.md", out)
+        self.assertIn("INFO  ../docs/owner.md", out)
         self.assertIn("16000-character reading budget", out)
+        self.assertNotIn("WARN", out)
         with open(owner, "rb") as handle:
             self.assertEqual(hashlib.sha256(handle.read()).hexdigest(), before)
+        # An oversized document owned inside SSOT/ still warns.
+        self.write("architecture.md", ARCHITECTURE + "\n" + "SSOT detail. " * 1400 + "\n")
+        out_ssot = self.assert_clean()
+        self.assertIn("WARN  architecture.md", out_ssot)
+        self.assertIn("16000-character reading budget", out_ssot)
 
     def test_external_owner_missing_file_is_error(self):
         self.valid()
@@ -2286,6 +2292,222 @@ class CheckerTest(unittest.TestCase):
             proc = subprocess.run([sys.executable, chk_dst, self.ssot], capture_output=True, text=True, check=False)
             self.assertEqual(proc.returncode, 0, proc.stdout + proc.stderr)
             self.assertIn("managed block is zh while installed templates are en", proc.stdout)
+
+    def test_sharded_external_owner_linked_only_from_shard_is_checked_and_owners_stays_scoped(self):
+        self.sharded_setup(
+            shipping_rows="| SHP-01 | architecture invariant | Never drop parcel manifests | [Spec](../../docs/shard-only.md#details) | confirmed | user, 2026-05-02 |\n",
+        )
+        os.makedirs(os.path.join(self.repo, "src"))
+        os.makedirs(os.path.join(self.repo, "tmp"))
+        with open(os.path.join(self.repo, ".gitignore"), "w", encoding="utf-8") as handle:
+            handle.write("tmp/\n")
+        with open(os.path.join(self.repo, "src", "old.py"), "w", encoding="utf-8") as handle:
+            handle.write("x = 1\n")
+        with open(os.path.join(self.repo, "tmp", "proof.txt"), "w", encoding="utf-8") as handle:
+            handle.write("ok\n")
+        self.write("../docs/shard-only.md", textwrap.dedent("""\
+            # Shard Only Spec
+
+            ## Details
+
+            Mentions `src/old.py`, [Proof](../tmp/proof.txt), and [Dead](missing.md).
+            """))
+        self.git("init", "-q")
+        self.commit("baseline")
+        self.git("rm", "-q", "src/old.py")
+        self.commit("remove old.py")
+        # Full run must scan docs/shard-only.md (1-hop from shard) and surface all three findings.
+        out = self.assert_error("broken link: missing.md")
+        self.assertIn("docs/shard-only.md", out)
+        self.assertIn("`src/old.py` was removed", out)
+        self.assertIn("link targets gitignored path", out)
+        # --owners mode must stay strictly scoped and never open unselected shard-only external owners.
+        shard_owner = os.path.join(self.repo, "docs", "shard-only.md")
+        observer = textwrap.dedent("""
+            import runpy, sys
+            watched, checker, *args = sys.argv[1:]
+            def audit(event, arguments):
+                if event == "open" and arguments[0] == watched:
+                    print("OPENED UNSELECTED", file=sys.stderr)
+            sys.addaudithook(audit)
+            sys.argv = [checker, *args]
+            runpy.run_path(checker, run_name="__main__")
+        """)
+        scoped = subprocess.run(
+            [sys.executable, "-c", observer, shard_owner, CHECKER,
+             os.path.join(self.ssot, "README.md"), "--owners", "invariants/shipping.md"],
+            cwd=self.repo, text=True, capture_output=True, check=False,
+        )
+        self.assertEqual(scoped.returncode, 0, scoped.stdout + scoped.stderr)
+        self.assertNotIn("OPENED UNSELECTED", scoped.stderr)
+        # Format 5 shard-only local owner is also scanned 1-hop in non-scoped mode.
+        space = os.path.join(self.repo, "f5space")
+        os.makedirs(space)
+        with open(os.path.join(space, "shard-only.md"), "w", encoding="utf-8") as handle:
+            handle.write("# Spec\n\n## Rules\n\n[Dead](nope.md)\n")
+        with open(os.path.join(space, "rules.md"), "w", encoding="utf-8") as handle:
+            handle.write("---\nssot_register: shard\n---\n\n# Rules\n\n"
+                         "| ID | Kind | Rule | Explained in | Status | Source |\n|---|---|---|---|---|---|\n"
+                         "| F5-01 | process rule | Keep receipts | [Rules](shard-only.md#rules) | confirmed | user, 2026-05-02 |\n")
+        entry = os.path.join(space, "CONTEXT.md")
+        with open(entry, "w", encoding="utf-8") as handle:
+            handle.write("---\nssot_format: 5\nlanguage: en\n---\n\n# Space\n\n## Invariants\n\n- [Rules](rules.md)\n")
+        code, f5_out = self.run_checker(entry)
+        self.assertEqual(code, 1, f5_out)
+        self.assertIn("broken link: nope.md", f5_out)
+
+    def test_multi_section_shard_validates_and_protects_every_section(self):
+        self.sharded_setup()
+        multi_ok = textwrap.dedent("""\
+            # Dispatch & Execution
+
+            | Scope | Owner |
+            |---|---|
+            | Dispatch | `host/dispatch.js` |
+
+            ## Invariants: Admission
+
+            | ID | Kind | Rule | Explained in | Status | Source |
+            |---|---|---|---|---|---|
+            | DISP-01 | architecture invariant | Never drop admission | [Retries](../architecture.md#failure-and-recovery) | confirmed | user, 2026-05-02 |
+
+            ## Invariants: Concurrency
+
+            | ID | Kind | Rule | Explained in | Status | Source |
+            |---|---|---|---|---|---|
+            | DISP-02 | architecture invariant | Never double-run | [Retries](../architecture.md#failure-and-recovery) | confirmed | user, 2026-05-02 |
+
+            ## 并发与恢复
+
+            | ID | 类型 | 规则 | 解释位置 | 状态 | 来源 |
+            |---|---|---|---|---|---|
+            | DISP-03 | 架构不变量 | 恢复不丢进度 | [Retries](../architecture.md#failure-and-recovery) | confirmed | user, 2026-05-02 |
+            """)
+        self.write("invariants/shipping.md", multi_ok)
+        self.git("init", "-q")
+        self.commit("multi-section shard baseline")
+        out = self.assert_clean()
+        self.assertNotIn("WARN", out)
+        # Tampering confirmed row under second ## Invariants section must fail.
+        self.write("invariants/shipping.md", multi_ok.replace("Never double-run", "Allow double-run"))
+        self.assert_error("confirmed invariant DISP-02 changed its rule")
+        # Tampering confirmed row under later non-Invariants ## section must also fail.
+        self.write("invariants/shipping.md", multi_ok.replace("恢复不丢进度", "允许丢进度"))
+        self.assert_error("confirmed invariant DISP-03 changed its rule")
+        # Structural errors under later section must also be caught.
+        self.write("invariants/shipping.md", multi_ok.replace(
+            "| [Retries](../architecture.md#failure-and-recovery) | confirmed | user, 2026-05-02 |",
+            "| no-link | bogus |  |",
+        ))
+        err_out = self.assert_error("status 'bogus' must be confirmed, candidate, or retired")
+        self.assertIn("needs a link", err_out)
+
+    def test_missing_gitignored_link_reports_worktree_diagnostic_and_existing_warns(self):
+        self.valid()
+        self.git("init", "-q")
+        with open(os.path.join(self.repo, ".gitignore"), "w", encoding="utf-8") as handle:
+            handle.write("verification/\nprivate-space/\n")
+        self.write("architecture.md", ARCHITECTURE
+                   + "\nSee [proof](../verification/run1/proof.json) and [real-missing](../docs/missing.md).\n")
+        self.commit("baseline")
+        # Missing gitignored target (as in a fresh worktree/clone) gets worktree-aware ERROR;
+        # genuinely missing non-ignored target stays plain broken link ERROR.
+        out = self.assert_error("broken link to gitignored path (absent in worktree/clone")
+        self.assertIn("../verification/run1/proof.json", out)
+        self.assertIn("ERROR architecture.md:7  broken link: ../docs/missing.md", out)
+        # Once the gitignored file exists locally and the real missing link is removed, WARN mentions worktrees/clones.
+        os.makedirs(os.path.join(self.repo, "verification", "run1"))
+        with open(os.path.join(self.repo, "verification", "run1", "proof.json"), "w", encoding="utf-8") as handle:
+            handle.write("{}\n")
+        self.write("architecture.md", ARCHITECTURE + "\nSee [proof](../verification/run1/proof.json).\n")
+        clean_out = self.assert_clean()
+        self.assertIn("link targets gitignored path (breaks in worktrees/clones or after cleanup)", clean_out)
+        # Inside an entirely gitignored Format-5 space, missing links stay plain broken link (not worktree noise).
+        priv = os.path.join(self.repo, "private-space")
+        os.makedirs(priv)
+        entry = os.path.join(priv, "INDEX.md")
+        with open(entry, "w", encoding="utf-8") as handle:
+            handle.write("---\nssot_format: 5\nlanguage: en\n---\n\n# Private\n\n[Dead](nope.md)\n\n## Invariants\n\nNone.\n")
+        code, priv_out = self.run_checker(entry)
+        self.assertEqual(code, 1, priv_out)
+        self.assertIn("broken link: nope.md", priv_out)
+        self.assertNotIn("absent in worktree/clone", priv_out)
+
+    def test_truncation_producer_info_signals_for_entry_shard_and_long_rows(self):
+        # 1. Total README > 16,000 chars (prose < 8,000) + single row > 500 chars -> INFO only, zero WARN.
+        long_rule = "Preserve exact ordering and idempotency across retries " * 9
+        rows = [f"| INV-001 | product promise | {long_rule} | [R](architecture.md#failure-and-recovery) | candidate | tests |"]
+        rows.extend(
+            f"| INV-{n:03d} | product promise | Concise invariant constraint number {n:03d} with context | [R](architecture.md#failure-and-recovery) | candidate | tests |"
+            for n in range(2, 130)
+        )
+        self.invariant_row("\n".join(rows))
+        out = self.assert_clean()
+        self.assertNotIn("WARN", out)
+        self.assertIn("total README.md size is", out)
+        self.assertIn("exceed 500 characters (longest: INV-001", out)
+        # 2. Oversized shard (> 50 rows and > 16,000 chars) + long row -> INFO only, zero WARN.
+        shard_rows = [f"| SHP-001 | product promise | {long_rule} | [R](../architecture.md#failure-and-recovery) | candidate | tests |"]
+        shard_rows.extend(
+            f"| SHP-{n:03d} | product promise | Concise shipping invariant number {n:03d} for checkout | [R](../architecture.md#failure-and-recovery) | candidate | tests |"
+            for n in range(2, 55)
+        )
+        self.sharded_setup(shipping_rows="\n".join(shard_rows) + "\n")
+        out_shard = self.assert_clean()
+        self.assertNotIn("WARN", out_shard)
+        self.assertIn("invariants/shipping.md  invariants shard is", out_shard)
+        self.assertIn("exceed 500 characters (longest: SHP-001", out_shard)
+
+    def test_reviewed_through_lag_info_respects_threshold_since_and_shallow(self):
+        self.valid()
+        self.git("init", "-q")
+        base = self.commit("initial")
+        self.write("README.md", README.replace("language: en\n", f"language: en\nreviewed_through: {base}\n"))
+        self.commit("set reviewed_through")
+        for n in range(9):
+            self.git("commit", "--allow-empty", "-q", "-m", f"step {n}")
+        # 10 commits behind (< 100) stays quiet.
+        out_small = self.assert_clean()
+        self.assertNotIn("commits behind HEAD", out_small)
+        for n in range(90):
+            self.git("commit", "--allow-empty", "-q", "-m", f"more {n}")
+        # 100 commits behind emits non-blocking INFO without WARN.
+        out_lag = self.assert_clean()
+        self.assertIn(f"INFO  README.md:1  reviewed_through {base} is 100 commits behind HEAD", out_lag)
+        self.assertNotIn("WARN", out_lag)
+        # Suppressed when --since is given.
+        code, out_since = self.run_checker(self.ssot, "--since", "HEAD")
+        self.assertEqual(code, 0, out_since)
+        self.assertNotIn("commits behind HEAD", out_since)
+        # Skipped safely on shallow clones even when reviewed_through is present.
+        with tempfile.TemporaryDirectory() as outer:
+            shallow_clone = os.path.join(outer, "shallow")
+            subprocess.run(["git", "clone", "-q", "--depth", "101", f"file://{self.repo}", shallow_clone], check=True)
+            proc = subprocess.run([sys.executable, CHECKER, os.path.join(shallow_clone, "SSOT")],
+                                  capture_output=True, text=True, check=False)
+            self.assertEqual(proc.returncode, 0, proc.stdout + proc.stderr)
+            self.assertNotIn("commits behind HEAD", proc.stdout)
+
+    def test_format5_english_block_with_cjk_entry_path_and_line_anchor_bounds(self):
+        self.valid()
+        en_f5 = os.path.join(os.path.dirname(CHECKER), "../../../ssot-bootstrap/assets/templates/en/context-adapter.md")
+        with open(en_f5, encoding="utf-8") as handle:
+            tpl = handle.read()
+        begin = tpl.index("<!-- SSOT-CONTEXT:BEGIN -->")
+        end = tpl.index("<!-- SSOT-CONTEXT:END -->") + len("<!-- SSOT-CONTEXT:END -->")
+        block = tpl[begin:end].replace("ENTRY", "个人空间/README.md")
+        with open(os.path.join(self.repo, "AGENTS.md"), "w", encoding="utf-8") as handle:
+            handle.write("# Space\n\n" + block + "\n")
+        # Must classify as English (not Chinese because of '空间' inside ENTRY path) and stay quiet.
+        out = self.assert_clean()
+        self.assertNotIn("managed block differs", out)
+        # Line anchor bounds: #L0, reversed range #L4-L2, and past-EOF end line #L1-L999 must all ERROR.
+        self.write("notes.md", "# Notes\n\n[zero](architecture.md#L0) [rev](architecture.md#L4-L2) "
+                   "[past](architecture.md#L1-L999) [ok](architecture.md#L1-L3)\n")
+        err_out = self.assert_error("line anchor past end of file: architecture.md#L1-L999")
+        self.assertIn("invalid line anchor: architecture.md#L0", err_out)
+        self.assertIn("invalid line anchor: architecture.md#L4-L2", err_out)
+        self.assertIn("line anchors drift when the file changes; link a heading: architecture.md#L1-L3", err_out)
 
 
 if __name__ == "__main__":

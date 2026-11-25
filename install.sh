@@ -205,7 +205,7 @@ t() {
       PROJECT_NOTE) echo "项目级安装仅在 Agent 在该项目根启动时生效。" ;;
       ALSO_GLOBAL_HINT) echo "如需同时全局安装，重新跑命令并追加 --scope global。" ;;
       WIRE_HEADER) echo "下一步：让 Agent 将这段触发指令合并到本仓库的指令文件" ;;
-      WIRE_TARGET_HINT) echo "目标文件：CLAUDE.md / AGENTS.md / .cursorrules / GEMINI.md / 等（按你用的 Agent 选）" ;;
+      WIRE_TARGET_HINT) echo "目标文件：AGENTS.md / CLAUDE.md / .cursor/rules/ssot.mdc / .cursorrules / GEMINI.md / 等（按你用的 Agent 选）" ;;
       WIRE_GENERAL_HINT) echo "这段只适用于开发仓库。登记处、笔记、研究、创作等非代码空间改用已安装的 context-adapter.md；不确定时由 Agent 按安装指南第 4 步判断，必要时问你。" ;;
       WIRE_SEE_README) echo "由 Agent 合并指令并验证安装：https://github.com/huangpufan/SSOT-CONTEXT/blob/main/INSTALL.md#4-wire-the-skills-into-the-repos-agent-instructions-file" ;;
       WIRE_SYNC_HINT) echo "已有受管标记块可用 --check-block <文件> 核验，或 --sync-block <文件> 仅同步标记块内正文。" ;;
@@ -247,7 +247,7 @@ t() {
       PROJECT_NOTE) echo "Project installs apply only when the Agent starts in this project root." ;;
       ALSO_GLOBAL_HINT) echo "To also install globally, re-run with --scope global appended." ;;
       WIRE_HEADER) echo "Next: ask your Agent to merge this trigger block into this repo's instructions" ;;
-      WIRE_TARGET_HINT) echo "Target file: CLAUDE.md / AGENTS.md / .cursorrules / GEMINI.md / etc. (whichever your agent uses)" ;;
+      WIRE_TARGET_HINT) echo "Target file: AGENTS.md / CLAUDE.md / .cursor/rules/ssot.mdc / .cursorrules / GEMINI.md / etc. (whichever your agent uses)" ;;
       WIRE_GENERAL_HINT) echo "This block is for development repositories. Registries, notes, research, creative work and other non-code spaces use the installed context-adapter.md instead; when unsure, the agent decides under install guide step 4 and asks you if needed." ;;
       WIRE_SEE_README) echo "Ask your agent to merge the instructions and verify setup: https://github.com/huangpufan/SSOT-CONTEXT/blob/main/INSTALL.md#4-wire-the-skills-into-the-repos-agent-instructions-file" ;;
       WIRE_SYNC_HINT) echo "To check or refresh an existing marked block in place, run --check-block <file> or --sync-block <file>." ;;
@@ -459,6 +459,7 @@ select_agents() {
     (( cur < vstart )) && vstart=$cur
     (( cur >= vstart + viewport )) && vstart=$(( cur - viewport + 1 ))
     (( vstart < 0 )) && vstart=0
+    return 0
   }
 
   render() {
@@ -549,20 +550,28 @@ select_agents() {
       fi
       if [[ "$key2" == "[" ]]; then
         IFS= read -rsn 1 -u "$PROMPT_FD" key3 || key3=""
-        case "$key3" in
-          'A') (( cur > 0 )) && cur=$((cur - 1)) ;;
-          'B') (( cur < ${#visible[@]} - 1 )) && cur=$((cur + 1)) ;;
-          '5') IFS= read -rsn 1 -u "$PROMPT_FD" key3 || true
-               cur=$((cur - viewport))
-               (( cur < 0 )) && cur=0 ;;
-          '6') IFS= read -rsn 1 -u "$PROMPT_FD" key3 || true
-               cur=$((cur + viewport))
-               (( cur >= ${#visible[@]} )) && cur=$(( ${#visible[@]} - 1 )) ;;
-          'H') cur=0 ;;
-          'F') cur=$(( ${#visible[@]} - 1 )) ;;
-        esac
-        (( cur < vstart )) && vstart=$cur
-        (( cur >= vstart + viewport )) && vstart=$(( cur - viewport + 1 ))
+        if [[ ${#visible[@]} -gt 0 ]]; then
+          case "$key3" in
+            'A') (( cur > 0 )) && cur=$((cur - 1)) ;;
+            'B') (( cur < ${#visible[@]} - 1 )) && cur=$((cur + 1)) ;;
+            '5') IFS= read -rsn 1 -u "$PROMPT_FD" key3 || true
+                 cur=$((cur - viewport))
+                 (( cur < 0 )) && cur=0 ;;
+            '6') IFS= read -rsn 1 -u "$PROMPT_FD" key3 || true
+                 cur=$((cur + viewport))
+                 (( cur >= ${#visible[@]} )) && cur=$(( ${#visible[@]} - 1 )) ;;
+            'H') cur=0 ;;
+            'F') cur=$(( ${#visible[@]} - 1 )) ;;
+          esac
+          (( cur < vstart )) && vstart=$cur
+          (( cur >= vstart + viewport )) && vstart=$(( cur - viewport + 1 ))
+        else
+          case "$key3" in
+            '5'|'6') IFS= read -rsn 1 -u "$PROMPT_FD" key3 || true ;;
+          esac
+          cur=0
+          vstart=0
+        fi
       fi
     elif [[ "$key" == " " ]]; then
       [[ ${#visible[@]} -gt 0 ]] || continue
@@ -604,8 +613,11 @@ select_agents() {
 
   SELECTED_AGENT_KEYS=()
   for ((i = 0; i < count; i++)); do
-    [[ "${selected[$i]}" == "1" ]] && SELECTED_AGENT_KEYS+=("${agents[$i]}")
+    if [[ "${selected[$i]}" == "1" ]]; then
+      SELECTED_AGENT_KEYS+=("${agents[$i]}")
+    fi
   done
+  return 0
 }
 
 # -----------------------------------------------------------------------------
@@ -680,6 +692,7 @@ deepagents	Deep Agents	.agents/skills	$HOME/.deepagents/agent/skills	dir:$HOME/.
 devin	Devin for Terminal	.devin/skills	$XDG/devin/skills	dir:$XDG/devin
 dexto	Dexto	.agents/skills	$HOME/.agents/skills	dir:$HOME/.dexto
 droid	Droid	.factory/skills	$HOME/.factory/skills	dir:$HOME/.factory
+dsh	DeepSeek Harness (dsh)	.dsh/skills	$ENV:DSH_HOME/skills;alt:$HOME/.dsh/skills	env:DSH_HOME;dir:$HOME/.dsh;cmd:dsh
 firebender	Firebender	.agents/skills	$HOME/.firebender/skills	dir:$HOME/.firebender
 forgecode	ForgeCode	.forge/skills	$HOME/.forge/skills	dir:$HOME/.forge
 gemini-cli	Gemini CLI	.agents/skills	$HOME/.gemini/skills	dir:$HOME/.gemini/skills;cmd:gemini;file:$HOME/.gemini/settings.json
@@ -876,7 +889,18 @@ autodetect_agent() {
     echo "antigravity-app"; return
   fi
   # (ii-b) persistent config-directory env vars (lower precedence than active sessions)
-  if [[ -n "${CODEX_HOME:-}" ]]; then echo "codex"; return; fi
+  local -a env_agents=()
+  [[ -n "${CLAUDE_CONFIG_DIR:-}" ]] && env_agents+=("claude-code")
+  [[ -n "${CODEX_HOME:-}" ]] && env_agents+=("codex")
+  [[ -n "${DSH_HOME:-}" ]] && env_agents+=("dsh")
+  if [[ ${#env_agents[@]} -eq 1 ]]; then
+    echo "${env_agents[0]}"
+    return
+  fi
+  if [[ ${#env_agents[@]} -gt 1 ]]; then
+    err "multiple agents configured via environment (${env_agents[*]}): re-run with --agent <key>; see --list-agents"
+    return 1
+  fi
   # (iii) fs-based fallback via existing detect_agents
   if [[ ${#DETECTED_AGENTS[@]} -eq 1 ]]; then
     echo "${DETECTED_AGENTS[0]}"
@@ -910,25 +934,51 @@ is_known_agent() {
   return 1
 }
 
-# Remove duplicate (resolved base) entries from RESOLVED_AGENTS, warning when
+# Canonicalize a target directory path (resolving symlinks on existing prefixes)
+# so symlinked or differently spelled paths to the same physical directory deduplicate.
+canonicalize_target_path() {
+  local p="$1" cur tail="" real_cur
+  [[ "$p" == /* ]] || p="$PWD/$p"
+  while [[ "$p" != "/" && "$p" == */ ]]; do
+    p="${p%/}"
+  done
+  cur="$p"
+  while [[ ! -d "$cur" && "$cur" != "/" && "$cur" != "." ]]; do
+    tail="/$(basename "$cur")${tail}"
+    cur="$(dirname "$cur")"
+  done
+  if [[ -d "$cur" ]]; then
+    real_cur="$(cd "$cur" 2>/dev/null && pwd -P)" || real_cur="$cur"
+    if [[ "$real_cur" == "/" ]]; then
+      printf '/%s\n' "${tail#/}"
+    else
+      printf '%s%s\n' "$real_cur" "$tail"
+    fi
+  else
+    printf '%s\n' "$p"
+  fi
+}
+
+# Remove duplicate (canonical resolved base) entries from RESOLVED_AGENTS, warning when
 # multiple agents share the same physical install path (e.g. cline/dexto/loaf
-# all writing to ~/.agents/skills). Keeps the first occurrence.
+# all writing to ~/.agents/skills, or symlinked skill roots). Keeps the first occurrence.
 dedup_targets() {
   local scope="$1"
   local -A seen=()
   local -a unique=()
-  local agent base
+  local agent base canon
   for agent in "${RESOLVED_AGENTS[@]}"; do
     base="$(agent_base_for "$agent" "$scope")"
     if [[ -z "$base" ]]; then
-      # project-only agent selected at global scope — caller filters earlier
+      warn "${AGENT_LABELS[$agent]} has no ${scope} install location — skipped"
       continue
     fi
-    if [[ -z "${seen[$base]+x}" ]]; then
-      seen[$base]="$agent"
+    canon="$(canonicalize_target_path "$base")"
+    if [[ -z "${seen[$canon]+x}" ]]; then
+      seen[$canon]="$agent"
       unique+=("$agent")
     else
-      warn "skipping ${AGENT_LABELS[$agent]} — same target as ${AGENT_LABELS[${seen[$base]}]} (${base})"
+      warn "skipping ${AGENT_LABELS[$agent]} — same target as ${AGENT_LABELS[${seen[$canon]}]} (${base})"
     fi
   done
   RESOLVED_AGENTS=("${unique[@]}")
@@ -1211,8 +1261,12 @@ extract_file_block() {
 }
 
 detect_block_lang() {
-  local block="$1"
-  if [[ "$block" == *"工作流"* || "$block" == *"长期 context"* || "$block" == *"保护规则"* || "$block" == *"回读"* || "$block" == *"空间"* || "$block" == *"建库"* ]]; then
+  local block="$1" probe="$1" entry=""
+  if [[ "$block" == *"ssot_format: 5"* ]]; then
+    entry="$(extract_format5_entry "$block" 2>/dev/null || true)"
+    [[ -n "$entry" ]] && probe="${probe//"$entry"/}"
+  fi
+  if [[ "$probe" == *"工作流"* || "$probe" == *"长期 context"* || "$probe" == *"保护规则"* || "$probe" == *"回读"* || "$probe" == *"本空间"* || "$probe" == *"建库"* ]]; then
     echo "zh"
   else
     echo "en"
@@ -1323,8 +1377,18 @@ find_local_installed_template() {
   LOCAL_BLOCK_ALT_BASES=()
   LOCAL_BLOCK_ALT_VERS=()
 
-  local repo_root agent base proj glob tpl_root cand block_probe
+  local repo_root target_git_root="" pr agent base proj glob tpl_root cand block_probe
   repo_root="$(infer_instruction_root "$target_file")"
+  local -a proj_roots=("$repo_root")
+  if command -v git >/dev/null 2>&1; then
+    target_git_root="$(git -C "$repo_root" rev-parse --show-toplevel 2>/dev/null || true)"
+    if [[ -n "$target_git_root" && -d "$target_git_root" ]]; then
+      target_git_root="$(cd "$target_git_root" 2>/dev/null && pwd -P)" || target_git_root=""
+    fi
+  fi
+  if [[ -n "$target_git_root" && "$target_git_root" != "$repo_root" ]]; then
+    proj_roots+=("$target_git_root")
+  fi
 
   # Determine file-to-agent affinity from requested filename first, then canonical target.
   local -a aff_proj=() aff_agents=()
@@ -1354,8 +1418,8 @@ find_local_installed_template() {
     esac
   done
   if [[ ${#aff_agents[@]} -eq 0 ]]; then
-    aff_proj+=(".agents/skills" ".claude/skills" ".windsurf/skills")
-    aff_agents+=("codex" "claude-code" "antigravity-app" "cursor" "gemini-cli" "github-copilot" "windsurf")
+    aff_proj+=(".agents/skills" ".claude/skills" ".windsurf/skills" ".dsh/skills")
+    aff_agents+=("codex" "claude-code" "antigravity-app" "cursor" "gemini-cli" "github-copilot" "windsurf" "dsh")
   fi
 
   local -a scoped_proj=() scoped_glob=() all_proj=() all_glob=()
@@ -1365,7 +1429,7 @@ find_local_installed_template() {
       proj="${AGENT_PROJECT_BASES[$agent]:-}"
       glob="${AGENT_GLOBAL_BASES[$agent]:-}"
       if [[ -n "$proj" && "$ARG_SCOPE" != "global" ]]; then
-        scoped_proj+=("$repo_root/$proj" "$PWD/$proj")
+        for pr in "${proj_roots[@]}"; do scoped_proj+=("$pr/$proj"); done
       fi
       if [[ -n "$glob" && "$ARG_SCOPE" != "project" ]]; then
         scoped_glob+=("$glob")
@@ -1374,13 +1438,16 @@ find_local_installed_template() {
   else
     if [[ "$ARG_SCOPE" != "global" ]]; then
       for proj in "${aff_proj[@]}"; do
-        scoped_proj+=("$repo_root/$proj" "$PWD/$proj")
+        for pr in "${proj_roots[@]}"; do scoped_proj+=("$pr/$proj"); done
       done
-      scoped_proj+=("$repo_root/.agents/skills" "$repo_root/.claude/skills" "$repo_root/.windsurf/skills"
-                    "$PWD/.agents/skills" "$PWD/.claude/skills" "$PWD/.windsurf/skills")
+      for pr in "${proj_roots[@]}"; do
+        scoped_proj+=("$pr/.agents/skills" "$pr/.claude/skills" "$pr/.windsurf/skills" "$pr/.dsh/skills")
+      done
       for agent in "${ALL_AGENTS[@]}"; do
         proj="${AGENT_PROJECT_BASES[$agent]:-}"
-        [[ -n "$proj" ]] && scoped_proj+=("$repo_root/$proj" "$PWD/$proj")
+        if [[ -n "$proj" ]]; then
+          for pr in "${proj_roots[@]}"; do scoped_proj+=("$pr/$proj"); done
+        fi
       done
     fi
     if [[ "$ARG_SCOPE" != "project" ]]; then
@@ -1396,13 +1463,16 @@ find_local_installed_template() {
   fi
 
   # Also scan all project/global installations for version-skew detection and anti-downgrade.
-  for proj in "${aff_proj[@]}" ".agents/skills" ".claude/skills" ".windsurf/skills"; do
-    all_proj+=("$repo_root/$proj" "$PWD/$proj")
+  # Keep project lookups strictly scoped to target_file's repository (never unrelated $PWD).
+  for proj in "${aff_proj[@]}" ".agents/skills" ".claude/skills" ".windsurf/skills" ".dsh/skills"; do
+    for pr in "${proj_roots[@]}"; do all_proj+=("$pr/$proj"); done
   done
   for agent in "${ALL_AGENTS[@]}"; do
     proj="${AGENT_PROJECT_BASES[$agent]:-}"
     glob="${AGENT_GLOBAL_BASES[$agent]:-}"
-    [[ -n "$proj" ]] && all_proj+=("$repo_root/$proj" "$PWD/$proj")
+    if [[ -n "$proj" ]]; then
+      for pr in "${proj_roots[@]}"; do all_proj+=("$pr/$proj"); done
+    fi
     [[ -n "$glob" ]] && all_glob+=("$glob")
   done
 
@@ -1941,17 +2011,32 @@ remove_bundle() {
   begin_install_stage "$base"
   lock_install_stage
   local skill target companion
+  local -a to_remove=()
   for skill in "${BUNDLE_SKILLS[@]}"; do
-    target="$base/$skill"
-    [[ -e "$target" || -L "$target" ]] && rm -rf "$target"
+    target="$INSTALL_BASE/$skill"
+    [[ -e "$target" || -L "$target" ]] && to_remove+=("$skill")
   done
   for companion in "${BUNDLE_ROOT_FILES[@]}"; do
-    if bundle_companion_is_owned "$base/$companion"; then
-      rm -f "$base/$companion"
-    elif [[ -e "$base/$companion" || -L "$base/$companion" ]]; then
-      warn "preserving unowned bundle companion: $base/$companion"
+    if bundle_companion_is_owned "$INSTALL_BASE/$companion"; then
+      to_remove+=("$companion")
+    elif [[ -e "$INSTALL_BASE/$companion" || -L "$INSTALL_BASE/$companion" ]]; then
+      warn "preserving unowned bundle companion: $INSTALL_BASE/$companion"
     fi
   done
+  if [[ ${#to_remove[@]} -gt 0 ]]; then
+    {
+      printf 'SSOT-CONTEXT uninstall transaction\nLocation: %s\nInstaller PID: %s\n' "$INSTALL_BASE" "$$"
+      printf 'Old entries are in .backup; .had-old records prior presence; .touched records attempted slots.\n'
+      printf 'Preserve this directory if rollback fails or the process is killed.\n'
+      printf 'Planned removal slots: %s\n' "${to_remove[*]}"
+    } > "$INSTALL_STAGE/.ssot-transaction"
+    INSTALL_REPLACING=1
+    for skill in "${to_remove[@]}"; do
+      replace_install_entry "$skill"
+    done
+    rm -f -- "$INSTALL_STAGE/.ssot-transaction" # commit only after every removal is staged in .backup
+    INSTALL_REPLACING=0
+  fi
   finish_install_stage
 }
 

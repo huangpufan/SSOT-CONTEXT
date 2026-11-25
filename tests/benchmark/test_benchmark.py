@@ -390,6 +390,54 @@ class BenchmarkTest(unittest.TestCase):
             start.assert_not_called()
             self.assertFalse(out.exists())
 
+    def test_all_billable_runners_refuse_ci_without_launching_models(self):
+        repo_root = run.HERE.parents[1]
+        tests_root = repo_root / 'tests'
+        discovered = sorted(
+            str(p.relative_to(repo_root))
+            for p in tests_root.rglob('*.py')
+            if not p.name.startswith(('test_', 'test-'))
+            and '--run-models' in p.read_text(encoding='utf-8')
+        )
+        invocations = {
+            'tests/benchmark/bootstrap.py': (False, lambda out: ['--case', 'shift', '--bundle', str(repo_root), '--output', str(out), '--run-models']),
+            'tests/benchmark/catchup.py': (False, lambda out: ['--case', 'linked', '--bundle', str(repo_root), '--output', str(out), '--run-models']),
+            'tests/benchmark/handoff.py': (True, lambda out: ['--output', str(out), '--run-models']),
+            'tests/benchmark/run.py': (False, lambda out: ['--output', str(out), '--run-models']),
+            'tests/benchmark/six_shifts.py': (False, lambda out: ['--plain', '--output', str(out), '--run-models']),
+            'tests/benchmark/space_setup.py': (False, lambda out: ['--case', 'review', '--bundle', str(repo_root), '--output', str(out), '--run-models']),
+            'tests/benchmark/stewardship_paths.py': (False, lambda out: ['--plain', '--lane', 'research', '--output', str(out), '--run-models']),
+            'tests/context/installed_run.py': (True, lambda out: ['--output', str(out), '--run-models']),
+            'tests/context/run.py': (True, lambda out: ['--output', str(out), '--run-models']),
+            'tests/run-memory-trials.py': (False, lambda out: [str(out), '--arm', 'baseline', '--case', 'typo', '--run-models']),
+            'tests/run-migration-trials.py': (False, lambda out: ['--bundle', str(repo_root), '--output', str(out), '--run-models']),
+            'tests/run-performance-trials.py': (False, lambda out: ['--baseline', str(repo_root), '--candidate', str(repo_root), '--output', str(out), '--case', 'typo', '--run-models']),
+        }
+        self.assertEqual(discovered, sorted(invocations))
+        fake_bin = self.root / 'fake-bin'
+        fake_bin.mkdir()
+        launched = self.root / 'unexpected-model-launch'
+        sentinel = f'#!/bin/sh\necho "$0 $*" >> "{launched}"\nexit 99\n'
+        for tool in ('codex', 'claude', 'dsh', 'bwrap'):
+            exe = fake_bin / tool
+            exe.write_text(sentinel, encoding='utf-8')
+            exe.chmod(0o755)
+        env = {**run.os.environ, 'CI': '1', 'PATH': f'{fake_bin}:{run.os.environ.get("PATH", "")}'}
+        for idx, rel in enumerate(discovered):
+            needs_plan, build_args = invocations[rel]
+            with self.subTest(runner=rel):
+                out = self.root / f'ci-runner-{idx}'
+                if needs_plan:
+                    out.mkdir()
+                    (out / 'plan.json').write_text(json.dumps({'model': 'gpt-6.1-terra'}), encoding='utf-8')
+                proc = run.subprocess.run(
+                    [run.sys.executable, '-B', str(repo_root / rel), *build_args(out)],
+                    env=env, capture_output=True, text=True, timeout=15,
+                )
+                self.assertNotEqual(proc.returncode, 0, proc.stdout + proc.stderr)
+                self.assertRegex(proc.stdout + proc.stderr, r'(?i)(disabled in CI|forbidden in CI|No native calls in CI)')
+                self.assertFalse(launched.exists(), f'{rel} launched external tool under CI=1')
+
     def test_generated_memory_is_clean_except_the_intentional_broken_route(self):
         checker = run.HERE.parents[1]/'skills/ssot-doctor/assets/scripts/ssot-check.py'
         for case in cases.CASES:

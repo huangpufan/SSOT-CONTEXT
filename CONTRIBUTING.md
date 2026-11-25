@@ -48,17 +48,17 @@ Detailed shared material belongs in a reference, read at the point of use. `SKIL
 | Always-loaded full-6 skill catalog (including legacy compatibility shims) | 768 bytes |
 | Managed instruction block (`en`/`zh`, format 4/5, between markers) | 1,600 bytes each |
 | All `SKILL.md` files together | 3,600 words |
-| Hot-path runtime protocol (`SKILL.md` + daily core references) | 9,200 words |
-| Conditional/cold runtime branches (setup, migration, spaces, source, review) | 10,400 words |
+| Hot-path runtime protocol (core-4 `SKILL.md` + daily references) | 9,200 words |
+| Conditional/cold runtime branches (setup, migration, spaces, source, review, legacy shims) | 10,400 words |
 | Templates, per language | 16 KiB |
 | Runtime assets (`skills/` excluding Python scripts) | 160 KiB |
 | `ssot-check.py` | 96 KiB |
 | All bundle scripts (`skills/*/assets/scripts/*.py`) | 128 KiB |
 | All of `skills/` | 288 KiB |
 
-Following the [Stage 5 real-session audit](docs/2026-11-24-real-session-stage5-audit.md), the CI budget ruler separates always-loaded prompt surfaces (core-4/full-6 discovery catalogs and managed adapter blocks), model-read protocol text (exhaustively partitioned into hot-path and conditional/cold branches plus 160 KiB of runtime assets), and non-model-read executable scripts. Models run `ssot-check.py` and `context-source.py` via CLI rather than loading their source into context, so the executable script ceilings were decoupled to 96 KiB / 128 KiB (and the disjoint `skills/` total sum to 288 KiB = 160 KiB + 128 KiB) to remove the 13-byte checker cliff after sharding, drift-hint, and parser hardening while keeping v3's anti-400KB-linter boundary and leaving every model-read ceiling unchanged. Per-release budget history and evidence links live in [CHANGELOG.md](./CHANGELOG.md).
+Following the [Stage 5 real-session audit](docs/2026-11-24-real-session-stage5-audit.md), the CI budget ruler separates always-loaded prompt surfaces (core-4/full-6 discovery catalogs and managed adapter blocks), model-read protocol text (exhaustively partitioned into hot-path core-4 + daily references and conditional/cold branches including opt-in legacy shims, plus 160 KiB of runtime assets), and non-model-read executable scripts. Models run `ssot-check.py` and `context-source.py` via CLI rather than loading their source into context, so the executable script ceilings were decoupled to 96 KiB / 128 KiB (and the disjoint `skills/` total sum to 288 KiB = 160 KiB + 128 KiB) to remove the 13-byte checker cliff after sharding, drift-hint, and parser hardening while keeping v3's anti-400KB-linter boundary and leaving every model-read ceiling unchanged. Per-release budget history and evidence links live in [CHANGELOG.md](./CHANGELOG.md).
 
-A budget is a reason to rethink responsibilities, never a reason to cut a recovery or authorization branch to fit, and never a reason to rewrite unrelated rule text to make room: such edits are untested changes. In 3.5 the owner raised the limits from 3,000 and 8,000 words, with room left on purpose, after a trial branch had tightened about 40 unrelated sentences to fit new rules into the old limits; in 3.7 the owner raised the runtime limit from 9,500 to 10,000 words for the mining changes, instead of cutting other rules; in 3.9 the owner raised the checker limit from 40 to 44 KiB for the check on confirmed invariants; in 3.10 the owner raised the runtime limit from 10,000 to 11,000 words for the row-fixing step in mining. A v2 word cap once rejected a complete entrypoint for being complete. Raising a limit requires the same evidence as adding a rule. Record the reason in `CHANGELOG.md`.
+A budget is a reason to rethink responsibilities, never a reason to cut a recovery or authorization branch to fit, and never a reason to rewrite unrelated rule text to make room: such edits are untested changes. A v2 word cap once rejected a complete entrypoint for being complete. Raising a limit requires the same evidence as adding a rule; record the reason in `CHANGELOG.md`.
 
 ## Versions
 

@@ -15,14 +15,14 @@ Writer requirement: SSOT-CONTEXT 5.0 or newer. Older writers read only; upgrade 
 
 ## Invariants
 
-<!-- Lasting protected rules with accepted source standing retained. Hypotheses and attributed experiences are not candidate invariants. If none are known yet, keep the empty table and say so in one sentence (or link topic shards under invariants/<topic>.md when the register grows large). -->
+<!-- Lasting protected rules with accepted source standing retained. Hypotheses and attributed experiences are not candidate invariants. If none are known yet, keep the empty table and say so in one sentence (or link topic shards under invariants/<topic>.md from a bullet list, never a table, when the register grows large). -->
 
 | ID | Kind | Rule | Explained in | Status | Source |
 |---|---|---|---|---|---|
 
 <!-- Example row:
 | INV-01 | process rule | Never publish unredacted participant quotes | [Permissions](permissions.md#redaction) | confirmed | owner, 2026-05-02 |
-Kind: product promise, architecture invariant, or process rule (or the space's plain equivalent). Status must stay in English: confirmed = set by an authorized person; candidate = inferred protection, waiting for a person; retired = no longer applies (link the superseding decision). -->
+Kind: product promise, architecture invariant, or process rule (or the space's plain equivalent). Status must stay in English: confirmed = set by an authorized person; candidate = inferred protection, binds until a task needs to depart from it; retired = no longer applies (link the superseding decision). -->
 
 ## Open questions
 

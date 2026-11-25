@@ -50,6 +50,11 @@ FORMAT = "4"
 README_WARN_CHARS = 8000
 DOC_WARN_CHARS = 16000
 INLINE_SHARD_INFO_ROWS = 50
+TOTAL_ENTRY_INFO_CHARS = 16000
+SHARD_INFO_CHARS = 16000
+SHARD_INFO_ROWS = 50
+ROW_INFO_CHARS = 500
+REVIEWED_LAG_INFO_COMMITS = 100
 INSTRUCTION_FILES = (
     "AGENTS.md", "CLAUDE.md", "GEMINI.md",
     ".cursor/rules/ssot.mdc", ".cursorrules",
@@ -75,7 +80,7 @@ SCHEME_RE = re.compile(r"^[a-zA-Z][a-zA-Z0-9+.-]*:")
 ID_PAT = r"[A-Z][A-Z0-9]*(?:-[A-Z][A-Z0-9]*)*-\d+"  # INV-01, CORE-RULE-2
 INVARIANT_ID_RE = re.compile(f"^{ID_PAT}$")
 SEPARATOR_CELL_RE = re.compile(r"^:?-{3,}:?$")
-LINE_ANCHOR_RE = re.compile(r"^L(\d+)(?:-L?\d+)?$")
+LINE_ANCHOR_RE = re.compile(r"^L(\d+)(?:-L?(\d+))?$")
 SHA_RE = re.compile(r"^[0-9a-f]{7,40}$")
 
 
@@ -347,7 +352,7 @@ def resolve(doc, target):
     return os.path.normpath(os.path.join(os.path.dirname(doc), path_part)), fragment
 
 
-def check_link(report, doc, number, target, local_links=None):
+def check_link(report, doc, number, target, local_links=None, missing_links=None):
     target = target.strip()
     if not target or SCHEME_RE.match(target):
         return  # external URLs and mailto: are outside this checker's scope
@@ -374,7 +379,10 @@ def check_link(report, doc, number, target, local_links=None):
                    f"link leaves the repository and only works where the same folders sit beside it: {target}")
         return
     if not os.path.exists(resolved):
-        report.add("ERROR", doc, number, f"broken link: {target}")
+        if missing_links is not None:
+            missing_links.append((doc, number, target, resolved))
+        else:
+            report.add("ERROR", doc, number, f"broken link: {target}")
         return
     if local_links is not None and resolved != doc:
         local_links.append((doc, number, target, resolved))
@@ -384,7 +392,11 @@ def check_link(report, doc, number, target, local_links=None):
     if line_anchor:
         with open(resolved, encoding="utf-8", errors="replace") as handle:
             length = sum(1 for _ in handle)
-        if int(line_anchor.group(1)) > length:
+        start_line = int(line_anchor.group(1))
+        end_line = int(line_anchor.group(2)) if line_anchor.group(2) is not None else start_line
+        if start_line < 1 or end_line < start_line:
+            report.add("ERROR", doc, number, f"invalid line anchor: {target}")
+        elif end_line > length:
             report.add("ERROR", doc, number, f"line anchor past end of file: {target}")
         else:
             report.add("WARN", doc, number, f"line anchors drift when the file changes; link a heading: {target}")
@@ -562,6 +574,9 @@ def register_rows(text, doc_path=None):
 
 def validate_register_tables(report, doc, lines, body, tables, seen, shard_lines=()):
     refdefs = refdef_map(lines)
+    line_lengths = {number: len(line) for number, line in lines}
+    row_count = 0
+    long_rows = []
     if not tables:
         for number, line in body:
             if number in shard_lines:
@@ -599,6 +614,10 @@ def validate_register_tables(report, doc, lines, body, tables, seen, shard_lines
                 report.add("ERROR", doc, number, f"duplicate invariant ID {ident} (first on {where})")
             else:
                 seen[ident] = (doc, number)
+                row_count += 1
+                row_len = line_lengths.get(number, 0)
+                if row_len > ROW_INFO_CHARS:
+                    long_rows.append((number, ident, row_len))
             if not kind:
                 report.add("ERROR", doc, number,
                            f"invariant {ident} needs a kind (product promise, architecture invariant, or process rule)")
@@ -622,6 +641,15 @@ def validate_register_tables(report, doc, lines, body, tables, seen, shard_lines
             if not source:
                 report.add("ERROR", doc, number,
                            f"invariant {ident} needs a source (user directive, decision, or date)")
+    if long_rows:
+        max_num, max_id, max_len = max(long_rows, key=lambda item: item[2])
+        others = [ident for _, ident, _ in long_rows if ident != max_id][:3]
+        extra = f"; also {', '.join(others)}{', ...' if len(long_rows) > 4 else ''}" if others else ""
+        report.add("INFO", doc, max_num,
+                   f"{len(long_rows)} register row(s) exceed {ROW_INFO_CHARS} characters "
+                   f"(longest: {max_id} at {max_len} chars{extra}); "
+                   "keep each row to a concise constraint and move prose/history to Explained in")
+    return row_count
 
 
 def looks_like_invariants_table(table):
@@ -632,13 +660,39 @@ def looks_like_invariants_table(table):
     return any(INVARIANT_ID_RE.match(cells[0].strip("`* ")) for _, cells in table[1:] if cells)
 
 
+def invariants_sections(text):
+    """Return list of (start_line, end_line_or_None) spans for all INVARIANT_HEADINGS sections."""
+    sections = []
+    current = None
+    for number, level, raw in headings(text):
+        if current is not None and level <= current[1]:
+            sections.append((current[0], number))
+            current = None
+        if current is None and re.sub(r"^[\d.)\s]+", "", raw).lower().startswith(INVARIANT_HEADINGS):
+            current = (number, level)
+    if current is not None:
+        sections.append((current[0], None))
+    return sections
+
+
 def shard_register_tables(lines, text):
-    found = register_tables(lines, text)
-    if found is not None:
-        return found
-    all_tables = pipe_tables(lines)
-    inv_tables = [table for table in all_tables if looks_like_invariants_table(table)]
-    return lines, (inv_tables if inv_tables else all_tables)
+    sections = invariants_sections(text)
+    if not sections:
+        all_tables = pipe_tables(lines)
+        inv_tables = [table for table in all_tables if looks_like_invariants_table(table)]
+        return lines, (inv_tables if inv_tables else all_tables)
+    in_section = lambda num: any(start < num and (end is None or num < end) for start, end in sections)
+    body = [(n, line) for n, line in lines if in_section(n)]
+    outside = [(n, line) for n, line in lines if not in_section(n)]
+    tables = []
+    for start, end in sections:
+        sec_lines = [(n, line) for n, line in lines if start < n and (end is None or n < end)]
+        tables.extend(pipe_tables(sec_lines))
+    for table in pipe_tables(outside):
+        if looks_like_invariants_table(table):
+            tables.append(table)
+    tables.sort(key=lambda tbl: tbl[0][0])
+    return body, tables
 
 
 def check_invariants(report, readme, text, ssot_dir):
@@ -650,15 +704,20 @@ def check_invariants(report, readme, text, ssot_dir):
     body, tables = found
     shards, shard_lines = linked_shards(readme, lines, body, ssot_dir, report.documents, tables)
     seen = {}
-    validate_register_tables(report, readme, lines, body, tables, seen, shard_lines)
-    if len(seen) >= INLINE_SHARD_INFO_ROWS:
+    inline_rows = validate_register_tables(report, readme, lines, body, tables, seen, shard_lines)
+    if inline_rows >= INLINE_SHARD_INFO_ROWS:
         report.add("INFO", readme, None,
-                   f"{len(seen)} inline invariant rows in {os.path.basename(readme)}; "
+                   f"{inline_rows} inline invariant rows in {os.path.basename(readme)}; "
                    "optional topic shards (SSOT/invariants/<topic>.md) keep entry reads small")
     for shard_path, shard_text in shards:
         shard_lines_md = list(markdown_lines(shard_text))
         sbody, stables = shard_register_tables(shard_lines_md, shard_text)
-        validate_register_tables(report, shard_path, shard_lines_md, sbody, stables, seen)
+        shard_rows = validate_register_tables(report, shard_path, shard_lines_md, sbody, stables, seen)
+        if len(shard_text) > SHARD_INFO_CHARS or shard_rows > SHARD_INFO_ROWS:
+            report.add("INFO", shard_path, None,
+                       f"invariants shard is {len(shard_text)} characters and {shard_rows} row(s) "
+                       f"(>{SHARD_INFO_CHARS} chars or >{SHARD_INFO_ROWS} rows); "
+                       "split by sub-topic or trim rows to avoid tool truncation")
     return shards
 
 
@@ -1062,12 +1121,16 @@ F5_ENTRY_RE = re.compile(
     r"|^(.+?) defines this space \(`ssot_format: 5`\)", re.M)
 
 
-def check_gitignored_links(report, ssot_dir, local_links, entry=None):
-    if not local_links:
+def check_gitignored_links(report, ssot_dir, local_links, entry=None, missing_links=None):
+    missing_links = missing_links or []
+    local_links = local_links or []
+    if not local_links and not missing_links:
         return
     try:
         top = os.path.realpath(git_output(ssot_dir, "rev-parse", "--show-toplevel").rstrip("\n"))
     except (FileNotFoundError, GitError):
+        for doc, num, target, _ in missing_links:
+            report.add("ERROR", doc, num, f"broken link: {target}")
         return
     def rel_in_top(path, dereference=True):
         if dereference:
@@ -1098,32 +1161,44 @@ def check_gitignored_links(report, ssot_dir, local_links, entry=None):
                 return "/".join(parts[:idx + 1])
         return "/".join(parts)
 
-    entries, unique = [], {}
+    local_entries, missing_entries, unique = [], [], {}
     for doc, num, target, resolved in local_links:
         rels = tuple(dict.fromkeys(r for r in (rel_in_top(resolved, False), rel_in_top(resolved, True)) if r))
         if rels:
-            entries.append((doc, num, target, rels))
+            local_entries.append((doc, num, target, rels))
             for rel in rels:
                 unique[rel] = None
-    if not unique:
-        return
+    for doc, num, target, resolved in missing_links:
+        rels = tuple(dict.fromkeys(r for r in (rel_in_top(resolved, False), rel_in_top(resolved, True)) if r))
+        missing_entries.append((doc, num, target, rels))
+        for rel in rels:
+            unique[rel] = None
     entry_rel = rel_in_top(entry) if GENERAL[0] and entry else None
     if entry_rel:
         unique[entry_rel] = None
-    try:
-        res = subprocess.run(["git", *GIT_SAFE, "-C", top, "check-ignore", "-z", "--stdin"], env=GIT_ENV,
-                             input=("\0".join(unique) + "\0").encode("utf-8", "surrogateescape"),
-                             capture_output=True, check=False)
-    except OSError:
+    ignored = set()
+    if unique:
+        try:
+            res = subprocess.run(["git", *GIT_SAFE, "-C", top, "check-ignore", "-z", "--stdin"], env=GIT_ENV,
+                                 input=("\0".join(unique) + "\0").encode("utf-8", "surrogateescape"),
+                                 capture_output=True, check=False)
+            if res.returncode == 0:
+                ignored = set(filter(None, res.stdout.decode("utf-8", "surrogateescape").split("\0")))
+        except OSError:
+            pass
+    entry_ignored = bool(entry_rel and entry_rel in ignored)
+    for doc, num, target, rels in missing_entries:
+        if not entry_ignored and any(rel in ignored for rel in rels):
+            report.add("ERROR", doc, num,
+                       f"broken link to gitignored path (absent in worktree/clone — track target or use plain path/receipt text): {target}")
+        else:
+            report.add("ERROR", doc, num, f"broken link: {target}")
+    if entry_ignored:
         return
-    if res.returncode != 0:
-        return
-    ignored = set(filter(None, res.stdout.decode("utf-8", "surrogateescape").split("\0")))
-    if entry_rel and entry_rel in ignored:
-        return
-    for doc, num, target, rels in entries:
+    for doc, num, target, rels in local_entries:
         if any(rel in ignored for rel in rels):
-            report.add("WARN", doc, num, f"link targets gitignored path (may break after cleanup/clone): {target}")
+            report.add("WARN", doc, num,
+                       f"link targets gitignored path (breaks in worktrees/clones or after cleanup): {target}")
 
 
 def extract_managed_block(text):
@@ -1139,7 +1214,15 @@ def check_instruction_blocks(report, root):
         os.path.dirname(os.path.realpath(__file__)), "..", "..", "..", "ssot-bootstrap", "assets", "templates"))
     if not os.path.isdir(tpl_root):
         return
-    is_zh = lambda s: any(k in s for k in ("工作流", "长期 context", "保护规则", "回读", "空间", "建库"))
+    def is_zh(s):
+        probe = s
+        if "ssot_format: 5" in probe:
+            hit = F5_ENTRY_RE.search(probe)
+            if hit:
+                ent = (hit.group(1) or hit.group(2)).strip()
+                if ent:
+                    probe = probe.replace(ent, "")
+        return any(k in probe for k in ("工作流", "长期 context", "保护规则", "回读", "本空间", "建库"))
     checked = set()
     for name in INSTRUCTION_FILES:
         path = os.path.join(root, name)
@@ -1183,7 +1266,7 @@ def check_instruction_blocks(report, root):
 
 # --- reviewed_through ----------------------------------------------------------
 
-def check_reviewed_through(report, readme, value):
+def check_reviewed_through(report, readme, value, since=None):
     if not value:
         return
     if value.startswith("<"):
@@ -1215,6 +1298,16 @@ def check_reviewed_through(report, readme, value):
                        "are not a simple range; ask the user where catch-up should start")
         elif ancestor != 0:
             report.unchecked.append(f"reviewed_through: git failed with exit code {ancestor}")
+        elif not since:
+            try:
+                shallow = git_output(directory, "rev-parse", "--is-shallow-repository").strip() == "true"
+                if not shallow:
+                    behind = int(git_output(directory, "rev-list", "--count", f"{value}..HEAD").strip())
+                    if behind >= REVIEWED_LAG_INFO_COMMITS:
+                        report.add("INFO", readme, 1,
+                                   f"reviewed_through {value} is {behind} commits behind HEAD; consider a Doctor catch-up review")
+            except (GitError, ValueError):
+                pass
     except OSError:
         report.unchecked.append("reviewed_through: git is not available")
 
@@ -1271,12 +1364,17 @@ def repository_local(path):
     return True
 
 
-def checked_documents(ssot_dir, readme, report):
-    """Follow intermediate links only inside an explicit selection."""
+def checked_documents(ssot_dir, readme, report, shard_paths=()):
+    """Follow intermediate links only inside an explicit selection, plus 1-hop links from entry and shards."""
     selection = report.documents
     documents = ({readme} if GENERAL[0] or selection is not None
                  else set(markdown_files(ssot_dir, report)))
     pending = [readme] if os.path.isfile(readme) and repository_local(readme) else []
+    if selection is None:
+        for path in sorted(shard_paths):
+            if path != readme and os.path.isfile(path) and repository_local(path):
+                documents.add(path)
+                pending.append(path)
     while pending and documents != selection:
         doc = pending.pop()
         for _, target in link_targets(read_text(doc)):
@@ -1402,7 +1500,7 @@ def main(argv):
             shards = check_invariants(report, readme, text, ssot_dir)
             if not scoped:
                 check_confirmed(report, readme, text, since, ssot_dir, shards)
-                check_reviewed_through(report, readme, meta.get("reviewed_through"))
+                check_reviewed_through(report, readme, meta.get("reviewed_through"), since)
             if not GENERAL[0] and not scoped:
                 for path in ledgers(ssot_dir):
                     report.add("WARN", path, None,
@@ -1423,7 +1521,8 @@ def main(argv):
     shard_paths = {path for path, _ in shards}
     mentions = []
     local_links = [] if not scoped else None
-    for doc in checked_documents(ssot_dir, readme, report):
+    missing_links = [] if not scoped else None
+    for doc in checked_documents(ssot_dir, readme, report, shard_paths):
         if not repository_local(doc):
             report.add("ERROR", doc, None, "document leaves the repository (possibly through a symlink)")
             continue
@@ -1439,13 +1538,19 @@ def main(argv):
         if is_register_doc:  # the invariants register is meant to grow; budget the prose around it
             measured = "\n".join(line for line in text.splitlines()
                                   if not re.match(rf"^\s*\|\s*[`*]*{ID_PAT}", line))
+        is_ssot_owned = doc == readme or (inside(doc, ssot_dir) and (not GENERAL[0] or doc in shard_paths))
         if len(measured) > limit and "/.bootstrap/" not in doc and not legacy:
-            report.add("WARN", doc, None,
+            report.add("WARN" if is_ssot_owned else "INFO", doc, None,
                        f"{len(measured)} characters is past the {limit}-character reading budget"
                        f"{' (invariant rows not counted)' if is_register_doc else ''}; "
                        "split it by topic or move detail out")
+        if doc == readme and len(text) > TOTAL_ENTRY_INFO_CHARS and not legacy:
+            report.add("INFO", doc, None,
+                       f"total {os.path.basename(readme)} size is {len(text)} characters "
+                       f"(including register rows; >{TOTAL_ENTRY_INFO_CHARS}); "
+                       "large entries cause tool truncation — shard invariants or trim rows")
         for number, target in link_targets(text):
-            check_link(report, doc, number, target, local_links)
+            check_link(report, doc, number, target, local_links, missing_links)
         wrapped = list(hard_wrapped_paragraphs(text))
         if wrapped and not legacy:
             lines = ", ".join(str(n) for n in wrapped[:5]) + (", ..." if len(wrapped) > 5 else "")
@@ -1453,7 +1558,7 @@ def main(argv):
                        f"{len(wrapped)} paragraph(s) are broken across short lines (lines {lines}); "
                        "write each paragraph or list item as one line and let the editor wrap it")
     if not scoped:
-        check_gitignored_links(report, ssot_dir, local_links, readme)
+        check_gitignored_links(report, ssot_dir, local_links, readme, missing_links)
         check_removed_paths(report, ssot_dir, mentions, since)
         if not legacy:
             check_instruction_blocks(report, REPO_ROOT[0])

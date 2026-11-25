@@ -17,8 +17,6 @@ It works in two kinds of place:
 - **Development repositories.** People define invariants—outcomes that must keep holding, such as API compatibility or never charging twice on a retry—and agents change code within them. The entry is `SSOT/README.md` (`ssot_format: 4`).
 - **General context spaces you explicitly declare:** a research project, creative work, personal life domain, or organization. Git is optional, and existing folders and documents stay where they are. The entry is the document you name (`ssot_format: 5`).
 
-The project was previously named SSOT-SKILL; fresh installs ship the four core lifecycle skills, while existing upgrades preserve the old compatibility shims (`--with-legacy-shims` for fresh opt-in; [details](./INSTALL.md#project-rename-compatibility)).
-
 ## Principles
 
 - **One fact, one owner.** SSOT means Single Source of Truth: each durable fact has one maintained document responsible for keeping it accurate, and other documents link to it.
@@ -60,7 +58,7 @@ The script installs the skills and prints an instruction block, but does not edi
 Describe tasks normally. Four skills handle the workflow automatically:
 
 - [`ssot-preflight`](./skills/ssot-preflight/SKILL.md) reads the routes, applicable constraints and relevant owners before substantive work. Long development entries are read by section.
-- [`ssot-bootstrap`](./skills/ssot-bootstrap/SKILL.md) creates or migrates the context with your agreement. During repository setup, a writer and an independent reviewer can cover a bounded area with a usable existing guide, followed by a fresh reader. Areas that require reconstructing a guide across sources, and large or disputed areas, use distributed mining.
+- [`ssot-bootstrap`](./skills/ssot-bootstrap/SKILL.md) creates or migrates the context with your agreement, keeping existing authoritative documents in place and verifying the saved routes with a fresh reader.
 - [`ssot-closeout`](./skills/ssot-closeout/SKILL.md) saves settled goals, preferences and decisions as they happen. It uses the task record for requested handoffs and updates durable knowledge at batch end when something changed.
 - [`ssot-doctor`](./skills/ssot-doctor/SKILL.md) checks health and catches the context up with work done outside this workflow.
 
@@ -95,19 +93,19 @@ In a development repository only `SSOT/README.md` is required; the other files a
 
 Existing maintained documents can stay the owners and are linked from the entry. A general space has no fixed layout: its entry states purpose, scope and protected rules, and links the documents that already own each topic. An unfinished general space links its own setup record. Several spaces can share a directory. Details are in the [memory model](./skills/ssot-preflight/references/memory-model.md) and the [space model](./skills/ssot-preflight/references/context-spaces.md).
 
-A reader can answer a bounded lookup from the current authorized owner, update a single approved prose rule in place with on-disk readback, and split a large invariants register into optional topic shards (`SSOT/invariants/<topic>.md` or `ssot_register: shard`) checked across files by `ssot-check.py`. For deterministic commit-time checks across every agent without spending model tokens, see the opt-in [`tools/ssot-precommit.sh`](./tools/ssot-precommit.sh) guard ([setup](./docs/2026-11-24-install-maintenance.md#optional-zero-token-git-pre-commit-guard)).
+A reader can answer bounded lookups from one authorized owner and apply an approved single-owner prose edit in place with on-disk readback. When an invariants register grows large, topic groups can move into optional shards (`SSOT/invariants/<topic>.md`) checked across files by `ssot-check.py`. For deterministic commit-time checks across every agent without spending model tokens, wire the opt-in [`tools/ssot-precommit.sh`](./tools/ssot-precommit.sh) guard ([setup](./docs/2026-11-24-install-maintenance.md#optional-zero-token-git-pre-commit-guard)).
 
 ## Limits
 
 - **No background collection or host enforcement.** The skills act only when the agent loads them and sees the input; they cannot delete copies they cannot reach (Git history, backups, provider logs) or override host file permissions.
 - **Decision authority, restricted sources, and selected checks.** Handovers follow the project's decision authority while preserving prior attribution and rationale ([decision evidence](./skills/ssot-preflight/references/memory-model.md#human-decision-evidence)). Restricted sources support metadata-only withdrawal ([source integration](./skills/ssot-doctor/references/source-integration.md#correction-and-withdrawal)) and scoped structural checks with `--owners` ([selected checks](./skills/ssot-preflight/references/source-retention.md#selected-mechanical-checks)).
-- **Measured real-world gaps.** A 15-day audit of 386 real consumer sessions confirmed consistent preflight on code edits and 20 real catches of unauthorized confirmed-invariant edits, while exposing stale instruction blocks across upgraded workspaces, truncation on 200+ KB entries, and repeated preflight in spawned subagents ([Stage 5 real-session audit](./docs/2026-11-24-real-session-stage5-audit.md)).
+- **Operational gaps in prompt-only use.** Prompt-only workflows cannot guarantee 100% closeout compliance across every host or automatically sync copied instruction blocks and Git-tracked project skills across worktrees; pair with `--sync-block`, optional topic shards, global or symlinked installs, and the opt-in pre-commit guard where needed ([real-session audit](./docs/2026-11-24-real-session-stage5-audit.md)).
 
 ## Supported agents
 
-For Antigravity App, use `--agent agy`; project installation shares `.agents/skills` with Codex. The [maintenance guide](./docs/2026-11-24-install-maintenance.md#when-a-skill-appears-unavailable) covers App/CLI/IDE locations, child-repository discovery, and local symlink setup (`tools/link-local.py`).
+For Antigravity App, use `--agent agy` (project installs share `.agents/skills` with Codex); for DeepSeek Harness, use `--agent dsh`. The [maintenance guide](./docs/2026-11-24-install-maintenance.md#when-a-skill-appears-unavailable) covers surface locations, child-repository discovery, worktree guidance, and local symlink setup (`tools/link-local.py`).
 
-The installer knows the installation paths for **70+ agents**, including Claude Code, Codex, Cursor, Windsurf, Gemini CLI, GitHub Copilot, OpenCode, and Cline. A known path does not prove identical behavior, so after installing, restart the agent and confirm it discovers the skills. To list every key and path:
+The installer knows the installation paths for **70+ agents**, including Claude Code, Codex, Cursor, Windsurf, Gemini CLI, GitHub Copilot, DeepSeek Harness (`dsh`), OpenCode, and Cline. A known path does not prove identical behavior, so after installing, restart the agent and confirm it discovers the skills. To list every key and path:
 
 ```bash
 set -o pipefail
@@ -120,16 +118,22 @@ curl -fsSL https://raw.githubusercontent.com/huangpufan/SSOT-CONTEXT/main/instal
 Read https://raw.githubusercontent.com/huangpufan/SSOT-CONTEXT/main/INSTALL.md and update SSOT-CONTEXT for this agent in the current project. Preserve the template language.
 ```
 
-After updating the skill files (or pulling a symlinked checkout), check and refresh a supported repository instruction file's managed block via `curl -fsSL https://raw.githubusercontent.com/huangpufan/SSOT-CONTEXT/main/install.sh | bash -s -- --check-block <AGENTS.md|CLAUDE.md>` and `--sync-block <file>` (or run `bash install.sh ...` from a local checkout; offline sync matches the file's agent installation and never silently downgrades a newer block), then restart the agent. Updating preserves symlinked skill installs, never rewrites your context documents, and never forces format-4 repositories to convert to format 5. Manual commands, uninstalling, interrupted-install recovery, and 2.x/3.x migration are in [the maintenance guide](./INSTALL.md#update-or-remove-an-existing-installation).
+After updating skills (or pulling a symlinked checkout), check and refresh a repository's managed instruction block, then restart the agent:
+
+```bash
+curl -fsSL https://raw.githubusercontent.com/huangpufan/SSOT-CONTEXT/main/install.sh | bash -s -- --check-block AGENTS.md
+curl -fsSL https://raw.githubusercontent.com/huangpufan/SSOT-CONTEXT/main/install.sh | bash -s -- --sync-block AGENTS.md
+```
+
+Updating preserves symlinked skill installs, never rewrites your context documents, and never forces format-4 repositories to convert to format 5. Local checkout commands, multi-agent flags, uninstalling, interrupted-install recovery, 2.x/3.x migration, and [rename compatibility](./INSTALL.md#project-rename-compatibility) live in [the maintenance guide](./INSTALL.md#update-or-remove-an-existing-installation).
 
 ## Documentation
 
-- [Install guide](./INSTALL.md) and [maintenance/recovery reference](./docs/2026-11-24-install-maintenance.md): fresh setup, block sync, upgrade, removal, symlinks, and recovery.
+- [Install guide](./INSTALL.md) and [maintenance/recovery reference](./docs/2026-11-24-install-maintenance.md): fresh setup, block sync, upgrade, removal, symlinks, pre-commit guard, and recovery.
 - [Design](./DESIGN.md): why the bundle is shaped this way and what v3 removed.
-- [Stage 5 real-session audit](./docs/2026-11-24-real-session-stage5-audit.md) and [long-term route review](./docs/2026-11-20-context-evolution-route.md): 386 real consumer sessions, current stage, and next priorities.
-- [5.20 batch closeout](./docs/2026-11-25-closeout-delegation-concurrency-v5.20.md), [5.19 immediate capture](./docs/2026-11-25-bounded-shard-and-capture-v5.19.md), [5.18 closeout & sharding](./docs/2026-11-24-closeout-sharding-v5.18.md), [5.17 sharded register](./docs/2026-11-24-register-sharding-v5.17.md), [5.16 batching & readback](./docs/2026-11-24-batching-readback-v5.16.md), [cross-domain architecture study](./docs/2026-11-20-context-paths-study.md), and [everyday lookup/edit costs](./docs/2026-11-20-ordered-lookup-cost.md): paired native experiments and whole-task costs.
+- [Stage 5 real-session audit](./docs/2026-11-24-real-session-stage5-audit.md) and [long-term route review](./docs/2026-11-20-context-evolution-route.md): live consumer telemetry, current stage, and next priorities.
+- [Evaluation and recorded release studies](./tests/benchmark/README.md#recorded-studies-and-additional-lanes): paired native trials, cold handoffs, plain-docs controls, and evidence limits.
 - [Evolving research and creative projects](./docs/2026-11-14-evolving-research-and-creative-projects.md) (Chinese guide): practical examples for format-5 spaces.
-- [Evaluation](./tests/benchmark/README.md): task outcomes, cold handoff, plain-docs controls, and evidence limits.
 - [Changelog](./CHANGELOG.md), [Contributing](./CONTRIBUTING.md), [AGENTS.md](./AGENTS.md), and [Security policy](./SECURITY.md).
 
 ## Star History

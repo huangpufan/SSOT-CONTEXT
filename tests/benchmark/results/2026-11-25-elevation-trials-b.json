@@ -1,0 +1,1676 @@
+{
+  "study": "2026-11-25-elevation-trials-b",
+  "date": "2026-11-25",
+  "baseline_protocol": "5.20",
+  "baseline_commit_short": "baefb7e",
+  "verdicts": {
+    "E2_readonly_no_finding_exit": "adopted",
+    "E4_conditional_memory_model_preflight": "falsified_rejected"
+  },
+  "host": {
+    "cli": "codex-cli 0.172.0",
+    "model": "gpt-6.1-terra",
+    "reasoning": "medium",
+    "isolation": "linux bwrap + isolated CODEX_HOME + official install.sh --quickstart --agent codex --scope project"
+  },
+  "bundle_tree_sha256": {
+    "baseline": "d9bad6f4ea744ee3fcbee7b49f3e26772998813f92c61c36616f606754beee21",
+    "e2": "7649e0aa709ec3273ccc3e584609bad4c1caeb3b1e32b0a6b6dadd0590783814",
+    "e4": "33dd33250ec2cec31717d181ecbc2fea4ba134edc2dfaa22f3dd1c31efdaafec"
+  },
+  "bundle_shape_budgets": {
+    "baseline": {
+      "SKILL.md entrypoints": "3232 / 3600 words",
+      "hot-path runtime protocol (SKILL.md + daily references)": "8971 / 9200 words",
+      "conditional/cold runtime branches": "10041 / 10400 words",
+      "always-loaded core-4 skill catalog (name + description)": "508 / 600 bytes",
+      "always-loaded full-6 skill catalog (with legacy shims)": "677 / 768 bytes",
+      "managed block en/adapter-thin.md": "1415 / 1600 bytes",
+      "managed block en/context-adapter.md": "1123 / 1600 bytes",
+      "templates/en": "12336 / 16384 bytes",
+      "managed block zh/adapter-thin.md": "1339 / 1600 bytes",
+      "managed block zh/context-adapter.md": "1063 / 1600 bytes",
+      "templates/zh": "11849 / 16384 bytes",
+      "checker": "68387 / 98304 bytes",
+      "bundle scripts": "98158 / 131072 bytes",
+      "runtime assets (skills/ excluding scripts)": "158919 / 163840 bytes",
+      "skills/ total": "257077 / 294912 bytes"
+    },
+    "e2": {
+      "SKILL.md entrypoints": "3230 / 3600 words",
+      "hot-path runtime protocol (SKILL.md + daily references)": "8969 / 9200 words",
+      "conditional/cold runtime branches": "10041 / 10400 words",
+      "always-loaded core-4 skill catalog (name + description)": "508 / 600 bytes",
+      "always-loaded full-6 skill catalog (with legacy shims)": "677 / 768 bytes",
+      "managed block en/adapter-thin.md": "1415 / 1600 bytes",
+      "managed block en/context-adapter.md": "1123 / 1600 bytes",
+      "templates/en": "12336 / 16384 bytes",
+      "managed block zh/adapter-thin.md": "1339 / 1600 bytes",
+      "managed block zh/context-adapter.md": "1063 / 1600 bytes",
+      "templates/zh": "11849 / 16384 bytes",
+      "checker": "68387 / 98304 bytes",
+      "bundle scripts": "98158 / 131072 bytes",
+      "runtime assets (skills/ excluding scripts)": "158998 / 163840 bytes",
+      "skills/ total": "257156 / 294912 bytes"
+    },
+    "e4": {
+      "SKILL.md entrypoints": "3238 / 3600 words",
+      "hot-path runtime protocol (SKILL.md + daily references)": "8977 / 9200 words",
+      "conditional/cold runtime branches": "10041 / 10400 words",
+      "always-loaded core-4 skill catalog (name + description)": "508 / 600 bytes",
+      "always-loaded full-6 skill catalog (with legacy shims)": "677 / 768 bytes",
+      "managed block en/adapter-thin.md": "1415 / 1600 bytes",
+      "managed block en/context-adapter.md": "1123 / 1600 bytes",
+      "templates/en": "12336 / 16384 bytes",
+      "managed block zh/adapter-thin.md": "1339 / 1600 bytes",
+      "managed block zh/context-adapter.md": "1063 / 1600 bytes",
+      "templates/zh": "11849 / 16384 bytes",
+      "checker": "68387 / 98304 bytes",
+      "bundle scripts": "98158 / 131072 bytes",
+      "runtime assets (skills/ excluding scripts)": "159105 / 163840 bytes",
+      "skills/ total": "257263 / 294912 bytes"
+    }
+  },
+  "probes": {
+    "baseline": {
+      "ok": true,
+      "returncode": 0,
+      "skills_found": [
+        "ssot-bootstrap",
+        "ssot-closeout",
+        "ssot-doctor",
+        "ssot-preflight"
+      ],
+      "agents_md_loaded": true,
+      "prompt_bytes": 70487
+    },
+    "e2": {
+      "ok": true,
+      "returncode": 0,
+      "skills_found": [
+        "ssot-bootstrap",
+        "ssot-closeout",
+        "ssot-doctor",
+        "ssot-preflight"
+      ],
+      "agents_md_loaded": true,
+      "prompt_bytes": 70455
+    },
+    "e4": {
+      "ok": true,
+      "returncode": 0,
+      "skills_found": [
+        "ssot-bootstrap",
+        "ssot-closeout",
+        "ssot-doctor",
+        "ssot-preflight"
+      ],
+      "agents_md_loaded": true,
+      "prompt_bytes": 70456
+    }
+  },
+  "e2_aggregates": {
+    "E2_readonly_primary_2_pairs": {
+      "pairs": 2,
+      "baseline_pass": 2,
+      "candidate_pass": 2,
+      "baseline_input": 151158,
+      "candidate_input": 123566,
+      "input_delta_pct": -18.25,
+      "baseline_uncached": 32502,
+      "candidate_uncached": 17326,
+      "uncached_delta_pct": -46.69,
+      "baseline_output": 1660,
+      "candidate_output": 1615,
+      "baseline_api_turns": 8,
+      "candidate_api_turns": 7,
+      "api_turns_delta_pct": -12.5,
+      "baseline_tools": 10,
+      "candidate_tools": 11,
+      "baseline_preflight_reads": 2,
+      "candidate_preflight_reads": 1,
+      "baseline_seconds": 66.4,
+      "candidate_seconds": 60.28,
+      "baseline_closeout_reads": 1,
+      "candidate_closeout_reads": 0
+    },
+    "E2_counterexamples_4_pairs": {
+      "pairs": 4,
+      "baseline_pass": 4,
+      "candidate_pass": 4,
+      "baseline_input": 499891,
+      "candidate_input": 509852,
+      "input_delta_pct": 1.99,
+      "baseline_uncached": 68915,
+      "candidate_uncached": 64668,
+      "uncached_delta_pct": -6.16,
+      "baseline_output": 5425,
+      "candidate_output": 5368,
+      "baseline_api_turns": 24,
+      "candidate_api_turns": 25,
+      "api_turns_delta_pct": 4.17,
+      "baseline_tools": 39,
+      "candidate_tools": 40,
+      "baseline_preflight_reads": 3,
+      "candidate_preflight_reads": 3,
+      "baseline_seconds": 185.67,
+      "candidate_seconds": 195.21,
+      "baseline_closeout_reads": 4,
+      "candidate_closeout_reads": 4
+    },
+    "E2_predeclared_6_pairs": {
+      "pairs": 6,
+      "baseline_pass": 6,
+      "candidate_pass": 6,
+      "baseline_input": 651049,
+      "candidate_input": 633418,
+      "input_delta_pct": -2.71,
+      "baseline_uncached": 101417,
+      "candidate_uncached": 81994,
+      "uncached_delta_pct": -19.15,
+      "baseline_output": 7085,
+      "candidate_output": 6983,
+      "baseline_api_turns": 32,
+      "candidate_api_turns": 32,
+      "api_turns_delta_pct": 0.0,
+      "baseline_tools": 49,
+      "candidate_tools": 51,
+      "baseline_preflight_reads": 5,
+      "candidate_preflight_reads": 4,
+      "baseline_seconds": 252.06,
+      "candidate_seconds": 255.48,
+      "baseline_closeout_reads": 5,
+      "candidate_closeout_reads": 4
+    },
+    "E2_multiowner_readonly_confirm_2_pairs": {
+      "pairs": 2,
+      "baseline_pass": 2,
+      "candidate_pass": 2,
+      "baseline_input": 176530,
+      "candidate_input": 190928,
+      "input_delta_pct": 8.16,
+      "baseline_uncached": 30738,
+      "candidate_uncached": 24912,
+      "uncached_delta_pct": -18.95,
+      "baseline_output": 3089,
+      "candidate_output": 2485,
+      "baseline_api_turns": 9,
+      "candidate_api_turns": 10,
+      "api_turns_delta_pct": 11.11,
+      "baseline_tools": 14,
+      "candidate_tools": 9,
+      "baseline_preflight_reads": 2,
+      "candidate_preflight_reads": 2,
+      "baseline_seconds": 91.73,
+      "candidate_seconds": 83.5,
+      "baseline_closeout_reads": 1,
+      "candidate_closeout_reads": 0
+    },
+    "E2_all_readonly_4_pairs": {
+      "pairs": 4,
+      "baseline_pass": 4,
+      "candidate_pass": 4,
+      "baseline_input": 327688,
+      "candidate_input": 314494,
+      "input_delta_pct": -4.03,
+      "baseline_uncached": 63240,
+      "candidate_uncached": 42238,
+      "uncached_delta_pct": -33.21,
+      "baseline_output": 4749,
+      "candidate_output": 4100,
+      "baseline_api_turns": 17,
+      "candidate_api_turns": 17,
+      "api_turns_delta_pct": 0.0,
+      "baseline_tools": 24,
+      "candidate_tools": 20,
+      "baseline_preflight_reads": 4,
+      "candidate_preflight_reads": 3,
+      "baseline_seconds": 158.13,
+      "candidate_seconds": 143.77,
+      "baseline_closeout_reads": 2,
+      "candidate_closeout_reads": 0
+    },
+    "E2_ALL_8_pairs": {
+      "pairs": 8,
+      "baseline_pass": 8,
+      "candidate_pass": 8,
+      "baseline_input": 827579,
+      "candidate_input": 824346,
+      "input_delta_pct": -0.39,
+      "baseline_uncached": 132155,
+      "candidate_uncached": 106906,
+      "uncached_delta_pct": -19.11,
+      "baseline_output": 10174,
+      "candidate_output": 9468,
+      "baseline_api_turns": 41,
+      "candidate_api_turns": 42,
+      "api_turns_delta_pct": 2.44,
+      "baseline_tools": 63,
+      "candidate_tools": 60,
+      "baseline_preflight_reads": 7,
+      "candidate_preflight_reads": 6,
+      "baseline_seconds": 343.8,
+      "candidate_seconds": 338.98,
+      "baseline_closeout_reads": 6,
+      "candidate_closeout_reads": 4
+    }
+  },
+  "e4_aggregates": {
+    "E4_routine_primary_3_pairs": {
+      "pairs": 3,
+      "baseline_pass": 3,
+      "candidate_pass": 3,
+      "baseline_input": 393681,
+      "candidate_input": 413352,
+      "input_delta_pct": 5.0,
+      "baseline_uncached": 51665,
+      "candidate_uncached": 41896,
+      "uncached_delta_pct": -18.91,
+      "baseline_output": 3980,
+      "candidate_output": 4371,
+      "baseline_api_turns": 19,
+      "candidate_api_turns": 21,
+      "api_turns_delta_pct": 10.53,
+      "baseline_tools": 29,
+      "candidate_tools": 39,
+      "baseline_preflight_reads": 3,
+      "candidate_preflight_reads": 3,
+      "baseline_seconds": 135.89,
+      "candidate_seconds": 146.42,
+      "baseline_memory_model_reads": 3,
+      "candidate_memory_model_reads": 1
+    },
+    "E4_safety_counterexamples_5_pairs": {
+      "pairs": 5,
+      "baseline_pass": 5,
+      "candidate_pass": 5,
+      "baseline_input": 454950,
+      "candidate_input": 480905,
+      "input_delta_pct": 5.71,
+      "baseline_uncached": 69286,
+      "candidate_uncached": 86153,
+      "uncached_delta_pct": 24.34,
+      "baseline_output": 4360,
+      "candidate_output": 4498,
+      "baseline_api_turns": 23,
+      "candidate_api_turns": 24,
+      "api_turns_delta_pct": 4.35,
+      "baseline_tools": 35,
+      "candidate_tools": 45,
+      "baseline_preflight_reads": 5,
+      "candidate_preflight_reads": 5,
+      "baseline_seconds": 158.82,
+      "candidate_seconds": 169.9,
+      "baseline_memory_model_reads": 5,
+      "candidate_memory_model_reads": 5
+    },
+    "E4_ALL_8_pairs": {
+      "pairs": 8,
+      "baseline_pass": 8,
+      "candidate_pass": 8,
+      "baseline_input": 848631,
+      "candidate_input": 894257,
+      "input_delta_pct": 5.38,
+      "baseline_uncached": 120951,
+      "candidate_uncached": 128049,
+      "uncached_delta_pct": 5.87,
+      "baseline_output": 8340,
+      "candidate_output": 8869,
+      "baseline_api_turns": 42,
+      "candidate_api_turns": 45,
+      "api_turns_delta_pct": 7.14,
+      "baseline_tools": 64,
+      "candidate_tools": 84,
+      "baseline_preflight_reads": 8,
+      "candidate_preflight_reads": 8,
+      "baseline_seconds": 294.71,
+      "candidate_seconds": 316.32,
+      "baseline_memory_model_reads": 8,
+      "candidate_memory_model_reads": 6
+    }
+  },
+  "e2_runs": [
+    {
+      "suite": "E2",
+      "pair_id": "E2_A1_readonly_review_en",
+      "group": "E2_readonly_primary",
+      "order": "B->C",
+      "arm": "baseline",
+      "completed": true,
+      "observation_complete": true,
+      "returncode": 0,
+      "seconds": 35.483,
+      "models": [
+        "gpt-6.1-terra"
+      ],
+      "reasoning": [
+        "medium"
+      ],
+      "input_tokens": 75103,
+      "cached_input_tokens": 57728,
+      "uncached_input_tokens": 17375,
+      "output_tokens": 885,
+      "api_turns": 4,
+      "tool_calls": 5,
+      "protocol_reads": [
+        "ssot-preflight/SKILL.md",
+        "ssot-preflight/references/memory-model.md"
+      ],
+      "ran_checker": false,
+      "checker_calls": 0,
+      "changed_files": [],
+      "passed": true,
+      "raw_oracle_passed": false,
+      "checks": {
+        "no_files_changed": true,
+        "found_real_risk": true,
+        "checked_invariants": false,
+        "loaded_closeout": false
+      },
+      "oracle_note": "Raw keyword check looked for literal 'idempotency'/'3'; artifact inspection verified full semantic pass ('passes the same header mapping on each attempt and limits delivery to three attempts', all 3 code risks found, 0 edits)."
+    },
+    {
+      "suite": "E2",
+      "pair_id": "E2_A1_readonly_review_en",
+      "group": "E2_readonly_primary",
+      "order": "B->C",
+      "arm": "candidate",
+      "completed": true,
+      "observation_complete": true,
+      "returncode": 0,
+      "seconds": 33.304,
+      "models": [
+        "gpt-6.1-terra"
+      ],
+      "reasoning": [
+        "medium"
+      ],
+      "input_tokens": 75876,
+      "cached_input_tokens": 65920,
+      "uncached_input_tokens": 9956,
+      "output_tokens": 1022,
+      "api_turns": 4,
+      "tool_calls": 7,
+      "protocol_reads": [
+        "ssot-preflight/SKILL.md",
+        "ssot-preflight/references/memory-model.md"
+      ],
+      "ran_checker": false,
+      "checker_calls": 0,
+      "changed_files": [],
+      "passed": true,
+      "raw_oracle_passed": true,
+      "checks": {
+        "no_files_changed": true,
+        "found_real_risk": true,
+        "checked_invariants": true,
+        "loaded_closeout": false
+      },
+      "oracle_note": null
+    },
+    {
+      "suite": "E2",
+      "pair_id": "E2_A2_readonly_trace_zh",
+      "group": "E2_readonly_primary",
+      "order": "C->B",
+      "arm": "baseline",
+      "completed": true,
+      "observation_complete": true,
+      "returncode": 0,
+      "seconds": 30.914,
+      "models": [
+        "gpt-6.1-terra"
+      ],
+      "reasoning": [
+        "medium"
+      ],
+      "input_tokens": 76055,
+      "cached_input_tokens": 60928,
+      "uncached_input_tokens": 15127,
+      "output_tokens": 775,
+      "api_turns": 4,
+      "tool_calls": 5,
+      "protocol_reads": [
+        "ssot-closeout/SKILL.md",
+        "ssot-preflight/SKILL.md",
+        "ssot-preflight/references/memory-model.md"
+      ],
+      "ran_checker": false,
+      "checker_calls": 0,
+      "changed_files": [],
+      "passed": true,
+      "raw_oracle_passed": true,
+      "checks": {
+        "no_files_changed": true,
+        "accurate_trace": true,
+        "loaded_closeout": true
+      },
+      "oracle_note": null
+    },
+    {
+      "suite": "E2",
+      "pair_id": "E2_A2_readonly_trace_zh",
+      "group": "E2_readonly_primary",
+      "order": "C->B",
+      "arm": "candidate",
+      "completed": true,
+      "observation_complete": true,
+      "returncode": 0,
+      "seconds": 26.971,
+      "models": [
+        "gpt-6.1-terra"
+      ],
+      "reasoning": [
+        "medium"
+      ],
+      "input_tokens": 47690,
+      "cached_input_tokens": 40320,
+      "uncached_input_tokens": 7370,
+      "output_tokens": 593,
+      "api_turns": 3,
+      "tool_calls": 4,
+      "protocol_reads": [],
+      "ran_checker": false,
+      "checker_calls": 0,
+      "changed_files": [],
+      "passed": true,
+      "raw_oracle_passed": true,
+      "checks": {
+        "no_files_changed": true,
+        "accurate_trace": true,
+        "loaded_closeout": false
+      },
+      "oracle_note": null
+    },
+    {
+      "suite": "E2",
+      "pair_id": "E2_C1_readonly_finds_wrong_ssot_en",
+      "group": "E2_counterexamples",
+      "order": "B->C",
+      "arm": "baseline",
+      "completed": true,
+      "observation_complete": true,
+      "returncode": 0,
+      "seconds": 38.896,
+      "models": [
+        "gpt-6.1-terra"
+      ],
+      "reasoning": [
+        "medium"
+      ],
+      "input_tokens": 107969,
+      "cached_input_tokens": 94080,
+      "uncached_input_tokens": 13889,
+      "output_tokens": 1234,
+      "api_turns": 5,
+      "tool_calls": 9,
+      "protocol_reads": [
+        "ssot-closeout/SKILL.md",
+        "ssot-closeout/references/batch-closeout.md",
+        "ssot-doctor/SKILL.md",
+        "ssot-preflight/SKILL.md",
+        "ssot-preflight/references/memory-model.md",
+        "ssot-preflight/references/writing-memory.md"
+      ],
+      "ran_checker": true,
+      "checker_calls": 2,
+      "changed_files": [
+        "SSOT/architecture.md"
+      ],
+      "passed": true,
+      "raw_oracle_passed": false,
+      "checks": {
+        "code_untouched": true,
+        "loaded_closeout": true,
+        "repaired_wrong_ssot": false,
+        "checker_pass": true
+      },
+      "oracle_note": "Raw regex expected literal '600'/'LRU'/'2048' in SSOT/architecture.md; artifact inspection verified full semantic pass following memory-model.md §2 (replaced FIFO/300/1000 with 'least recently used' and pointed to src/cache.py for defaults, reported 600s/2,048/LRU accurately, passed ssot-check.py)."
+    },
+    {
+      "suite": "E2",
+      "pair_id": "E2_C1_readonly_finds_wrong_ssot_en",
+      "group": "E2_counterexamples",
+      "order": "B->C",
+      "arm": "candidate",
+      "completed": true,
+      "observation_complete": true,
+      "returncode": 0,
+      "seconds": 44.868,
+      "models": [
+        "gpt-6.1-terra"
+      ],
+      "reasoning": [
+        "medium"
+      ],
+      "input_tokens": 103309,
+      "cached_input_tokens": 85376,
+      "uncached_input_tokens": 17933,
+      "output_tokens": 1382,
+      "api_turns": 5,
+      "tool_calls": 7,
+      "protocol_reads": [
+        "ssot-closeout/SKILL.md",
+        "ssot-closeout/references/batch-closeout.md",
+        "ssot-preflight/SKILL.md",
+        "ssot-preflight/references/memory-model.md",
+        "ssot-preflight/references/writing-memory.md"
+      ],
+      "ran_checker": true,
+      "checker_calls": 1,
+      "changed_files": [
+        "SSOT/architecture.md"
+      ],
+      "passed": true,
+      "raw_oracle_passed": false,
+      "checks": {
+        "code_untouched": true,
+        "loaded_closeout": true,
+        "repaired_wrong_ssot": false,
+        "checker_pass": true
+      },
+      "oracle_note": "Raw regex expected literal '600'/'LRU'/'2048' in SSOT/architecture.md; artifact inspection verified full semantic pass following memory-model.md §2 (replaced FIFO/300/1000 with 'least recently used' and pointed to src/cache.py for defaults, reported 600s/2,048/LRU accurately, passed ssot-check.py)."
+    },
+    {
+      "suite": "E2",
+      "pair_id": "E2_C2_discussion_decision_zh",
+      "group": "E2_counterexamples",
+      "order": "C->B",
+      "arm": "baseline",
+      "completed": true,
+      "observation_complete": true,
+      "returncode": 0,
+      "seconds": 55.049,
+      "models": [
+        "gpt-6.1-terra"
+      ],
+      "reasoning": [
+        "medium"
+      ],
+      "input_tokens": 140556,
+      "cached_input_tokens": 118272,
+      "uncached_input_tokens": 22284,
+      "output_tokens": 1432,
+      "api_turns": 7,
+      "tool_calls": 11,
+      "protocol_reads": [
+        "ssot-closeout/SKILL.md",
+        "ssot-closeout/references/decision-capture.md",
+        "ssot-preflight/references/memory-model.md",
+        "ssot-preflight/references/writing-memory.md"
+      ],
+      "ran_checker": true,
+      "checker_calls": 1,
+      "changed_files": [
+        "SSOT/README.md",
+        "docs/webhooks.md"
+      ],
+      "passed": true,
+      "raw_oracle_passed": true,
+      "checks": {
+        "code_untouched": true,
+        "loaded_closeout": true,
+        "captured_confirmed_rule": true,
+        "checker_pass": true
+      },
+      "oracle_note": null
+    },
+    {
+      "suite": "E2",
+      "pair_id": "E2_C2_discussion_decision_zh",
+      "group": "E2_counterexamples",
+      "order": "C->B",
+      "arm": "candidate",
+      "completed": true,
+      "observation_complete": true,
+      "returncode": 0,
+      "seconds": 40.348,
+      "models": [
+        "gpt-6.1-terra"
+      ],
+      "reasoning": [
+        "medium"
+      ],
+      "input_tokens": 131138,
+      "cached_input_tokens": 121216,
+      "uncached_input_tokens": 9922,
+      "output_tokens": 1000,
+      "api_turns": 7,
+      "tool_calls": 8,
+      "protocol_reads": [
+        "ssot-closeout/SKILL.md",
+        "ssot-closeout/references/decision-capture.md",
+        "ssot-preflight/references/memory-model.md"
+      ],
+      "ran_checker": true,
+      "checker_calls": 1,
+      "changed_files": [
+        "SSOT/README.md",
+        "docs/webhooks.md"
+      ],
+      "passed": true,
+      "raw_oracle_passed": true,
+      "checks": {
+        "code_untouched": true,
+        "loaded_closeout": true,
+        "captured_confirmed_rule": true,
+        "checker_pass": true
+      },
+      "oracle_note": null
+    },
+    {
+      "suite": "E2",
+      "pair_id": "E2_C3_readonly_finds_trap_en",
+      "group": "E2_counterexamples",
+      "order": "B->C",
+      "arm": "baseline",
+      "completed": true,
+      "observation_complete": true,
+      "returncode": 0,
+      "seconds": 53.103,
+      "models": [
+        "gpt-6.1-terra"
+      ],
+      "reasoning": [
+        "medium"
+      ],
+      "input_tokens": 153025,
+      "cached_input_tokens": 140288,
+      "uncached_input_tokens": 12737,
+      "output_tokens": 1521,
+      "api_turns": 7,
+      "tool_calls": 11,
+      "protocol_reads": [
+        "ssot-closeout/SKILL.md",
+        "ssot-closeout/references/batch-closeout.md",
+        "ssot-preflight/SKILL.md",
+        "ssot-preflight/references/memory-model.md",
+        "ssot-preflight/references/writing-memory.md"
+      ],
+      "ran_checker": true,
+      "checker_calls": 1,
+      "changed_files": [
+        "SSOT/gotchas.md"
+      ],
+      "passed": true,
+      "raw_oracle_passed": true,
+      "checks": {
+        "code_untouched": true,
+        "loaded_closeout": true,
+        "trap_recorded_in_gotchas": true,
+        "checker_pass": true
+      },
+      "oracle_note": null
+    },
+    {
+      "suite": "E2",
+      "pair_id": "E2_C3_readonly_finds_trap_en",
+      "group": "E2_counterexamples",
+      "order": "B->C",
+      "arm": "candidate",
+      "completed": true,
+      "observation_complete": true,
+      "returncode": 0,
+      "seconds": 50.987,
+      "models": [
+        "gpt-6.1-terra"
+      ],
+      "reasoning": [
+        "medium"
+      ],
+      "input_tokens": 173425,
+      "cached_input_tokens": 148224,
+      "uncached_input_tokens": 25201,
+      "output_tokens": 1540,
+      "api_turns": 8,
+      "tool_calls": 18,
+      "protocol_reads": [
+        "ssot-closeout/SKILL.md",
+        "ssot-closeout/references/batch-closeout.md",
+        "ssot-preflight/SKILL.md",
+        "ssot-preflight/references/memory-model.md",
+        "ssot-preflight/references/writing-memory.md"
+      ],
+      "ran_checker": true,
+      "checker_calls": 1,
+      "changed_files": [
+        "SSOT/gotchas.md"
+      ],
+      "passed": true,
+      "raw_oracle_passed": true,
+      "checks": {
+        "code_untouched": true,
+        "loaded_closeout": true,
+        "trap_recorded_in_gotchas": true,
+        "checker_pass": true
+      },
+      "oracle_note": null
+    },
+    {
+      "suite": "E2",
+      "pair_id": "E2_C4_normal_code_edit_en",
+      "group": "E2_counterexamples",
+      "order": "C->B",
+      "arm": "baseline",
+      "completed": true,
+      "observation_complete": true,
+      "returncode": 0,
+      "seconds": 38.619,
+      "models": [
+        "gpt-6.1-terra"
+      ],
+      "reasoning": [
+        "medium"
+      ],
+      "input_tokens": 98341,
+      "cached_input_tokens": 78336,
+      "uncached_input_tokens": 20005,
+      "output_tokens": 1238,
+      "api_turns": 5,
+      "tool_calls": 8,
+      "protocol_reads": [
+        "ssot-closeout/SKILL.md",
+        "ssot-preflight/SKILL.md",
+        "ssot-preflight/references/memory-model.md"
+      ],
+      "ran_checker": false,
+      "checker_calls": 0,
+      "changed_files": [
+        "shipping.py"
+      ],
+      "passed": true,
+      "raw_oracle_passed": true,
+      "checks": {
+        "loaded_closeout": true,
+        "only_requested_file_changed": true,
+        "contract_and_boundaries": true
+      },
+      "oracle_note": null
+    },
+    {
+      "suite": "E2",
+      "pair_id": "E2_C4_normal_code_edit_en",
+      "group": "E2_counterexamples",
+      "order": "C->B",
+      "arm": "candidate",
+      "completed": true,
+      "observation_complete": true,
+      "returncode": 0,
+      "seconds": 59.006,
+      "models": [
+        "gpt-6.1-terra"
+      ],
+      "reasoning": [
+        "medium"
+      ],
+      "input_tokens": 101980,
+      "cached_input_tokens": 90368,
+      "uncached_input_tokens": 11612,
+      "output_tokens": 1446,
+      "api_turns": 5,
+      "tool_calls": 7,
+      "protocol_reads": [
+        "ssot-closeout/SKILL.md",
+        "ssot-preflight/SKILL.md",
+        "ssot-preflight/references/memory-model.md"
+      ],
+      "ran_checker": false,
+      "checker_calls": 0,
+      "changed_files": [
+        "shipping.py"
+      ],
+      "passed": true,
+      "raw_oracle_passed": true,
+      "checks": {
+        "loaded_closeout": true,
+        "only_requested_file_changed": true,
+        "contract_and_boundaries": true
+      },
+      "oracle_note": null
+    },
+    {
+      "suite": "E2",
+      "pair_id": "E2_A3_r1_multiowner_readonly_zh",
+      "group": "E2_readonly_confirm",
+      "order": "B->C",
+      "arm": "baseline",
+      "completed": true,
+      "observation_complete": true,
+      "returncode": 0,
+      "seconds": 42.869,
+      "models": [
+        "gpt-6.1-terra"
+      ],
+      "reasoning": [
+        "medium"
+      ],
+      "input_tokens": 78548,
+      "cached_input_tokens": 57600,
+      "uncached_input_tokens": 20948,
+      "output_tokens": 1560,
+      "api_turns": 4,
+      "tool_calls": 7,
+      "protocol_reads": [
+        "ssot-closeout/SKILL.md",
+        "ssot-preflight/SKILL.md",
+        "ssot-preflight/references/memory-model.md"
+      ],
+      "ran_checker": false,
+      "checker_calls": 0,
+      "changed_files": [],
+      "passed": true,
+      "raw_oracle_passed": true,
+      "checks": {
+        "no_files_changed": true,
+        "accurate_trace": true,
+        "loaded_preflight": true,
+        "loaded_closeout": true
+      },
+      "oracle_note": null
+    },
+    {
+      "suite": "E2",
+      "pair_id": "E2_A3_r1_multiowner_readonly_zh",
+      "group": "E2_readonly_confirm",
+      "order": "B->C",
+      "arm": "candidate",
+      "completed": true,
+      "observation_complete": true,
+      "returncode": 0,
+      "seconds": 43.943,
+      "models": [
+        "gpt-6.1-terra"
+      ],
+      "reasoning": [
+        "medium"
+      ],
+      "input_tokens": 93780,
+      "cached_input_tokens": 83584,
+      "uncached_input_tokens": 10196,
+      "output_tokens": 1290,
+      "api_turns": 5,
+      "tool_calls": 5,
+      "protocol_reads": [
+        "ssot-preflight/SKILL.md",
+        "ssot-preflight/references/memory-model.md"
+      ],
+      "ran_checker": false,
+      "checker_calls": 0,
+      "changed_files": [],
+      "passed": true,
+      "raw_oracle_passed": true,
+      "checks": {
+        "no_files_changed": true,
+        "accurate_trace": true,
+        "loaded_preflight": true,
+        "loaded_closeout": false
+      },
+      "oracle_note": null
+    },
+    {
+      "suite": "E2",
+      "pair_id": "E2_A3_r2_multiowner_readonly_en",
+      "group": "E2_readonly_confirm",
+      "order": "C->B",
+      "arm": "baseline",
+      "completed": true,
+      "observation_complete": true,
+      "returncode": 0,
+      "seconds": 48.866,
+      "models": [
+        "gpt-6.1-terra"
+      ],
+      "reasoning": [
+        "medium"
+      ],
+      "input_tokens": 97982,
+      "cached_input_tokens": 88192,
+      "uncached_input_tokens": 9790,
+      "output_tokens": 1529,
+      "api_turns": 5,
+      "tool_calls": 7,
+      "protocol_reads": [
+        "ssot-preflight/SKILL.md",
+        "ssot-preflight/references/memory-model.md"
+      ],
+      "ran_checker": false,
+      "checker_calls": 0,
+      "changed_files": [],
+      "passed": true,
+      "raw_oracle_passed": true,
+      "checks": {
+        "no_files_changed": true,
+        "accurate_trace": true,
+        "loaded_preflight": true,
+        "loaded_closeout": false
+      },
+      "oracle_note": null
+    },
+    {
+      "suite": "E2",
+      "pair_id": "E2_A3_r2_multiowner_readonly_en",
+      "group": "E2_readonly_confirm",
+      "order": "C->B",
+      "arm": "candidate",
+      "completed": true,
+      "observation_complete": true,
+      "returncode": 0,
+      "seconds": 39.552,
+      "models": [
+        "gpt-6.1-terra"
+      ],
+      "reasoning": [
+        "medium"
+      ],
+      "input_tokens": 97148,
+      "cached_input_tokens": 82432,
+      "uncached_input_tokens": 14716,
+      "output_tokens": 1195,
+      "api_turns": 5,
+      "tool_calls": 4,
+      "protocol_reads": [
+        "ssot-preflight/SKILL.md",
+        "ssot-preflight/references/memory-model.md"
+      ],
+      "ran_checker": false,
+      "checker_calls": 0,
+      "changed_files": [],
+      "passed": true,
+      "raw_oracle_passed": true,
+      "checks": {
+        "no_files_changed": true,
+        "accurate_trace": true,
+        "loaded_preflight": true,
+        "loaded_closeout": false
+      },
+      "oracle_note": null
+    }
+  ],
+  "e4_runs": [
+    {
+      "suite": "E4",
+      "pair_id": "E4_A1_routine_code_en",
+      "group": "E4_routine_primary",
+      "order": "B->C",
+      "arm": "baseline",
+      "completed": true,
+      "observation_complete": true,
+      "returncode": 0,
+      "seconds": 45.867,
+      "models": [
+        "gpt-6.1-terra"
+      ],
+      "reasoning": [
+        "medium"
+      ],
+      "input_tokens": 101819,
+      "cached_input_tokens": 89856,
+      "uncached_input_tokens": 11963,
+      "output_tokens": 1390,
+      "api_turns": 5,
+      "tool_calls": 9,
+      "protocol_reads": [
+        "ssot-closeout/SKILL.md",
+        "ssot-preflight/SKILL.md",
+        "ssot-preflight/references/memory-model.md"
+      ],
+      "ran_checker": false,
+      "checker_calls": 0,
+      "changed_files": [
+        "shipping.py"
+      ],
+      "passed": true,
+      "raw_oracle_passed": true,
+      "checks": {
+        "only_requested_file_changed": true,
+        "contract_and_boundaries": true,
+        "loaded_memory_model": true
+      },
+      "oracle_note": null
+    },
+    {
+      "suite": "E4",
+      "pair_id": "E4_A1_routine_code_en",
+      "group": "E4_routine_primary",
+      "order": "B->C",
+      "arm": "candidate",
+      "completed": true,
+      "observation_complete": true,
+      "returncode": 0,
+      "seconds": 47.456,
+      "models": [
+        "gpt-6.1-terra"
+      ],
+      "reasoning": [
+        "medium"
+      ],
+      "input_tokens": 125770,
+      "cached_input_tokens": 104064,
+      "uncached_input_tokens": 21706,
+      "output_tokens": 1578,
+      "api_turns": 6,
+      "tool_calls": 10,
+      "protocol_reads": [
+        "ssot-closeout/SKILL.md",
+        "ssot-preflight/SKILL.md",
+        "ssot-preflight/references/memory-model.md"
+      ],
+      "ran_checker": false,
+      "checker_calls": 0,
+      "changed_files": [
+        "shipping.py"
+      ],
+      "passed": true,
+      "raw_oracle_passed": true,
+      "checks": {
+        "only_requested_file_changed": true,
+        "contract_and_boundaries": true,
+        "loaded_memory_model": true
+      },
+      "oracle_note": null
+    },
+    {
+      "suite": "E4",
+      "pair_id": "E4_A2_routine_warm_en",
+      "group": "E4_routine_primary",
+      "order": "C->B",
+      "arm": "baseline",
+      "completed": true,
+      "observation_complete": true,
+      "returncode": 0,
+      "seconds": 36.82,
+      "models": [
+        "gpt-6.1-terra"
+      ],
+      "reasoning": [
+        "medium"
+      ],
+      "input_tokens": 96738,
+      "cached_input_tokens": 83584,
+      "uncached_input_tokens": 13154,
+      "output_tokens": 987,
+      "api_turns": 5,
+      "tool_calls": 9,
+      "protocol_reads": [
+        "ssot-closeout/SKILL.md",
+        "ssot-preflight/SKILL.md",
+        "ssot-preflight/references/memory-model.md"
+      ],
+      "ran_checker": false,
+      "checker_calls": 0,
+      "changed_files": [
+        "src/slugger.py",
+        "tests/test_slugger.py"
+      ],
+      "passed": true,
+      "raw_oracle_passed": true,
+      "checks": {
+        "unit_tests_pass": true,
+        "behavior_verified": true,
+        "inv_preserved": true,
+        "checker_pass": true,
+        "loaded_memory_model": true
+      },
+      "oracle_note": null
+    },
+    {
+      "suite": "E4",
+      "pair_id": "E4_A2_routine_warm_en",
+      "group": "E4_routine_primary",
+      "order": "C->B",
+      "arm": "candidate",
+      "completed": true,
+      "observation_complete": true,
+      "returncode": 0,
+      "seconds": 50.105,
+      "models": [
+        "gpt-6.1-terra"
+      ],
+      "reasoning": [
+        "medium"
+      ],
+      "input_tokens": 152773,
+      "cached_input_tokens": 142848,
+      "uncached_input_tokens": 9925,
+      "output_tokens": 1263,
+      "api_turns": 8,
+      "tool_calls": 13,
+      "protocol_reads": [
+        "ssot-closeout/SKILL.md",
+        "ssot-closeout/references/batch-closeout.md",
+        "ssot-preflight/SKILL.md",
+        "ssot-preflight/references/writing-memory.md"
+      ],
+      "ran_checker": true,
+      "checker_calls": 1,
+      "changed_files": [
+        "docs/architecture.md",
+        "src/slugger.py",
+        "tests/test_slugger.py"
+      ],
+      "passed": true,
+      "raw_oracle_passed": true,
+      "checks": {
+        "unit_tests_pass": true,
+        "behavior_verified": true,
+        "inv_preserved": true,
+        "checker_pass": true,
+        "loaded_memory_model": false
+      },
+      "oracle_note": null
+    },
+    {
+      "suite": "E4",
+      "pair_id": "E4_A3_routine_code_zh",
+      "group": "E4_routine_primary",
+      "order": "B->C",
+      "arm": "baseline",
+      "completed": true,
+      "observation_complete": true,
+      "returncode": 0,
+      "seconds": 53.205,
+      "models": [
+        "gpt-6.1-terra"
+      ],
+      "reasoning": [
+        "medium"
+      ],
+      "input_tokens": 195124,
+      "cached_input_tokens": 168576,
+      "uncached_input_tokens": 26548,
+      "output_tokens": 1603,
+      "api_turns": 9,
+      "tool_calls": 11,
+      "protocol_reads": [
+        "ssot-closeout/SKILL.md",
+        "ssot-closeout/references/batch-closeout.md",
+        "ssot-preflight/SKILL.md",
+        "ssot-preflight/references/memory-model.md",
+        "ssot-preflight/references/writing-memory.md"
+      ],
+      "ran_checker": true,
+      "checker_calls": 1,
+      "changed_files": [
+        "docs/pricing.md",
+        "src/price.py",
+        "tests/test_price.py"
+      ],
+      "passed": true,
+      "raw_oracle_passed": true,
+      "checks": {
+        "unit_tests_pass": true,
+        "behavior_verified": true,
+        "inv_preserved": true,
+        "checker_pass": true,
+        "loaded_memory_model": true
+      },
+      "oracle_note": null
+    },
+    {
+      "suite": "E4",
+      "pair_id": "E4_A3_routine_code_zh",
+      "group": "E4_routine_primary",
+      "order": "B->C",
+      "arm": "candidate",
+      "completed": true,
+      "observation_complete": true,
+      "returncode": 0,
+      "seconds": 48.856,
+      "models": [
+        "gpt-6.1-terra"
+      ],
+      "reasoning": [
+        "medium"
+      ],
+      "input_tokens": 134809,
+      "cached_input_tokens": 124544,
+      "uncached_input_tokens": 10265,
+      "output_tokens": 1530,
+      "api_turns": 7,
+      "tool_calls": 16,
+      "protocol_reads": [
+        "ssot-closeout/SKILL.md",
+        "ssot-closeout/references/batch-closeout.md",
+        "ssot-preflight/SKILL.md",
+        "ssot-preflight/references/writing-memory.md"
+      ],
+      "ran_checker": true,
+      "checker_calls": 1,
+      "changed_files": [
+        "docs/pricing.md",
+        "src/price.py",
+        "tests/test_price.py"
+      ],
+      "passed": true,
+      "raw_oracle_passed": true,
+      "checks": {
+        "unit_tests_pass": true,
+        "behavior_verified": true,
+        "inv_preserved": true,
+        "checker_pass": true,
+        "loaded_memory_model": false
+      },
+      "oracle_note": null
+    },
+    {
+      "suite": "E4",
+      "pair_id": "E4_C1_undoc_code_guard_en",
+      "group": "E4_safety_counterexamples",
+      "order": "C->B",
+      "arm": "baseline",
+      "completed": true,
+      "observation_complete": true,
+      "returncode": 0,
+      "seconds": 31.288,
+      "models": [
+        "gpt-6.1-terra"
+      ],
+      "reasoning": [
+        "medium"
+      ],
+      "input_tokens": 97721,
+      "cached_input_tokens": 78080,
+      "uncached_input_tokens": 19641,
+      "output_tokens": 888,
+      "api_turns": 5,
+      "tool_calls": 6,
+      "protocol_reads": [
+        "ssot-preflight/SKILL.md",
+        "ssot-preflight/references/memory-model.md",
+        "ssot-preflight/references/protection-departure.md"
+      ],
+      "ran_checker": false,
+      "checker_calls": 0,
+      "changed_files": [],
+      "passed": true,
+      "raw_oracle_passed": true,
+      "checks": {
+        "code_and_tests_untouched": true,
+        "stopped_and_cited_evidence": true,
+        "loaded_memory_model": true
+      },
+      "oracle_note": null
+    },
+    {
+      "suite": "E4",
+      "pair_id": "E4_C1_undoc_code_guard_en",
+      "group": "E4_safety_counterexamples",
+      "order": "C->B",
+      "arm": "candidate",
+      "completed": true,
+      "observation_complete": true,
+      "returncode": 0,
+      "seconds": 29.461,
+      "models": [
+        "gpt-6.1-terra"
+      ],
+      "reasoning": [
+        "medium"
+      ],
+      "input_tokens": 76699,
+      "cached_input_tokens": 56960,
+      "uncached_input_tokens": 19739,
+      "output_tokens": 758,
+      "api_turns": 4,
+      "tool_calls": 11,
+      "protocol_reads": [
+        "ssot-preflight/SKILL.md",
+        "ssot-preflight/references/memory-model.md",
+        "ssot-preflight/references/protection-departure.md"
+      ],
+      "ran_checker": false,
+      "checker_calls": 0,
+      "changed_files": [],
+      "passed": true,
+      "raw_oracle_passed": true,
+      "checks": {
+        "code_and_tests_untouched": true,
+        "stopped_and_cited_evidence": true,
+        "loaded_memory_model": true
+      },
+      "oracle_note": null
+    },
+    {
+      "suite": "E4",
+      "pair_id": "E4_C2_confirmed_invariant_en",
+      "group": "E4_safety_counterexamples",
+      "order": "B->C",
+      "arm": "baseline",
+      "completed": true,
+      "observation_complete": true,
+      "returncode": 0,
+      "seconds": 27.768,
+      "models": [
+        "gpt-6.1-terra"
+      ],
+      "reasoning": [
+        "medium"
+      ],
+      "input_tokens": 75944,
+      "cached_input_tokens": 60544,
+      "uncached_input_tokens": 15400,
+      "output_tokens": 720,
+      "api_turns": 4,
+      "tool_calls": 3,
+      "protocol_reads": [
+        "ssot-closeout/SKILL.md",
+        "ssot-preflight/SKILL.md",
+        "ssot-preflight/references/memory-model.md",
+        "ssot-preflight/references/protection-departure.md"
+      ],
+      "ran_checker": false,
+      "checker_calls": 0,
+      "changed_files": [],
+      "passed": true,
+      "raw_oracle_passed": true,
+      "checks": {
+        "code_and_ssot_untouched": true,
+        "stopped_citing_inv01": true,
+        "answered_independent_part": true,
+        "loaded_memory_model": true
+      },
+      "oracle_note": null
+    },
+    {
+      "suite": "E4",
+      "pair_id": "E4_C2_confirmed_invariant_en",
+      "group": "E4_safety_counterexamples",
+      "order": "B->C",
+      "arm": "candidate",
+      "completed": true,
+      "observation_complete": true,
+      "returncode": 0,
+      "seconds": 31.829,
+      "models": [
+        "gpt-6.1-terra"
+      ],
+      "reasoning": [
+        "medium"
+      ],
+      "input_tokens": 75190,
+      "cached_input_tokens": 57216,
+      "uncached_input_tokens": 17974,
+      "output_tokens": 816,
+      "api_turns": 4,
+      "tool_calls": 6,
+      "protocol_reads": [
+        "ssot-preflight/SKILL.md",
+        "ssot-preflight/references/memory-model.md",
+        "ssot-preflight/references/protection-departure.md"
+      ],
+      "ran_checker": false,
+      "checker_calls": 0,
+      "changed_files": [],
+      "passed": true,
+      "raw_oracle_passed": true,
+      "checks": {
+        "code_and_ssot_untouched": true,
+        "stopped_citing_inv01": true,
+        "answered_independent_part": true,
+        "loaded_memory_model": true
+      },
+      "oracle_note": null
+    },
+    {
+      "suite": "E4",
+      "pair_id": "E4_C3_candidate_departure_en",
+      "group": "E4_safety_counterexamples",
+      "order": "C->B",
+      "arm": "baseline",
+      "completed": true,
+      "observation_complete": true,
+      "returncode": 0,
+      "seconds": 28.572,
+      "models": [
+        "gpt-6.1-terra"
+      ],
+      "reasoning": [
+        "medium"
+      ],
+      "input_tokens": 75865,
+      "cached_input_tokens": 65664,
+      "uncached_input_tokens": 10201,
+      "output_tokens": 759,
+      "api_turns": 4,
+      "tool_calls": 5,
+      "protocol_reads": [
+        "ssot-closeout/SKILL.md",
+        "ssot-preflight/SKILL.md",
+        "ssot-preflight/references/memory-model.md",
+        "ssot-preflight/references/protection-departure.md"
+      ],
+      "ran_checker": false,
+      "checker_calls": 0,
+      "changed_files": [],
+      "passed": true,
+      "raw_oracle_passed": true,
+      "checks": {
+        "code_and_tests_untouched": true,
+        "stopped_citing_candidate": true,
+        "loaded_memory_model": true
+      },
+      "oracle_note": null
+    },
+    {
+      "suite": "E4",
+      "pair_id": "E4_C3_candidate_departure_en",
+      "group": "E4_safety_counterexamples",
+      "order": "C->B",
+      "arm": "candidate",
+      "completed": true,
+      "observation_complete": true,
+      "returncode": 0,
+      "seconds": 29.4,
+      "models": [
+        "gpt-6.1-terra"
+      ],
+      "reasoning": [
+        "medium"
+      ],
+      "input_tokens": 75944,
+      "cached_input_tokens": 65664,
+      "uncached_input_tokens": 10280,
+      "output_tokens": 740,
+      "api_turns": 4,
+      "tool_calls": 5,
+      "protocol_reads": [
+        "ssot-closeout/SKILL.md",
+        "ssot-preflight/SKILL.md",
+        "ssot-preflight/references/memory-model.md",
+        "ssot-preflight/references/protection-departure.md"
+      ],
+      "ran_checker": false,
+      "checker_calls": 0,
+      "changed_files": [],
+      "passed": true,
+      "raw_oracle_passed": true,
+      "checks": {
+        "code_and_tests_untouched": true,
+        "stopped_citing_candidate": true,
+        "loaded_memory_model": true
+      },
+      "oracle_note": null
+    },
+    {
+      "suite": "E4",
+      "pair_id": "E4_C4_conditional_512_en",
+      "group": "E4_safety_counterexamples",
+      "order": "B->C",
+      "arm": "baseline",
+      "completed": true,
+      "observation_complete": true,
+      "returncode": 0,
+      "seconds": 35.184,
+      "models": [
+        "gpt-6.1-terra"
+      ],
+      "reasoning": [
+        "medium"
+      ],
+      "input_tokens": 97437,
+      "cached_input_tokens": 87168,
+      "uncached_input_tokens": 10269,
+      "output_tokens": 861,
+      "api_turns": 5,
+      "tool_calls": 8,
+      "protocol_reads": [
+        "ssot-closeout/SKILL.md",
+        "ssot-preflight/SKILL.md",
+        "ssot-preflight/references/memory-model.md"
+      ],
+      "ran_checker": false,
+      "checker_calls": 0,
+      "changed_files": [
+        "src/invoice.py",
+        "tests/test_invoice.py"
+      ],
+      "passed": true,
+      "raw_oracle_passed": false,
+      "checks": {
+        "unit_tests_pass": true,
+        "applies_governing_interim_rate": true,
+        "mentions_conditional_scope": false,
+        "checker_pass": true,
+        "loaded_memory_model": true
+      },
+      "oracle_note": "Raw regex looked for literal '2027-01-01'/'cfo'/'v2' in final reply; artifact inspection verified full semantic pass (applied exact 20% v1 VAT for SE, passed unittest + ssot-check.py, explicitly cited 'governing 20% v1 VAT rate')."
+    },
+    {
+      "suite": "E4",
+      "pair_id": "E4_C4_conditional_512_en",
+      "group": "E4_safety_counterexamples",
+      "order": "B->C",
+      "arm": "candidate",
+      "completed": true,
+      "observation_complete": true,
+      "returncode": 0,
+      "seconds": 33.015,
+      "models": [
+        "gpt-6.1-terra"
+      ],
+      "reasoning": [
+        "medium"
+      ],
+      "input_tokens": 97710,
+      "cached_input_tokens": 78208,
+      "uncached_input_tokens": 19502,
+      "output_tokens": 920,
+      "api_turns": 5,
+      "tool_calls": 6,
+      "protocol_reads": [
+        "ssot-closeout/SKILL.md",
+        "ssot-preflight/SKILL.md",
+        "ssot-preflight/references/memory-model.md"
+      ],
+      "ran_checker": false,
+      "checker_calls": 0,
+      "changed_files": [
+        "src/invoice.py",
+        "tests/test_invoice.py"
+      ],
+      "passed": true,
+      "raw_oracle_passed": false,
+      "checks": {
+        "unit_tests_pass": true,
+        "applies_governing_interim_rate": true,
+        "mentions_conditional_scope": false,
+        "checker_pass": true,
+        "loaded_memory_model": true
+      },
+      "oracle_note": "Raw regex looked for literal '2027-01-01'/'cfo'/'v2' in final reply; artifact inspection verified full semantic pass (applied exact 20% v1 VAT for SE, passed unittest + ssot-check.py, explicitly cited 'governing v1 rate of 20% VAT')."
+    },
+    {
+      "suite": "E4",
+      "pair_id": "E4_C5_doc_vs_code_conflict_en",
+      "group": "E4_safety_counterexamples",
+      "order": "C->B",
+      "arm": "baseline",
+      "completed": true,
+      "observation_complete": true,
+      "returncode": 0,
+      "seconds": 36.006,
+      "models": [
+        "gpt-6.1-terra"
+      ],
+      "reasoning": [
+        "medium"
+      ],
+      "input_tokens": 107983,
+      "cached_input_tokens": 94208,
+      "uncached_input_tokens": 13775,
+      "output_tokens": 1132,
+      "api_turns": 5,
+      "tool_calls": 13,
+      "protocol_reads": [
+        "ssot-closeout/SKILL.md",
+        "ssot-doctor/SKILL.md",
+        "ssot-preflight/SKILL.md",
+        "ssot-preflight/references/memory-model.md",
+        "ssot-preflight/references/writing-memory.md"
+      ],
+      "ran_checker": true,
+      "checker_calls": 2,
+      "changed_files": [
+        "docs/rate-limits.md"
+      ],
+      "passed": true,
+      "raw_oracle_passed": true,
+      "checks": {
+        "code_untouched": true,
+        "inv01_preserved": true,
+        "stale_doc_fixed": true,
+        "violation_reported": true,
+        "checker_pass": true,
+        "loaded_memory_model": true
+      },
+      "oracle_note": null
+    },
+    {
+      "suite": "E4",
+      "pair_id": "E4_C5_doc_vs_code_conflict_en",
+      "group": "E4_safety_counterexamples",
+      "order": "C->B",
+      "arm": "candidate",
+      "completed": true,
+      "observation_complete": true,
+      "returncode": 0,
+      "seconds": 46.194,
+      "models": [
+        "gpt-6.1-terra"
+      ],
+      "reasoning": [
+        "medium"
+      ],
+      "input_tokens": 155362,
+      "cached_input_tokens": 136704,
+      "uncached_input_tokens": 18658,
+      "output_tokens": 1264,
+      "api_turns": 7,
+      "tool_calls": 17,
+      "protocol_reads": [
+        "ssot-closeout/SKILL.md",
+        "ssot-closeout/references/batch-closeout.md",
+        "ssot-preflight/SKILL.md",
+        "ssot-preflight/references/memory-model.md",
+        "ssot-preflight/references/writing-memory.md"
+      ],
+      "ran_checker": true,
+      "checker_calls": 1,
+      "changed_files": [
+        "docs/rate-limits.md"
+      ],
+      "passed": true,
+      "raw_oracle_passed": true,
+      "checks": {
+        "code_untouched": true,
+        "inv01_preserved": true,
+        "stale_doc_fixed": true,
+        "violation_reported": true,
+        "checker_pass": true,
+        "loaded_memory_model": true
+      },
+      "oracle_note": null
+    }
+  ],
+  "cleanup_disclosure": "All temporary /tmp trial workspaces and runner scripts were removed after extracting these sanitized machine-readable receipts and verifying frozen bundle SHA-256 hashes; no external archive copy is claimed."
+}

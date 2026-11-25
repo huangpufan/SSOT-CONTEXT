@@ -29,14 +29,14 @@ reviewed_through: <commit you explored>
 
 ## Invariants
 
-These are rules people decided and the implementation must preserve. An agent never changes a rule's meaning, scope, or status on its own: a task that conflicts with a confirmed rule stops and asks the user. A candidate rule was inferred and still waits for the user; follow it by default, and ask the user before departing from it.
+These are rules people decided and the implementation must preserve. An agent never changes a rule's meaning, scope, or status on its own: a task that conflicts with a confirmed rule stops and asks the user. A candidate rule was inferred from protection evidence; follow it by default, and settle it with the user only when a task needs to depart from it.
 
 | ID | Kind | Rule | Explained in | Status | Source |
 |---|---|---|---|---|---|
 
 <!-- Example row:
 | INV-01 | product promise | A retry never charges twice | [Retries](architecture.md#failure-and-recovery) | confirmed | user, 2026-05-02 |
-Kind: product promise, architecture invariant, or process rule. Status: confirmed = set by a person; candidate = inferred by an agent, waiting for the user; retired = no longer applies (link the decision). If there are none yet, keep the empty table and say so in one sentence. -->
+Kind: product promise, architecture invariant, or process rule. Status: confirmed = set by a person; candidate = inferred protection, binds until a task needs to depart from it; retired = no longer applies (link the decision). If there are none yet, keep the empty table and say so in one sentence. When the register grows large (~50+ rows), keep cross-cutting rules here and move topic groups into `invariants/<topic>.md` shards linked from a bullet list (never a table). -->
 
 ## Open questions
 

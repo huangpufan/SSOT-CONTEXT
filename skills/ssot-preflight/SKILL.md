@@ -2,7 +2,7 @@
 name: ssot-preflight
 description: Read SSOT before substantive work in a repository or declared space. Follow its bounded lookup and edit routes. Skip pure commands and cosmetic edits.
 metadata:
-  protocol_version: "5.20"
+  protocol_version: "5.21"
   bundle: "SSOT-CONTEXT"
 ---
 
@@ -16,13 +16,13 @@ Read the explicit entry or default `SSOT/README.md` by header and headings first
 
 In formats 4 and 5, answer a lookup from its current authorized owner when that owner settles the question. For one settled prose change confined to that owner, use `$ssot-closeout` directly. Follow owner-specific requirements. If the answer depends on other evidence or decisions, follow their authorized routes. Restricted sources require the permission result before any dependent read, including a search.
 
-Otherwise format 5 and agreed general-space setup use [general context spaces](references/context-spaces.md); format 4 uses the steps below. Known v2/v3 stays read-only pending agreed migration. Unknown formats stay read-only pending a compatible writer. Undeclared non-repository chat, research or creation skips this skill.
+Otherwise format 5 and agreed general-space setup use [general context spaces](references/context-spaces.md); format 4 uses the steps below. Known v2/v3 stays read-only pending agreed migration (`$ssot-bootstrap`); unknown/future formats stay read-only pending a compatible writer (never offer migration or downgrade). Undeclared non-repository chat, research or creation skips this skill.
 
 ## 1. Find the entry point
 
 - **No `SSOT/` directory.** Tell the user the repository has no SSOT and offer to create one with `$ssot-bootstrap`. Setup writes a documentation tree and can take more than one session, so it needs the user's yes. If they decline or defer, do the task without the SSOT steps, and do not offer again this session.
 - **`SSOT/BOOTSTRAP.md` exists.** Setup is unfinished. Offer to continue it, and meanwhile use what is already written.
-- **Known v2/v3 layout.** Read it as knowledge. Its coverage labels and review records are historical, but relevant adjudications, user constraints, limits and open questions still bind. Keep it read-only and offer the agreed preservation-aware migration through `$ssot-bootstrap`; do not apply that offer to unknown/future formats.
+- **Known v2/v3 layout.** Read it as knowledge: coverage labels and review records are historical, while relevant adjudications, user constraints, limits and open questions still bind. Offer preservation-aware migration via `$ssot-bootstrap`.
 
 ## 2. Read what this task needs
 
@@ -40,19 +40,12 @@ For oversized entries, repeated reconstruction from history, or requested tierin
 
 ## 3. Find what the change must preserve
 
-Before you settle on an implementation, identify the behaviors and boundaries the change could affect: their canonical owners and the domain evidence that establishes them. For software, inspect the tests, boundary checks and guards, and fix or revert history; follow callers and shared state where effects cross files. For creative, research or human-decision work, use the relevant canon, original materials or accepted source exchange rather than requiring code evidence. Tell a protected outcome from an incidental detail with the admission and departure rules in [memory-model.md §5](references/memory-model.md#5-invariants).
+Skip this section for read-only review or investigation (still note observed violations). Before you settle on an implementation, identify the behaviors and boundaries the change could affect: their canonical owners and the domain evidence that establishes them. For software, inspect the tests, boundary checks and guards, and fix or revert history; follow callers and shared state where effects cross files. For creative, research or human-decision work, use the relevant canon, original materials or accepted source exchange rather than requiring code evidence. Tell a protected outcome from an incidental detail with the admission and departure rules in [memory-model.md §5](references/memory-model.md#5-invariants).
 
 Before implementation details, state each affected rule, registered or newly admitted: "Must preserve: [outcome and conditions] — [evidence]." Compare the request with these rules. For a concrete conflict, propose a preserving design that meets the request, or follow "When to ask" in memory-model §5. Continue independent work. Record missing rules through closeout using [human-decision evidence](references/memory-model.md#human-decision-evidence): preserve recorded acceptance; only inferred rules are candidates.
 
 ## 4. Before your first change, and while you work
 
-When resuming paused or interrupted work, follow [task continuation](references/memory-layout.md#existing-task-and-evidence-owners) before planning from its saved state.
+When resuming paused or interrupted work, follow [task continuation](references/task-continuation.md) before planning from its saved state.
 
-Invoke `$ssot-closeout` as soon as the user settles or revises a durable choice, even during discussion. Capture it before dependent work. Track other lasting facts for batch closeout, or update an obvious owner as you work.
-
-## Where to go next
-
-| Situation | Skill |
-|---|---|
-| No SSOT yet, setup unfinished, or an older layout to migrate | `$ssot-bootstrap` |
-| Finishing a substantive batch, before the final response or commit | `$ssot-closeout` |
+Invoke `$ssot-closeout` immediately when the user settles or revises a durable choice (even in discussion), before dependent work. Update obvious owners as you work, and run `$ssot-closeout` before replying or committing if this batch edited files, requested a handoff, or surfaced a lasting finding or wrong/missing SSOT statement; pure read-only review or investigation with none of those finishes directly without loading `$ssot-closeout`.

@@ -17,8 +17,6 @@
 - **开发仓库。** 人定义不变量——必须持续守住的结果，例如接口兼容、重试不能重复扣款；Agent 在这些边界内修改代码。入口是 `SSOT/README.md`（`ssot_format: 4`）。
 - **你明确声明的通用 context 空间：** 一项研究、一部创作、一个人生领域或一个组织。Git 不是必需的，已有的文件夹和文档保持原位。入口是你指定的文档（`ssot_format: 5`）。
 
-本项目原名 SSOT-SKILL；新装默认只安装 4 个核心生命周期技能，旧安装升级自动保留原兼容名称（新装如需兼容旧提示词可加 `--with-legacy-shims`，[详情](./INSTALL.md#project-rename-compatibility)）。
-
 ## 原则
 
 - **一条事实，一个 owner。** SSOT 即 Single Source of Truth（单一事实源）：每条长期事实有一篇负责维护它的文档，其他文档通过链接引用。
@@ -60,7 +58,7 @@ curl -fsSL https://raw.githubusercontent.com/huangpufan/SSOT-CONTEXT/main/instal
 照常描述任务即可，四个 Skill 会自动处理工作流程：
 
 - [`ssot-preflight`](./skills/ssot-preflight/SKILL.md) 在实质性工作开始前读取任务路由、适用约束及相关权威来源。开发仓库的长入口按章节读取。
-- [`ssot-bootstrap`](./skills/ssot-bootstrap/SKILL.md)：经你同意后建立或迁移 context。建库时，已有权威文档足以指导操作、范围也能逐项查清时，由一人起草、另一人独立核对，再请新读者试用。需要跨来源重建指南、范围过大或权威来源有争议的部分单独分工。
+- [`ssot-bootstrap`](./skills/ssot-bootstrap/SKILL.md)：经你同意后建立或迁移 context，保留既有权威文档，并由新读者验证生成的路由是否可用。
 - [`ssot-closeout`](./skills/ssot-closeout/SKILL.md) 在目标、偏好和决定确定时保存它们。用户要求交接时使用任务记录，批次收尾时按实际变化更新长期知识。
 - [`ssot-doctor`](./skills/ssot-doctor/SKILL.md)：检查健康，并补上在这个流程之外完成的工作。
 
@@ -95,19 +93,19 @@ curl -fsSL https://raw.githubusercontent.com/huangpufan/SSOT-CONTEXT/main/instal
 
 已有且持续维护的文档可以继续当 owner，由入口链接。通用空间没有固定目录：入口说明目的、范围和受保护的规则，并链接已经负责各个主题的文档。同目录可以有多个空间。搭建尚未完成时，每个入口链接自己的进度记录。详见[记忆模型](./skills/ssot-preflight/references/memory-model.md)和[空间模型](./skills/ssot-preflight/references/context-spaces.md)。
 
-日常限定查询可以直接依据获准读取的现行文档作答，已批准的单文档正文修订也可原地更新并从磁盘回读；不变量表长大后还可以按需拆为由 `ssot-check.py` 跨文件校验的主题分片（`SSOT/invariants/<topic>.md` 或 `ssot_register: shard`）。如需在所有 Agent 上零模型 token 做提交前机械校验，可选用 [`tools/ssot-precommit.sh`](./tools/ssot-precommit.sh) 钩子（[配置说明](./docs/2026-11-24-install-maintenance.md#optional-zero-token-git-pre-commit-guard)）。
+日常限定查询可直接依据单一获准读取的权威文档作答，已批准的单文档正文修订也可原地更新并从磁盘回读。不变量表长大后，可按主题拆分为由 `ssot-check.py` 跨文件校验的可选分片（`SSOT/invariants/<topic>.md`）。如需在所有 Agent 上零模型 token 做提交前机械校验，可选用 [`tools/ssot-precommit.sh`](./tools/ssot-precommit.sh) 钩子（[配置说明](./docs/2026-11-24-install-maintenance.md#optional-zero-token-git-pre-commit-guard)）。
 
 ## 限度
 
 - **不后台采集，也不替代宿主权限。** Skill 只在 Agent 加载并看到输入时生效；无法删除触及不到的副本（Git 历史、备份、服务商日志），也无法绕过宿主的文件访问控制。
 - **决策权、受限来源与限定范围检查。** 换人接手依项目决策权保留前后归属与唯一旧理由（[决策证据](./skills/ssot-preflight/references/memory-model.md#human-decision-evidence)）；受限来源支持仅元数据撤回（[来源集成](./skills/ssot-doctor/references/source-integration.md#correction-and-withdrawal)）以及使用 `--owners` 限定文件范围的机械检查（[受限检查](./skills/ssot-preflight/references/source-retention.md#selected-mechanical-checks)）。
-- **已实测的真实世界缺口。** 对 5 个在用空间近 15 天 386 条真实消费会话的审计证实，改代码会话稳定触发预检且检查器 20 次拦住了未经授权的已确认不变量篡改，同时也暴露出升级后指令块过期、200+ KB 巨型入口截断以及子 Agent 重复预检税（[Stage 5 真实会话审计](./docs/2026-11-24-real-session-stage5-audit.md)）。
+- **纯提示词路径的运行边界。** 仅靠提示词无法在所有宿主上保证 100% 触发收尾检查，也不会自动同步各工作区中复制的指令块或入库的技能副本；按需配合 `--sync-block`、可选主题分片、全局/软链接安装与可选提交前守卫使用（[真实会话审计](./docs/2026-11-24-real-session-stage5-audit.md)）。
 
 ## 支持的 Agent
 
-Antigravity App 使用 `--agent agy`，项目安装与 Codex 共用 `.agents/skills`。[维护与排障参考](./docs/2026-11-24-install-maintenance.md#when-a-skill-appears-unavailable)说明 App/CLI/IDE 位置差异、子仓库发现边界与本机软链接方案（`tools/link-local.py`）。
+Antigravity App 使用 `--agent agy`（项目安装与 Codex 共用 `.agents/skills`）；DeepSeek Harness 使用 `--agent dsh`。[维护与排障参考](./docs/2026-11-24-install-maintenance.md#when-a-skill-appears-unavailable)说明多端位置差异、子仓库发现边界、worktree 建议与本机软链接方案（`tools/link-local.py`）。
 
-安装器登记了 **70 多种 Agent** 的安装路径，包括 Claude Code、Codex、Cursor、Windsurf、Gemini CLI、GitHub Copilot、OpenCode 和 Cline。登记了路径不等于行为完全一致，安装后请重启 Agent，确认它能发现这些 Skill。查看全部标识与路径：
+安装器登记了 **70 多种 Agent** 的安装路径，包括 Claude Code、Codex、Cursor、Windsurf、Gemini CLI、GitHub Copilot、DeepSeek Harness（`dsh`）、OpenCode 和 Cline。登记了路径不等于行为完全一致，安装后请重启 Agent，确认它能发现这些 Skill。查看全部标识与路径：
 
 ```bash
 set -o pipefail
@@ -120,16 +118,22 @@ curl -fsSL https://raw.githubusercontent.com/huangpufan/SSOT-CONTEXT/main/instal
 请阅读 https://raw.githubusercontent.com/huangpufan/SSOT-CONTEXT/main/INSTALL.md，为当前 Agent 更新本项目的 SSOT-CONTEXT，保留原模板语言。
 ```
 
-更新技能文件（或拉取软链接源码）后，可用 `curl -fsSL https://raw.githubusercontent.com/huangpufan/SSOT-CONTEXT/main/install.sh | bash -s -- --check-block <AGENTS.md|CLAUDE.md>` 与 `--sync-block <文件>`（或在本地源码仓直接运行 `bash install.sh ...`；离线同步会按文件对应的 Agent 安装匹配，不会把较新的受管块静默降级）仅检查并刷新受支持指令文件的受管块，再重启 Agent。更新会保留软链接安装的技能，不会改写你的 context 文档，也不强制 format 4 仓库转为 format 5。手动命令、卸载、安装中断恢复及 2.x/3.x 迁移见[维护指南](./INSTALL.md#update-or-remove-an-existing-installation)。
+更新技能文件（或拉取软链接源码）后，检查并刷新仓库指令文件中的受管块，再重启 Agent：
+
+```bash
+curl -fsSL https://raw.githubusercontent.com/huangpufan/SSOT-CONTEXT/main/install.sh | bash -s -- --check-block AGENTS.md
+curl -fsSL https://raw.githubusercontent.com/huangpufan/SSOT-CONTEXT/main/install.sh | bash -s -- --sync-block AGENTS.md
+```
+
+更新会保留软链接安装，不会改写你的 context 文档，也不强制 format 4 仓库转为 format 5。本地源码仓命令、多 Agent 参数、卸载、中断恢复、2.x/3.x 迁移与[更名兼容](./INSTALL.md#project-rename-compatibility)见[维护指南](./INSTALL.md#update-or-remove-an-existing-installation)。
 
 ## 文档
 
-- [安装指南](./INSTALL.md)与[维护与恢复参考](./docs/2026-11-24-install-maintenance.md)：新装、指令块同步、升级、卸载、软链接与中断恢复。
+- [安装指南](./INSTALL.md)与[维护与恢复参考](./docs/2026-11-24-install-maintenance.md)：新装、指令块同步、升级、卸载、软链接、提交前守卫与中断恢复。
 - [设计说明](./DESIGN.md)：Skill 包为什么是现在这个形态，以及 v3 移除了什么。
-- [Stage 5 真实会话审计](./docs/2026-11-24-real-session-stage5-audit.md)与[长期路线审视](./docs/2026-11-20-context-evolution-route.md)：386 条真实消费会话分布、当前阶段与后续优先级。
-- [5.20 批量收尾](./docs/2026-11-25-closeout-delegation-concurrency-v5.20.md)、[5.19 即时采集检查](./docs/2026-11-25-bounded-shard-and-capture-v5.19.md)、[5.18 收尾与分片采集](./docs/2026-11-24-closeout-sharding-v5.18.md)、[5.17 主题分片](./docs/2026-11-24-register-sharding-v5.17.md)、[5.16 合批与落盘回读](./docs/2026-11-24-batching-readback-v5.16.md)、[跨领域架构研究](./docs/2026-11-20-context-paths-study.md)与[日常查改成本对照](./docs/2026-11-20-ordered-lookup-cost.md)：原生配对试验与整任务成本。
+- [Stage 5 真实会话审计](./docs/2026-11-24-real-session-stage5-audit.md)与[长期路线审视](./docs/2026-11-20-context-evolution-route.md)：真实消费遥测、当前阶段与后续优先级。
+- [评测指南与各版本实测索引](./tests/benchmark/README.md#recorded-studies-and-additional-lanes)：配对原生试验、冷接续、普通文档对照与证据边界。
 - [持续修改的研究和创作项目](./docs/2026-11-14-evolving-research-and-creative-projects.md)：格式 5 通用空间的实用示例。
-- [评测指南](./tests/benchmark/README.md)：任务结果、冷接续、普通文档对照与证据边界。
 - [更新日志](./CHANGELOG.md)、[贡献指南](./CONTRIBUTING.md)、[AGENTS.md](./AGENTS.md)与[安全政策](./SECURITY.md)。
 
 ## Star 趋势

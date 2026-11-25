@@ -162,6 +162,122 @@ class LocalLinks(unittest.TestCase):
             links.apply(selected, self.backups)
         self.assertFalse((self.base / 'ssot-preflight').is_symlink())
 
+    def test_apply_acquires_installer_lock_blocks_concurrent_installer_and_releases_on_exit(self):
+        import os, subprocess
+        installer = Path(__file__).resolve().parents[1] / 'install.sh'
+        proj = self.root / 'locked-proj'
+        base = proj / '.agents/skills'
+        for name in links.CORE_SKILLS:
+            (base / name).mkdir(parents=True)
+            (base / name / 'SKILL.md').write_text(f'---\nname: {name}\n---\n', encoding='utf-8')
+        lock_file = base / '.ssot-skill-lock'
+        orig_symlink = Path.symlink_to
+        checked_concurrent = False
+
+        def intercept_first(path, *args, **kwargs):
+            nonlocal checked_concurrent
+            if not checked_concurrent and path.parent == base:
+                checked_concurrent = True
+                self.assertTrue(lock_file.is_file(), '.ssot-skill-lock must be held during apply()')
+                # Concurrent install.sh on the same base must be rejected by the lock.
+                proc = subprocess.run(
+                    ['bash', str(installer), '--non-interactive', '--agent', 'codex', '--scope', 'project', '--lang', 'en', '--yes'],
+                    cwd=proj,
+                    env={**os.environ, 'HOME': str(self.root / 'home'), 'SOURCE_DIR': str(Path(__file__).resolve().parents[1])},
+                    capture_output=True, text=True,
+                )
+                self.assertNotEqual(proc.returncode, 0, proc.stdout + proc.stderr)
+                self.assertIn('locked', proc.stderr)
+            return orig_symlink(path, *args, **kwargs)
+
+        with patch.object(Path, 'symlink_to', intercept_first):
+            res = links.apply(links.plan(self.source, [base]), self.backups)
+        self.assertTrue(checked_concurrent)
+        self.assertEqual(res['linked_skills'], 4)
+        self.assertFalse(lock_file.exists(), '.ssot-skill-lock must be released after apply()')
+
+    def test_rollback_continues_restoring_earlier_slots_after_concurrent_conflict(self):
+        import json
+        first_orig = links.fingerprint(self.base / 'ssot-preflight')
+        orig_symlink = Path.symlink_to
+        count = 0
+
+        def fail_third_with_conflict(path, *args, **kwargs):
+            nonlocal count
+            count += 1
+            if count == 3:
+                # Replace slot 2 (ssot-bootstrap) concurrently so rollback hits a conflict on slot 2,
+                # yet must still proceed to restore slot 1 (ssot-preflight) from backup.
+                second = self.base / 'ssot-bootstrap'
+                second.unlink()
+                second.mkdir()
+                (second / 'FOREIGN.txt').write_text('foreign', encoding='utf-8')
+                raise OSError('injected failure on third slot')
+            return orig_symlink(path, *args, **kwargs)
+
+        with patch.object(Path, 'symlink_to', fail_third_with_conflict):
+            with self.assertRaisesRegex(RuntimeError, 'Concurrent replacement left intact'):
+                links.apply(links.plan(self.source, [self.base]), self.backups)
+
+        # Slot 1 (ssot-preflight) must be restored despite conflict on slot 2 (ssot-bootstrap).
+        self.assertFalse((self.base / 'ssot-preflight').is_symlink())
+        self.assertEqual(links.fingerprint(self.base / 'ssot-preflight'), first_orig)
+        self.assertTrue((self.base / 'ssot-bootstrap/FOREIGN.txt').is_file())
+        self.assertFalse((self.base / '.ssot-skill-lock').exists(), 'lock must be released after rollback')
+        manifests = list(self.backups.glob('link-*/manifest.json'))
+        self.assertEqual(len(manifests), 1)
+        data = json.loads(manifests[0].read_text(encoding='utf-8'))
+        self.assertEqual(data['status'], 'recovery-needed')
+        self.assertEqual(len(data['rollback_conflicts']), 1)
+
+    def test_refuses_git_tracked_skill_dirs_unless_allow_tracked(self):
+        import os, subprocess
+        repo = self.root / 'tracked-repo'
+        base = repo / '.agents/skills'
+        for name in links.CORE_SKILLS:
+            (base / name).mkdir(parents=True)
+            (base / name / 'SKILL.md').write_text(f'---\nname: {name}\n---\n', encoding='utf-8')
+        git_env = {
+            **os.environ,
+            'GIT_AUTHOR_NAME': 'Test', 'GIT_AUTHOR_EMAIL': 't@example.test',
+            'GIT_COMMITTER_NAME': 'Test', 'GIT_COMMITTER_EMAIL': 't@example.test',
+        }
+        subprocess.run(['git', 'init', '-q'], cwd=repo, env=git_env, check=True)
+        subprocess.run(['git', 'add', '.'], cwd=repo, env=git_env, check=True)
+        subprocess.run(['git', 'commit', '-qm', 'track skills'], cwd=repo, env=git_env, check=True)
+
+        with self.assertRaisesRegex(ValueError, 'git-tracked skill directories'):
+            links.plan(self.source, [base])
+
+        selected = links.plan(self.source, [base], allow_tracked=True)
+        self.assertEqual(len(selected['actions']), 4)
+        res = links.apply(selected, self.backups)
+        self.assertEqual(res['linked_skills'], 4)
+        self.assertTrue((base / 'ssot-preflight').is_symlink())
+
+    def test_absolute_flag_creates_absolute_symlinks_and_upgrades_relative_links(self):
+        import os, subprocess, sys
+        tool = Path(__file__).resolve().parents[1] / 'tools/link-local.py'
+        # 1. Start with default relative links.
+        links.apply(links.plan(self.source, [self.base]), self.backups)
+        for name in links.SKILLS:
+            self.assertFalse(os.path.isabs(os.readlink(self.base / name)))
+
+        # 2. Running with --absolute via CLI upgrades existing relative links to absolute ones.
+        proc = subprocess.run(
+            [sys.executable, str(tool), '--source', str(self.source), '--base', str(self.base),
+             '--apply', '--backup-root', str(self.backups), '--absolute'],
+            capture_output=True, text=True,
+        )
+        self.assertEqual(proc.returncode, 0, proc.stdout + proc.stderr)
+        for name in links.SKILLS:
+            raw_target = os.readlink(self.base / name)
+            self.assertTrue(os.path.isabs(raw_target), f'expected absolute link for {name}, got {raw_target}')
+            self.assertEqual(Path(raw_target), (self.source / 'skills' / name).resolve())
+
+        # 3. Second --absolute plan is a no-op (already-linked).
+        self.assertEqual(links.plan(self.source, [self.base], absolute=True)['actions'], [])
+
 
 if __name__ == '__main__':
     unittest.main()

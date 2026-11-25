@@ -9,7 +9,7 @@ For a new installation, finish the setup: install the bundle, verify the install
 Honor options the user already supplied. Otherwise use these defaults without asking them to reconfirm:
 
 - **Agent:** the coding agent you are currently running as. Pass its canonical installer key explicitly; a machine may have several agents installed.
-- **Scope:** `project` by default; use `global` for an explicit global-only request. Install in both locations only when the user requests both. Run project commands from the target repository root.
+- **Scope:** `project` by default; use `global` for an explicit global-only request. For repositories that use Git worktrees or multiple clones, recommend `--scope global` (or gitignoring project skill directories such as `.agents/skills/` and `.claude/skills/`), because Git-tracked project copies can leave other worktrees stuck on older skill versions. Install in both locations only when the user requests both. Run project commands from the target repository root.
 - **Template language:** keep the repository's existing choice (`language` in `SSOT/README.md` front matter, `documentation_language` of an older `SSOT/STATUS.md`, or the installed template language on reinstall). For a new setup, use `zh` when the user is communicating in Chinese, otherwise `en`. A template choice never changes the language an existing SSOT is written in.
 - **Version:** the current release from `main`. Add `--ref v2-final` only when the user wants to stay on the frozen v2 protocol.
 
@@ -28,6 +28,7 @@ Common keys and project locations (for other agents or global locations, run `in
 | Standalone Antigravity IDE | `antigravity` | `.agents/skills/` |
 | Antigravity CLI with its legacy global location | `antigravity-cli` | `.agents/skills/` |
 | GitHub Copilot | `github-copilot` | `.agents/skills/` |
+| DeepSeek Harness (`dsh`) | `dsh` | `.dsh/skills/` (global: `~/.dsh/skills/` or `$DSH_HOME/skills`) |
 
 ## 2. Install the bundle
 
@@ -86,6 +87,8 @@ For a general space, use the installed selected-language `context-adapter.md`, r
 | Windsurf | `.windsurf/rules/ssot.md`, or existing `.windsurfrules` |
 | Gemini CLI | `GEMINI.md` |
 | Antigravity App / CLI / IDE | Existing `AGENTS.md`, `GEMINI.md`, or supported project rules pointing to that owner |
+| GitHub Copilot | `.github/copilot-instructions.md` |
+| DeepSeek Harness (`dsh`) | `AGENTS.md` |
 | Other agents | Their supported repository-instruction entry |
 
 Read existing instructions first, follow any symlink/pointer to the shared instruction owner, keep one ordered marked block, preserve unrelated instructions, and copy only the marked block (never copy SSOT-CONTEXT's own `AGENTS.md`). Reread the resulting file to verify it covers automatic preflight, immediate closeout capture, batch reconciliation, skip cases (chat, pure commands, typos), honest missing-skill reporting, and no leftover v2 directives.

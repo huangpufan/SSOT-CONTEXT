@@ -23,6 +23,7 @@ resolve_script_dir() {
 
 # Resolve before changing directories so relative invocations from subdirectories still work.
 SCRIPT_DIR="$(resolve_script_dir 2>/dev/null || true)"
+ORIG_PWD="$(pwd -P 2>/dev/null || pwd)"
 
 SSOT_TARGET="${SSOT_DIR:-SSOT}"
 while [[ "$SSOT_TARGET" != "/" && "$SSOT_TARGET" == */ ]]; do
@@ -33,6 +34,16 @@ while [[ "$SSOT_TARGET" == ./* && "$SSOT_TARGET" != "./" ]]; do
 done
 STRICT="${SSOT_PRECOMMIT_STRICT:-0}"
 ALWAYS="${SSOT_PRECOMMIT_ALWAYS:-0}"
+
+# Canonicalize relative Git routing env paths before cd "$REPO_ROOT" so split
+# GIT_DIR/GIT_WORK_TREE or subdirectory direct invocations stay valid.
+for _git_var in GIT_DIR GIT_WORK_TREE GIT_COMMON_DIR GIT_INDEX_FILE GIT_OBJECT_DIRECTORY GIT_SHALLOW_FILE; do
+  _git_val="${!_git_var:-}"
+  if [[ -n "$_git_val" && "$_git_val" != /* ]]; then
+    export "${_git_var}=$ORIG_PWD/$_git_val"
+  fi
+done
+unset _git_var _git_val
 
 REPO_ROOT="$(git rev-parse --show-toplevel 2>/dev/null || true)"
 [[ -n "$REPO_ROOT" ]] || exit 0
@@ -147,7 +158,7 @@ while IFS= read -r -d '' status; do
   if [[ "$should_check" -eq 0 ]]; then
     for p in "$path1" "$path2"; do
       [[ -n "$p" ]] || continue
-      if [[ "$p" == "$SSOT_TARGET" || "$p" == "$SSOT_TARGET/"* || "$p" == *.[mM][dD] ]]; then
+      if [[ "$SSOT_TARGET" == "." || "$p" == "$SSOT_TARGET" || "$p" == "$SSOT_TARGET/"* || "$p" == *.[mM][dD] || "$p" == *.[mM][dD][cC] || "$p" == ".cursorrules" || "$p" == ".windsurfrules" ]]; then
         should_check=1
         break
       fi
@@ -163,24 +174,36 @@ find_checker() {
     return 1
   fi
   local cand rel="ssot-doctor/assets/scripts/ssot-check.py"
+  local xdg="${XDG_CONFIG_HOME:-${HOME:+$HOME/.config}}"
   local -a candidates=(
     "$REPO_ROOT/.agents/skills/$rel"
     "$REPO_ROOT/.claude/skills/$rel"
     "$REPO_ROOT/.windsurf/skills/$rel"
+    "$REPO_ROOT/.dsh/skills/$rel"
   )
   [[ -n "$SCRIPT_DIR" ]] && candidates+=("$SCRIPT_DIR/../skills/$rel")
   [[ -n "${CODEX_HOME:-}" ]] && candidates+=("$CODEX_HOME/skills/$rel")
   [[ -n "${CLAUDE_CONFIG_DIR:-}" ]] && candidates+=("$CLAUDE_CONFIG_DIR/skills/$rel")
+  [[ -n "${DSH_HOME:-}" ]] && candidates+=("$DSH_HOME/skills/$rel")
+  if [[ -n "$xdg" ]]; then
+    candidates+=(
+      "$xdg/opencode/skills/$rel"
+      "$xdg/agents/skills/$rel"
+    )
+  fi
   if [[ -n "${HOME:-}" ]]; then
     candidates+=(
       "$HOME/.agents/skills/$rel"
       "$HOME/.codex/skills/$rel"
       "$HOME/.claude/skills/$rel"
       "$HOME/.cursor/skills/$rel"
+      "$HOME/.copilot/skills/$rel"
       "$HOME/.gemini/config/skills/$rel"
       "$HOME/.gemini/skills/$rel"
       "$HOME/.gemini/antigravity/skills/$rel"
+      "$HOME/.gemini/antigravity-cli/skills/$rel"
       "$HOME/.codeium/windsurf/skills/$rel"
+      "$HOME/.dsh/skills/$rel"
     )
   fi
   for cand in "${candidates[@]}"; do
@@ -230,10 +253,22 @@ if [[ ! -e "$SSOT_TARGET" || "$staged_del_on_disk" -eq 1 ]]; then
   need_snapshot=1
 fi
 
+if [[ "$need_snapshot" -eq 0 && ( -n "${GIT_DIR:-}" || -n "${GIT_WORK_TREE:-}" ) ]]; then
+  if ! git_clean rev-parse --is-inside-work-tree >/dev/null 2>&1; then
+    # ssot-check.py strips GIT_DIR/GIT_WORK_TREE; split Git repos require a self-contained snapshot.
+    need_snapshot=1
+  fi
+fi
+
 if [[ "$need_snapshot" -eq 0 && -n "${GIT_INDEX_FILE:-}" ]]; then
-  default_index="$(resolve_abs_path "$(git_clean rev-parse --git-path index)")"
-  active_index="$(resolve_abs_path "$GIT_INDEX_FILE")"
-  if [[ "$active_index" != "$default_index" ]]; then
+  # Preserve GIT_DIR/GIT_WORK_TREE while unsetting GIT_INDEX_FILE so split repos do not fail.
+  if default_index_raw="$(env -u GIT_INDEX_FILE git rev-parse --git-path index 2>/dev/null)" && [[ -n "$default_index_raw" ]]; then
+    default_index="$(resolve_abs_path "$default_index_raw")"
+    active_index="$(resolve_abs_path "$GIT_INDEX_FILE")"
+    if [[ "$active_index" != "$default_index" ]]; then
+      need_snapshot=1
+    fi
+  else
     need_snapshot=1
   fi
 fi
@@ -341,6 +376,7 @@ entries = []
 all_paths = set()
 all_dirs = set()
 initial = []
+submodules = []
 ssot_prefix = "" if ssot_target == "." else ssot_target + "/"
 
 for rec in raw.split(b"\0"):
@@ -357,9 +393,12 @@ for rec in raw.split(b"\0"):
     segs = p.split("/")
     for i in range(1, len(segs)):
         all_dirs.add("/".join(segs[:i]))
+    if mode == "160000":
+        submodules.append(p)
+        continue
     low = p.lower()
     if (
-        mode in ("120000", "160000")
+        mode == "120000"
         or ssot_target == "."
         or p == ssot_target
         or p.startswith(ssot_prefix)
@@ -375,6 +414,11 @@ if initial:
         ["git", "checkout-index", "-f", "--prefix=" + stage + "/", "--stdin", "-z"],
         cwd=repo, input=inp, check=True,
     )
+
+# Mark 160000 submodule gitlinks with a nested .git boundary so ssot-check.py's
+# repository_local() matches direct-mode WARN behavior instead of false broken-link ERROR.
+for sub in submodules:
+    os.makedirs(os.path.join(stage, sub, ".git"), exist_ok=True)
 
 stage_real = os.path.realpath(stage)
 checked_out = set(initial)
@@ -470,9 +514,26 @@ if [[ "$need_snapshot" -eq 1 ]]; then
     head_sha="$(git rev-parse HEAD)"
     git_clean -C "$STAGE_DIR" update-ref HEAD "$head_sha"
   fi
+  shallow_file="${GIT_SHALLOW_FILE:-}"
+  if [[ -z "$shallow_file" ]]; then
+    shallow_file="$(git rev-parse --git-path shallow 2>/dev/null || true)"
+  fi
+  if [[ -n "$shallow_file" && -f "$shallow_file" ]]; then
+    cp "$shallow_file" "$STAGE_DIR/.git/shallow"
+  fi
   git ls-files --stage -z | git_clean -C "$STAGE_DIR" update-index -z --index-info
   if ! stage_targeted_snapshot; then
     git checkout-index -a -f --prefix="$STAGE_DIR/"
+    python3 - "$REPO_ROOT" "$STAGE_DIR" <<'PY'
+import os, subprocess, sys
+repo, stage = sys.argv[1:3]
+raw = subprocess.run(["git", "ls-files", "--stage", "-z"], cwd=repo, capture_output=True, check=True).stdout
+for rec in raw.split(b"\0"):
+    if rec.startswith(b"160000 "):
+        _, _, p_bytes = rec.partition(b"\t")
+        if p_bytes:
+            os.makedirs(os.path.join(stage, p_bytes.decode("utf-8", "surrogateescape"), ".git"), exist_ok=True)
+PY
   fi
   check_target="$STAGE_DIR/$SSOT_TARGET"
 fi

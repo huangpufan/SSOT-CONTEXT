@@ -1413,11 +1413,205 @@ ANTIGRAVITY_AGENT=1
 [[ "$(autodetect_agent)" == "antigravity-app" ]]
 unset ANTIGRAVITY_AGENT
 [[ "$(autodetect_agent)" == "codex" ]]
+unset CODEX_HOME
+CLAUDE_CONFIG_DIR="/tmp/claude-cfg"
+[[ "$(autodetect_agent)" == "claude-code" ]]
+unset CLAUDE_CONFIG_DIR
+DSH_HOME="/tmp/dsh-home"
+[[ "$(autodetect_agent)" == "dsh" ]]
+CODEX_HOME="/tmp/codex-home"
+! autodetect_agent >/dev/null 2>&1
 SH
 then
-  pass "scenario37: active session env markers precede persistent CODEX_HOME"
+  pass "scenario37: autodetect_agent honors session precedence, CLAUDE_CONFIG_DIR, DSH_HOME, and rejects ambiguity"
 else
   fail "scenario37: autodetect_agent precedence check failed ($(cat "$SCENARIO37/autodetect.log"))"
+fi
+
+# Scenario 38: Cross-repo $PWD isolation for --check-block / --sync-block.
+# Standing inside repo-old (stale project .agents/skills v5.12) while checking/syncing
+# /repo-other/AGENTS.md (which relies on global v5.20) must NEVER pick repo-old's skills.
+SCENARIO38="$WORK_ROOT/scenario38"
+mkdir -p "$SCENARIO38/repo-old" "$SCENARIO38/repo-other" "$SCENARIO38/standalone" "$SCENARIO38/userhome"
+cp "$INSTALLER" "$SCENARIO38/standalone/install.sh"
+HOME="$SCENARIO38/userhome" SOURCE_DIR="$PROJECT_ROOT" \
+  bash "$INSTALLER" --non-interactive --agent codex --scope global --lang en --yes >/dev/null 2>&1 \
+  || fail "scenario38: global codex install failed"
+HOME="$SCENARIO38/userhome" SOURCE_DIR="$PROJECT_ROOT" \
+  bash -c "cd '$SCENARIO38/repo-old' && bash '$INSTALLER' --quickstart --agent codex --scope project --lang en" >/dev/null 2>&1 \
+  || fail "scenario38: repo-old project install failed"
+cat > "$SCENARIO38/repo-old/.agents/skills/ssot-bootstrap/assets/templates/adapter-thin.md" <<'EOF'
+<!-- SSOT-CONTEXT:BEGIN -->
+## SSOT workflow
+Stale repo-old v5.12 block mentioning $ssot-preflight $ssot-bootstrap $ssot-closeout $ssot-doctor.
+<!-- SSOT-CONTEXT:END -->
+EOF
+sed -i.bak 's/protocol_version: "[^"]*"/protocol_version: "5.12"/' "$SCENARIO38/repo-old/.agents/skills/ssot-preflight/SKILL.md"
+rm -f "$SCENARIO38/repo-old/.agents/skills/ssot-preflight/SKILL.md.bak"
+printf '<!-- SSOT-CONTEXT:BEGIN -->\n## SSOT workflow\nOld block.\n<!-- SSOT-CONTEXT:END -->\n' > "$SCENARIO38/repo-other/AGENTS.md"
+
+SYNC38_OUT="$(HOME="$SCENARIO38/userhome" SSOT_CONTEXT_REPO_URL="http://127.0.0.1:1/unreachable.git" \
+  bash -c "cd '$SCENARIO38/repo-old' && bash '$SCENARIO38/standalone/install.sh' --sync-block '$SCENARIO38/repo-other/AGENTS.md'" 2>&1)"
+SYNC38_RC=$?
+if [[ $SYNC38_RC -eq 0 ]] &&
+   ! grep -q 'Stale repo-old v5.12 block' "$SCENARIO38/repo-other/AGENTS.md" &&
+   HOME="$SCENARIO38/userhome" SSOT_CONTEXT_REPO_URL="http://127.0.0.1:1/unreachable.git" \
+   bash -c "cd '$SCENARIO38/repo-old' && bash '$SCENARIO38/standalone/install.sh' --check-block '$SCENARIO38/repo-other/AGENTS.md'" >/dev/null 2>&1 &&
+   SOURCE_DIR="$PROJECT_ROOT" bash "$INSTALLER" --check-block "$SCENARIO38/repo-other/AGENTS.md" >/dev/null 2>&1; then
+  pass "scenario38: --sync-block/--check-block isolates target repo from unrelated stale \$PWD"
+else
+  fail "scenario38: cross-repo \$PWD bleed detected (rc=$SYNC38_RC, out=$SYNC38_OUT)"
+fi
+
+# Scenario 39: Canonical symlink deduplication in dedup_targets and promptscript global skip warning.
+SCENARIO39="$WORK_ROOT/scenario39"
+mkdir -p "$SCENARIO39/userhome/.claude/skills" "$SCENARIO39/userhome/.codex"
+ln -s "$SCENARIO39/userhome/.claude/skills" "$SCENARIO39/userhome/.codex/skills"
+DEDUP39_OUT="$(HOME="$SCENARIO39/userhome" SOURCE_DIR="$PROJECT_ROOT" \
+  bash "$INSTALLER" --non-interactive --agent claude-code,codex,promptscript --scope global --lang en --yes 2>&1)"
+DEDUP39_RC=$?
+if [[ $DEDUP39_RC -eq 0 ]] &&
+   grep -q 'same target as Claude Code' <<< "$DEDUP39_OUT" &&
+   grep -q 'PromptScript has no global install location' <<< "$DEDUP39_OUT" &&
+   [[ -f "$SCENARIO39/userhome/.claude/skills/ssot-preflight/SKILL.md" ]]; then
+  pass "scenario39: dedup_targets canonicalizes symlinked bases and warns when skipping promptscript"
+else
+  fail "scenario39: dedup_targets canonicalization/warning failed (rc=$DEDUP39_RC, out=$DEDUP39_OUT)"
+fi
+
+# Scenario 40: English format-5 block with Chinese ENTRY path containing 空间/工作流 stays lang=en.
+SCENARIO40="$WORK_ROOT/scenario40"
+mkdir -p "$SCENARIO40"
+cat > "$SCENARIO40/EN-CN-PATH.md" <<'EOF'
+<!-- SSOT-CONTEXT:BEGIN -->
+## Maintained context
+
+个人空间/工作流/README.md defines this space (`ssot_format: 5`); old text.
+<!-- SSOT-CONTEXT:END -->
+EOF
+SYNC40_OUT="$(SOURCE_DIR="$PROJECT_ROOT" bash "$INSTALLER" --sync-block "$SCENARIO40/EN-CN-PATH.md" 2>&1)"
+SYNC40_RC=$?
+if [[ $SYNC40_RC -eq 0 ]] &&
+   grep -q 'lang=en' <<< "$SYNC40_OUT" &&
+   grep -q '个人空间/工作流/README.md defines this space' "$SCENARIO40/EN-CN-PATH.md" &&
+   SOURCE_DIR="$PROJECT_ROOT" bash "$INSTALLER" --check-block "$SCENARIO40/EN-CN-PATH.md" >/dev/null 2>&1; then
+  pass "scenario40: detect_block_lang keeps English format-5 block with Chinese ENTRY path as lang=en"
+else
+  fail "scenario40: detect_block_lang misclassified EN format-5 block (rc=$SYNC40_RC, out=$SYNC40_OUT)"
+fi
+
+# Scenario 41: dsh agent registration (list, project, global, DSH_HOME) and updated WIRE_TARGET_HINT.
+SCENARIO41="$WORK_ROOT/scenario41"
+mkdir -p "$SCENARIO41/userhome" "$SCENARIO41/proj" "$SCENARIO41/custom-dsh"
+LIST41="$(HOME="$SCENARIO41/userhome" bash "$INSTALLER" --list-agents 2>&1)"
+if grep -E '^  dsh +DeepSeek Harness \(dsh\)' <<< "$LIST41" >/dev/null; then
+  pass "scenario41: --list-agents includes dsh (DeepSeek Harness)"
+else
+  fail "scenario41: --list-agents missing dsh entry"
+fi
+INST41_PROJ="$(HOME="$SCENARIO41/userhome" SOURCE_DIR="$PROJECT_ROOT" \
+  bash -c "cd '$SCENARIO41/proj' && bash '$INSTALLER' --non-interactive --agent dsh --scope project --lang en --yes" 2>&1)"
+if [[ $? -eq 0 ]] && [[ -f "$SCENARIO41/proj/.dsh/skills/ssot-preflight/SKILL.md" ]] &&
+   grep -q '\.cursor/rules/ssot\.mdc / \.cursorrules' <<< "$INST41_PROJ"; then
+  pass "scenario41: dsh project install lands in .dsh/skills and wire hint prioritizes .cursor/rules/ssot.mdc"
+else
+  fail "scenario41: dsh project install or wire hint failed (out=$INST41_PROJ)"
+fi
+HOME="$SCENARIO41/userhome" SOURCE_DIR="$PROJECT_ROOT" \
+  bash "$INSTALLER" --non-interactive --agent dsh --scope global --lang en --yes >/dev/null 2>&1 \
+  || fail "scenario41: dsh default global install failed"
+assert_file "scenario41: dsh global install lands in ~/.dsh/skills" "$SCENARIO41/userhome/.dsh/skills/ssot-preflight/SKILL.md"
+HOME="$SCENARIO41/userhome" DSH_HOME="$SCENARIO41/custom-dsh" SOURCE_DIR="$PROJECT_ROOT" \
+  bash "$INSTALLER" --non-interactive --agent dsh --scope global --lang en --yes >/dev/null 2>&1 \
+  || fail "scenario41: dsh DSH_HOME global install failed"
+assert_file "scenario41: dsh global install honors DSH_HOME" "$SCENARIO41/custom-dsh/skills/ssot-preflight/SKILL.md"
+
+# Scenario 42: select_agents handles End/PgDn on zero search matches without cur=-1 crash under set -u.
+SCENARIO42="$WORK_ROOT/scenario42"
+mkdir -p "$SCENARIO42"
+if env -i PATH="$PATH" HOME="$SCENARIO42" SSOT_TEST_INSTALLER="$INSTALLER" bash <<'SH' >"$SCENARIO42/picker.log" 2>&1
+set -euo pipefail
+source <(sed '/^main "\$@"$/d' "$SSOT_TEST_INSTALLER")
+parse_agent_registry
+validate_registry
+DETECTED_AGENTS=("codex")
+# Search non-matching query, press End, PgDn, PgUp, space, Esc (clear), Enter (confirm).
+exec 4< <(printf '/zzzz-no-such-agent\n\033[F\033[6~\033[5~ \033\n\n')
+PROMPT_FD=4
+select_agents "Pick" "project" "${ALL_AGENTS[@]}"
+[[ "${#SELECTED_AGENT_KEYS[@]}" -eq 1 && "${SELECTED_AGENT_KEYS[0]}" == "codex" ]]
+SH
+then
+  pass "scenario42: select_agents handles End/PgDn/space on 0 search matches cleanly under set -u"
+else
+  fail "scenario42: select_agents crashed on empty search navigation ($(cat "$SCENARIO42/picker.log"))"
+fi
+
+# Scenario 43: Authentic v2-final backward-compatibility fixture (SSOT-SKILL markers + owned SKILL_STYLE.md + 6 skills)
+# and clean upgrade from v2-final to current bundle.
+SCENARIO43="$WORK_ROOT/scenario43"
+mkdir -p "$SCENARIO43/v2src/skills" "$SCENARIO43/proj" "$SCENARIO43/userhome"
+printf '2.86\n' > "$SCENARIO43/v2src/VERSION"
+printf '<!-- SSOT-SKILL bundle companion; owned by install.sh -->\n# SKILL_STYLE\n' > "$SCENARIO43/v2src/skills/SKILL_STYLE.md"
+for sk in ssot-preflight ssot-bootstrap ssot-closeout ssot-doctor ssot-audit ssot-skill; do
+  mkdir -p "$SCENARIO43/v2src/skills/$sk/agents"
+  cat > "$SCENARIO43/v2src/skills/$sk/SKILL.md" <<EOF
+---
+name: $sk
+description: v2-final compatibility fixture skill for $sk covering repository workflows.
+metadata:
+  protocol_version: "2.86"
+---
+# $sk
+EOF
+  cat > "$SCENARIO43/v2src/skills/$sk/agents/openai.yaml" <<EOF
+interface:
+  display_name: "$sk"
+  short_description: "v2 fixture"
+  default_prompt: "Use \$$sk"
+EOF
+done
+mkdir -p "$SCENARIO43/v2src/skills/ssot-bootstrap/assets/templates/en"
+cat > "$SCENARIO43/v2src/skills/ssot-bootstrap/assets/templates/en/adapter-thin.md" <<'EOF'
+# Adapter
+
+<!-- SSOT-SKILL:BEGIN -->
+## SSOT workflow
+Use `$ssot-preflight`, `$ssot-bootstrap`, `$ssot-closeout`, `$ssot-audit`, and `$ssot-doctor`.
+<!-- SSOT-SKILL:END -->
+EOF
+cat > "$SCENARIO43/v2src/skills/ssot-bootstrap/assets/templates/en/architecture-readme.md" <<'EOF'
+# Architecture
+EOF
+git -C "$SCENARIO43/v2src" init -q
+git -C "$SCENARIO43/v2src" symbolic-ref HEAD refs/heads/main
+git -C "$SCENARIO43/v2src" add -A
+git -C "$SCENARIO43/v2src" -c core.hooksPath=/dev/null -c commit.gpgsign=false \
+  -c user.name=SSOT-test -c user.email=ssot-test@example.invalid commit -qm 'v2-final authentic fixture'
+git -C "$SCENARIO43/v2src" tag v2-final
+
+V2_INST_OUT="$(env -u SOURCE_DIR HOME="$SCENARIO43/userhome" SSOT_CONTEXT_REPO_URL="$SCENARIO43/v2src" \
+  bash -c "cd '$SCENARIO43/proj' && bash '$INSTALLER' --non-interactive --agent claude-code --scope project --lang en --yes --ref v2-final" 2>&1)"
+V2_INST_RC=$?
+if [[ $V2_INST_RC -eq 0 ]] &&
+   [[ -f "$SCENARIO43/proj/.claude/skills/SKILL_STYLE.md" ]] &&
+   [[ -f "$SCENARIO43/proj/.claude/skills/ssot-audit/SKILL.md" ]] &&
+   [[ -f "$SCENARIO43/proj/.claude/skills/ssot-skill/SKILL.md" ]] &&
+   grep -q 'SSOT-SKILL:BEGIN' <<< "$V2_INST_OUT"; then
+  pass "scenario43: authentic v2-final fixture installs all 6 skills, owned SKILL_STYLE.md, and SSOT-SKILL wire block"
+else
+  fail "scenario43: authentic v2-final fixture install failed (rc=$V2_INST_RC, out=$V2_INST_OUT)"
+fi
+V2_UPG_OUT="$(HOME="$SCENARIO43/userhome" SOURCE_DIR="$PROJECT_ROOT" \
+  bash -c "cd '$SCENARIO43/proj' && bash '$INSTALLER' --upgrade --agent claude-code --scope project" 2>&1)"
+V2_UPG_RC=$?
+if [[ $V2_UPG_RC -eq 0 ]] &&
+   [[ ! -e "$SCENARIO43/proj/.claude/skills/SKILL_STYLE.md" ]] &&
+   [[ -f "$SCENARIO43/proj/.claude/skills/ssot-audit/SKILL.md" ]] &&
+   grep -q 'read-only for agents until migrated' <<< "$V2_UPG_OUT"; then
+  pass "scenario43: upgrading authentic v2-final install warns on v2->v4, retires SKILL_STYLE.md, and preserves shims"
+else
+  fail "scenario43: upgrade from authentic v2-final failed (rc=$V2_UPG_RC, out=$V2_UPG_OUT)"
 fi
 
 echo "=== RESULT: pass=$PASS fail=$FAIL ==="

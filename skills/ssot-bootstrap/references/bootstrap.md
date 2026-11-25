@@ -40,7 +40,7 @@ If duplicated or obsolete documents need consolidation, propose the owner and ex
 
 ## 5. Work across sessions
 
-If setup will not finish in one session, keep `SSOT/BOOTSTRAP.md` from the `bootstrap-progress.md` template. As each area/source unit finishes, record its completed range, owner outputs, scratch checklist links and next action; keep detailed checklists in scratch. Record gaps and questions waiting for the user. Each session starts by reading it, verifying completed units and active writers, then resuming unfinished work rather than repeating completed units. Do not retry provider-blocked chunks merely on resume; continue independent units. Delete it when setup is complete.
+If setup will not finish in one session, keep `SSOT/BOOTSTRAP.md` from the `bootstrap-progress.md` template. As each area/source unit finishes, record its completed range, owner outputs, inline backticked scratch paths (e.g. `.ssot-work/...`, never Markdown links to gitignored paths), and next action; keep detailed checklists in scratch. Record gaps and questions waiting for the user. Each session starts by reading it, verifying completed units and active writers, then resuming unfinished work rather than repeating completed units. Do not retry provider-blocked chunks merely on resume; continue independent units. Delete it when setup is complete.
 
 ## 6. Wire the instructions and finish
 

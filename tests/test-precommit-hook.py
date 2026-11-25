@@ -499,6 +499,222 @@ class PrecommitHookTest(unittest.TestCase):
         self.assertEqual(res.returncode, 0, res.stdout + res.stderr)
         self.assertIn("v2 ledger left after migration", res.stdout + res.stderr)
 
+    def test_shallow_clone_snapshot_mode_succeeds_and_still_blocks_tamper(self):
+        # Create a second commit so a depth-1 clone has a real shallow graft boundary.
+        (self.repo / "src/extra.py").write_text("y = 2\n", encoding="utf-8")
+        self.git("add", "src/extra.py")
+        self.assertEqual(self.git("commit", "-m", "second commit").returncode, 0)
+
+        shallow = Path(self.tmp.name) / "shallow-clone"
+        subprocess.run(
+            ["git", "clone", "-q", "--depth", "1", f"file://{self.repo}", str(shallow)],
+            env=self.env, check=True,
+        )
+        hook_dst = shallow / ".git/hooks/pre-commit"
+        hook_dst.write_text(f'#!/usr/bin/env bash\nexec "{self.standalone}" "$@"\n', encoding="utf-8")
+        hook_dst.chmod(0o755)
+        # Force snapshot mode with an unstaged edit to docs/api.md.
+        (shallow / "docs/api.md").write_text("# API\n\n## Retries\n\nUnstaged local note.\n", encoding="utf-8")
+        (shallow / "SSOT/architecture.md").write_text(
+            "# Architecture\n\nActive code is in `src/app.py`; `src/extra.py` is helper.\n", encoding="utf-8"
+        )
+        subprocess.run(["git", "add", "SSOT/architecture.md"], cwd=shallow, env=self.env, check=True)
+        res_ok = subprocess.run(
+            ["git", "commit", "-m", "shallow snapshot clean"],
+            cwd=shallow, env=self.env, capture_output=True, text=True,
+        )
+        self.assertEqual(res_ok.returncode, 0, res_ok.stdout + res_ok.stderr)
+        self.assertNotIn("INCOMPLETE", res_ok.stdout + res_ok.stderr)
+
+        # Tampered confirmed invariant in shallow snapshot mode must still be blocked (exit 1, not 3).
+        readme = shallow / "SSOT/README.md"
+        readme.write_text(
+            readme.read_text(encoding="utf-8").replace("Never charge twice", "Shallow tamper"),
+            encoding="utf-8",
+        )
+        subprocess.run(["git", "add", "SSOT/README.md"], cwd=shallow, env=self.env, check=True)
+        res_bad = subprocess.run(
+            ["git", "commit", "-m", "shallow snapshot tamper"],
+            cwd=shallow, env=self.env, capture_output=True, text=True,
+        )
+        self.assertEqual(res_bad.returncode, 1, res_bad.stdout + res_bad.stderr)
+        self.assertIn("confirmed invariant INV-01 changed its rule", res_bad.stdout + res_bad.stderr)
+
+    def test_submodule_160000_link_matches_direct_mode_in_targeted_and_fallback_snapshots(self):
+        sub_origin = Path(self.tmp.name) / "sub-origin"
+        sub_origin.mkdir()
+        subprocess.run(["git", "init", "-q"], cwd=sub_origin, env=self.env, check=True)
+        (sub_origin / "README.md").write_text("# Submodule\n", encoding="utf-8")
+        subprocess.run(["git", "add", "."], cwd=sub_origin, env=self.env, check=True)
+        subprocess.run(["git", "commit", "-qm", "sub init"], cwd=sub_origin, env=self.env, check=True)
+
+        res_sub = self.git("-c", "protocol.file.allow=always", "submodule", "add", "-q", str(sub_origin), "plugins/sub")
+        self.assertEqual(res_sub.returncode, 0, res_sub.stdout + res_sub.stderr)
+        readme = self.repo / "SSOT/README.md"
+        readme.write_text(
+            readme.read_text(encoding="utf-8") + "\n- [Sub](../plugins/sub/README.md)\n",
+            encoding="utf-8",
+        )
+        self.git("add", ".gitmodules", "plugins/sub", "SSOT/README.md")
+        # Force targeted snapshot mode with an unstaged edit to docs/api.md.
+        (self.repo / "docs/api.md").write_text("# API\n\n## Retries\n\nUnstaged.\n", encoding="utf-8")
+        res_snap = self.git("commit", "-m", "link submodule in snapshot")
+        self.assertEqual(res_snap.returncode, 0, res_snap.stdout + res_snap.stderr)
+        self.assertIn("link leaves the repository", res_snap.stdout + res_snap.stderr)
+        self.assertNotIn("broken link", res_snap.stdout + res_snap.stderr)
+
+        # Also test the fallback checkout-index -a snapshot path by wrapping ssot-check.py in a non-importable shim.
+        wrapper = Path(self.tmp.name) / "wrap-checker.py"
+        wrapper.write_text(
+            f"import subprocess, sys\nraise SystemExit(subprocess.call([sys.executable, {str(CHECKER)!r}, *sys.argv[1:]]))\n",
+            encoding="utf-8",
+        )
+        (self.repo / "SSOT/architecture.md").write_text("# Architecture\n\nFallback submodule test.\n", encoding="utf-8")
+        self.git("add", "SSOT/architecture.md")
+        res_fb = self.git("commit", "-m", "submodule fallback snapshot", env={**self.env, "SSOT_CHECKER": str(wrapper)})
+        self.assertEqual(res_fb.returncode, 0, res_fb.stdout + res_fb.stderr)
+        self.assertIn("link leaves the repository", res_fb.stdout + res_fb.stderr)
+        self.assertNotIn("broken link", res_fb.stdout + res_fb.stderr)
+
+    def test_split_git_dir_and_work_tree_runs_cleanly_and_blocks_tamper(self):
+        git_dir = Path(self.tmp.name) / "split.git"
+        work_tree = Path(self.tmp.name) / "split-wt"
+        work_tree.mkdir()
+        split_base = ["git", f"--git-dir={git_dir}", f"--work-tree={work_tree}"]
+        subprocess.run([*split_base, "init", "-q"], env=self.env, check=True)
+        hook_dst = git_dir / "hooks/pre-commit"
+        hook_dst.write_text(f'#!/usr/bin/env bash\nexec "{self.standalone}" "$@"\n', encoding="utf-8")
+        hook_dst.chmod(0o755)
+        (work_tree / "SSOT").mkdir()
+        (work_tree / "SSOT/arch.md").write_text("# Arch\n\nDetails.\n", encoding="utf-8")
+        readme_text = textwrap.dedent("""\
+            ---
+            ssot_format: 4
+            language: en
+            ---
+            # Split
+
+            ## Map
+
+            - [Arch](arch.md)
+
+            ## Invariants
+
+            | ID | Kind | Rule | Explained in | Status | Source |
+            |---|---|---|---|---|---|
+            | SPL-01 | product promise | Stay intact | [Arch](arch.md) | confirmed | user, 2026-05-02 |
+            """)
+        (work_tree / "SSOT/README.md").write_text(readme_text, encoding="utf-8")
+        local_chk = work_tree / ".agents/skills/ssot-doctor/assets/scripts/ssot-check.py"
+        local_chk.parent.mkdir(parents=True)
+        shutil.copy2(CHECKER, local_chk)
+        subprocess.run([*split_base, "add", "."], env=self.env, check=True)
+        res_init = subprocess.run([*split_base, "commit", "-m", "initial split"], env=self.env, capture_output=True, text=True)
+        self.assertEqual(res_init.returncode, 0, res_init.stdout + res_init.stderr)
+
+        # Clean follow-up commit must succeed (no exit 128 from git_clean).
+        (work_tree / "SSOT/arch.md").write_text("# Arch\n\nUpdated details.\n", encoding="utf-8")
+        subprocess.run([*split_base, "add", "SSOT/arch.md"], env=self.env, check=True)
+        res_clean = subprocess.run([*split_base, "commit", "-m", "clean split update"], env=self.env, capture_output=True, text=True)
+        self.assertEqual(res_clean.returncode, 0, res_clean.stdout + res_clean.stderr)
+
+        # Tampered confirmed invariant must be blocked with exit 1.
+        (work_tree / "SSOT/README.md").write_text(readme_text.replace("Stay intact", "Tampered"), encoding="utf-8")
+        subprocess.run([*split_base, "add", "SSOT/README.md"], env=self.env, check=True)
+        res_bad = subprocess.run([*split_base, "commit", "-m", "tamper split"], env=self.env, capture_output=True, text=True)
+        self.assertEqual(res_bad.returncode, 1, res_bad.stdout + res_bad.stderr)
+        self.assertIn("confirmed invariant SPL-01 changed its rule", res_bad.stdout + res_bad.stderr)
+
+    def test_staged_mdc_cursorrules_and_windsurfrules_trigger_hook(self):
+        for idx, rel in enumerate((".cursor/rules/ssot.mdc", ".cursorrules", ".windsurfrules")):
+            marker = Path(self.tmp.name) / f"instr-ran-{idx}"
+            sentinel = Path(self.tmp.name) / f"instr-sentinel-{idx}.py"
+            sentinel.write_text(
+                f"import pathlib, sys\npathlib.Path({str(marker)!r}).write_text('ran')\nsys.exit(0)\n",
+                encoding="utf-8",
+            )
+            target = self.repo / rel
+            target.parent.mkdir(parents=True, exist_ok=True)
+            target.write_text(f"# rule {idx}\n", encoding="utf-8")
+            self.git("add", rel)
+            res = self.git("commit", "-m", f"add {rel}", env={**self.env, "SSOT_CHECKER": str(sentinel)})
+            self.assertEqual(res.returncode, 0, res.stdout + res.stderr)
+            self.assertTrue(marker.exists(), f"staging {rel} should trigger the pre-commit guard")
+
+    def test_find_checker_discovers_copilot_opencode_amp_antigravity_cli_and_dsh(self):
+        shutil.rmtree(self.repo / ".agents")
+        hook_dst = self.repo / ".git/hooks/pre-commit"
+        hook_dst.unlink()
+        hook_dst.symlink_to(self.standalone)
+
+        readme = self.repo / "SSOT/README.md"
+        orig = readme.read_text(encoding="utf-8")
+        readme.write_text(orig.replace("Never charge twice", "Global discovery tamper"), encoding="utf-8")
+        self.git("add", "SSOT/README.md")
+
+        rel = Path("ssot-doctor/assets/scripts/ssot-check.py")
+        cases = [
+            ("copilot", self.home / ".copilot/skills" / rel, {}),
+            ("opencode", Path(self.tmp.name) / "xdg/opencode/skills" / rel, {"XDG_CONFIG_HOME": str(Path(self.tmp.name) / "xdg")}),
+            ("amp", Path(self.tmp.name) / "xdg2/agents/skills" / rel, {"XDG_CONFIG_HOME": str(Path(self.tmp.name) / "xdg2")}),
+            ("antigravity-cli", self.home / ".gemini/antigravity-cli/skills" / rel, {}),
+            ("dsh-home", Path(self.tmp.name) / "custom-dsh/skills" / rel, {"DSH_HOME": str(Path(self.tmp.name) / "custom-dsh")}),
+            ("dsh-default", self.home / ".dsh/skills" / rel, {}),
+        ]
+        for label, chk_path, extra_env in cases:
+            with self.subTest(agent=label):
+                chk_path.parent.mkdir(parents=True, exist_ok=True)
+                shutil.copy2(CHECKER, chk_path)
+                try:
+                    env = {**self.env, **extra_env}
+                    env.pop("DSH_HOME", None)
+                    env.pop("XDG_CONFIG_HOME", None)
+                    env.update(extra_env)
+                    res = self.git("commit", "-m", f"tamper via {label}", env=env)
+                    self.assertEqual(res.returncode, 1, res.stdout + res.stderr)
+                    self.assertIn("confirmed invariant INV-01 changed its rule", res.stdout + res.stderr)
+                finally:
+                    chk_path.unlink()
+        readme.write_text(orig, encoding="utf-8")
+        self.git("reset", "-q", "HEAD", "SSOT/README.md")
+
+    def test_hook_works_inside_git_submodule_where_dotgit_is_file(self):
+        parent = Path(self.tmp.name) / "parent-repo"
+        parent.mkdir()
+        subprocess.run(["git", "init", "-q"], cwd=parent, env=self.env, check=True)
+        res_add = subprocess.run(
+            ["git", "-c", "protocol.file.allow=always", "submodule", "add", "-q", str(self.repo), "plugins/child"],
+            cwd=parent, env=self.env, capture_output=True, text=True,
+        )
+        self.assertEqual(res_add.returncode, 0, res_add.stdout + res_add.stderr)
+        child = parent / "plugins/child"
+        self.assertTrue((child / ".git").is_file(), "submodule .git must be a regular file")
+
+        common_dir = subprocess.check_output(
+            ["git", "rev-parse", "--git-common-dir"], cwd=child, env=self.env, text=True
+        ).strip()
+        common_path = (child / common_dir).resolve()
+        hook_dst = common_path / "hooks/pre-commit"
+        hook_dst.parent.mkdir(parents=True, exist_ok=True)
+        hook_dst.write_text(f'#!/usr/bin/env bash\nexec "{self.standalone}" "$@"\n', encoding="utf-8")
+        hook_dst.chmod(0o755)
+
+        # 1. Clean commit inside submodule passes.
+        (child / "SSOT/architecture.md").write_text("# Architecture\n\nSubmodule clean edit.\n", encoding="utf-8")
+        subprocess.run(["git", "add", "SSOT/architecture.md"], cwd=child, env=self.env, check=True)
+        r_clean = subprocess.run(["git", "commit", "-m", "sub clean"], cwd=child, env=self.env, capture_output=True, text=True)
+        self.assertEqual(r_clean.returncode, 0, r_clean.stdout + r_clean.stderr)
+
+        # 2. Tampered shard invariant inside submodule (snapshot mode with reverted WT) is blocked.
+        shard = child / "SSOT/invariants/shipping.md"
+        shard_orig = shard.read_text(encoding="utf-8")
+        shard.write_text(shard_orig.replace("Express keeps standard intact", "Submodule tamper"), encoding="utf-8")
+        subprocess.run(["git", "add", "SSOT/invariants/shipping.md"], cwd=child, env=self.env, check=True)
+        shard.write_text(shard_orig, encoding="utf-8")
+        r_bad = subprocess.run(["git", "commit", "-m", "sub tamper"], cwd=child, env=self.env, capture_output=True, text=True)
+        self.assertEqual(r_bad.returncode, 1, r_bad.stdout + r_bad.stderr)
+        self.assertIn("confirmed invariant SHP-01 changed its rule", r_bad.stdout + r_bad.stderr)
+
 
 if __name__ == "__main__":
     unittest.main(verbosity=1)

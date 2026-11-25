@@ -88,6 +88,10 @@ if tool == 'rm' and mode == 'rollback-remove' and dst.name == 'ssot-bootstrap':
     injected.write_text('rollback-remove'); sys.exit(73)
 if tool == 'mv' and mode == 'backup' and '.backup' in dst.parts and src.name == target:
     injected.write_text('backup'); sys.exit(71)
+if tool == 'mv' and mode in ('backup-term', 'backup-kill') and '.backup' in dst.parts and src.name == target:
+    injected.write_text(mode)
+    sig = signal.SIGTERM if mode == 'backup-term' else signal.SIGKILL
+    os.kill(os.getppid(), sig); time.sleep(0.03); sys.exit(128 + sig)
 if tool == 'mv' and mode == 'rollback' and restore and dst.name == 'ssot-preflight':
     injected.write_text('rollback'); sys.exit(72)
 if tool == 'mv' and promote and mode in ('promotion', 'rollback', 'rollback-remove', 'pause', 'term', 'int', 'kill'):
@@ -366,6 +370,42 @@ os.execv({real_mv!r} if tool == 'mv' else {real_rm!r}, [tool, *args])
         retry = self.run_installer("new", action="upgrade")
         self.assertEqual(retry.returncode, 0, retry.stdout + retry.stderr)
         self.assert_new_generation()
+
+    def test_uninstall_backup_failure_restores_all_skills(self):
+        result = self.run_installer("old", "backup", "ssot-closeout", action="uninstall")
+        self.assertEqual(self.injected.read_text(), "backup")
+        self.assertNotEqual(result.returncode, 0)
+        self.assertEqual(self.old, digest(self.base), "failed uninstall must roll back all removed skills")
+
+    def test_uninstall_term_restores_all_skills_with_cancellation_exit(self):
+        result = self.run_installer("old", "backup-term", "ssot-closeout", action="uninstall")
+        self.assertEqual(self.injected.read_text(), "backup-term")
+        self.assertEqual(result.returncode, 143, result.stdout + result.stderr)
+        self.assertEqual(self.old, digest(self.base), "SIGTERM mid-uninstall must restore every skill")
+
+    def test_uninstall_kill_retains_recovery_state_and_refuses_rerun(self):
+        result = self.run_installer("old", "backup-kill", "ssot-closeout", action="uninstall")
+        self.assertEqual(result.returncode, -signal.SIGKILL)
+        stages = list(self.base.glob(".ssot-skill-install.*"))
+        self.assertEqual(len(stages), 1)
+        self.assertTrue((stages[0] / ".ssot-transaction").is_file())
+        self.assertEqual((stages[0] / ".backup/ssot-preflight/generation.txt").read_text(), "old")
+        saved = digest(self.base)
+        for action in ("upgrade", "uninstall"):
+            retry = self.run_installer("new", action=action)
+            self.assertNotEqual(retry.returncode, 0, retry.stdout + retry.stderr)
+            self.assertEqual(saved, digest(self.base), "rerun must not touch pending uninstall recovery state")
+        self.recover_retained_attempt(stages[0])
+        clean = self.run_installer("old", action="uninstall")
+        self.assertEqual(clean.returncode, 0, clean.stdout + clean.stderr)
+        for skill in SKILLS:
+            self.assertFalse((self.base / skill).exists())
+
+    def test_uninstall_commit_failure_restores_all_skills(self):
+        result = self.run_installer("old", "commit", action="uninstall")
+        self.assertEqual(self.injected.read_text(), "commit")
+        self.assertNotEqual(result.returncode, 0)
+        self.assertEqual(self.old, digest(self.base), "commit failure during uninstall must restore every skill")
 
 
 if __name__ == "__main__":

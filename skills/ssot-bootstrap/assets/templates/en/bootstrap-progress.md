@@ -9,10 +9,10 @@ This file exists only while SSOT setup or a migration is unfinished. Each sessio
 
 ## Done
 
-Completed area/source units and ranges, with owner outputs and links to scratch checklists.
+<!-- Completed area/source units and ranges, with owner outputs and inline backticked scratch paths (e.g. `.ssot-work/checklist.md`; never Markdown links to gitignored `.ssot-work/` paths). -->
 
 ## Next
 
-Next unfinished units, active writers, and blocked-source gaps to preserve.
+<!-- Next unfinished units, active writers, and blocked-source gaps to preserve. -->
 
 ## Waiting for the user
