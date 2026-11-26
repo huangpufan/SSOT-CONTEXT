@@ -9,7 +9,7 @@ This file exists only while SSOT setup or a migration is unfinished. Each sessio
 
 ## Done
 
-<!-- Completed area/source units and ranges, with owner outputs and inline backticked scratch paths (e.g. `.ssot-work/checklist.md`; never Markdown links to gitignored `.ssot-work/` paths). -->
+<!-- Keep one concise line per completed area/source unit (range, owner outputs, and inline backticked scratch paths like `.ssot-work/checklist.md`; never Markdown links to gitignored `.ssot-work/` paths). -->
 
 ## Next
 

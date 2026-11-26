@@ -53,11 +53,38 @@ INLINE_SHARD_INFO_ROWS = 50
 TOTAL_ENTRY_INFO_CHARS = 16000
 SHARD_INFO_CHARS = 16000
 SHARD_INFO_ROWS = 50
+COLD_SHARD_TRUNC_CHARS = 64000
 ROW_INFO_CHARS = 500
 REVIEWED_LAG_INFO_COMMITS = 100
 DATED_HISTORY_INFO_HEADINGS = 5
+DATED_EARLY_INFO_CHARS = 8000
+ENTRY_SECTION_INFO_CHARS = 4000
+COLD_TAIL_TRUNC_CHARS = 32000
+COLD_TAIL_INVERTED_CHARS = 1000
+COLD_INDEX_INFO_CHARS = 8000
+COLD_INDEX_ROW_SOFT_CHARS = 250
+COLD_INDEX_ROW_SOFT_COUNT = 3
+COLD_INDEX_ROW_HARD_CHARS = 350
+MEGA_DOC_H2_SECTIONS = 6
+CHECKBOX_TASK_INFO_COUNT = 5
+CHECKBOX_WARM_INFO_COUNT = 8
 RETIRED_INLINE_INFO_ROWS = 3
+COMPACTION_ROLLUP_LIMIT = 5
 COLD_SHARD_NAMES = ("retired", "archive", "history")
+WARM_TIERS = {"warm", "hot", "active"}
+COLD_DIRS = {"decisions", "research", "archive", "archives", "history"}
+COLD_INDEX_NAMES = {"readme", "index"}
+COLD_INDEX_STEMS = {"decisions-index", "history-index"}
+COLD_STEM_SUFFIXES = ("-history", "_history", "-archive", "_archive")
+COLD_EXACT_STEMS = {"history", "archive", "retired", "changelog"}
+ENTRY_CORE_SECTIONS = (
+    "map", "地图", "文档地图", "文件地图", "索引",
+    "owners", "所有者", "权威文档",
+    "task routes", "routes", "任务路由", "路由",
+    "invariants", "不变量", "保护规则",
+)
+TASK_FILE_STEM_PREFIXES = ("tasks", "todo", "workarounds", "open-questions", "open_questions")
+TASK_FILE_EXACT_STEMS = {"now", "task", "workaround"}
 INSTRUCTION_FILES = (
     "AGENTS.md", "CLAUDE.md", "GEMINI.md",
     ".cursor/rules/ssot.mdc", ".cursorrules",
@@ -85,6 +112,15 @@ INVARIANT_ID_RE = re.compile(f"^{ID_PAT}$")
 SEPARATOR_CELL_RE = re.compile(r"^:?-{3,}:?$")
 LINE_ANCHOR_RE = re.compile(r"^L(\d+)(?:-L?(\d+))?$")
 SHA_RE = re.compile(r"^[0-9a-f]{7,40}$")
+COLD_HEADING_RE = re.compile(
+    r"^(?:(?:history|archive)\s*[(（]\s*cold\s*[)）]|(?:历史记录|历史归档)\s*[(（]\s*冷读\s*[)）])(?:\s*[:：—-].*)?$",
+    re.IGNORECASE,
+)
+ACTIVE_RESEARCH_RE = re.compile(
+    r"^\s*(?:[-*+]\s*)?(?:\*\*)?(?:status|状态)(?:\*\*)?\s*[:：]\s*`?(?:active|进行中)\b",
+    re.IGNORECASE,
+)
+CHECKBOX_RE = re.compile(r"^\s*(?:[-*+]|\d+[.)])\s+\[([ xX])\]\s")
 
 
 class Report:
@@ -92,6 +128,7 @@ class Report:
         self.root = root
         self.documents = documents
         self.lines = []
+        self.compactions = []
         self.errors = 0
         self.warnings = 0
         self.unchecked = []  # parts the checker could not examine; any of them makes the run exit 3
@@ -106,7 +143,22 @@ class Report:
         elif level == "WARN":
             self.warnings += 1
 
+    def add_compaction(self, path, detail):
+        where = os.path.relpath(path, self.root) if path else "."
+        self.compactions.append((where, detail))
+
     def finish(self, target):
+        if self.compactions:
+            grouped = {}
+            for where, detail in self.compactions:
+                items = grouped.setdefault(where, [])
+                if detail not in items:
+                    items.append(detail)
+            entries = [f"{where} ({'; '.join(details)})" for where, details in grouped.items()]
+            shown = ", ".join(entries[:COMPACTION_ROLLUP_LIMIT])
+            if len(entries) > COMPACTION_ROLLUP_LIMIT:
+                shown += f", and {len(entries) - COMPACTION_ROLLUP_LIMIT} more"
+            self.add("INFO", None, None, f"compaction candidates ({len(entries)}): {shown}")
         for line in self.lines:
             print(line)
         for item in self.unchecked:
@@ -151,39 +203,40 @@ def front_matter(text):
 
 # --- the line model --------------------------------------------------------
 
-def markdown_lines(text):
-    """Yield (line_number, text) for every line a reader sees as Markdown:
-    front matter, fenced code, and HTML comments removed (a comment may end
-    mid-line, and the rest of that line still counts). Fence lines and lines
-    inside fences are skipped entirely."""
-    lines = text.splitlines()
-    start = 0
+def _fm_end(lines):
     if lines and lines[0].strip() == "---":
-        for index in range(1, len(lines)):
-            if lines[index].strip() == "---":
-                start = index + 1
-                break
-    fence = None
-    in_comment = False
-    for index in range(start, len(lines)):
-        line = lines[index]
-        if fence is None and not in_comment:
-            match = FENCE_RE.match(line)
-            # CommonMark §4.5: backtick fence info strings cannot contain backticks.
-            if match and (match.group(1)[0] != "`" or "`" not in line[match.end():]):
-                fence = match.group(1)
-                continue
-        elif fence is not None:
-            match = FENCE_RE.match(line)
-            if match and match.group(1)[0] == fence[0] and len(match.group(1)) >= len(fence) \
-                    and not line.strip()[len(match.group(1)):].strip():
-                fence = None
+        for i in range(1, len(lines)):
+            if lines[i].strip() == "---":
+                return i + 1
+    return 0
+
+
+def _fence_step(line, fence, in_comment=False):
+    if fence is None and not in_comment:
+        m = FENCE_RE.match(line)
+        if m and (m.group(1)[0] != "`" or "`" not in line[m.end():]):
+            return m.group(1), True
+    elif fence is not None:
+        m = FENCE_RE.match(line)
+        if m and m.group(1)[0] == fence[0] and len(m.group(1)) >= len(fence) and not line.strip()[len(m.group(1)):].strip():
+            return None, True
+        return fence, True
+    return fence, False
+
+
+def markdown_lines(text):
+    """Yield (line_number, text) for Markdown outside front matter, fences and HTML comments."""
+    lines = text.splitlines()
+    fence, in_comment = None, False
+    for index in range(_fm_end(lines), len(lines)):
+        fence, fenced = _fence_step(lines[index], fence, in_comment)
+        if fenced:
             continue
-        visible, in_comment = strip_comments(line, in_comment)
+        visible, in_comment = strip_comments(lines[index], in_comment)
         yield index + 1, visible
 
 
-def strip_comments(line, in_comment):
+def strip_comments(line, in_comment, comments_out=None):
     code_spans = [match.span() for match in INLINE_CODE_RE.finditer(line)]
 
     def opener(start):
@@ -194,13 +247,17 @@ def strip_comments(line, in_comment):
 
     out = []
     position = 0
+    opened_here = None
     while position <= len(line):
         if in_comment:
             end = line.find("-->", position)
             if end == -1:
                 return "".join(out), True
+            if comments_out is not None and opened_here is not None:
+                comments_out.append(line[opened_here:end])
             position = end + 3
             in_comment = False
+            opened_here = None
         else:
             begin = opener(position)
             if begin == -1:
@@ -209,6 +266,7 @@ def strip_comments(line, in_comment):
             out.append(line[position:begin])
             position = begin + 4
             in_comment = True
+            opened_here = position
     return "".join(out), in_comment
 
 
@@ -439,6 +497,323 @@ def hard_wrapped_paragraphs(text):
         yield run_start
 
 
+# --- cold-tier classification and bloat auto-discovery ----------------------
+
+def doc_rel_parts(doc, ssot_dir):
+    base = ssot_dir if inside(doc, ssot_dir) else REPO_ROOT[0]
+    rel = os.path.relpath(os.path.realpath(doc), os.path.realpath(base))
+    return [p.lower() for p in rel.split(os.sep) if p not in ("", ".")]
+
+
+def is_cold_index(doc, ssot_dir, readme):
+    parts = None if doc == readme else doc_rel_parts(doc, ssot_dir)
+    if not parts:
+        return False
+    stem = os.path.splitext(parts[-1])[0]
+    return stem in COLD_INDEX_STEMS or (bool(COLD_DIRS & set(parts[:-1])) and (stem in COLD_INDEX_NAMES or stem.endswith(("-index", "_index"))))
+
+
+def is_active_research(text):
+    return any(ACTIVE_RESEARCH_RE.match(line) for _, (_, line) in zip(range(30), markdown_lines(text)))
+
+
+def is_cold_archive(doc, ssot_dir, readme, text):
+    if doc == readme or is_cold_index(doc, ssot_dir, readme):
+        return False
+    tier = front_matter(text).get("ssot_tier", "").lower()
+    if tier in WARM_TIERS or tier == "cold":
+        return tier == "cold"
+    parts = doc_rel_parts(doc, ssot_dir)
+    if not parts:
+        return False
+    parents = set(parts[:-1])
+    if parents & (COLD_DIRS - {"research"}):
+        return True
+    if "research" in parents:
+        return not is_active_research(text)
+    stem = os.path.splitext(parts[-1])[0]
+    if stem.endswith(COLD_STEM_SUFFIXES):
+        return True
+    return False if (GENERAL[0] and stem in {"history", "archive"}) else stem in COLD_EXACT_STEMS
+
+
+def is_declared_cold_shard(doc, text=None, is_entry=False):
+    if is_entry:
+        return False
+    tier = front_matter(text).get("ssot_tier", "").lower() if text is not None else ""
+    if tier in WARM_TIERS or tier == "cold":
+        return tier == "cold"
+    stem = os.path.splitext(os.path.basename(doc))[0].lower()
+    return stem in COLD_SHARD_NAMES or stem.startswith("retired") or stem.endswith(("-retired", "_retired"))
+
+
+def is_cold_retired_shard(doc, text=None, row_count=0, retired_count=0, active_count=0, is_entry=False):
+    if is_entry or active_count > 0 or (text is not None and front_matter(text).get("ssot_tier", "").lower() in WARM_TIERS):
+        return False
+    return (row_count > 0 and retired_count == row_count) or (row_count == 0 and is_declared_cold_shard(doc, text, is_entry))
+
+
+def is_cold_heading(raw):
+    return bool(COLD_HEADING_RE.match(re.sub(r"^[\d.)\s]+", "", heading_text(raw)).strip()))
+
+
+def scan_document_lines(text):
+    lines = text.splitlines()
+    start = _fm_end(lines)
+    out = [(i + 1, lines[i]) for i in range(start)]
+    fence, in_comment, opens, closes = None, False, [], []
+    for i in range(start, len(lines)):
+        line, num = lines[i], i + 1
+        fence, fenced = _fence_step(line, fence, in_comment)
+        if fenced:
+            out.append((num, line))
+            continue
+        comments, was_in = [], in_comment
+        visible, in_comment = strip_comments(line, in_comment, comments)
+        for tok in comments:
+            low = tok.strip().lower()
+            if low == "ssot:cold":
+                opens.append(num)
+            elif low in ("/ssot:cold", "ssot:cold:end"):
+                closes.append(num)
+        if not ((was_in or line.strip()) and not visible.strip()):
+            out.append((num, visible))
+    return out, opens, closes
+
+
+def in_cold_region(num, cold_start, inverted_spans):
+    return cold_start is not None and num >= cold_start and not any(s <= num and (e is None or num < e) for s, e in inverted_spans)
+
+
+def find_cold_boundary(vis_lines, all_headings, opens, closes):
+    cold_m = opens[0] if opens else None
+    cold_h = next(((n, l) for n, l, r in all_headings if l >= 2 and is_cold_heading(r)), None)
+    if cold_m is None and cold_h is None:
+        return None, (), 0
+    spans = []
+    if cold_m is not None and (cold_h is None or cold_m < cold_h[0]):
+        cold_start, end_m = cold_m, next((c for c in closes if c > cold_m), None)
+        if end_m is not None:
+            in_cold, non_cold = False, end_m + 1
+            for n, _, r in all_headings:
+                if n > end_m and not in_cold and (is_cold_heading(r) or any(non_cold <= o < n for o in opens)):
+                    spans.append((non_cold, min([n] + [o for o in opens if non_cold <= o < n])))
+                    in_cold, non_cold = True, None
+            if not in_cold:
+                spans.append((non_cold, next((o for o in opens if o >= non_cold), None)))
+        else:
+            first_vis = next(((n, ln) for n, ln in vis_lines if n > cold_m and ln.strip()), None)
+            custom_h = next(((n, l, r) for n, l, r in all_headings if first_vis and n == first_vis[0] and l >= 2), None)
+            scan_after, cold_level = (custom_h[0], custom_h[1]) if (custom_h and not DATE_RE.search(custom_h[2])) else (cold_m, 2)
+    else:
+        cold_start, cold_level = cold_h
+        end_m, scan_after = None, cold_start
+    if end_m is None:
+        in_cold, non_cold = True, None
+        for n, l, r in all_headings:
+            if n <= scan_after:
+                continue
+            if in_cold and l <= cold_level and not is_cold_heading(r) and not DATE_RE.search(r):
+                in_cold, non_cold = False, n
+            elif not in_cold and (is_cold_heading(r) or any(non_cold < o < n for o in opens)):
+                spans.append((non_cold, n))
+                in_cold, non_cold = True, None
+        if not in_cold and non_cold is not None:
+            spans.append((non_cold, next((o for o in opens if o > non_cold), None)))
+    if not spans:
+        return cold_start, (), 0
+    inv = "\n".join(ln for n, ln in vis_lines if any(s <= n and (e is None or n < e) for s, e in spans))
+    return cold_start, tuple(spans), len(inv)
+
+
+def measure_visible_chars(vis_lines, cold_start=None, inverted_spans=(), exclude_invariants=False):
+    return len("\n".join(
+        ln for n, ln in vis_lines
+        if not in_cold_region(n, cold_start, inverted_spans)
+        and not (exclude_invariants and re.match(rf"^\s*\|\s*[`*]*{ID_PAT}", ln))
+    ))
+
+
+def h2_sections(vis_lines, all_headings, end_line=None, exclude_invariants=False):
+    bounds, cur = [], None
+    for n, l, r in all_headings:
+        if end_line is not None and n >= end_line:
+            break
+        if l in (1, 2):
+            if cur is not None:
+                bounds.append((cur[0], n, cur[1]))
+            cur = (n, r) if l == 2 else None
+    if cur is not None:
+        bounds.append((cur[0], end_line, cur[1]))
+    return [(s, heading_text(r), len("\n".join(
+        ln for n, ln in vis_lines
+        if s <= n and (e is None or n < e) and not (exclude_invariants and re.match(rf"^\s*\|\s*[`*]*{ID_PAT}", ln))
+    ))) for s, e, r in bounds]
+
+
+def is_task_like_doc(doc, readme):
+    stem = os.path.splitext(os.path.basename(doc))[0].lower()
+    return doc == readme or stem in TASK_FILE_EXACT_STEMS or stem.startswith(TASK_FILE_STEM_PREFIXES)
+
+
+def check_cold_index_bloat(report, doc, text, vis_lines, is_ssot_owned):
+    ext = not GENERAL[0] and not is_ssot_owned
+    prefix = "external owner, " if ext else ""
+    index_chars = measure_visible_chars(vis_lines)
+    if index_chars > COLD_INDEX_INFO_CHARS:
+        over_warn = index_chars > DOC_WARN_CHARS
+        threshold = DOC_WARN_CHARS if over_warn else COLD_INDEX_INFO_CHARS
+        report.add("WARN" if (over_warn and is_ssot_owned) else "INFO", doc, None,
+                   f"cold index is {index_chars} characters (>{threshold}); "
+                   "keep cold indexes to one-line topic/date locators rather than replaying archive summaries")
+        act = "propose trimming index" if ext else "trim to 1-line locators"
+        report.add_compaction(doc, f"{prefix}cold index {index_chars} chars -> {act}")
+    md_lines = list(markdown_lines(text))
+    line_lengths = {num: len(line) for num, line in md_lines}
+    soft_rows, has_hard = [], False
+    for table in pipe_tables(md_lines):
+        if len(table) < 3 or len(table[1][1]) != len(table[0][1]) \
+                or not all(SEPARATOR_CELL_RE.match(cell) for cell in table[1][1]):
+            continue
+        for num, _ in table[2:]:
+            row_len = line_lengths.get(num, 0)
+            if row_len > COLD_INDEX_ROW_SOFT_CHARS:
+                soft_rows.append((num, row_len))
+                has_hard |= row_len > COLD_INDEX_ROW_HARD_CHARS
+    if len(soft_rows) >= COLD_INDEX_ROW_SOFT_COUNT or has_hard:
+        max_num, max_len = max(soft_rows, key=lambda item: item[1])
+        report.add("INFO", doc, max_num,
+                   f"{len(soft_rows)} cold-index table row(s) exceed {COLD_INDEX_ROW_SOFT_CHARS} characters "
+                   f"(longest: line {max_num} at {max_len} chars); "
+                   "keep cold indexes to one-line locators without summary columns")
+        act = "propose trimming index cells" if ext else "trim index cells"
+        report.add_compaction(doc, f"{prefix}{len(soft_rows)} verbose index rows (max {max_len} chars) -> {act}")
+
+
+def check_completed_checkboxes(report, doc, readme, text, cold_start, inverted_spans=(), is_external=False):
+    checked, total, first_checked = 0, 0, None
+    for num, line in markdown_lines(text):
+        if in_cold_region(num, cold_start, inverted_spans):
+            continue
+        match = CHECKBOX_RE.match(line)
+        if not match:
+            continue
+        total += 1
+        if match.group(1).lower() == "x":
+            checked += 1
+            if first_checked is None:
+                first_checked = num
+    if (is_task_like_doc(doc, readme) and checked >= CHECKBOX_TASK_INFO_COUNT) \
+            or (checked >= CHECKBOX_WARM_INFO_COUNT and checked * 2 >= total):
+        report.add("INFO", doc, first_checked,
+                   f"{checked} completed checklist item(s) (`- [x]`) out of {total} in active document; "
+                   "archive or remove finished items so active reads stay concise")
+        detail = (f"external owner, {checked} completed checkboxes -> propose pruning"
+                  if is_external else f"{checked} completed checkboxes -> prune/archive finished items")
+        report.add_compaction(doc, detail)
+
+
+def check_document_bloat(report, doc, readme, ssot_dir, text, shard_paths, cold_shards):
+    if "/.bootstrap/" in doc:
+        return None
+    is_register_doc = doc == readme or doc in shard_paths
+    is_ssot_owned = doc == readme or (inside(doc, ssot_dir) and (not GENERAL[0] or doc in shard_paths))
+    is_external = not GENERAL[0] and not is_ssot_owned
+    vis_lines, cold_opens, cold_closes = scan_document_lines(text)
+    if is_cold_index(doc, ssot_dir, readme):
+        check_cold_index_bloat(report, doc, text, vis_lines, is_ssot_owned)
+        return "cold"
+    if doc in cold_shards or (doc not in shard_paths and is_cold_archive(doc, ssot_dir, readme, text)):
+        return "cold"
+    all_headings = list(headings(text))
+    cold_start, inverted_spans, inverted_chars = find_cold_boundary(vis_lines, all_headings, cold_opens, cold_closes)
+    warm_chars = measure_visible_chars(vis_lines, cold_start, inverted_spans, exclude_invariants=is_register_doc)
+    warm_headings = [(num, lvl, raw) for num, lvl, raw in all_headings if not in_cold_region(num, cold_start, inverted_spans)]
+    warm_dated = sum(1 for _, _, raw in warm_headings if DATE_RE.search(raw))
+    limit = README_WARN_CHARS if doc == readme else DOC_WARN_CHARS
+    cold_dest = ("a cold archive (or trailing ## History (cold) if layout is fixed)"
+                 if (GENERAL[0] or is_external) else "a cold archive (decisions/ or *-history.md)")
+    dated_action = ("propose consolidation/cold archive" if is_external
+                    else "consolidate + cold archive (or ## History (cold) if layout fixed)" if GENERAL[0]
+                    else "consolidate + offload history to cold archive")
+    prefix = "external owner, " if is_external else ""
+    if doc == readme:
+        secs = h2_sections(vis_lines, all_headings, cold_start, exclude_invariants=True)
+        non_inv_secs = [(n, t, c) for n, t, c in secs
+                        if not re.sub(r"^[\d.)\s]+", "", t).lower().startswith(INVARIANT_HEADINGS)]
+        if warm_chars > limit:
+            top = max(non_inv_secs, key=lambda item: item[2]) if non_inv_secs else None
+            largest = f"; largest section: ## {top[1]} ({top[2]} chars)" if top and top[2] > 0 else ""
+            if warm_dated >= DATED_HISTORY_INFO_HEADINGS:
+                report.add("WARN", doc, None,
+                           f"{warm_chars} characters is past the {limit}-character reading budget "
+                           f"(invariant rows not counted) and has {warm_dated} dated headings{largest}; "
+                           f"consolidate current behavior and move superseded history to {cold_dest}")
+                report.add_compaction(doc, f"{warm_chars} entry chars, {warm_dated} dated headings -> {dated_action}")
+            else:
+                report.add("WARN", doc, None,
+                           f"{warm_chars} characters is past the {limit}-character reading budget "
+                           f"(invariant rows not counted){largest}; split it by topic or move detail out")
+                report.add_compaction(doc, f"{warm_chars} entry prose chars -> trim/split entry")
+        for sec_line, title, sec_chars in non_inv_secs:
+            if not re.sub(r"^[\d.)\s]+", "", title).lower().startswith(ENTRY_CORE_SECTIONS) and sec_chars > ENTRY_SECTION_INFO_CHARS:
+                report.add("INFO", doc, sec_line,
+                           f"entry section '## {title}' is {sec_chars} characters (>{ENTRY_SECTION_INFO_CHARS}); "
+                           "move detail to a topic owner or prune resolved items")
+                report.add_compaction(doc, f"## {title} ({sec_chars} chars) -> move detail or prune")
+        if len(text) > TOTAL_ENTRY_INFO_CHARS:
+            report.add("INFO", doc, None,
+                       f"total {os.path.basename(readme)} size is {len(text)} characters "
+                       f"(including register rows; >{TOTAL_ENTRY_INFO_CHARS}); "
+                       "large entries cause tool truncation — shard invariants or trim rows")
+            rel_readme = os.path.relpath(readme, report.root)
+            if not any(w == rel_readme and "sharding" in d for w, d in report.compactions):
+                report.add_compaction(doc, f"{len(text)} total chars -> propose sharding/trimming entry")
+    else:
+        h2_count = sum(1 for _, lvl, _ in warm_headings if lvl == 2)
+        if warm_chars > limit:
+            level = "WARN" if is_ssot_owned else "INFO"
+            if warm_dated >= DATED_HISTORY_INFO_HEADINGS:
+                report.add(level, doc, None,
+                           f"{warm_chars} characters is past the {limit}-character reading budget "
+                           f"and has {warm_dated} dated headings; consolidate current behavior and "
+                           f"move superseded history to {cold_dest}")
+                report.add_compaction(doc, f"{prefix}{warm_chars} chars, {warm_dated} dated headings -> {dated_action}")
+            elif not is_register_doc and h2_count >= MEGA_DOC_H2_SECTIONS:
+                report.add(level, doc, None,
+                           f"{warm_chars} characters across {h2_count} level-2 sections is past the {limit}-character "
+                           "reading budget; consider splitting by topic or moving detail out")
+                act = "propose split/consolidation" if is_external else "split by topic"
+                report.add_compaction(doc, f"{prefix}{warm_chars} chars, {h2_count} sections -> {act}")
+            else:
+                report.add(level, doc, None,
+                           f"{warm_chars} characters is past the {limit}-character reading budget"
+                           f"{' (invariant rows not counted)' if is_register_doc else ''}; "
+                           "split it by topic or move detail out")
+                act = "propose split/consolidation" if is_external else "split by topic"
+                report.add_compaction(doc, f"{prefix}{warm_chars} chars -> {act}")
+        elif warm_chars > DATED_EARLY_INFO_CHARS and warm_dated >= DATED_HISTORY_INFO_HEADINGS:
+            report.add("INFO", doc, None,
+                       f"{warm_chars} characters with {warm_dated} dated headings; "
+                       f"consolidate current state and move superseded history to {cold_dest}")
+            report.add_compaction(doc, f"{prefix}{warm_chars} chars, {warm_dated} dated headings -> {dated_action}")
+    if cold_start is not None:
+        if inverted_chars > COLD_TAIL_INVERTED_CHARS:
+            report.add("INFO", doc, cold_start,
+                       f"cold section starts above {inverted_chars} characters of non-cold sections; "
+                       "move active sections above the cold boundary so partial head-reads land on current state")
+            act = "propose reordering top-down" if is_external else "reorder top-down"
+            report.add_compaction(doc, f"{prefix}inverted cold tail ({inverted_chars} active chars below) -> {act}")
+        if len(text) > COLD_TAIL_TRUNC_CHARS:
+            report.add("INFO", doc, cold_start,
+                       f"total file size is {len(text)} characters including its cold tail (>{COLD_TAIL_TRUNC_CHARS}); "
+                       "offload the cold tail to a separate cold history file to avoid tool truncation")
+            act = "propose offloading cold tail" if is_external else "offload cold tail"
+            report.add_compaction(doc, f"{prefix}{len(text)} chars incl. cold tail -> {act}")
+    check_completed_checkboxes(report, doc, readme, text, cold_start, inverted_spans, is_external)
+    return cold_start, inverted_spans
+
+
 # --- the invariants register -------------------------------------------------
 
 def table_cells(line):
@@ -575,12 +950,13 @@ def register_rows(text, doc_path=None):
     return {ident: (number, cells) for ident, (_, number, cells) in rows_from_tables(tables, "").items()}
 
 
-def validate_register_tables(report, doc, lines, body, tables, seen, shard_lines=()):
+def validate_register_tables(report, doc, lines, body, tables, seen, shard_lines=(), doc_text=None, is_entry=False):
     refdefs = refdef_map(lines)
     line_lengths = {number: len(line) for number, line in lines}
     row_count = 0
     long_rows = []
     retired_rows = []
+    active_rows = []
     if not tables:
         for number, line in body:
             if number in shard_lines:
@@ -644,10 +1020,18 @@ def validate_register_tables(report, doc, lines, body, tables, seen, shard_lines
                            f"invariant {ident} status '{status}' must be confirmed, candidate, or retired")
             elif status.lower() == "retired":
                 retired_rows.append((number, ident))
+            else:
+                active_rows.append((number, ident))
             if not source:
                 report.add("ERROR", doc, number,
                            f"invariant {ident} needs a source (user directive, decision, or date)")
-    if long_rows:
+    if active_rows and is_declared_cold_shard(doc, doc_text, is_entry=is_entry):
+        report.add("WARN", doc, active_rows[0][0],
+                   f"{len(active_rows)} active (confirmed/candidate) invariant row(s) in cold shard "
+                   f"{os.path.basename(doc)}; routine preflight skips cold shards — move active rules "
+                   "to an active shard or set ssot_tier: warm")
+    cold_shard = is_cold_retired_shard(doc, doc_text, row_count, len(retired_rows), len(active_rows), is_entry=is_entry)
+    if long_rows and not cold_shard:
         max_num, max_id, max_len = max(long_rows, key=lambda item: item[2])
         others = [ident for _, ident, _ in long_rows if ident != max_id][:3]
         extra = f"; also {', '.join(others)}{', ...' if len(long_rows) > 4 else ''}" if others else ""
@@ -655,13 +1039,14 @@ def validate_register_tables(report, doc, lines, body, tables, seen, shard_lines
                    f"{len(long_rows)} register row(s) exceed {ROW_INFO_CHARS} characters "
                    f"(longest: {max_id} at {max_len} chars{extra}); "
                    "keep each row to a concise constraint and move prose/history to Explained in")
-    base_stem = os.path.splitext(os.path.basename(doc))[0].lower()
-    is_cold_retired_shard = any(tok in base_stem for tok in COLD_SHARD_NAMES) or (row_count > 0 and len(retired_rows) == row_count)
-    if len(retired_rows) >= RETIRED_INLINE_INFO_ROWS and not is_cold_retired_shard:
+        report.add_compaction(doc, f"{len(long_rows)} long rows >{ROW_INFO_CHARS} chars -> trim rows")
+    if len(retired_rows) >= RETIRED_INLINE_INFO_ROWS and not cold_shard:
         report.add("INFO", doc, retired_rows[0][0],
                    f"{len(retired_rows)} retired invariant row(s) inline in {os.path.basename(doc)}; "
                    "consider moving retired rows to a cold shard (such as invariants/retired.md) so active reads stay concise")
-    return row_count
+        if not is_entry:
+            report.add_compaction(doc, f"{len(retired_rows)} retired rows -> invariants/retired.md")
+    return row_count, cold_shard, len(retired_rows)
 
 
 def looks_like_invariants_table(table):
@@ -712,25 +1097,45 @@ def check_invariants(report, readme, text, ssot_dir):
     found = register_tables(lines, text)
     if found is None:
         report.add("WARN", readme, None, "no Invariants section; add one (it may say there are none yet)")
-        return []
+        return [], set()
     body, tables = found
     shards, shard_lines = linked_shards(readme, lines, body, ssot_dir, report.documents, tables)
     seen = {}
-    inline_rows = validate_register_tables(report, readme, lines, body, tables, seen, shard_lines)
+    inline_rows, _, inline_retired = validate_register_tables(report, readme, lines, body, tables, seen, shard_lines, text, is_entry=True)
+    inv_base = "invariants" if GENERAL[0] or os.path.basename(ssot_dir) != "SSOT" else "SSOT/invariants"
     if inline_rows >= INLINE_SHARD_INFO_ROWS:
+        shard_target = (f"{inv_base}/<topic>.md (relative to entry dir)"
+                        if inv_base == "invariants" else f"{inv_base}/<topic>.md")
         report.add("INFO", readme, None,
                    f"{inline_rows} inline invariant rows in {os.path.basename(readme)}; "
-                   "optional topic shards (SSOT/invariants/<topic>.md) keep entry reads small")
+                   f"optional topic shards ({shard_target}) keep entry reads small")
+        if inline_retired >= RETIRED_INLINE_INFO_ROWS:
+            report.add_compaction(readme, f"{inline_rows} inline; {inline_retired} retired -> propose sharding into {inv_base}/<topic>.md + {inv_base}/retired.md")
+        else:
+            report.add_compaction(readme, f"{inline_rows} inline -> propose sharding into {inv_base}/<topic>.md")
+    elif inline_retired >= RETIRED_INLINE_INFO_ROWS:
+        act = (f"move to {inv_base}/retired.md" if any(is_declared_cold_shard(p, t) for p, t in shards)
+               else f"propose {inv_base}/retired.md")
+        report.add_compaction(readme, f"{inline_retired} retired -> {act}")
+    cold_shards = set()
     for shard_path, shard_text in shards:
         shard_lines_md = list(markdown_lines(shard_text))
         sbody, stables = shard_register_tables(shard_lines_md, shard_text)
-        shard_rows = validate_register_tables(report, shard_path, shard_lines_md, sbody, stables, seen)
-        if len(shard_text) > SHARD_INFO_CHARS or shard_rows > SHARD_INFO_ROWS:
+        shard_rows, is_cold, _ = validate_register_tables(report, shard_path, shard_lines_md, sbody, stables, seen, (), shard_text)
+        if is_cold:
+            cold_shards.add(shard_path)
+            if len(shard_text) > COLD_SHARD_TRUNC_CHARS:
+                report.add("INFO", shard_path, None,
+                           f"cold retired shard is {len(shard_text)} characters (>{COLD_SHARD_TRUNC_CHARS}); "
+                           "split by year or topic to avoid tool truncation")
+                report.add_compaction(shard_path, f"cold shard {len(shard_text)} chars -> split cold archive")
+        elif len(shard_text) > SHARD_INFO_CHARS or shard_rows > SHARD_INFO_ROWS:
             report.add("INFO", shard_path, None,
                        f"invariants shard is {len(shard_text)} characters and {shard_rows} row(s) "
                        f"(>{SHARD_INFO_CHARS} chars or >{SHARD_INFO_ROWS} rows); "
                        "split by sub-topic or trim rows to avoid tool truncation")
-    return shards
+            report.add_compaction(shard_path, f"{len(shard_text)} chars/{shard_rows} rows -> split shard")
+    return shards, cold_shards
 
 
 # --- git -----------------------------------------------------------------------
@@ -788,7 +1193,7 @@ HISTORY_DIRS = {"decisions", "research"}
 SKIP_FILES = {"STATUS.md", "HISTORY.md", "_manifest.md"}  # v2 ledgers: never current guidance
 
 
-def path_mentions(ssot_dir, doc, text):
+def path_mentions(ssot_dir, doc, text, cold_start=None, inverted_spans=()):
     """Yield (line, path, line_text) for inline code spans that hold only a path.
     A link's own label is skipped: the link target is what the link check tests."""
     relative = os.path.relpath(doc, ssot_dir).split(os.sep)
@@ -796,6 +1201,8 @@ def path_mentions(ssot_dir, doc, text):
             or relative[-1] in SKIP_FILES:
         return
     for number, line in markdown_lines(text):
+        if in_cold_region(number, cold_start, inverted_spans):
+            continue
         labels = [m.span() for m in LABEL_RE.finditer(line)] + [m.span() for m in REF_LABEL_RE.finditer(line)]
         definition = REFDEF_RE.match(line)
         if definition:
@@ -1468,6 +1875,7 @@ def main(argv):
 
     legacy = False
     shards = []
+    cold_shards = set()
     text = meta = None
     if named_entry and os.path.isfile(readme) and inside(readme, space_root or os.path.realpath(ssot_dir)):
         text = read_text(readme)
@@ -1509,7 +1917,7 @@ def main(argv):
         if meta.get("ssot_format") in {FORMAT, "5"}:
             if not meta.get("language"):
                 report.add("ERROR", readme, 1, "front matter needs `language:` (for example en or zh-CN)")
-            shards = check_invariants(report, readme, text, ssot_dir)
+            shards, cold_shards = check_invariants(report, readme, text, ssot_dir)
             if not scoped:
                 check_confirmed(report, readme, text, since, ssot_dir, shards)
                 check_reviewed_through(report, readme, meta.get("reviewed_through"), since)
@@ -1543,31 +1951,10 @@ def main(argv):
             if is_register_shard(doc, ssot_dir, text):
                 report.add("ERROR", doc, None,
                            f"unlinked invariants shard is not linked under ## Invariants in {os.path.basename(readme)}")
-        mentions.extend((doc, number, path, line) for number, path, line in path_mentions(ssot_dir, doc, text))
-        limit = README_WARN_CHARS if doc == readme else DOC_WARN_CHARS
-        measured = text
-        is_register_doc = doc == readme or doc in shard_paths
-        if is_register_doc:  # the invariants register is meant to grow; budget the prose around it
-            measured = "\n".join(line for line in text.splitlines()
-                                  if not re.match(rf"^\s*\|\s*[`*]*{ID_PAT}", line))
-        is_ssot_owned = doc == readme or (inside(doc, ssot_dir) and (not GENERAL[0] or doc in shard_paths))
-        if len(measured) > limit and "/.bootstrap/" not in doc and not legacy:
-            dated_headings = sum(1 for _, _, raw in headings(text) if DATE_RE.search(raw)) if doc != readme else 0
-            if dated_headings >= DATED_HISTORY_INFO_HEADINGS:
-                report.add("WARN" if is_ssot_owned else "INFO", doc, None,
-                           f"{len(measured)} characters is past the {limit}-character reading budget "
-                           f"and has {dated_headings} dated headings; consolidate current behavior and "
-                           "move superseded history to a cold archive (or split by topic)")
-            else:
-                report.add("WARN" if is_ssot_owned else "INFO", doc, None,
-                           f"{len(measured)} characters is past the {limit}-character reading budget"
-                           f"{' (invariant rows not counted)' if is_register_doc else ''}; "
-                           "split it by topic or move detail out")
-        if doc == readme and len(text) > TOTAL_ENTRY_INFO_CHARS and not legacy:
-            report.add("INFO", doc, None,
-                       f"total {os.path.basename(readme)} size is {len(text)} characters "
-                       f"(including register rows; >{TOTAL_ENTRY_INFO_CHARS}); "
-                       "large entries cause tool truncation — shard invariants or trim rows")
+        cold_info = check_document_bloat(report, doc, readme, ssot_dir, text, shard_paths, cold_shards) if not legacy else None
+        if cold_info != "cold":
+            c_start, c_inv = cold_info if isinstance(cold_info, tuple) else (None, ())
+            mentions.extend((doc, number, path, line) for number, path, line in path_mentions(ssot_dir, doc, text, c_start, c_inv))
         for number, target in link_targets(text):
             check_link(report, doc, number, target, local_links, missing_links)
         wrapped = list(hard_wrapped_paragraphs(text))

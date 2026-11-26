@@ -1,6 +1,6 @@
 # Product
 
-<!-- Write for someone who has never seen the product. Prose first; use a table only when readers will look something up in it. Delete any section that has nothing true to say. -->
+<!-- Remove instructional comments when filling. Write current behavior for someone who has never seen the product; offload superseded specs and rejected trials to a separate cold file (`decisions/` or `*-history.md`)—use a trailing `## History (cold)` section only when layout is fixed to one file—and drop single-task verification receipts. Prose first; use a table only for lookups. Delete empty sections. -->
 
 ## Who it is for and what it solves
 
@@ -8,9 +8,11 @@
 
 ## What it promises
 
-<!-- The behavior users rely on today, in plain words. Mark anything decided but not built as "Planned, not built yet" and link the decision. -->
+<!-- The behavior users rely on today, in plain words. Mark anything decided but not built as "Planned, not built yet" and link the decision; remove the label once shipped. -->
 
 ## What it deliberately does not do
+
+<!-- Current non-goals and product boundaries; link `decisions/` for why a rejected direction lost instead of stacking trial logs here. -->
 
 ## Main journeys
 
@@ -18,4 +20,4 @@
 
 ## Known gaps
 
-<!-- Limits users would hit today, and anything that has not been verified (for example a platform nobody has tested on). -->
+<!-- Limits users hit today and anything unverified (e.g. an untested platform). Delete each gap once fixed or verified. -->

@@ -715,6 +715,40 @@ class PrecommitHookTest(unittest.TestCase):
         self.assertEqual(r_bad.returncode, 1, r_bad.stdout + r_bad.stderr)
         self.assertIn("confirmed invariant SHP-01 changed its rule", r_bad.stdout + r_bad.stderr)
 
+    def test_ast_import_safe_targeted_snapshot_and_nonblocking_compaction_info(self):
+        # 1. Verify ssot-check.py still satisfies tools/ssot-precommit.sh's AST import-safety whitelist
+        #    so snapshot mode never silently degrades to full checkout-index -a fallback.
+        hook_text = HOOK.read_text(encoding="utf-8")
+        marker_start = hook_text.index("def is_import_safe_checker(path):")
+        marker_end = hook_text.index("\ntry:\n    if not is_import_safe_checker(checker):")
+        ns = {}
+        exec("import ast\n" + hook_text[marker_start:marker_end], ns)
+        self.assertTrue(
+            ns["is_import_safe_checker"](str(CHECKER)),
+            "ssot-check.py violated tools/ssot-precommit.sh is_import_safe_checker() AST whitelist",
+        )
+
+        # 2. Verify compaction INFO + rollup emitted in snapshot mode (triggered by an untracked file)
+        #    are strictly non-blocking (commit exits 0) and surface the rollup hint cleanly.
+        (self.repo / "untracked-note.txt").write_text("forces snapshot mode\n", encoding="utf-8")
+        mid_dated = "# Sync Log\n\n" + "\n\n".join(
+            f"## 2026-11-{d:02d} Change {d}\n\n" + ("Chronological entry accumulating in warm owner. " * 38)
+            for d in range(1, 7)
+        ) + "\n"
+        (self.repo / "SSOT/sync.md").write_text(mid_dated, encoding="utf-8")
+        (self.repo / "SSOT/workarounds.md").write_text(
+            "# Workarounds\n\n" + "\n".join(f"- [x] Fixed shim {i}" for i in range(1, 6)) + "\n",
+            encoding="utf-8",
+        )
+        self.git("add", "SSOT/sync.md", "SSOT/workarounds.md")
+        res = self.git("commit", "-m", "add bloated docs with compaction info")
+        self.assertEqual(res.returncode, 0, res.stdout + res.stderr)
+        combined = res.stdout + res.stderr
+        self.assertIn("compaction candidates (2):", combined)
+        self.assertIn("sync.md", combined)
+        self.assertIn("workarounds.md", combined)
+        self.assertIn("ssot-check: PASS", combined)
+
 
 if __name__ == "__main__":
     unittest.main(verbosity=1)

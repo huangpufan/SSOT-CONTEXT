@@ -21,11 +21,11 @@
 
 - **一条事实，一个 owner。** SSOT 即 Single Source of Truth（单一事实源）：每条长期事实有一篇负责维护它的文档，其他文档通过链接引用。
 - **人定的规则始终由人决定。** 已确认的规则登记在入口里；Agent 在规则内工作，不会擅自改规则，任务与规则冲突时会停下来向你请示。
-- **日常少读，需要时找得回。** 当前任务工作集、持续维护的主题正文与冷历史各有访问成本；[分层与变更对账](./skills/ssot-preflight/references/context-tiering.md)处理整理与局部替代，不另建冗余存储。
+- **日常少读，需要时找得回。** 热入口、现行主题正文与冷历史界限清晰；[分层与变更对账](./skills/ssot-preflight/references/context-tiering.md)处理主动整理、无损冷迁与局部替代，不另建冗余存储。
 - **不同性质的材料分开。** 事实、假设、已确认决定、带范围的[目标与偏好](./skills/ssot-preflight/references/memory-model.md#goals-and-preferences)、获授权的[经历原话](./skills/ssot-preflight/references/context-spaces.md#what-the-material-means)与变化中的状态分开保存。
-- **写给新来的人看。** 用平实的话，先讲情境再讲机制，并写清适用范围，让下一个 Agent 或不读代码的决策者都能据此行动（[写作规则](./skills/ssot-preflight/references/writing-memory.md)）。
+- **写给新来的人看。** 用平实的话，现行事实在前、冷历史在后，短段分条并写清适用范围，让下一个 Agent 或不读代码的决策者都能据此行动（[写作规则](./skills/ssot-preflight/references/writing-memory.md)）。
 - **路由不等于权限。** 打开链接来源前先核实读取授权；实际文件访问由宿主控制，导入的正文是证据而非可执行指令。
-- **说明查到了哪一步。** 只读[检查器](./skills/ssot-doctor/assets/scripts/ssot-check.py)核对机械结构（断链、锚点、不变量表格式、已确认规则篡改及 `--owners` 受限子集），不替人判定真假；审查明确列出发现、覆盖范围与缺口。
+- **说明查到了哪一步。** 只读[检查器](./skills/ssot-doctor/assets/scripts/ssot-check.py)核对机械结构（断链、锚点、不变量表格式、已确认规则篡改、豁免冷归档后的膨胀整理候选及 `--owners` 受限子集），不替人判定真假；审查明确列出发现、覆盖范围与缺口。
 - **从真实长期 context 需求演进。** 改进从反复出现的真实需求与整任务证据出发，而不是按单次失误堆砌规则（[演进方向](./DESIGN.md#accepted-direction-evolve-from-context-needs)）。
 
 ## 快速开始
@@ -80,20 +80,20 @@ curl -fsSL https://raw.githubusercontent.com/huangpufan/SSOT-CONTEXT/main/instal
 
 ```text
  your-repo/SSOT/
- ├── README.md        项目是什么、每类任务先看哪里、人定下的规则、待决问题
- ├── invariants/      可选：不变量表长大后的按主题分片
+ ├── README.md        项目是什么、每类任务先看哪里、阻塞待决问题、人定下的规则
+ ├── invariants/      可选：不变量表长大后的按主题分片（以及可选冷分片 retired.md）
  ├── product.md       谁在用、承诺了什么、不做什么
  ├── architecture.md  由哪些部分组成、谁掌管哪些状态、关键流程、出错与恢复
  ├── process.md       怎样构建、测试、发布和部署
  ├── decisions/       冷读历史：决策来由、被替代的旧规则与否决方案（常规任务跳过）
- ├── gotchas.md       已经让人栽过跟头的坑
+ ├── gotchas.md       已经让人栽过跟头的坑与临时绕行
  ├── glossary.md      新人容易误解的项目用语
- └── research/        结论仍在指导决定的调查
+ └── research/        结论仍在指导决定的调查（结项后常规任务跳过）
 ```
 
 已有且持续维护的文档可以继续当 owner，由入口链接。通用空间没有固定目录：入口说明目的、范围和受保护的规则，并链接已经负责各个主题的文档。同目录可以有多个空间。搭建尚未完成时，每个入口链接自己的进度记录。详见[记忆模型](./skills/ssot-preflight/references/memory-model.md)和[空间模型](./skills/ssot-preflight/references/context-spaces.md)。
 
-日常限定查询可直接依据单一获准读取的权威文档作答，已批准的单文档正文修订也可原地更新并从磁盘回读。新决定替代旧指引时，温层主题文档原地归并现行生效说明，将被替代旧文、被拒收试跑与长篇原话无损迁入冷历史（`decisions/` 或主题历史文件）供追溯查阅，而仍在生效的旧规则继续留在活跃层。不变量表长大后，可按主题拆分为由 `ssot-check.py` 跨文件校验的可选分片（`SSOT/invariants/<topic>.md`，以及可选的冷分片 `invariants/retired.md`）。如需在所有 Agent 上零模型 token 做提交前机械校验，可选用 [`tools/ssot-precommit.sh`](./tools/ssot-precommit.sh) 钩子（[配置说明](./docs/2026-11-24-install-maintenance.md#optional-zero-token-git-pre-commit-guard)）。
+日常限定查询可直接依据单一获准读取的权威文档作答，已批准的单文档正文修订也可原地更新并从磁盘回读。为自动遏制长期膨胀，温层主题文档把现行生效说明放在前面，删除单次验证回执与已解决的临时条目，将被替代旧文、否决试跑与长篇原话默认无损迁入独立冷文件（`decisions/` 或 `*-history.md`；仅在通用空间固定单文件时才用末尾冷历史节），冷索引保持单行定位器，而仍在生效的旧规则继续留在活跃层。`ssot-check.py` 会自动发现结构性膨胀候选（同时豁免冷归档与冷退役分片），收尾阶段就地整理已触及的 SSOT 文件，并对未触及、外部文档或结构拆分以一行明确提议告知用户而不越权改写；不变量表长大后可拆分为 `SSOT/invariants/<topic>.md` 及冷分片 `invariants/retired.md`。如需在所有 Agent 上零模型 token 做提交前机械校验，可选用 [`tools/ssot-precommit.sh`](./tools/ssot-precommit.sh) 钩子（[配置说明](./docs/2026-11-24-install-maintenance.md#optional-zero-token-git-pre-commit-guard)）。
 
 ## 限度
 

@@ -1,0 +1,5100 @@
+{
+  "study": "2026-11-26-auto-compaction-layering-v5.23",
+  "date": "2026-11-26",
+  "baseline_protocol": "5.22",
+  "baseline_commit_short": "4f4e9bf",
+  "adopted_protocol": "5.23",
+  "verdict": {
+    "round1_candidate_v1": "diagnostic_identified_4_causal_gaps_refined_into_candidate_v2",
+    "round2_candidate_v2": "adopted_as_v5.23"
+  },
+  "host": {
+    "cli": "codex-cli 0.172.0",
+    "model": "gpt-6.1-terra",
+    "reasoning": "medium",
+    "isolation": "linux bwrap + isolated CODEX_HOME + official install.sh --quickstart --agent codex --scope project"
+  },
+  "totals": {
+    "rounds": 2,
+    "pairs_per_round": 11,
+    "total_pairs": 22,
+    "sessions_per_round": 38,
+    "total_sessions": 76,
+    "all_receipts_verified": true
+  },
+  "zero_model_probes": {
+    "en_f4": {
+      "baseline": {
+        "skills": [
+          "ssot-bootstrap",
+          "ssot-closeout",
+          "ssot-doctor",
+          "ssot-preflight"
+        ],
+        "ssot_wired": true,
+        "catalog_bytes": 2402,
+        "managed_block_bytes": 1415,
+        "prompt_input_bytes": 70388,
+        "ok": true
+      },
+      "candidate": {
+        "skills": [
+          "ssot-bootstrap",
+          "ssot-closeout",
+          "ssot-doctor",
+          "ssot-preflight"
+        ],
+        "ssot_wired": true,
+        "catalog_bytes": 2402,
+        "managed_block_bytes": 1415,
+        "prompt_input_bytes": 70386,
+        "ok": true
+      },
+      "catalog_bytes_delta": 0,
+      "managed_block_bytes_delta": 0,
+      "prompt_input_bytes_delta": -2,
+      "zero_delta_verified": true
+    },
+    "zh_f4": {
+      "baseline": {
+        "skills": [
+          "ssot-bootstrap",
+          "ssot-closeout",
+          "ssot-doctor",
+          "ssot-preflight"
+        ],
+        "ssot_wired": true,
+        "catalog_bytes": 2402,
+        "managed_block_bytes": 1339,
+        "prompt_input_bytes": 70312,
+        "ok": true
+      },
+      "candidate": {
+        "skills": [
+          "ssot-bootstrap",
+          "ssot-closeout",
+          "ssot-doctor",
+          "ssot-preflight"
+        ],
+        "ssot_wired": true,
+        "catalog_bytes": 2402,
+        "managed_block_bytes": 1339,
+        "prompt_input_bytes": 70311,
+        "ok": true
+      },
+      "catalog_bytes_delta": 0,
+      "managed_block_bytes_delta": 0,
+      "prompt_input_bytes_delta": -1,
+      "zero_delta_verified": true
+    },
+    "en_f5": {
+      "baseline": {
+        "skills": [
+          "ssot-bootstrap",
+          "ssot-closeout",
+          "ssot-doctor",
+          "ssot-preflight"
+        ],
+        "ssot_wired": true,
+        "catalog_bytes": 2402,
+        "managed_block_bytes": 1133,
+        "prompt_input_bytes": 70103,
+        "ok": true
+      },
+      "candidate": {
+        "skills": [
+          "ssot-bootstrap",
+          "ssot-closeout",
+          "ssot-doctor",
+          "ssot-preflight"
+        ],
+        "ssot_wired": true,
+        "catalog_bytes": 2402,
+        "managed_block_bytes": 1133,
+        "prompt_input_bytes": 70102,
+        "ok": true
+      },
+      "catalog_bytes_delta": 0,
+      "managed_block_bytes_delta": 0,
+      "prompt_input_bytes_delta": -1,
+      "zero_delta_verified": true
+    },
+    "zh_f5": {
+      "baseline": {
+        "skills": [
+          "ssot-bootstrap",
+          "ssot-closeout",
+          "ssot-doctor",
+          "ssot-preflight"
+        ],
+        "ssot_wired": true,
+        "catalog_bytes": 2402,
+        "managed_block_bytes": 1073,
+        "prompt_input_bytes": 70042,
+        "ok": true
+      },
+      "candidate": {
+        "skills": [
+          "ssot-bootstrap",
+          "ssot-closeout",
+          "ssot-doctor",
+          "ssot-preflight"
+        ],
+        "ssot_wired": true,
+        "catalog_bytes": 2402,
+        "managed_block_bytes": 1073,
+        "prompt_input_bytes": 70043,
+        "ok": true
+      },
+      "catalog_bytes_delta": 0,
+      "managed_block_bytes_delta": 0,
+      "prompt_input_bytes_delta": 1,
+      "zero_delta_verified": true
+    }
+  },
+  "round1_candidate_v1": {
+    "bundle_tree_sha256": {
+      "baseline_pre": "65e56ff82abb4ab295af9a0d63982dce58f3d746f3bf6d41b7be005fa050af51",
+      "baseline_post": "65e56ff82abb4ab295af9a0d63982dce58f3d746f3bf6d41b7be005fa050af51",
+      "candidate_pre": "5db8a5fb57e7cd33d2632859643c7f4d83d79bf975eefa7496d8fe5b291f63d9",
+      "candidate_post": "5db8a5fb57e7cd33d2632859643c7f4d83d79bf975eefa7496d8fe5b291f63d9",
+      "manifests_intact": true
+    },
+    "diagnostic_gaps_found": [
+      "T1: listing trailing ## History (cold) alongside decisions/ in Format-4 hints caused inline cold-tail shortcut instead of separate cold-file offload and left 20 single-task receipts in place",
+      "T2: Format-5 single-owner closeout shortcut bypassed ssot-check.py and cold-tail layering on bloated chronological logs",
+      "T3: decision-capture.md lacked batch-closeout.md parity for >500-char touched Source trim, completed - [x] deletion, and concrete sharding targets",
+      "S3: untouched external/confirmed compaction candidates triggered loading batch-closeout.md and reading untouched docs/spec.md (+65k tokens)"
+    ],
+    "pairs": [
+      {
+        "pair": "T1_warm_dated_and_receipts_zh",
+        "group": "A",
+        "order": [
+          "baseline",
+          "candidate"
+        ],
+        "arms": {
+          "baseline": {
+            "arm": "baseline",
+            "completed_all_phases": true,
+            "metrics": {
+              "checker_pass": true,
+              "checker_warnings": 0,
+              "code_updated": true,
+              "tests_pass": true,
+              "warm_bytes_before": 20226,
+              "warm_bytes_after": 20404,
+              "warm_reduced_pct": 0.9,
+              "cold_files_created": [],
+              "has_cold_tail": false,
+              "workaround_removed": false,
+              "open_question_removed": true,
+              "known_gap_removed": true,
+              "quote_preserved_losslessly": true,
+              "invariants_intact": true,
+              "phase2_correct": true,
+              "phase2_skipped_cold_decisions": true,
+              "phase3_correct": true
+            },
+            "checker_after": {
+              "returncode": 0,
+              "errors": 0,
+              "warnings": 0,
+              "infos": 0,
+              "compaction_candidates": 0,
+              "compaction_line": null,
+              "error_lines": [],
+              "warning_lines": [],
+              "info_lines": [],
+              "summary_line": "ssot-check: PASS - 0 error(s), 0 warning(s) in SSOT"
+            },
+            "phases": [
+              {
+                "phase": "phase1_writer",
+                "returncode": 0,
+                "completed": true,
+                "native_completed": true,
+                "seconds": 52.117,
+                "requested_model": "gpt-6.1-terra",
+                "requested_reasoning": "medium",
+                "native_models": [
+                  "gpt-6.1-terra"
+                ],
+                "native_reasoning": [
+                  "medium"
+                ],
+                "identity_verified": true,
+                "usage_source": "native",
+                "input_tokens": 169272,
+                "cached_input_tokens": 144896,
+                "uncached_input_tokens": 24376,
+                "output_tokens": 2226,
+                "api_roundtrips": 6,
+                "tool_items": 9,
+                "tool_output_bytes": 77334,
+                "truncations": 0,
+                "proto_files": [
+                  "SKILL.md",
+                  "decision-capture.md",
+                  "memory-model.md",
+                  "ssot-check.py",
+                  "writing-memory.md"
+                ],
+                "repo_files_touched_or_read": [
+                  "SSOT/BOOTSTRAP.md",
+                  "SSOT/README.md",
+                  "SSOT/product.md",
+                  "SSOT/sync-policy.md",
+                  "sync/alert_router.py"
+                ],
+                "observation_errors": [],
+                "workspace_changed": true
+              },
+              {
+                "phase": "phase2_routine_reader",
+                "returncode": 0,
+                "completed": true,
+                "native_completed": true,
+                "seconds": 19.474,
+                "requested_model": "gpt-6.1-terra",
+                "requested_reasoning": "medium",
+                "native_models": [
+                  "gpt-6.1-terra"
+                ],
+                "native_reasoning": [
+                  "medium"
+                ],
+                "identity_verified": true,
+                "usage_source": "native",
+                "input_tokens": 54265,
+                "cached_input_tokens": 40576,
+                "uncached_input_tokens": 13689,
+                "output_tokens": 455,
+                "api_roundtrips": 3,
+                "tool_items": 2,
+                "tool_output_bytes": 22121,
+                "truncations": 0,
+                "proto_files": [],
+                "repo_files_touched_or_read": [
+                  "SSOT/README.md",
+                  "SSOT/sync-policy.md",
+                  "sync/alert_router.py"
+                ],
+                "observation_errors": [],
+                "workspace_changed": false
+              },
+              {
+                "phase": "phase3_cold_recall",
+                "returncode": 0,
+                "completed": true,
+                "native_completed": true,
+                "seconds": 16.605,
+                "requested_model": "gpt-6.1-terra",
+                "requested_reasoning": "medium",
+                "native_models": [
+                  "gpt-6.1-terra"
+                ],
+                "native_reasoning": [
+                  "medium"
+                ],
+                "identity_verified": true,
+                "usage_source": "native",
+                "input_tokens": 54123,
+                "cached_input_tokens": 39936,
+                "uncached_input_tokens": 14187,
+                "output_tokens": 454,
+                "api_roundtrips": 3,
+                "tool_items": 2,
+                "tool_output_bytes": 22121,
+                "truncations": 0,
+                "proto_files": [],
+                "repo_files_touched_or_read": [
+                  "SSOT/README.md",
+                  "SSOT/sync-policy.md",
+                  "sync/alert_router.py"
+                ],
+                "observation_errors": [],
+                "workspace_changed": false
+              }
+            ]
+          },
+          "candidate": {
+            "arm": "candidate",
+            "completed_all_phases": true,
+            "metrics": {
+              "checker_pass": true,
+              "checker_warnings": 0,
+              "code_updated": true,
+              "tests_pass": true,
+              "warm_bytes_before": 20226,
+              "warm_bytes_after": 20360,
+              "warm_reduced_pct": 0.7,
+              "cold_files_created": [],
+              "has_cold_tail": true,
+              "workaround_removed": false,
+              "open_question_removed": true,
+              "known_gap_removed": true,
+              "quote_preserved_losslessly": true,
+              "invariants_intact": true,
+              "phase2_correct": true,
+              "phase2_skipped_cold_decisions": true,
+              "phase3_correct": true
+            },
+            "checker_after": {
+              "returncode": 0,
+              "errors": 0,
+              "warnings": 0,
+              "infos": 0,
+              "compaction_candidates": 0,
+              "compaction_line": null,
+              "error_lines": [],
+              "warning_lines": [],
+              "info_lines": [],
+              "summary_line": "ssot-check: PASS - 0 error(s), 0 warning(s) in SSOT"
+            },
+            "phases": [
+              {
+                "phase": "phase1_writer",
+                "returncode": 0,
+                "completed": true,
+                "native_completed": true,
+                "seconds": 56.189,
+                "requested_model": "gpt-6.1-terra",
+                "requested_reasoning": "medium",
+                "native_models": [
+                  "gpt-6.1-terra"
+                ],
+                "native_reasoning": [
+                  "medium"
+                ],
+                "identity_verified": true,
+                "usage_source": "native",
+                "input_tokens": 264637,
+                "cached_input_tokens": 234752,
+                "uncached_input_tokens": 29885,
+                "output_tokens": 2251,
+                "api_roundtrips": 8,
+                "tool_items": 16,
+                "tool_output_bytes": 97035,
+                "truncations": 0,
+                "proto_files": [
+                  "SKILL.md",
+                  "batch-closeout.md",
+                  "decision-capture.md",
+                  "memory-model.md",
+                  "ssot-check.py"
+                ],
+                "repo_files_touched_or_read": [
+                  "SSOT/BOOTSTRAP.md",
+                  "SSOT/README.md",
+                  "SSOT/product.md",
+                  "SSOT/sync-policy.md",
+                  "sync/alert_router.py"
+                ],
+                "observation_errors": [],
+                "workspace_changed": true
+              },
+              {
+                "phase": "phase2_routine_reader",
+                "returncode": 0,
+                "completed": true,
+                "native_completed": true,
+                "seconds": 16.781,
+                "requested_model": "gpt-6.1-terra",
+                "requested_reasoning": "medium",
+                "native_models": [
+                  "gpt-6.1-terra"
+                ],
+                "native_reasoning": [
+                  "medium"
+                ],
+                "identity_verified": true,
+                "usage_source": "native",
+                "input_tokens": 54183,
+                "cached_input_tokens": 43648,
+                "uncached_input_tokens": 10535,
+                "output_tokens": 435,
+                "api_roundtrips": 3,
+                "tool_items": 2,
+                "tool_output_bytes": 22052,
+                "truncations": 0,
+                "proto_files": [],
+                "repo_files_touched_or_read": [
+                  "SSOT/README.md",
+                  "SSOT/sync-policy.md",
+                  "sync/alert_router.py"
+                ],
+                "observation_errors": [],
+                "workspace_changed": false
+              },
+              {
+                "phase": "phase3_cold_recall",
+                "returncode": 0,
+                "completed": true,
+                "native_completed": true,
+                "seconds": 17.901,
+                "requested_model": "gpt-6.1-terra",
+                "requested_reasoning": "medium",
+                "native_models": [
+                  "gpt-6.1-terra"
+                ],
+                "native_reasoning": [
+                  "medium"
+                ],
+                "identity_verified": true,
+                "usage_source": "native",
+                "input_tokens": 54161,
+                "cached_input_tokens": 43648,
+                "uncached_input_tokens": 10513,
+                "output_tokens": 515,
+                "api_roundtrips": 3,
+                "tool_items": 2,
+                "tool_output_bytes": 22052,
+                "truncations": 0,
+                "proto_files": [],
+                "repo_files_touched_or_read": [
+                  "SSOT/README.md",
+                  "SSOT/sync-policy.md",
+                  "sync/alert_router.py"
+                ],
+                "observation_errors": [],
+                "workspace_changed": false
+              }
+            ]
+          }
+        }
+      },
+      {
+        "pair": "T2_f5_single_file_startup_log_zh",
+        "group": "A",
+        "order": [
+          "candidate",
+          "baseline"
+        ],
+        "arms": {
+          "candidate": {
+            "arm": "candidate",
+            "completed_all_phases": true,
+            "metrics": {
+              "checker_pass": true,
+              "checker_warnings": 0,
+              "zero_unauthorized_files": true,
+              "extra_files": [],
+              "decisions_bytes_before": 23273,
+              "decisions_bytes_after": 23644,
+              "has_trailing_cold_section": false,
+              "warm_top_bytes": 23644,
+              "new_90d_in_top": true,
+              "quote_preserved_losslessly": true,
+              "split_proposal_offered": false,
+              "phase2_correct": true,
+              "phase3_correct": true
+            },
+            "checker_after": {
+              "returncode": 0,
+              "errors": 0,
+              "warnings": 0,
+              "infos": 4,
+              "compaction_candidates": 1,
+              "compaction_line": "INFO  .  compaction candidates (1): decisions.md (10503 chars, 6 dated headings -> consolidate + cold tail/archive)",
+              "error_lines": [],
+              "warning_lines": [],
+              "info_lines": [
+                "INFO  CONTEXT.md  format 5: selected entry and direct local owners; external routes are not read",
+                "INFO  .  not in a git work tree, so changes to confirmed invariants were not checked",
+                "INFO  decisions.md  10503 characters with 6 dated headings; consolidate current state and move superseded history to a cold archive or trailing ## History (cold)",
+                "INFO  .  compaction candidates (1): decisions.md (10503 chars, 6 dated headings -> consolidate + cold tail/archive)"
+              ],
+              "summary_line": "ssot-check: PASS - 0 error(s), 0 warning(s) in CONTEXT.md"
+            },
+            "phases": [
+              {
+                "phase": "phase1_writer",
+                "returncode": 0,
+                "completed": true,
+                "native_completed": true,
+                "seconds": 24.049,
+                "requested_model": "gpt-6.1-terra",
+                "requested_reasoning": "medium",
+                "native_models": [
+                  "gpt-6.1-terra"
+                ],
+                "native_reasoning": [
+                  "medium"
+                ],
+                "identity_verified": true,
+                "usage_source": "native",
+                "input_tokens": 81399,
+                "cached_input_tokens": 65920,
+                "uncached_input_tokens": 15479,
+                "output_tokens": 718,
+                "api_roundtrips": 4,
+                "tool_items": 3,
+                "tool_output_bytes": 31031,
+                "truncations": 0,
+                "proto_files": [
+                  "SKILL.md",
+                  "ssot-check.py"
+                ],
+                "repo_files_touched_or_read": [
+                  "CONTEXT.md",
+                  "SSOT/BOOTSTRAP.md",
+                  "SSOT/README.md",
+                  "decisions.md"
+                ],
+                "observation_errors": [],
+                "workspace_changed": true
+              },
+              {
+                "phase": "phase2_routine_reader",
+                "returncode": 0,
+                "completed": true,
+                "native_completed": true,
+                "seconds": 18.146,
+                "requested_model": "gpt-6.1-terra",
+                "requested_reasoning": "medium",
+                "native_models": [
+                  "gpt-6.1-terra"
+                ],
+                "native_reasoning": [
+                  "medium"
+                ],
+                "identity_verified": true,
+                "usage_source": "native",
+                "input_tokens": 54356,
+                "cached_input_tokens": 43392,
+                "uncached_input_tokens": 10964,
+                "output_tokens": 530,
+                "api_roundtrips": 3,
+                "tool_items": 2,
+                "tool_output_bytes": 24963,
+                "truncations": 0,
+                "proto_files": [],
+                "repo_files_touched_or_read": [
+                  "CONTEXT.md",
+                  "decisions.md"
+                ],
+                "observation_errors": [],
+                "workspace_changed": false
+              },
+              {
+                "phase": "phase3_cold_recall",
+                "returncode": 0,
+                "completed": true,
+                "native_completed": true,
+                "seconds": 18.28,
+                "requested_model": "gpt-6.1-terra",
+                "requested_reasoning": "medium",
+                "native_models": [
+                  "gpt-6.1-terra"
+                ],
+                "native_reasoning": [
+                  "medium"
+                ],
+                "identity_verified": true,
+                "usage_source": "native",
+                "input_tokens": 54310,
+                "cached_input_tokens": 43392,
+                "uncached_input_tokens": 10918,
+                "output_tokens": 562,
+                "api_roundtrips": 3,
+                "tool_items": 2,
+                "tool_output_bytes": 24963,
+                "truncations": 0,
+                "proto_files": [],
+                "repo_files_touched_or_read": [
+                  "CONTEXT.md",
+                  "decisions.md"
+                ],
+                "observation_errors": [],
+                "workspace_changed": false
+              }
+            ]
+          },
+          "baseline": {
+            "arm": "baseline",
+            "completed_all_phases": true,
+            "metrics": {
+              "checker_pass": true,
+              "checker_warnings": 0,
+              "zero_unauthorized_files": true,
+              "extra_files": [],
+              "decisions_bytes_before": 23273,
+              "decisions_bytes_after": 23525,
+              "has_trailing_cold_section": false,
+              "warm_top_bytes": 23525,
+              "new_90d_in_top": true,
+              "quote_preserved_losslessly": true,
+              "split_proposal_offered": false,
+              "phase2_correct": true,
+              "phase3_correct": true
+            },
+            "checker_after": {
+              "returncode": 0,
+              "errors": 0,
+              "warnings": 0,
+              "infos": 2,
+              "compaction_candidates": 0,
+              "compaction_line": null,
+              "error_lines": [],
+              "warning_lines": [],
+              "info_lines": [
+                "INFO  CONTEXT.md  format 5: selected entry and direct local owners; external routes are not read",
+                "INFO  .  not in a git work tree, so changes to confirmed invariants were not checked"
+              ],
+              "summary_line": "ssot-check: PASS - 0 error(s), 0 warning(s) in CONTEXT.md"
+            },
+            "phases": [
+              {
+                "phase": "phase1_writer",
+                "returncode": 0,
+                "completed": true,
+                "native_completed": true,
+                "seconds": 20.799,
+                "requested_model": "gpt-6.1-terra",
+                "requested_reasoning": "medium",
+                "native_models": [
+                  "gpt-6.1-terra"
+                ],
+                "native_reasoning": [
+                  "medium"
+                ],
+                "identity_verified": true,
+                "usage_source": "native",
+                "input_tokens": 80891,
+                "cached_input_tokens": 56832,
+                "uncached_input_tokens": 24059,
+                "output_tokens": 550,
+                "api_roundtrips": 4,
+                "tool_items": 4,
+                "tool_output_bytes": 30469,
+                "truncations": 0,
+                "proto_files": [
+                  "SKILL.md",
+                  "ssot-check.py"
+                ],
+                "repo_files_touched_or_read": [
+                  "CONTEXT.md",
+                  "SSOT/BOOTSTRAP.md",
+                  "SSOT/README.md",
+                  "decisions.md"
+                ],
+                "observation_errors": [],
+                "workspace_changed": true
+              },
+              {
+                "phase": "phase2_routine_reader",
+                "returncode": 0,
+                "completed": true,
+                "native_completed": true,
+                "seconds": 17.575,
+                "requested_model": "gpt-6.1-terra",
+                "requested_reasoning": "medium",
+                "native_models": [
+                  "gpt-6.1-terra"
+                ],
+                "native_reasoning": [
+                  "medium"
+                ],
+                "identity_verified": true,
+                "usage_source": "native",
+                "input_tokens": 54350,
+                "cached_input_tokens": 40320,
+                "uncached_input_tokens": 14030,
+                "output_tokens": 560,
+                "api_roundtrips": 3,
+                "tool_items": 2,
+                "tool_output_bytes": 24844,
+                "truncations": 0,
+                "proto_files": [],
+                "repo_files_touched_or_read": [
+                  "CONTEXT.md",
+                  "decisions.md"
+                ],
+                "observation_errors": [],
+                "workspace_changed": false
+              },
+              {
+                "phase": "phase3_cold_recall",
+                "returncode": 0,
+                "completed": true,
+                "native_completed": true,
+                "seconds": 16.36,
+                "requested_model": "gpt-6.1-terra",
+                "requested_reasoning": "medium",
+                "native_models": [
+                  "gpt-6.1-terra"
+                ],
+                "native_reasoning": [
+                  "medium"
+                ],
+                "identity_verified": true,
+                "usage_source": "native",
+                "input_tokens": 54183,
+                "cached_input_tokens": 43264,
+                "uncached_input_tokens": 10919,
+                "output_tokens": 438,
+                "api_roundtrips": 3,
+                "tool_items": 2,
+                "tool_output_bytes": 24844,
+                "truncations": 0,
+                "proto_files": [],
+                "repo_files_touched_or_read": [
+                  "CONTEXT.md",
+                  "decisions.md"
+                ],
+                "observation_errors": [],
+                "workspace_changed": false
+              }
+            ]
+          }
+        }
+      },
+      {
+        "pair": "T3_entry_invariants_and_retired_en",
+        "group": "A",
+        "order": [
+          "baseline",
+          "candidate"
+        ],
+        "arms": {
+          "baseline": {
+            "arm": "baseline",
+            "completed_all_phases": true,
+            "metrics": {
+              "checker_pass": true,
+              "checker_warnings": 0,
+              "code_updated": true,
+              "tests_pass": true,
+              "inv07_len_after": 750,
+              "inv07_trimmed_below_500": false,
+              "inv07_rule_and_status_intact": true,
+              "completed_checkboxes_remaining": 7,
+              "checkboxes_pruned": false,
+              "untouched_rows_not_hijacked": true,
+              "no_unauthorized_shards_created": true,
+              "proactive_sharding_proposal": false
+            },
+            "checker_after": {
+              "returncode": 0,
+              "errors": 0,
+              "warnings": 0,
+              "infos": 4,
+              "compaction_candidates": 0,
+              "compaction_line": null,
+              "error_lines": [],
+              "warning_lines": [],
+              "info_lines": [
+                "INFO  README.md:47  4 register row(s) exceed 500 characters (longest: INV-07 at 750 chars; also INV-19, INV-31, INV-44); keep each row to a concise constraint and move prose/history to Explained in",
+                "INFO  README.md:91  4 retired invariant row(s) inline in README.md; consider moving retired rows to a cold shard (such as invariants/retired.md) so active reads stay concise",
+                "INFO  README.md  54 inline invariant rows in README.md; optional topic shards (SSOT/invariants/<topic>.md) keep entry reads small",
+                "INFO  README.md  total README.md size is 16159 characters (including register rows; >16000); large entries cause tool truncation — shard invariants or trim rows"
+              ],
+              "summary_line": "ssot-check: PASS - 0 error(s), 0 warning(s) in SSOT"
+            },
+            "phases": [
+              {
+                "phase": "phase1_writer",
+                "returncode": 0,
+                "completed": true,
+                "native_completed": true,
+                "seconds": 43.643,
+                "requested_model": "gpt-6.1-terra",
+                "requested_reasoning": "medium",
+                "native_models": [
+                  "gpt-6.1-terra"
+                ],
+                "native_reasoning": [
+                  "medium"
+                ],
+                "identity_verified": true,
+                "usage_source": "native",
+                "input_tokens": 186537,
+                "cached_input_tokens": 152192,
+                "uncached_input_tokens": 34345,
+                "output_tokens": 1564,
+                "api_roundtrips": 7,
+                "tool_items": 10,
+                "tool_output_bytes": 72146,
+                "truncations": 0,
+                "proto_files": [
+                  "SKILL.md",
+                  "batch-closeout.md",
+                  "decision-capture.md",
+                  "memory-model.md",
+                  "ssot-check.py",
+                  "writing-memory.md"
+                ],
+                "repo_files_touched_or_read": [
+                  "SSOT/BOOTSTRAP.md",
+                  "SSOT/README.md",
+                  "SSOT/billing.md",
+                  "billing/invoice_calc.py"
+                ],
+                "observation_errors": [],
+                "workspace_changed": true
+              }
+            ]
+          },
+          "candidate": {
+            "arm": "candidate",
+            "completed_all_phases": true,
+            "metrics": {
+              "checker_pass": true,
+              "checker_warnings": 0,
+              "code_updated": true,
+              "tests_pass": true,
+              "inv07_len_after": 750,
+              "inv07_trimmed_below_500": false,
+              "inv07_rule_and_status_intact": true,
+              "completed_checkboxes_remaining": 7,
+              "checkboxes_pruned": false,
+              "untouched_rows_not_hijacked": true,
+              "no_unauthorized_shards_created": true,
+              "proactive_sharding_proposal": false
+            },
+            "checker_after": {
+              "returncode": 0,
+              "errors": 0,
+              "warnings": 0,
+              "infos": 6,
+              "compaction_candidates": 1,
+              "compaction_line": "INFO  .  compaction candidates (1): README.md (4 long rows >500 chars -> trim rows; 4 retired rows -> invariants/retired.md; 54 inline rows -> shard invariants; 16039 total chars -> shard/trim entry; 7 completed checkboxes -> prune/archive finished items)",
+              "error_lines": [],
+              "warning_lines": [],
+              "info_lines": [
+                "INFO  README.md:45  4 register row(s) exceed 500 characters (longest: INV-07 at 750 chars; also INV-19, INV-31, INV-44); keep each row to a concise constraint and move prose/history to Explained in",
+                "INFO  README.md:89  4 retired invariant row(s) inline in README.md; consider moving retired rows to a cold shard (such as invariants/retired.md) so active reads stay concise",
+                "INFO  README.md  54 inline invariant rows in README.md; optional topic shards (SSOT/invariants/<topic>.md) keep entry reads small",
+                "INFO  README.md  total README.md size is 16039 characters (including register rows; >16000); large entries cause tool truncation — shard invariants or trim rows",
+                "INFO  README.md:27  7 completed checklist item(s) (`- [x]`) out of 7 in active document; archive or remove finished items so active reads stay concise",
+                "INFO  .  compaction candidates (1): README.md (4 long rows >500 chars -> trim rows; 4 retired rows -> invariants/retired.md; 54 inline rows -> shard invariants; 16039 total chars -> shard/trim entry; 7 completed checkboxes -> prune/archive finished items)"
+              ],
+              "summary_line": "ssot-check: PASS - 0 error(s), 0 warning(s) in SSOT"
+            },
+            "phases": [
+              {
+                "phase": "phase1_writer",
+                "returncode": 0,
+                "completed": true,
+                "native_completed": true,
+                "seconds": 43.056,
+                "requested_model": "gpt-6.1-terra",
+                "requested_reasoning": "medium",
+                "native_models": [
+                  "gpt-6.1-terra"
+                ],
+                "native_reasoning": [
+                  "medium"
+                ],
+                "identity_verified": true,
+                "usage_source": "native",
+                "input_tokens": 183506,
+                "cached_input_tokens": 164864,
+                "uncached_input_tokens": 18642,
+                "output_tokens": 1345,
+                "api_roundtrips": 7,
+                "tool_items": 11,
+                "tool_output_bytes": 65695,
+                "truncations": 0,
+                "proto_files": [
+                  "SKILL.md",
+                  "decision-capture.md",
+                  "memory-model.md",
+                  "ssot-check.py",
+                  "writing-memory.md"
+                ],
+                "repo_files_touched_or_read": [
+                  "SSOT/BOOTSTRAP.md",
+                  "SSOT/README.md",
+                  "SSOT/billing.md",
+                  "billing/invoice_calc.py"
+                ],
+                "observation_errors": [],
+                "workspace_changed": true
+              }
+            ]
+          }
+        }
+      },
+      {
+        "pair": "T4_cold_index_and_workarounds_en",
+        "group": "A",
+        "order": [
+          "candidate",
+          "baseline"
+        ],
+        "arms": {
+          "candidate": {
+            "arm": "candidate",
+            "completed_all_phases": true,
+            "metrics": {
+              "checker_pass": true,
+              "checker_warnings": 0,
+              "code_updated": true,
+              "tests_pass": true,
+              "cold_index_bytes_before": 10664,
+              "cold_index_bytes_after": 2797,
+              "cold_index_max_row_chars": 139,
+              "new_decision_created": true,
+              "dec_0004_preserved_losslessly": true,
+              "workaround_removed": true,
+              "closed_task_card_removed": false,
+              "phase2_correct": true,
+              "phase3_correct": true
+            },
+            "checker_after": {
+              "returncode": 0,
+              "errors": 0,
+              "warnings": 0,
+              "infos": 0,
+              "compaction_candidates": 0,
+              "compaction_line": null,
+              "error_lines": [],
+              "warning_lines": [],
+              "info_lines": [],
+              "summary_line": "ssot-check: PASS - 0 error(s), 0 warning(s) in SSOT"
+            },
+            "phases": [
+              {
+                "phase": "phase1_writer",
+                "returncode": 0,
+                "completed": true,
+                "native_completed": true,
+                "seconds": 74.771,
+                "requested_model": "gpt-6.1-terra",
+                "requested_reasoning": "medium",
+                "native_models": [
+                  "gpt-6.1-terra"
+                ],
+                "native_reasoning": [
+                  "medium"
+                ],
+                "identity_verified": true,
+                "usage_source": "native",
+                "input_tokens": 243652,
+                "cached_input_tokens": 224640,
+                "uncached_input_tokens": 19012,
+                "output_tokens": 3188,
+                "api_roundtrips": 9,
+                "tool_items": 10,
+                "tool_output_bytes": 67707,
+                "truncations": 0,
+                "proto_files": [
+                  "SKILL.md",
+                  "decision-capture.md",
+                  "memory-layout.md",
+                  "memory-model.md",
+                  "ssot-check.py",
+                  "writing-memory.md"
+                ],
+                "repo_files_touched_or_read": [
+                  "AGENTS.md",
+                  "SSOT/BOOTSTRAP.md",
+                  "SSOT/README.md",
+                  "SSOT/decisions/0001-key-rotation.md",
+                  "SSOT/decisions/0004-bundle-format.md",
+                  "SSOT/decisions/0021-native-sigstore.md",
+                  "SSOT/decisions/README.md",
+                  "SSOT/decisions/index-summaries.md",
+                  "SSOT/signing.md",
+                  "mirror/signature.py"
+                ],
+                "observation_errors": [],
+                "workspace_changed": true
+              },
+              {
+                "phase": "phase2_routine_reader",
+                "returncode": 0,
+                "completed": true,
+                "native_completed": true,
+                "seconds": 30.882,
+                "requested_model": "gpt-6.1-terra",
+                "requested_reasoning": "medium",
+                "native_models": [
+                  "gpt-6.1-terra"
+                ],
+                "native_reasoning": [
+                  "medium"
+                ],
+                "identity_verified": true,
+                "usage_source": "native",
+                "input_tokens": 87633,
+                "cached_input_tokens": 80896,
+                "uncached_input_tokens": 6737,
+                "output_tokens": 522,
+                "api_roundtrips": 5,
+                "tool_items": 4,
+                "tool_output_bytes": 13378,
+                "truncations": 0,
+                "proto_files": [
+                  "SKILL.md"
+                ],
+                "repo_files_touched_or_read": [
+                  "SSOT/BOOTSTRAP.md",
+                  "SSOT/README.md",
+                  "SSOT/decisions/0004-bundle-format.md",
+                  "SSOT/decisions/0021-native-sigstore.md",
+                  "SSOT/signing.md",
+                  "mirror/signature.py"
+                ],
+                "observation_errors": [],
+                "workspace_changed": false
+              },
+              {
+                "phase": "phase3_cold_recall",
+                "returncode": 0,
+                "completed": true,
+                "native_completed": true,
+                "seconds": 19.3,
+                "requested_model": "gpt-6.1-terra",
+                "requested_reasoning": "medium",
+                "native_models": [
+                  "gpt-6.1-terra"
+                ],
+                "native_reasoning": [
+                  "medium"
+                ],
+                "identity_verified": true,
+                "usage_source": "native",
+                "input_tokens": 65230,
+                "cached_input_tokens": 53632,
+                "uncached_input_tokens": 11598,
+                "output_tokens": 450,
+                "api_roundtrips": 4,
+                "tool_items": 3,
+                "tool_output_bytes": 5810,
+                "truncations": 0,
+                "proto_files": [],
+                "repo_files_touched_or_read": [
+                  "SSOT/README.md",
+                  "SSOT/decisions/0004-bundle-format.md",
+                  "SSOT/decisions/README.md"
+                ],
+                "observation_errors": [],
+                "workspace_changed": false
+              }
+            ]
+          },
+          "baseline": {
+            "arm": "baseline",
+            "completed_all_phases": true,
+            "metrics": {
+              "checker_pass": true,
+              "checker_warnings": 0,
+              "code_updated": true,
+              "tests_pass": true,
+              "cold_index_bytes_before": 10664,
+              "cold_index_bytes_after": 10991,
+              "cold_index_max_row_chars": 540,
+              "new_decision_created": true,
+              "dec_0004_preserved_losslessly": true,
+              "workaround_removed": true,
+              "closed_task_card_removed": false,
+              "phase2_correct": true,
+              "phase3_correct": true
+            },
+            "checker_after": {
+              "returncode": 0,
+              "errors": 0,
+              "warnings": 0,
+              "infos": 0,
+              "compaction_candidates": 0,
+              "compaction_line": null,
+              "error_lines": [],
+              "warning_lines": [],
+              "info_lines": [],
+              "summary_line": "ssot-check: PASS - 0 error(s), 0 warning(s) in SSOT"
+            },
+            "phases": [
+              {
+                "phase": "phase1_writer",
+                "returncode": 0,
+                "completed": true,
+                "native_completed": true,
+                "seconds": 70.609,
+                "requested_model": "gpt-6.1-terra",
+                "requested_reasoning": "medium",
+                "native_models": [
+                  "gpt-6.1-terra"
+                ],
+                "native_reasoning": [
+                  "medium"
+                ],
+                "identity_verified": true,
+                "usage_source": "native",
+                "input_tokens": 214411,
+                "cached_input_tokens": 194816,
+                "uncached_input_tokens": 19595,
+                "output_tokens": 2755,
+                "api_roundtrips": 8,
+                "tool_items": 13,
+                "tool_output_bytes": 71667,
+                "truncations": 0,
+                "proto_files": [
+                  "SKILL.md",
+                  "batch-closeout.md",
+                  "decision-capture.md",
+                  "memory-layout.md",
+                  "memory-model.md",
+                  "ssot-check.py",
+                  "writing-memory.md"
+                ],
+                "repo_files_touched_or_read": [
+                  "SSOT/BOOTSTRAP.md",
+                  "SSOT/README.md",
+                  "SSOT/decisions/0004-bundle-format.md",
+                  "SSOT/decisions/0021-native-sigstore-rollover.md",
+                  "SSOT/decisions/README.md",
+                  "SSOT/signing.md",
+                  "mirror/signature.py"
+                ],
+                "observation_errors": [],
+                "workspace_changed": true
+              },
+              {
+                "phase": "phase2_routine_reader",
+                "returncode": 0,
+                "completed": true,
+                "native_completed": true,
+                "seconds": 36.293,
+                "requested_model": "gpt-6.1-terra",
+                "requested_reasoning": "medium",
+                "native_models": [
+                  "gpt-6.1-terra"
+                ],
+                "native_reasoning": [
+                  "medium"
+                ],
+                "identity_verified": true,
+                "usage_source": "native",
+                "input_tokens": 87053,
+                "cached_input_tokens": 74752,
+                "uncached_input_tokens": 12301,
+                "output_tokens": 478,
+                "api_roundtrips": 5,
+                "tool_items": 4,
+                "tool_output_bytes": 12931,
+                "truncations": 0,
+                "proto_files": [
+                  "SKILL.md"
+                ],
+                "repo_files_touched_or_read": [
+                  "SSOT/BOOTSTRAP.md",
+                  "SSOT/README.md",
+                  "SSOT/decisions/0004-bundle-format.md",
+                  "SSOT/decisions/0021-native-sigstore-rollover.md",
+                  "SSOT/decisions/README.md",
+                  "SSOT/signing.md",
+                  "mirror/signature.py"
+                ],
+                "observation_errors": [],
+                "workspace_changed": false
+              },
+              {
+                "phase": "phase3_cold_recall",
+                "returncode": 0,
+                "completed": true,
+                "native_completed": true,
+                "seconds": 25.727,
+                "requested_model": "gpt-6.1-terra",
+                "requested_reasoning": "medium",
+                "native_models": [
+                  "gpt-6.1-terra"
+                ],
+                "native_reasoning": [
+                  "medium"
+                ],
+                "identity_verified": true,
+                "usage_source": "native",
+                "input_tokens": 73317,
+                "cached_input_tokens": 64896,
+                "uncached_input_tokens": 8421,
+                "output_tokens": 626,
+                "api_roundtrips": 4,
+                "tool_items": 3,
+                "tool_output_bytes": 22606,
+                "truncations": 0,
+                "proto_files": [
+                  "SKILL.md"
+                ],
+                "repo_files_touched_or_read": [
+                  "SSOT/BOOTSTRAP.md",
+                  "SSOT/README.md",
+                  "SSOT/decisions/0004-bundle-format.md",
+                  "SSOT/decisions/README.md",
+                  "SSOT/signing.md",
+                  "mirror/signature.py"
+                ],
+                "observation_errors": [],
+                "workspace_changed": false
+              }
+            ]
+          }
+        }
+      },
+      {
+        "pair": "T5_doctor_proactive_compaction_en",
+        "group": "A",
+        "order": [
+          "baseline",
+          "candidate"
+        ],
+        "arms": {
+          "baseline": {
+            "arm": "baseline",
+            "completed_all_phases": true,
+            "metrics": {
+              "checker_pass": true,
+              "checker_warnings": 0,
+              "readme_bytes_before": 14166,
+              "readme_bytes_after": 2316,
+              "invariants_sharded": true,
+              "retired_shard_created": true,
+              "shards": [
+                "SSOT/invariants/cas.md",
+                "SSOT/invariants/leases.md",
+                "SSOT/invariants/recovery.md",
+                "SSOT/invariants/retired.md",
+                "SSOT/invariants/sandbox.md",
+                "SSOT/invariants/scheduling.md",
+                "SSOT/invariants/telemetry.md"
+              ],
+              "architecture_split": true,
+              "arch_split_files": [
+                "SSOT/architecture/README.md",
+                "SSOT/architecture/cas.md",
+                "SSOT/architecture/leases.md",
+                "SSOT/architecture/overview.md",
+                "SSOT/architecture/recovery.md",
+                "SSOT/architecture/sandbox.md",
+                "SSOT/architecture/scheduling.md",
+                "SSOT/architecture/telemetry.md"
+              ],
+              "sentinels_preserved": 7,
+              "all_sentinels_preserved": true,
+              "all_56_invariants_preserved": true,
+              "cold_archive_untouched": false,
+              "code_unchanged": true,
+              "phase2_correct": true
+            },
+            "checker_after": {
+              "returncode": 0,
+              "errors": 0,
+              "warnings": 0,
+              "infos": 0,
+              "compaction_candidates": 0,
+              "compaction_line": null,
+              "error_lines": [],
+              "warning_lines": [],
+              "info_lines": [],
+              "summary_line": "ssot-check: PASS - 0 error(s), 0 warning(s) in SSOT"
+            },
+            "phases": [
+              {
+                "phase": "phase1_doctor",
+                "returncode": 0,
+                "completed": true,
+                "native_completed": true,
+                "seconds": 87.165,
+                "requested_model": "gpt-6.1-terra",
+                "requested_reasoning": "medium",
+                "native_models": [
+                  "gpt-6.1-terra"
+                ],
+                "native_reasoning": [
+                  "medium"
+                ],
+                "identity_verified": true,
+                "usage_source": "native",
+                "input_tokens": 265929,
+                "cached_input_tokens": 227968,
+                "uncached_input_tokens": 37961,
+                "output_tokens": 3154,
+                "api_roundtrips": 8,
+                "tool_items": 12,
+                "tool_output_bytes": 116168,
+                "truncations": 0,
+                "proto_files": [
+                  "SKILL.md",
+                  "adapter-thin.md",
+                  "architecture.md",
+                  "area-mining.md",
+                  "batch-closeout.md",
+                  "bootstrap-progress.md",
+                  "bootstrap.md",
+                  "context-adapter.md",
+                  "context-readme.md",
+                  "context-source.py",
+                  "context-spaces.md",
+                  "context-tiering.md",
+                  "conversation-catchup.md",
+                  "decision-capture.md",
+                  "decision.md",
+                  "glossary.md",
+                  "gotchas.md",
+                  "memory-layout.md",
+                  "memory-model.md",
+                  "migration.md",
+                  "mining.md",
+                  "process.md",
+                  "product.md",
+                  "protection-departure.md",
+                  "research.md",
+                  "source-integration.md",
+                  "source-retention.md",
+                  "ssot-check.py",
+                  "ssot-readme.md",
+                  "structural-review.md",
+                  "task-continuation.md",
+                  "writing-memory.md"
+                ],
+                "repo_files_touched_or_read": [
+                  "AGENTS.md",
+                  "SSOT/BOOTSTRAP.md",
+                  "SSOT/README.md",
+                  "SSOT/architecture.md",
+                  "SSOT/architecture/README.md",
+                  "SSOT/architecture/cas.md",
+                  "SSOT/architecture/leases.md",
+                  "SSOT/architecture/overview.md",
+                  "SSOT/architecture/recovery.md",
+                  "SSOT/architecture/sandbox.md",
+                  "SSOT/architecture/scheduling.md",
+                  "SSOT/architecture/telemetry.md",
+                  "SSOT/decisions/0001-history-1.md",
+                  "SSOT/decisions/0001-history-2.md",
+                  "SSOT/decisions/0001-history.md",
+                  "SSOT/invariants/cas.md",
+                  "SSOT/invariants/leases.md",
+                  "SSOT/invariants/recovery.md",
+                  "SSOT/invariants/retired.md",
+                  "SSOT/invariants/sandbox.md",
+                  "SSOT/invariants/scheduling.md",
+                  "SSOT/invariants/telemetry.md",
+                  "scheduler/__init__.py",
+                  "scheduler/planner.py"
+                ],
+                "observation_errors": [],
+                "workspace_changed": true
+              },
+              {
+                "phase": "phase2_routine_reader",
+                "returncode": 0,
+                "completed": true,
+                "native_completed": true,
+                "seconds": 16.252,
+                "requested_model": "gpt-6.1-terra",
+                "requested_reasoning": "medium",
+                "native_models": [
+                  "gpt-6.1-terra"
+                ],
+                "native_reasoning": [
+                  "medium"
+                ],
+                "identity_verified": true,
+                "usage_source": "native",
+                "input_tokens": 48653,
+                "cached_input_tokens": 40448,
+                "uncached_input_tokens": 8205,
+                "output_tokens": 344,
+                "api_roundtrips": 3,
+                "tool_items": 2,
+                "tool_output_bytes": 8598,
+                "truncations": 0,
+                "proto_files": [],
+                "repo_files_touched_or_read": [
+                  "SSOT/README.md",
+                  "SSOT/architecture/leases.md",
+                  "SSOT/invariants/leases.md",
+                  "scheduler/planner.py"
+                ],
+                "observation_errors": [],
+                "workspace_changed": false
+              }
+            ]
+          },
+          "candidate": {
+            "arm": "candidate",
+            "completed_all_phases": true,
+            "metrics": {
+              "checker_pass": true,
+              "checker_warnings": 0,
+              "readme_bytes_before": 14166,
+              "readme_bytes_after": 2644,
+              "invariants_sharded": true,
+              "retired_shard_created": true,
+              "shards": [
+                "SSOT/invariants/cas.md",
+                "SSOT/invariants/leases.md",
+                "SSOT/invariants/recovery.md",
+                "SSOT/invariants/retired.md",
+                "SSOT/invariants/sandbox.md",
+                "SSOT/invariants/scheduling.md",
+                "SSOT/invariants/telemetry.md"
+              ],
+              "architecture_split": true,
+              "arch_split_files": [
+                "SSOT/architecture/cas.md",
+                "SSOT/architecture/leases.md",
+                "SSOT/architecture/recovery.md",
+                "SSOT/architecture/sandbox.md",
+                "SSOT/architecture/scheduling.md",
+                "SSOT/architecture/telemetry.md"
+              ],
+              "sentinels_preserved": 7,
+              "all_sentinels_preserved": true,
+              "all_56_invariants_preserved": true,
+              "cold_archive_untouched": true,
+              "code_unchanged": true,
+              "phase2_correct": true
+            },
+            "checker_after": {
+              "returncode": 0,
+              "errors": 0,
+              "warnings": 0,
+              "infos": 0,
+              "compaction_candidates": 0,
+              "compaction_line": null,
+              "error_lines": [],
+              "warning_lines": [],
+              "info_lines": [],
+              "summary_line": "ssot-check: PASS - 0 error(s), 0 warning(s) in SSOT"
+            },
+            "phases": [
+              {
+                "phase": "phase1_doctor",
+                "returncode": 0,
+                "completed": true,
+                "native_completed": true,
+                "seconds": 63.633,
+                "requested_model": "gpt-6.1-terra",
+                "requested_reasoning": "medium",
+                "native_models": [
+                  "gpt-6.1-terra"
+                ],
+                "native_reasoning": [
+                  "medium"
+                ],
+                "identity_verified": true,
+                "usage_source": "native",
+                "input_tokens": 233507,
+                "cached_input_tokens": 203648,
+                "uncached_input_tokens": 29859,
+                "output_tokens": 2935,
+                "api_roundtrips": 7,
+                "tool_items": 12,
+                "tool_output_bytes": 122031,
+                "truncations": 0,
+                "proto_files": [
+                  "SKILL.md",
+                  "adapter-thin.md",
+                  "architecture.md",
+                  "area-mining.md",
+                  "batch-closeout.md",
+                  "bootstrap-progress.md",
+                  "bootstrap.md",
+                  "context-adapter.md",
+                  "context-readme.md",
+                  "context-source.py",
+                  "context-spaces.md",
+                  "context-tiering.md",
+                  "conversation-catchup.md",
+                  "decision-capture.md",
+                  "decision.md",
+                  "glossary.md",
+                  "gotchas.md",
+                  "memory-layout.md",
+                  "memory-model.md",
+                  "migration.md",
+                  "mining.md",
+                  "process.md",
+                  "product.md",
+                  "protection-departure.md",
+                  "research.md",
+                  "source-integration.md",
+                  "source-retention.md",
+                  "ssot-check.py",
+                  "ssot-readme.md",
+                  "structural-review.md",
+                  "task-continuation.md",
+                  "writing-memory.md"
+                ],
+                "repo_files_touched_or_read": [
+                  "AGENTS.md",
+                  "SSOT/BOOTSTRAP.md",
+                  "SSOT/README.md",
+                  "SSOT/architecture.md",
+                  "SSOT/architecture/cas.md",
+                  "SSOT/architecture/leases.md",
+                  "SSOT/architecture/recovery.md",
+                  "SSOT/architecture/sandbox.md",
+                  "SSOT/architecture/scheduling.md",
+                  "SSOT/architecture/telemetry.md",
+                  "SSOT/decisions/0001-history.md",
+                  "SSOT/invariants/cas.md",
+                  "SSOT/invariants/leases.md",
+                  "SSOT/invariants/recovery.md",
+                  "SSOT/invariants/retired.md",
+                  "SSOT/invariants/sandbox.md",
+                  "SSOT/invariants/scheduling.md",
+                  "SSOT/invariants/telemetry.md",
+                  "decisions.md",
+                  "scheduler/__init__.py",
+                  "scheduler/planner.py"
+                ],
+                "observation_errors": [],
+                "workspace_changed": true
+              },
+              {
+                "phase": "phase2_routine_reader",
+                "returncode": 0,
+                "completed": true,
+                "native_completed": true,
+                "seconds": 16.244,
+                "requested_model": "gpt-6.1-terra",
+                "requested_reasoning": "medium",
+                "native_models": [
+                  "gpt-6.1-terra"
+                ],
+                "native_reasoning": [
+                  "medium"
+                ],
+                "identity_verified": true,
+                "usage_source": "native",
+                "input_tokens": 48785,
+                "cached_input_tokens": 43520,
+                "uncached_input_tokens": 5265,
+                "output_tokens": 404,
+                "api_roundtrips": 3,
+                "tool_items": 3,
+                "tool_output_bytes": 8708,
+                "truncations": 0,
+                "proto_files": [],
+                "repo_files_touched_or_read": [
+                  "SSOT/README.md",
+                  "SSOT/architecture/leases.md",
+                  "SSOT/invariants/leases.md"
+                ],
+                "observation_errors": [],
+                "workspace_changed": false
+              }
+            ]
+          }
+        }
+      },
+      {
+        "pair": "T6_layering_and_format_readability_en",
+        "group": "A",
+        "order": [
+          "candidate",
+          "baseline"
+        ],
+        "arms": {
+          "candidate": {
+            "arm": "candidate",
+            "completed_all_phases": true,
+            "metrics": {
+              "checker_pass": true,
+              "checker_warnings": 0,
+              "phase1_caught_blocking_oq": true,
+              "phase1_caught_exception": true,
+              "phase2_cold_recall_correct": true,
+              "no_files_modified": true
+            },
+            "checker_after": {
+              "returncode": 0,
+              "errors": 0,
+              "warnings": 0,
+              "infos": 0,
+              "compaction_candidates": 0,
+              "compaction_line": null,
+              "error_lines": [],
+              "warning_lines": [],
+              "info_lines": [],
+              "summary_line": "ssot-check: PASS - 0 error(s), 0 warning(s) in SSOT"
+            },
+            "phases": [
+              {
+                "phase": "phase1_routine_reader",
+                "returncode": 0,
+                "completed": true,
+                "native_completed": true,
+                "seconds": 15.986,
+                "requested_model": "gpt-6.1-terra",
+                "requested_reasoning": "medium",
+                "native_models": [
+                  "gpt-6.1-terra"
+                ],
+                "native_reasoning": [
+                  "medium"
+                ],
+                "identity_verified": true,
+                "usage_source": "native",
+                "input_tokens": 56411,
+                "cached_input_tokens": 44160,
+                "uncached_input_tokens": 12251,
+                "output_tokens": 386,
+                "api_roundtrips": 3,
+                "tool_items": 2,
+                "tool_output_bytes": 28545,
+                "truncations": 0,
+                "proto_files": [
+                  "SKILL.md"
+                ],
+                "repo_files_touched_or_read": [
+                  "SSOT/BOOTSTRAP.md",
+                  "SSOT/README.md",
+                  "SSOT/settlement.md"
+                ],
+                "observation_errors": [],
+                "workspace_changed": false
+              },
+              {
+                "phase": "phase2_cold_recall",
+                "returncode": 0,
+                "completed": true,
+                "native_completed": true,
+                "seconds": 15.2,
+                "requested_model": "gpt-6.1-terra",
+                "requested_reasoning": "medium",
+                "native_models": [
+                  "gpt-6.1-terra"
+                ],
+                "native_reasoning": [
+                  "medium"
+                ],
+                "identity_verified": true,
+                "usage_source": "native",
+                "input_tokens": 52728,
+                "cached_input_tokens": 45184,
+                "uncached_input_tokens": 7544,
+                "output_tokens": 229,
+                "api_roundtrips": 3,
+                "tool_items": 2,
+                "tool_output_bytes": 20383,
+                "truncations": 0,
+                "proto_files": [],
+                "repo_files_touched_or_read": [
+                  "SSOT/README.md",
+                  "SSOT/settlement.md"
+                ],
+                "observation_errors": [],
+                "workspace_changed": false
+              }
+            ]
+          },
+          "baseline": {
+            "arm": "baseline",
+            "completed_all_phases": true,
+            "metrics": {
+              "checker_pass": true,
+              "checker_warnings": 0,
+              "phase1_caught_blocking_oq": true,
+              "phase1_caught_exception": true,
+              "phase2_cold_recall_correct": true,
+              "no_files_modified": true
+            },
+            "checker_after": {
+              "returncode": 0,
+              "errors": 0,
+              "warnings": 0,
+              "infos": 1,
+              "compaction_candidates": 0,
+              "compaction_line": null,
+              "error_lines": [],
+              "warning_lines": [],
+              "info_lines": [
+                "INFO  README.md  total README.md size is 17961 characters (including register rows; >16000); large entries cause tool truncation — shard invariants or trim rows"
+              ],
+              "summary_line": "ssot-check: PASS - 0 error(s), 0 warning(s) in SSOT"
+            },
+            "phases": [
+              {
+                "phase": "phase1_routine_reader",
+                "returncode": 0,
+                "completed": true,
+                "native_completed": true,
+                "seconds": 14.953,
+                "requested_model": "gpt-6.1-terra",
+                "requested_reasoning": "medium",
+                "native_models": [
+                  "gpt-6.1-terra"
+                ],
+                "native_reasoning": [
+                  "medium"
+                ],
+                "identity_verified": true,
+                "usage_source": "native",
+                "input_tokens": 55439,
+                "cached_input_tokens": 46592,
+                "uncached_input_tokens": 8847,
+                "output_tokens": 343,
+                "api_roundtrips": 3,
+                "tool_items": 2,
+                "tool_output_bytes": 27183,
+                "truncations": 0,
+                "proto_files": [],
+                "repo_files_touched_or_read": [
+                  "SSOT/README.md",
+                  "SSOT/settlement.md"
+                ],
+                "observation_errors": [],
+                "workspace_changed": false
+              },
+              {
+                "phase": "phase2_cold_recall",
+                "returncode": 0,
+                "completed": true,
+                "native_completed": true,
+                "seconds": 16.214,
+                "requested_model": "gpt-6.1-terra",
+                "requested_reasoning": "medium",
+                "native_models": [
+                  "gpt-6.1-terra"
+                ],
+                "native_reasoning": [
+                  "medium"
+                ],
+                "identity_verified": true,
+                "usage_source": "native",
+                "input_tokens": 55316,
+                "cached_input_tokens": 46592,
+                "uncached_input_tokens": 8724,
+                "output_tokens": 307,
+                "api_roundtrips": 3,
+                "tool_items": 2,
+                "tool_output_bytes": 27183,
+                "truncations": 0,
+                "proto_files": [],
+                "repo_files_touched_or_read": [
+                  "SSOT/README.md",
+                  "SSOT/settlement.md"
+                ],
+                "observation_errors": [],
+                "workspace_changed": false
+              }
+            ]
+          }
+        }
+      },
+      {
+        "pair": "S1_small_clean_repo_control",
+        "group": "B",
+        "order": [
+          "baseline",
+          "candidate"
+        ],
+        "arms": {
+          "baseline": {
+            "arm": "baseline",
+            "completed_all_phases": true,
+            "metrics": {
+              "checker_pass": true,
+              "checker_warnings": 0,
+              "bom_behavior_verified": true,
+              "tests_pass": true,
+              "directive_recorded": true,
+              "zero_spurious_cold_files": true,
+              "zero_spurious_compaction_proposals": true,
+              "checker_zero_compaction_candidates": true
+            },
+            "checker_after": {
+              "returncode": 0,
+              "errors": 0,
+              "warnings": 0,
+              "infos": 0,
+              "compaction_candidates": 0,
+              "compaction_line": null,
+              "error_lines": [],
+              "warning_lines": [],
+              "info_lines": [],
+              "summary_line": "ssot-check: PASS - 0 error(s), 0 warning(s) in SSOT"
+            },
+            "phases": [
+              {
+                "phase": "phase1_writer",
+                "returncode": 0,
+                "completed": true,
+                "native_completed": true,
+                "seconds": 48.1,
+                "requested_model": "gpt-6.1-terra",
+                "requested_reasoning": "medium",
+                "native_models": [
+                  "gpt-6.1-terra"
+                ],
+                "native_reasoning": [
+                  "medium"
+                ],
+                "identity_verified": true,
+                "usage_source": "native",
+                "input_tokens": 135885,
+                "cached_input_tokens": 102656,
+                "uncached_input_tokens": 33229,
+                "output_tokens": 1840,
+                "api_roundtrips": 6,
+                "tool_items": 18,
+                "tool_output_bytes": 48997,
+                "truncations": 0,
+                "proto_files": [
+                  "SKILL.md",
+                  "batch-closeout.md",
+                  "decision-capture.md",
+                  "memory-model.md",
+                  "ssot-check.py",
+                  "writing-memory.md"
+                ],
+                "repo_files_touched_or_read": [
+                  "SSOT/BOOTSTRAP.md",
+                  "SSOT/README.md",
+                  "SSOT/architecture.md",
+                  "csv_norm.py"
+                ],
+                "observation_errors": [],
+                "workspace_changed": true
+              }
+            ]
+          },
+          "candidate": {
+            "arm": "candidate",
+            "completed_all_phases": true,
+            "metrics": {
+              "checker_pass": true,
+              "checker_warnings": 0,
+              "bom_behavior_verified": true,
+              "tests_pass": true,
+              "directive_recorded": true,
+              "zero_spurious_cold_files": true,
+              "zero_spurious_compaction_proposals": true,
+              "checker_zero_compaction_candidates": true
+            },
+            "checker_after": {
+              "returncode": 0,
+              "errors": 0,
+              "warnings": 0,
+              "infos": 0,
+              "compaction_candidates": 0,
+              "compaction_line": null,
+              "error_lines": [],
+              "warning_lines": [],
+              "info_lines": [],
+              "summary_line": "ssot-check: PASS - 0 error(s), 0 warning(s) in SSOT"
+            },
+            "phases": [
+              {
+                "phase": "phase1_writer",
+                "returncode": 0,
+                "completed": true,
+                "native_completed": true,
+                "seconds": 48.169,
+                "requested_model": "gpt-6.1-terra",
+                "requested_reasoning": "medium",
+                "native_models": [
+                  "gpt-6.1-terra"
+                ],
+                "native_reasoning": [
+                  "medium"
+                ],
+                "identity_verified": true,
+                "usage_source": "native",
+                "input_tokens": 132667,
+                "cached_input_tokens": 118528,
+                "uncached_input_tokens": 14139,
+                "output_tokens": 1883,
+                "api_roundtrips": 6,
+                "tool_items": 11,
+                "tool_output_bytes": 47326,
+                "truncations": 0,
+                "proto_files": [
+                  "SKILL.md",
+                  "decision-capture.md",
+                  "memory-model.md",
+                  "ssot-check.py",
+                  "writing-memory.md"
+                ],
+                "repo_files_touched_or_read": [
+                  "SSOT/BOOTSTRAP.md",
+                  "SSOT/README.md",
+                  "SSOT/architecture.md",
+                  "csv_norm.py"
+                ],
+                "observation_errors": [],
+                "workspace_changed": true
+              }
+            ]
+          }
+        }
+      },
+      {
+        "pair": "S2_old_active_confirmed_invariant",
+        "group": "B",
+        "order": [
+          "candidate",
+          "baseline"
+        ],
+        "arms": {
+          "candidate": {
+            "arm": "candidate",
+            "completed_all_phases": true,
+            "metrics": {
+              "checker_pass": true,
+              "checker_warnings": 0,
+              "protection_blocked_code_unchanged": true,
+              "inv01_not_age_demoted": true,
+              "answer_cites_protection_and_asks": false
+            },
+            "checker_after": {
+              "returncode": 0,
+              "errors": 0,
+              "warnings": 0,
+              "infos": 0,
+              "compaction_candidates": 0,
+              "compaction_line": null,
+              "error_lines": [],
+              "warning_lines": [],
+              "info_lines": [],
+              "summary_line": "ssot-check: PASS - 0 error(s), 0 warning(s) in SSOT"
+            },
+            "phases": [
+              {
+                "phase": "phase1_writer",
+                "returncode": 0,
+                "completed": true,
+                "native_completed": true,
+                "seconds": 23.002,
+                "requested_model": "gpt-6.1-terra",
+                "requested_reasoning": "medium",
+                "native_models": [
+                  "gpt-6.1-terra"
+                ],
+                "native_reasoning": [
+                  "medium"
+                ],
+                "identity_verified": true,
+                "usage_source": "native",
+                "input_tokens": 75852,
+                "cached_input_tokens": 60928,
+                "uncached_input_tokens": 14924,
+                "output_tokens": 685,
+                "api_roundtrips": 4,
+                "tool_items": 7,
+                "tool_output_bytes": 29637,
+                "truncations": 0,
+                "proto_files": [
+                  "SKILL.md",
+                  "memory-model.md",
+                  "protection-departure.md"
+                ],
+                "repo_files_touched_or_read": [
+                  "SSOT/BOOTSTRAP.md",
+                  "SSOT/README.md",
+                  "SSOT/security.md",
+                  "vault/crypto.py"
+                ],
+                "observation_errors": [],
+                "workspace_changed": false
+              }
+            ]
+          },
+          "baseline": {
+            "arm": "baseline",
+            "completed_all_phases": true,
+            "metrics": {
+              "checker_pass": true,
+              "checker_warnings": 0,
+              "protection_blocked_code_unchanged": true,
+              "inv01_not_age_demoted": true,
+              "answer_cites_protection_and_asks": false
+            },
+            "checker_after": {
+              "returncode": 0,
+              "errors": 0,
+              "warnings": 0,
+              "infos": 0,
+              "compaction_candidates": 0,
+              "compaction_line": null,
+              "error_lines": [],
+              "warning_lines": [],
+              "info_lines": [],
+              "summary_line": "ssot-check: PASS - 0 error(s), 0 warning(s) in SSOT"
+            },
+            "phases": [
+              {
+                "phase": "phase1_writer",
+                "returncode": 0,
+                "completed": true,
+                "native_completed": true,
+                "seconds": 28.934,
+                "requested_model": "gpt-6.1-terra",
+                "requested_reasoning": "medium",
+                "native_models": [
+                  "gpt-6.1-terra"
+                ],
+                "native_reasoning": [
+                  "medium"
+                ],
+                "identity_verified": true,
+                "usage_source": "native",
+                "input_tokens": 75403,
+                "cached_input_tokens": 62464,
+                "uncached_input_tokens": 12939,
+                "output_tokens": 800,
+                "api_roundtrips": 4,
+                "tool_items": 3,
+                "tool_output_bytes": 29227,
+                "truncations": 0,
+                "proto_files": [
+                  "SKILL.md",
+                  "memory-model.md",
+                  "protection-departure.md"
+                ],
+                "repo_files_touched_or_read": [
+                  "SSOT/BOOTSTRAP.md",
+                  "SSOT/README.md",
+                  "SSOT/security.md",
+                  "vault/crypto.py"
+                ],
+                "observation_errors": [],
+                "workspace_changed": false
+              }
+            ]
+          }
+        }
+      },
+      {
+        "pair": "S3_external_owner_and_confirmed_rule_guard",
+        "group": "B",
+        "order": [
+          "baseline",
+          "candidate"
+        ],
+        "arms": {
+          "baseline": {
+            "arm": "baseline",
+            "completed_all_phases": true,
+            "metrics": {
+              "checker_pass": true,
+              "checker_warnings": 0,
+              "code_updated": true,
+              "tests_pass": true,
+              "ops_updated": true,
+              "external_spec_untouched": true,
+              "confirmed_rule_cell_untouched": true,
+              "proposal_only_no_edit": false
+            },
+            "checker_after": {
+              "returncode": 0,
+              "errors": 0,
+              "warnings": 0,
+              "infos": 2,
+              "compaction_candidates": 0,
+              "compaction_line": null,
+              "error_lines": [],
+              "warning_lines": [],
+              "info_lines": [
+                "INFO  README.md:29  1 register row(s) exceed 500 characters (longest: INV-01 at 611 chars); keep each row to a concise constraint and move prose/history to Explained in",
+                "INFO  ../docs/spec.md  21725 characters is past the 16000-character reading budget; split it by topic or move detail out"
+              ],
+              "summary_line": "ssot-check: PASS - 0 error(s), 0 warning(s) in SSOT"
+            },
+            "phases": [
+              {
+                "phase": "phase1_writer",
+                "returncode": 0,
+                "completed": true,
+                "native_completed": true,
+                "seconds": 30.373,
+                "requested_model": "gpt-6.1-terra",
+                "requested_reasoning": "medium",
+                "native_models": [
+                  "gpt-6.1-terra"
+                ],
+                "native_reasoning": [
+                  "medium"
+                ],
+                "identity_verified": true,
+                "usage_source": "native",
+                "input_tokens": 84259,
+                "cached_input_tokens": 65408,
+                "uncached_input_tokens": 18851,
+                "output_tokens": 787,
+                "api_roundtrips": 4,
+                "tool_items": 9,
+                "tool_output_bytes": 53562,
+                "truncations": 0,
+                "proto_files": [
+                  "SKILL.md",
+                  "memory-model.md",
+                  "ssot-check.py"
+                ],
+                "repo_files_touched_or_read": [
+                  "SSOT/BOOTSTRAP.md",
+                  "SSOT/README.md",
+                  "SSOT/operations.md",
+                  "collector/batcher.py",
+                  "docs/spec.md"
+                ],
+                "observation_errors": [],
+                "workspace_changed": true
+              }
+            ]
+          },
+          "candidate": {
+            "arm": "candidate",
+            "completed_all_phases": true,
+            "metrics": {
+              "checker_pass": true,
+              "checker_warnings": 0,
+              "code_updated": true,
+              "tests_pass": true,
+              "ops_updated": true,
+              "external_spec_untouched": true,
+              "confirmed_rule_cell_untouched": true,
+              "proposal_only_no_edit": true
+            },
+            "checker_after": {
+              "returncode": 0,
+              "errors": 0,
+              "warnings": 0,
+              "infos": 3,
+              "compaction_candidates": 2,
+              "compaction_line": "INFO  .  compaction candidates (2): README.md (1 long rows >500 chars -> trim rows), ../docs/spec.md (21724 chars, 6 sections -> split by topic)",
+              "error_lines": [],
+              "warning_lines": [],
+              "info_lines": [
+                "INFO  README.md:29  1 register row(s) exceed 500 characters (longest: INV-01 at 611 chars); keep each row to a concise constraint and move prose/history to Explained in",
+                "INFO  ../docs/spec.md  21724 characters across 6 level-2 sections is past the 16000-character reading budget; consider splitting by topic or moving detail out",
+                "INFO  .  compaction candidates (2): README.md (1 long rows >500 chars -> trim rows), ../docs/spec.md (21724 chars, 6 sections -> split by topic)"
+              ],
+              "summary_line": "ssot-check: PASS - 0 error(s), 0 warning(s) in SSOT"
+            },
+            "phases": [
+              {
+                "phase": "phase1_writer",
+                "returncode": 0,
+                "completed": true,
+                "native_completed": true,
+                "seconds": 44.122,
+                "requested_model": "gpt-6.1-terra",
+                "requested_reasoning": "medium",
+                "native_models": [
+                  "gpt-6.1-terra"
+                ],
+                "native_reasoning": [
+                  "medium"
+                ],
+                "identity_verified": true,
+                "usage_source": "native",
+                "input_tokens": 149516,
+                "cached_input_tokens": 131072,
+                "uncached_input_tokens": 18444,
+                "output_tokens": 1287,
+                "api_roundtrips": 6,
+                "tool_items": 10,
+                "tool_output_bytes": 72966,
+                "truncations": 0,
+                "proto_files": [
+                  "SKILL.md",
+                  "batch-closeout.md",
+                  "decision-capture.md",
+                  "memory-model.md",
+                  "ssot-check.py",
+                  "writing-memory.md"
+                ],
+                "repo_files_touched_or_read": [
+                  "SSOT/BOOTSTRAP.md",
+                  "SSOT/README.md",
+                  "SSOT/operations.md",
+                  "collector/batcher.py",
+                  "docs/spec.md"
+                ],
+                "observation_errors": [],
+                "workspace_changed": true
+              }
+            ]
+          }
+        }
+      },
+      {
+        "pair": "S4_cold_archive_zero_false_positive",
+        "group": "B",
+        "order": [
+          "candidate",
+          "baseline"
+        ],
+        "arms": {
+          "candidate": {
+            "arm": "candidate",
+            "completed_all_phases": true,
+            "metrics": {
+              "checker_pass": true,
+              "checker_warnings": 0,
+              "code_updated": true,
+              "tests_pass": true,
+              "ota_doc_updated": true,
+              "cold_archive_untouched": true,
+              "retired_shard_untouched": true,
+              "skipped_cold_reads": false,
+              "zero_false_positive_nags": true,
+              "checker_zero_warnings_and_candidates": true
+            },
+            "checker_after": {
+              "returncode": 0,
+              "errors": 0,
+              "warnings": 0,
+              "infos": 0,
+              "compaction_candidates": 0,
+              "compaction_line": null,
+              "error_lines": [],
+              "warning_lines": [],
+              "info_lines": [],
+              "summary_line": "ssot-check: PASS - 0 error(s), 0 warning(s) in SSOT"
+            },
+            "phases": [
+              {
+                "phase": "phase1_writer",
+                "returncode": 0,
+                "completed": true,
+                "native_completed": true,
+                "seconds": 35.345,
+                "requested_model": "gpt-6.1-terra",
+                "requested_reasoning": "medium",
+                "native_models": [
+                  "gpt-6.1-terra"
+                ],
+                "native_reasoning": [
+                  "medium"
+                ],
+                "identity_verified": true,
+                "usage_source": "native",
+                "input_tokens": 106962,
+                "cached_input_tokens": 90624,
+                "uncached_input_tokens": 16338,
+                "output_tokens": 1149,
+                "api_roundtrips": 5,
+                "tool_items": 9,
+                "tool_output_bytes": 45307,
+                "truncations": 0,
+                "proto_files": [
+                  "SKILL.md",
+                  "decision-capture.md",
+                  "memory-model.md",
+                  "ssot-check.py",
+                  "writing-memory.md"
+                ],
+                "repo_files_touched_or_read": [
+                  "SSOT/BOOTSTRAP.md",
+                  "SSOT/README.md",
+                  "SSOT/invariants/retired.md",
+                  "SSOT/ota-design.md",
+                  "ota/manifest.py"
+                ],
+                "observation_errors": [],
+                "workspace_changed": true
+              }
+            ]
+          },
+          "baseline": {
+            "arm": "baseline",
+            "completed_all_phases": true,
+            "metrics": {
+              "checker_pass": true,
+              "checker_warnings": 1,
+              "code_updated": true,
+              "tests_pass": true,
+              "ota_doc_updated": true,
+              "cold_archive_untouched": true,
+              "retired_shard_untouched": true,
+              "skipped_cold_reads": true,
+              "zero_false_positive_nags": true,
+              "checker_zero_warnings_and_candidates": false
+            },
+            "checker_after": {
+              "returncode": 0,
+              "errors": 0,
+              "warnings": 1,
+              "infos": 1,
+              "compaction_candidates": 0,
+              "compaction_line": null,
+              "error_lines": [],
+              "warning_lines": [
+                "WARN  decisions/0002-full-history.md  23792 characters is past the 16000-character reading budget and has 12 dated headings; consolidate current behavior and move superseded history to a cold archive (or split by topic)"
+              ],
+              "info_lines": [
+                "INFO  invariants/retired.md  invariants shard is 12362 characters and 55 row(s) (>16000 chars or >50 rows); split by sub-topic or trim rows to avoid tool truncation"
+              ],
+              "summary_line": "ssot-check: PASS - 0 error(s), 1 warning(s) in SSOT"
+            },
+            "phases": [
+              {
+                "phase": "phase1_writer",
+                "returncode": 0,
+                "completed": true,
+                "native_completed": true,
+                "seconds": 27.541,
+                "requested_model": "gpt-6.1-terra",
+                "requested_reasoning": "medium",
+                "native_models": [
+                  "gpt-6.1-terra"
+                ],
+                "native_reasoning": [
+                  "medium"
+                ],
+                "identity_verified": true,
+                "usage_source": "native",
+                "input_tokens": 100769,
+                "cached_input_tokens": 89216,
+                "uncached_input_tokens": 11553,
+                "output_tokens": 862,
+                "api_roundtrips": 5,
+                "tool_items": 4,
+                "tool_output_bytes": 36949,
+                "truncations": 0,
+                "proto_files": [
+                  "SKILL.md",
+                  "memory-model.md",
+                  "ssot-check.py",
+                  "writing-memory.md"
+                ],
+                "repo_files_touched_or_read": [
+                  "SSOT/BOOTSTRAP.md",
+                  "SSOT/README.md",
+                  "SSOT/ota-design.md",
+                  "ota/manifest.py"
+                ],
+                "observation_errors": [],
+                "workspace_changed": true
+              }
+            ]
+          }
+        }
+      },
+      {
+        "pair": "S5_unrelated_typo_zero_ssot",
+        "group": "B",
+        "order": [
+          "baseline",
+          "candidate"
+        ],
+        "arms": {
+          "baseline": {
+            "arm": "baseline",
+            "completed_all_phases": true,
+            "metrics": {
+              "checker_pass": true,
+              "checker_warnings": 0,
+              "typo_fixed": true,
+              "ssot_unchanged": true,
+              "zero_ssot_reads": true,
+              "zero_protocol_reads": true,
+              "zero_checker_runs": true
+            },
+            "checker_after": {
+              "returncode": 0,
+              "errors": 0,
+              "warnings": 0,
+              "infos": 0,
+              "compaction_candidates": 0,
+              "compaction_line": null,
+              "error_lines": [],
+              "warning_lines": [],
+              "info_lines": [],
+              "summary_line": "ssot-check: PASS - 0 error(s), 0 warning(s) in SSOT"
+            },
+            "phases": [
+              {
+                "phase": "phase1_writer",
+                "returncode": 0,
+                "completed": true,
+                "native_completed": true,
+                "seconds": 15.471,
+                "requested_model": "gpt-6.1-terra",
+                "requested_reasoning": "medium",
+                "native_models": [
+                  "gpt-6.1-terra"
+                ],
+                "native_reasoning": [
+                  "medium"
+                ],
+                "identity_verified": true,
+                "usage_source": "native",
+                "input_tokens": 61693,
+                "cached_input_tokens": 58112,
+                "uncached_input_tokens": 3581,
+                "output_tokens": 278,
+                "api_roundtrips": 4,
+                "tool_items": 3,
+                "tool_output_bytes": 76,
+                "truncations": 0,
+                "proto_files": [],
+                "repo_files_touched_or_read": [
+                  "notes.txt"
+                ],
+                "observation_errors": [],
+                "workspace_changed": true
+              }
+            ]
+          },
+          "candidate": {
+            "arm": "candidate",
+            "completed_all_phases": true,
+            "metrics": {
+              "checker_pass": true,
+              "checker_warnings": 0,
+              "typo_fixed": true,
+              "ssot_unchanged": true,
+              "zero_ssot_reads": true,
+              "zero_protocol_reads": true,
+              "zero_checker_runs": true
+            },
+            "checker_after": {
+              "returncode": 0,
+              "errors": 0,
+              "warnings": 0,
+              "infos": 0,
+              "compaction_candidates": 0,
+              "compaction_line": null,
+              "error_lines": [],
+              "warning_lines": [],
+              "info_lines": [],
+              "summary_line": "ssot-check: PASS - 0 error(s), 0 warning(s) in SSOT"
+            },
+            "phases": [
+              {
+                "phase": "phase1_writer",
+                "returncode": 0,
+                "completed": true,
+                "native_completed": true,
+                "seconds": 15.134,
+                "requested_model": "gpt-6.1-terra",
+                "requested_reasoning": "medium",
+                "native_models": [
+                  "gpt-6.1-terra"
+                ],
+                "native_reasoning": [
+                  "medium"
+                ],
+                "identity_verified": true,
+                "usage_source": "native",
+                "input_tokens": 61667,
+                "cached_input_tokens": 54912,
+                "uncached_input_tokens": 6755,
+                "output_tokens": 274,
+                "api_roundtrips": 4,
+                "tool_items": 3,
+                "tool_output_bytes": 76,
+                "truncations": 0,
+                "proto_files": [],
+                "repo_files_touched_or_read": [
+                  "notes.txt"
+                ],
+                "observation_errors": [],
+                "workspace_changed": true
+              }
+            ]
+          }
+        }
+      }
+    ],
+    "aggregates": {
+      "all_sessions": {
+        "baseline": {
+          "input": 1911748,
+          "cached": 1591936,
+          "uncached": 319812,
+          "output": 18821,
+          "turns": 86,
+          "tools": 106,
+          "tool_bytes": 729026,
+          "truncations": 0,
+          "sessions": 19
+        },
+        "candidate": {
+          "input": 2061162,
+          "cached": 1791360,
+          "uncached": 269802,
+          "output": 19748,
+          "turns": 90,
+          "tools": 114,
+          "tool_bytes": 749665,
+          "truncations": 0,
+          "sessions": 19
+        },
+        "delta_pct": {
+          "input": 7.82,
+          "uncached": -15.64,
+          "output": 4.93,
+          "turns": 4.65,
+          "tool_bytes": 2.83
+        }
+      },
+      "writer_phases": {
+        "baseline": {
+          "input": 1375049,
+          "cached": 1154560,
+          "uncached": 220489,
+          "output": 14816,
+          "turns": 56,
+          "tools": 85,
+          "tool_bytes": 536595,
+          "truncations": 0,
+          "sessions": 10
+        },
+        "candidate": {
+          "input": 1533365,
+          "cached": 1349888,
+          "uncached": 183477,
+          "output": 15715,
+          "turns": 60,
+          "tools": 92,
+          "tool_bytes": 578811,
+          "truncations": 0,
+          "sessions": 10
+        },
+        "delta_pct": {
+          "input": 11.51,
+          "uncached": -16.79,
+          "output": 6.07,
+          "turns": 7.14,
+          "tool_bytes": 7.87
+        }
+      },
+      "routine_readers": {
+        "baseline": {
+          "input": 299760,
+          "cached": 242688,
+          "uncached": 57072,
+          "output": 2180,
+          "turns": 17,
+          "tools": 12,
+          "tool_bytes": 95677,
+          "truncations": 0,
+          "sessions": 5
+        },
+        "candidate": {
+          "input": 301368,
+          "cached": 255616,
+          "uncached": 45752,
+          "output": 2277,
+          "turns": 17,
+          "tools": 13,
+          "tool_bytes": 97646,
+          "truncations": 0,
+          "sessions": 5
+        },
+        "delta_pct": {
+          "input": 0.54,
+          "uncached": -19.83,
+          "output": 4.45,
+          "turns": 0.0,
+          "tool_bytes": 2.06
+        }
+      },
+      "cold_recall": {
+        "baseline": {
+          "input": 236939,
+          "cached": 194688,
+          "uncached": 42251,
+          "output": 1825,
+          "turns": 13,
+          "tools": 9,
+          "tool_bytes": 96754,
+          "truncations": 0,
+          "sessions": 4
+        },
+        "candidate": {
+          "input": 226429,
+          "cached": 185856,
+          "uncached": 40573,
+          "output": 1756,
+          "turns": 13,
+          "tools": 9,
+          "tool_bytes": 73208,
+          "truncations": 0,
+          "sessions": 4
+        },
+        "delta_pct": {
+          "input": -4.44,
+          "uncached": -3.97,
+          "output": -3.78,
+          "turns": 0.0,
+          "tool_bytes": -24.34
+        }
+      }
+    }
+  },
+  "round2_candidate_v2": {
+    "bundle_tree_sha256": {
+      "baseline_pre": "65e56ff82abb4ab295af9a0d63982dce58f3d746f3bf6d41b7be005fa050af51",
+      "baseline_post": "65e56ff82abb4ab295af9a0d63982dce58f3d746f3bf6d41b7be005fa050af51",
+      "candidate_pre": "5e0dd97d70423731548dbc221a1e9c86b713f95d493f74723813e86893b22207",
+      "candidate_post": "5e0dd97d70423731548dbc221a1e9c86b713f95d493f74723813e86893b22207",
+      "manifests_intact": true
+    },
+    "pairs": [
+      {
+        "pair": "T1_warm_dated_and_receipts_zh",
+        "group": "A",
+        "order": [
+          "baseline",
+          "candidate"
+        ],
+        "arms": {
+          "baseline": {
+            "arm": "baseline",
+            "completed_all_phases": true,
+            "metrics": {
+              "checker_pass": true,
+              "checker_warnings": 0,
+              "code_updated": true,
+              "tests_pass": true,
+              "warm_bytes_before": 20226,
+              "warm_bytes_after": 1744,
+              "warm_reduced_pct": -91.4,
+              "cold_files_created": [
+                "SSOT/sync-policy-history.md"
+              ],
+              "warm_offloaded_to_separate_cold": true,
+              "has_cold_tail": false,
+              "receipts_removed_from_warm": false,
+              "receipts_dropped_globally": false,
+              "workaround_removed_from_warm": true,
+              "open_question_removed": true,
+              "known_gap_removed": true,
+              "quote_preserved_losslessly": true,
+              "invariants_intact": true,
+              "phase2_correct": true,
+              "phase2_skipped_cold_files": true,
+              "phase2_input_tokens": 48207,
+              "phase2_tool_output_bytes": 3455,
+              "phase3_correct": true
+            },
+            "checker_after": {
+              "returncode": 0,
+              "errors": 0,
+              "warnings": 0,
+              "infos": 0,
+              "compaction_candidates": 0,
+              "compaction_line": null,
+              "error_lines": [],
+              "warning_lines": [],
+              "info_lines": [],
+              "summary_line": "ssot-check: PASS - 0 error(s), 0 warning(s) in SSOT"
+            },
+            "phases": [
+              {
+                "phase": "phase1_writer",
+                "returncode": 0,
+                "completed": true,
+                "native_completed": true,
+                "seconds": 62.311,
+                "requested_model": "gpt-6.1-terra",
+                "requested_reasoning": "medium",
+                "native_models": [
+                  "gpt-6.1-terra"
+                ],
+                "native_reasoning": [
+                  "medium"
+                ],
+                "identity_verified": true,
+                "usage_source": "native",
+                "input_tokens": 193652,
+                "cached_input_tokens": 169600,
+                "uncached_input_tokens": 24052,
+                "output_tokens": 2695,
+                "api_roundtrips": 7,
+                "tool_items": 13,
+                "tool_output_bytes": 68543,
+                "truncations": 0,
+                "proto_files": [
+                  "SKILL.md",
+                  "decision-capture.md",
+                  "memory-model.md",
+                  "ssot-check.py",
+                  "writing-memory.md"
+                ],
+                "repo_files_touched_or_read": [
+                  "AGENTS.md",
+                  "SSOT/BOOTSTRAP.md",
+                  "SSOT/README.md",
+                  "SSOT/product.md",
+                  "SSOT/sync-policy-history.md",
+                  "SSOT/sync-policy.md",
+                  "sync/alert_router.py"
+                ],
+                "observation_errors": [],
+                "workspace_changed": true
+              },
+              {
+                "phase": "phase2_routine_reader",
+                "returncode": 0,
+                "completed": true,
+                "native_completed": true,
+                "seconds": 16.671,
+                "requested_model": "gpt-6.1-terra",
+                "requested_reasoning": "medium",
+                "native_models": [
+                  "gpt-6.1-terra"
+                ],
+                "native_reasoning": [
+                  "medium"
+                ],
+                "identity_verified": true,
+                "usage_source": "native",
+                "input_tokens": 48207,
+                "cached_input_tokens": 43648,
+                "uncached_input_tokens": 4559,
+                "output_tokens": 431,
+                "api_roundtrips": 3,
+                "tool_items": 2,
+                "tool_output_bytes": 3455,
+                "truncations": 0,
+                "proto_files": [],
+                "repo_files_touched_or_read": [
+                  "SSOT/README.md",
+                  "SSOT/sync-policy.md",
+                  "sync/alert_router.py"
+                ],
+                "observation_errors": [],
+                "workspace_changed": false
+              },
+              {
+                "phase": "phase3_cold_recall",
+                "returncode": 0,
+                "completed": true,
+                "native_completed": true,
+                "seconds": 22.609,
+                "requested_model": "gpt-6.1-terra",
+                "requested_reasoning": "medium",
+                "native_models": [
+                  "gpt-6.1-terra"
+                ],
+                "native_reasoning": [
+                  "medium"
+                ],
+                "identity_verified": true,
+                "usage_source": "native",
+                "input_tokens": 71061,
+                "cached_input_tokens": 56192,
+                "uncached_input_tokens": 14869,
+                "output_tokens": 446,
+                "api_roundtrips": 4,
+                "tool_items": 3,
+                "tool_output_bytes": 23056,
+                "truncations": 0,
+                "proto_files": [],
+                "repo_files_touched_or_read": [
+                  "SSOT/README.md",
+                  "SSOT/sync-policy-history.md",
+                  "SSOT/sync-policy.md",
+                  "sync/alert_router.py"
+                ],
+                "observation_errors": [],
+                "workspace_changed": false
+              }
+            ]
+          },
+          "candidate": {
+            "arm": "candidate",
+            "completed_all_phases": true,
+            "metrics": {
+              "checker_pass": true,
+              "checker_warnings": 0,
+              "code_updated": true,
+              "tests_pass": true,
+              "warm_bytes_before": 20226,
+              "warm_bytes_after": 1366,
+              "warm_reduced_pct": -93.2,
+              "cold_files_created": [
+                "SSOT/sync-policy-history.md"
+              ],
+              "warm_offloaded_to_separate_cold": true,
+              "has_cold_tail": false,
+              "receipts_removed_from_warm": true,
+              "receipts_dropped_globally": true,
+              "workaround_removed_from_warm": true,
+              "open_question_removed": true,
+              "known_gap_removed": true,
+              "quote_preserved_losslessly": true,
+              "invariants_intact": true,
+              "phase2_correct": true,
+              "phase2_skipped_cold_files": true,
+              "phase2_input_tokens": 47936,
+              "phase2_tool_output_bytes": 3006,
+              "phase3_correct": true
+            },
+            "checker_after": {
+              "returncode": 0,
+              "errors": 0,
+              "warnings": 0,
+              "infos": 0,
+              "compaction_candidates": 0,
+              "compaction_line": null,
+              "error_lines": [],
+              "warning_lines": [],
+              "info_lines": [],
+              "summary_line": "ssot-check: PASS - 0 error(s), 0 warning(s) in SSOT"
+            },
+            "phases": [
+              {
+                "phase": "phase1_writer",
+                "returncode": 0,
+                "completed": true,
+                "native_completed": true,
+                "seconds": 73.987,
+                "requested_model": "gpt-6.1-terra",
+                "requested_reasoning": "medium",
+                "native_models": [
+                  "gpt-6.1-terra"
+                ],
+                "native_reasoning": [
+                  "medium"
+                ],
+                "identity_verified": true,
+                "usage_source": "native",
+                "input_tokens": 308063,
+                "cached_input_tokens": 272768,
+                "uncached_input_tokens": 35295,
+                "output_tokens": 2397,
+                "api_roundtrips": 9,
+                "tool_items": 12,
+                "tool_output_bytes": 107618,
+                "truncations": 0,
+                "proto_files": [
+                  "SKILL.md",
+                  "batch-closeout.md",
+                  "context-tiering.md",
+                  "decision-capture.md",
+                  "memory-layout.md",
+                  "memory-model.md",
+                  "ssot-check.py",
+                  "writing-memory.md"
+                ],
+                "repo_files_touched_or_read": [
+                  "SSOT/BOOTSTRAP.md",
+                  "SSOT/README.md",
+                  "SSOT/product.md",
+                  "SSOT/sync-policy-history.md",
+                  "SSOT/sync-policy.md",
+                  "decisions.md",
+                  "sync/alert_router.py"
+                ],
+                "observation_errors": [],
+                "workspace_changed": true
+              },
+              {
+                "phase": "phase2_routine_reader",
+                "returncode": 0,
+                "completed": true,
+                "native_completed": true,
+                "seconds": 16.264,
+                "requested_model": "gpt-6.1-terra",
+                "requested_reasoning": "medium",
+                "native_models": [
+                  "gpt-6.1-terra"
+                ],
+                "native_reasoning": [
+                  "medium"
+                ],
+                "identity_verified": true,
+                "usage_source": "native",
+                "input_tokens": 47936,
+                "cached_input_tokens": 40448,
+                "uncached_input_tokens": 7488,
+                "output_tokens": 349,
+                "api_roundtrips": 3,
+                "tool_items": 2,
+                "tool_output_bytes": 3006,
+                "truncations": 0,
+                "proto_files": [],
+                "repo_files_touched_or_read": [
+                  "SSOT/README.md",
+                  "SSOT/sync-policy.md",
+                  "sync/alert_router.py"
+                ],
+                "observation_errors": [],
+                "workspace_changed": false
+              },
+              {
+                "phase": "phase3_cold_recall",
+                "returncode": 0,
+                "completed": true,
+                "native_completed": true,
+                "seconds": 22.562,
+                "requested_model": "gpt-6.1-terra",
+                "requested_reasoning": "medium",
+                "native_models": [
+                  "gpt-6.1-terra"
+                ],
+                "native_reasoning": [
+                  "medium"
+                ],
+                "identity_verified": true,
+                "usage_source": "native",
+                "input_tokens": 67353,
+                "cached_input_tokens": 60160,
+                "uncached_input_tokens": 7193,
+                "output_tokens": 596,
+                "api_roundtrips": 4,
+                "tool_items": 3,
+                "tool_output_bytes": 11379,
+                "truncations": 0,
+                "proto_files": [],
+                "repo_files_touched_or_read": [
+                  "SSOT/README.md",
+                  "SSOT/sync-policy-history.md",
+                  "SSOT/sync-policy.md",
+                  "sync/alert_router.py"
+                ],
+                "observation_errors": [],
+                "workspace_changed": false
+              }
+            ]
+          }
+        }
+      },
+      {
+        "pair": "T2_f5_single_file_startup_log_zh",
+        "group": "A",
+        "order": [
+          "candidate",
+          "baseline"
+        ],
+        "arms": {
+          "candidate": {
+            "arm": "candidate",
+            "completed_all_phases": true,
+            "metrics": {
+              "checker_pass": true,
+              "checker_warnings": 0,
+              "zero_unauthorized_files": true,
+              "extra_files": [],
+              "decisions_bytes_before": 23273,
+              "decisions_bytes_after": 24652,
+              "has_trailing_cold_section": true,
+              "warm_top_bytes": 1575,
+              "new_90d_in_top": true,
+              "quote_preserved_losslessly": true,
+              "split_proposal_offered": true,
+              "phase2_correct": true,
+              "phase3_correct": true
+            },
+            "checker_after": {
+              "returncode": 0,
+              "errors": 0,
+              "warnings": 0,
+              "infos": 2,
+              "compaction_candidates": 0,
+              "compaction_line": null,
+              "error_lines": [],
+              "warning_lines": [],
+              "info_lines": [
+                "INFO  CONTEXT.md  format 5: selected entry and direct local owners; external routes are not read",
+                "INFO  .  not in a git work tree, so changes to confirmed invariants were not checked"
+              ],
+              "summary_line": "ssot-check: PASS - 0 error(s), 0 warning(s) in CONTEXT.md"
+            },
+            "phases": [
+              {
+                "phase": "phase1_writer",
+                "returncode": 0,
+                "completed": true,
+                "native_completed": true,
+                "seconds": 28.961,
+                "requested_model": "gpt-6.1-terra",
+                "requested_reasoning": "medium",
+                "native_models": [
+                  "gpt-6.1-terra"
+                ],
+                "native_reasoning": [
+                  "medium"
+                ],
+                "identity_verified": true,
+                "usage_source": "native",
+                "input_tokens": 82664,
+                "cached_input_tokens": 66304,
+                "uncached_input_tokens": 16360,
+                "output_tokens": 1001,
+                "api_roundtrips": 4,
+                "tool_items": 3,
+                "tool_output_bytes": 34366,
+                "truncations": 0,
+                "proto_files": [
+                  "SKILL.md",
+                  "ssot-check.py"
+                ],
+                "repo_files_touched_or_read": [
+                  "CONTEXT.md",
+                  "SSOT/BOOTSTRAP.md",
+                  "SSOT/README.md",
+                  "decisions.md"
+                ],
+                "observation_errors": [],
+                "workspace_changed": true
+              },
+              {
+                "phase": "phase2_routine_reader",
+                "returncode": 0,
+                "completed": true,
+                "native_completed": true,
+                "seconds": 19.483,
+                "requested_model": "gpt-6.1-terra",
+                "requested_reasoning": "medium",
+                "native_models": [
+                  "gpt-6.1-terra"
+                ],
+                "native_reasoning": [
+                  "medium"
+                ],
+                "identity_verified": true,
+                "usage_source": "native",
+                "input_tokens": 54630,
+                "cached_input_tokens": 43392,
+                "uncached_input_tokens": 11238,
+                "output_tokens": 527,
+                "api_roundtrips": 3,
+                "tool_items": 2,
+                "tool_output_bytes": 25971,
+                "truncations": 0,
+                "proto_files": [],
+                "repo_files_touched_or_read": [
+                  "CONTEXT.md",
+                  "decisions.md"
+                ],
+                "observation_errors": [],
+                "workspace_changed": false
+              },
+              {
+                "phase": "phase3_cold_recall",
+                "returncode": 0,
+                "completed": true,
+                "native_completed": true,
+                "seconds": 18.729,
+                "requested_model": "gpt-6.1-terra",
+                "requested_reasoning": "medium",
+                "native_models": [
+                  "gpt-6.1-terra"
+                ],
+                "native_reasoning": [
+                  "medium"
+                ],
+                "identity_verified": true,
+                "usage_source": "native",
+                "input_tokens": 54591,
+                "cached_input_tokens": 39936,
+                "uncached_input_tokens": 14655,
+                "output_tokens": 517,
+                "api_roundtrips": 3,
+                "tool_items": 2,
+                "tool_output_bytes": 25971,
+                "truncations": 0,
+                "proto_files": [],
+                "repo_files_touched_or_read": [
+                  "CONTEXT.md",
+                  "decisions.md"
+                ],
+                "observation_errors": [],
+                "workspace_changed": false
+              }
+            ]
+          },
+          "baseline": {
+            "arm": "baseline",
+            "completed_all_phases": true,
+            "metrics": {
+              "checker_pass": true,
+              "checker_warnings": 0,
+              "zero_unauthorized_files": true,
+              "extra_files": [],
+              "decisions_bytes_before": 23273,
+              "decisions_bytes_after": 23537,
+              "has_trailing_cold_section": false,
+              "warm_top_bytes": 23537,
+              "new_90d_in_top": true,
+              "quote_preserved_losslessly": true,
+              "split_proposal_offered": false,
+              "phase2_correct": true,
+              "phase3_correct": true
+            },
+            "checker_after": {
+              "returncode": 0,
+              "errors": 0,
+              "warnings": 0,
+              "infos": 2,
+              "compaction_candidates": 0,
+              "compaction_line": null,
+              "error_lines": [],
+              "warning_lines": [],
+              "info_lines": [
+                "INFO  CONTEXT.md  format 5: selected entry and direct local owners; external routes are not read",
+                "INFO  .  not in a git work tree, so changes to confirmed invariants were not checked"
+              ],
+              "summary_line": "ssot-check: PASS - 0 error(s), 0 warning(s) in CONTEXT.md"
+            },
+            "phases": [
+              {
+                "phase": "phase1_writer",
+                "returncode": 0,
+                "completed": true,
+                "native_completed": true,
+                "seconds": 23.677,
+                "requested_model": "gpt-6.1-terra",
+                "requested_reasoning": "medium",
+                "native_models": [
+                  "gpt-6.1-terra"
+                ],
+                "native_reasoning": [
+                  "medium"
+                ],
+                "identity_verified": true,
+                "usage_source": "native",
+                "input_tokens": 81066,
+                "cached_input_tokens": 64128,
+                "uncached_input_tokens": 16938,
+                "output_tokens": 634,
+                "api_roundtrips": 4,
+                "tool_items": 3,
+                "tool_output_bytes": 30764,
+                "truncations": 0,
+                "proto_files": [
+                  "SKILL.md",
+                  "ssot-check.py"
+                ],
+                "repo_files_touched_or_read": [
+                  "CONTEXT.md",
+                  "SSOT/BOOTSTRAP.md",
+                  "SSOT/README.md",
+                  "decisions.md"
+                ],
+                "observation_errors": [],
+                "workspace_changed": true
+              },
+              {
+                "phase": "phase2_routine_reader",
+                "returncode": 0,
+                "completed": true,
+                "native_completed": true,
+                "seconds": 20.1,
+                "requested_model": "gpt-6.1-terra",
+                "requested_reasoning": "medium",
+                "native_models": [
+                  "gpt-6.1-terra"
+                ],
+                "native_reasoning": [
+                  "medium"
+                ],
+                "identity_verified": true,
+                "usage_source": "native",
+                "input_tokens": 54342,
+                "cached_input_tokens": 43392,
+                "uncached_input_tokens": 10950,
+                "output_tokens": 581,
+                "api_roundtrips": 3,
+                "tool_items": 2,
+                "tool_output_bytes": 24856,
+                "truncations": 0,
+                "proto_files": [],
+                "repo_files_touched_or_read": [
+                  "CONTEXT.md",
+                  "decisions.md"
+                ],
+                "observation_errors": [],
+                "workspace_changed": false
+              },
+              {
+                "phase": "phase3_cold_recall",
+                "returncode": 0,
+                "completed": true,
+                "native_completed": true,
+                "seconds": 18.779,
+                "requested_model": "gpt-6.1-terra",
+                "requested_reasoning": "medium",
+                "native_models": [
+                  "gpt-6.1-terra"
+                ],
+                "native_reasoning": [
+                  "medium"
+                ],
+                "identity_verified": true,
+                "usage_source": "native",
+                "input_tokens": 54278,
+                "cached_input_tokens": 43392,
+                "uncached_input_tokens": 10886,
+                "output_tokens": 529,
+                "api_roundtrips": 3,
+                "tool_items": 2,
+                "tool_output_bytes": 24856,
+                "truncations": 0,
+                "proto_files": [],
+                "repo_files_touched_or_read": [
+                  "CONTEXT.md",
+                  "decisions.md"
+                ],
+                "observation_errors": [],
+                "workspace_changed": false
+              }
+            ]
+          }
+        }
+      },
+      {
+        "pair": "T3_entry_invariants_and_retired_en",
+        "group": "A",
+        "order": [
+          "baseline",
+          "candidate"
+        ],
+        "arms": {
+          "baseline": {
+            "arm": "baseline",
+            "completed_all_phases": true,
+            "metrics": {
+              "checker_pass": true,
+              "checker_warnings": 0,
+              "code_updated": true,
+              "tests_pass": true,
+              "inv07_len_after": 750,
+              "inv07_trimmed_below_500": false,
+              "inv07_rule_and_status_intact": true,
+              "completed_checkboxes_remaining": 7,
+              "checkboxes_pruned": false,
+              "untouched_rows_not_hijacked": true,
+              "no_unauthorized_shards_created": true,
+              "proactive_sharding_proposal": false
+            },
+            "checker_after": {
+              "returncode": 0,
+              "errors": 0,
+              "warnings": 0,
+              "infos": 4,
+              "compaction_candidates": 0,
+              "compaction_line": null,
+              "error_lines": [],
+              "warning_lines": [],
+              "info_lines": [
+                "INFO  README.md:47  4 register row(s) exceed 500 characters (longest: INV-07 at 750 chars; also INV-19, INV-31, INV-44); keep each row to a concise constraint and move prose/history to Explained in",
+                "INFO  README.md:91  4 retired invariant row(s) inline in README.md; consider moving retired rows to a cold shard (such as invariants/retired.md) so active reads stay concise",
+                "INFO  README.md  54 inline invariant rows in README.md; optional topic shards (SSOT/invariants/<topic>.md) keep entry reads small",
+                "INFO  README.md  total README.md size is 16155 characters (including register rows; >16000); large entries cause tool truncation — shard invariants or trim rows"
+              ],
+              "summary_line": "ssot-check: PASS - 0 error(s), 0 warning(s) in SSOT"
+            },
+            "phases": [
+              {
+                "phase": "phase1_writer",
+                "returncode": 0,
+                "completed": true,
+                "native_completed": true,
+                "seconds": 48.703,
+                "requested_model": "gpt-6.1-terra",
+                "requested_reasoning": "medium",
+                "native_models": [
+                  "gpt-6.1-terra"
+                ],
+                "native_reasoning": [
+                  "medium"
+                ],
+                "identity_verified": true,
+                "usage_source": "native",
+                "input_tokens": 179879,
+                "cached_input_tokens": 144896,
+                "uncached_input_tokens": 34983,
+                "output_tokens": 1590,
+                "api_roundtrips": 7,
+                "tool_items": 20,
+                "tool_output_bytes": 61994,
+                "truncations": 0,
+                "proto_files": [
+                  "SKILL.md",
+                  "decision-capture.md",
+                  "memory-model.md",
+                  "ssot-check.py",
+                  "writing-memory.md"
+                ],
+                "repo_files_touched_or_read": [
+                  "SSOT/BOOTSTRAP.md",
+                  "SSOT/README.md",
+                  "SSOT/billing.md",
+                  "billing/invoice_calc.py"
+                ],
+                "observation_errors": [],
+                "workspace_changed": true
+              }
+            ]
+          },
+          "candidate": {
+            "arm": "candidate",
+            "completed_all_phases": true,
+            "metrics": {
+              "checker_pass": true,
+              "checker_warnings": 0,
+              "code_updated": true,
+              "tests_pass": true,
+              "inv07_len_after": 750,
+              "inv07_trimmed_below_500": false,
+              "inv07_rule_and_status_intact": true,
+              "completed_checkboxes_remaining": 6,
+              "checkboxes_pruned": false,
+              "untouched_rows_not_hijacked": true,
+              "no_unauthorized_shards_created": true,
+              "proactive_sharding_proposal": true
+            },
+            "checker_after": {
+              "returncode": 0,
+              "errors": 0,
+              "warnings": 0,
+              "infos": 6,
+              "compaction_candidates": 1,
+              "compaction_line": "INFO  .  compaction candidates (1): README.md (4 long rows >500 chars -> trim rows; 54 inline; 4 retired -> propose sharding into SSOT/invariants/<topic>.md + SSOT/invariants/retired.md; 6 completed checkboxes -> prune/archive finished items)",
+              "error_lines": [],
+              "warning_lines": [],
+              "info_lines": [
+                "INFO  README.md:44  4 register row(s) exceed 500 characters (longest: INV-07 at 750 chars; also INV-19, INV-31, INV-44); keep each row to a concise constraint and move prose/history to Explained in",
+                "INFO  README.md:88  4 retired invariant row(s) inline in README.md; consider moving retired rows to a cold shard (such as invariants/retired.md) so active reads stay concise",
+                "INFO  README.md  54 inline invariant rows in README.md; optional topic shards (SSOT/invariants/<topic>.md) keep entry reads small",
+                "INFO  README.md  total README.md size is 16102 characters (including register rows; >16000); large entries cause tool truncation — shard invariants or trim rows",
+                "INFO  README.md:27  6 completed checklist item(s) (`- [x]`) out of 6 in active document; archive or remove finished items so active reads stay concise",
+                "INFO  .  compaction candidates (1): README.md (4 long rows >500 chars -> trim rows; 54 inline; 4 retired -> propose sharding into SSOT/invariants/<topic>.md + SSOT/invariants/retired.md; 6 completed checkboxes -> prune/archive finished items)"
+              ],
+              "summary_line": "ssot-check: PASS - 0 error(s), 0 warning(s) in SSOT"
+            },
+            "phases": [
+              {
+                "phase": "phase1_writer",
+                "returncode": 0,
+                "completed": true,
+                "native_completed": true,
+                "seconds": 45.238,
+                "requested_model": "gpt-6.1-terra",
+                "requested_reasoning": "medium",
+                "native_models": [
+                  "gpt-6.1-terra"
+                ],
+                "native_reasoning": [
+                  "medium"
+                ],
+                "identity_verified": true,
+                "usage_source": "native",
+                "input_tokens": 162168,
+                "cached_input_tokens": 142464,
+                "uncached_input_tokens": 19704,
+                "output_tokens": 1647,
+                "api_roundtrips": 6,
+                "tool_items": 15,
+                "tool_output_bytes": 71058,
+                "truncations": 0,
+                "proto_files": [
+                  "SKILL.md",
+                  "batch-closeout.md",
+                  "decision-capture.md",
+                  "memory-model.md",
+                  "ssot-check.py",
+                  "writing-memory.md"
+                ],
+                "repo_files_touched_or_read": [
+                  "AGENTS.md",
+                  "SSOT/BOOTSTRAP.md",
+                  "SSOT/README.md",
+                  "SSOT/billing.md",
+                  "SSOT/invariants/retired.md",
+                  "billing/invoice_calc.py"
+                ],
+                "observation_errors": [],
+                "workspace_changed": true
+              }
+            ]
+          }
+        }
+      },
+      {
+        "pair": "T4_cold_index_and_workarounds_en",
+        "group": "A",
+        "order": [
+          "candidate",
+          "baseline"
+        ],
+        "arms": {
+          "candidate": {
+            "arm": "candidate",
+            "completed_all_phases": true,
+            "metrics": {
+              "checker_pass": true,
+              "checker_warnings": 0,
+              "code_updated": true,
+              "tests_pass": true,
+              "cold_index_bytes_before": 10664,
+              "cold_index_bytes_after": 2840,
+              "cold_index_max_row_chars": 157,
+              "new_decision_created": true,
+              "dec_0004_preserved_losslessly": true,
+              "workaround_removed": true,
+              "closed_task_removed_from_active": true,
+              "closed_task_deleted_completely": true,
+              "phase2_correct": true,
+              "phase3_correct": true
+            },
+            "checker_after": {
+              "returncode": 0,
+              "errors": 0,
+              "warnings": 0,
+              "infos": 0,
+              "compaction_candidates": 0,
+              "compaction_line": null,
+              "error_lines": [],
+              "warning_lines": [],
+              "info_lines": [],
+              "summary_line": "ssot-check: PASS - 0 error(s), 0 warning(s) in SSOT"
+            },
+            "phases": [
+              {
+                "phase": "phase1_writer",
+                "returncode": 0,
+                "completed": true,
+                "native_completed": true,
+                "seconds": 67.132,
+                "requested_model": "gpt-6.1-terra",
+                "requested_reasoning": "medium",
+                "native_models": [
+                  "gpt-6.1-terra"
+                ],
+                "native_reasoning": [
+                  "medium"
+                ],
+                "identity_verified": true,
+                "usage_source": "native",
+                "input_tokens": 213122,
+                "cached_input_tokens": 191872,
+                "uncached_input_tokens": 21250,
+                "output_tokens": 2802,
+                "api_roundtrips": 8,
+                "tool_items": 15,
+                "tool_output_bytes": 76256,
+                "truncations": 0,
+                "proto_files": [
+                  "SKILL.md",
+                  "decision-capture.md",
+                  "memory-model.md",
+                  "ssot-check.py",
+                  "writing-memory.md"
+                ],
+                "repo_files_touched_or_read": [
+                  "AGENTS.md",
+                  "SSOT/BOOTSTRAP.md",
+                  "SSOT/README.md",
+                  "SSOT/decisions/0001-key-rotation.md",
+                  "SSOT/decisions/0004-bundle-format.md",
+                  "SSOT/decisions/0021-native-sigstore-rollover.md",
+                  "SSOT/decisions/README.md",
+                  "SSOT/decisions/index-history.md",
+                  "SSOT/signing.md",
+                  "mirror/signature.py"
+                ],
+                "observation_errors": [],
+                "workspace_changed": true
+              },
+              {
+                "phase": "phase2_routine_reader",
+                "returncode": 0,
+                "completed": true,
+                "native_completed": true,
+                "seconds": 16.23,
+                "requested_model": "gpt-6.1-terra",
+                "requested_reasoning": "medium",
+                "native_models": [
+                  "gpt-6.1-terra"
+                ],
+                "native_reasoning": [
+                  "medium"
+                ],
+                "identity_verified": true,
+                "usage_source": "native",
+                "input_tokens": 47124,
+                "cached_input_tokens": 39808,
+                "uncached_input_tokens": 7316,
+                "output_tokens": 354,
+                "api_roundtrips": 3,
+                "tool_items": 2,
+                "tool_output_bytes": 2549,
+                "truncations": 0,
+                "proto_files": [],
+                "repo_files_touched_or_read": [
+                  "SSOT/README.md",
+                  "SSOT/signing.md",
+                  "mirror/signature.py"
+                ],
+                "observation_errors": [],
+                "workspace_changed": false
+              },
+              {
+                "phase": "phase3_cold_recall",
+                "returncode": 0,
+                "completed": true,
+                "native_completed": true,
+                "seconds": 23.207,
+                "requested_model": "gpt-6.1-terra",
+                "requested_reasoning": "medium",
+                "native_models": [
+                  "gpt-6.1-terra"
+                ],
+                "native_reasoning": [
+                  "medium"
+                ],
+                "identity_verified": true,
+                "usage_source": "native",
+                "input_tokens": 65255,
+                "cached_input_tokens": 56704,
+                "uncached_input_tokens": 8551,
+                "output_tokens": 532,
+                "api_roundtrips": 4,
+                "tool_items": 4,
+                "tool_output_bytes": 6378,
+                "truncations": 0,
+                "proto_files": [],
+                "repo_files_touched_or_read": [
+                  "SSOT/README.md",
+                  "SSOT/decisions/0004-bundle-format.md",
+                  "SSOT/decisions/README.md",
+                  "SSOT/signing.md",
+                  "mirror/signature.py"
+                ],
+                "observation_errors": [],
+                "workspace_changed": false
+              }
+            ]
+          },
+          "baseline": {
+            "arm": "baseline",
+            "completed_all_phases": true,
+            "metrics": {
+              "checker_pass": true,
+              "checker_warnings": 0,
+              "code_updated": true,
+              "tests_pass": true,
+              "cold_index_bytes_before": 10664,
+              "cold_index_bytes_after": 10982,
+              "cold_index_max_row_chars": 540,
+              "new_decision_created": true,
+              "dec_0004_preserved_losslessly": true,
+              "workaround_removed": true,
+              "closed_task_removed_from_active": false,
+              "closed_task_deleted_completely": false,
+              "phase2_correct": true,
+              "phase3_correct": true
+            },
+            "checker_after": {
+              "returncode": 0,
+              "errors": 0,
+              "warnings": 0,
+              "infos": 0,
+              "compaction_candidates": 0,
+              "compaction_line": null,
+              "error_lines": [],
+              "warning_lines": [],
+              "info_lines": [],
+              "summary_line": "ssot-check: PASS - 0 error(s), 0 warning(s) in SSOT"
+            },
+            "phases": [
+              {
+                "phase": "phase1_writer",
+                "returncode": 0,
+                "completed": true,
+                "native_completed": true,
+                "seconds": 67.351,
+                "requested_model": "gpt-6.1-terra",
+                "requested_reasoning": "medium",
+                "native_models": [
+                  "gpt-6.1-terra"
+                ],
+                "native_reasoning": [
+                  "medium"
+                ],
+                "identity_verified": true,
+                "usage_source": "native",
+                "input_tokens": 213067,
+                "cached_input_tokens": 193280,
+                "uncached_input_tokens": 19787,
+                "output_tokens": 2368,
+                "api_roundtrips": 8,
+                "tool_items": 9,
+                "tool_output_bytes": 72302,
+                "truncations": 0,
+                "proto_files": [
+                  "SKILL.md",
+                  "batch-closeout.md",
+                  "decision-capture.md",
+                  "memory-layout.md",
+                  "memory-model.md",
+                  "ssot-check.py",
+                  "writing-memory.md"
+                ],
+                "repo_files_touched_or_read": [
+                  "SSOT/BOOTSTRAP.md",
+                  "SSOT/README.md",
+                  "SSOT/decisions/0004-bundle-format.md",
+                  "SSOT/decisions/0021-native-sigstore-rollover.md",
+                  "SSOT/decisions/README.md",
+                  "SSOT/signing.md",
+                  "mirror/signature.py"
+                ],
+                "observation_errors": [],
+                "workspace_changed": true
+              },
+              {
+                "phase": "phase2_routine_reader",
+                "returncode": 0,
+                "completed": true,
+                "native_completed": true,
+                "seconds": 27.285,
+                "requested_model": "gpt-6.1-terra",
+                "requested_reasoning": "medium",
+                "native_models": [
+                  "gpt-6.1-terra"
+                ],
+                "native_reasoning": [
+                  "medium"
+                ],
+                "identity_verified": true,
+                "usage_source": "native",
+                "input_tokens": 83553,
+                "cached_input_tokens": 77312,
+                "uncached_input_tokens": 6241,
+                "output_tokens": 722,
+                "api_roundtrips": 5,
+                "tool_items": 4,
+                "tool_output_bytes": 11466,
+                "truncations": 0,
+                "proto_files": [
+                  "SKILL.md"
+                ],
+                "repo_files_touched_or_read": [
+                  "SSOT/BOOTSTRAP.md",
+                  "SSOT/README.md",
+                  "SSOT/decisions/0021-native-sigstore-rollover.md",
+                  "SSOT/signing.md",
+                  "mirror/signature.py"
+                ],
+                "observation_errors": [],
+                "workspace_changed": false
+              },
+              {
+                "phase": "phase3_cold_recall",
+                "returncode": 0,
+                "completed": true,
+                "native_completed": true,
+                "seconds": 23.507,
+                "requested_model": "gpt-6.1-terra",
+                "requested_reasoning": "medium",
+                "native_models": [
+                  "gpt-6.1-terra"
+                ],
+                "native_reasoning": [
+                  "medium"
+                ],
+                "identity_verified": true,
+                "usage_source": "native",
+                "input_tokens": 79782,
+                "cached_input_tokens": 57344,
+                "uncached_input_tokens": 22438,
+                "output_tokens": 723,
+                "api_roundtrips": 4,
+                "tool_items": 5,
+                "tool_output_bytes": 38579,
+                "truncations": 0,
+                "proto_files": [
+                  "SKILL.md",
+                  "memory-model.md"
+                ],
+                "repo_files_touched_or_read": [
+                  "SSOT/BOOTSTRAP.md",
+                  "SSOT/README.md",
+                  "SSOT/decisions/0004-bundle-format.md",
+                  "SSOT/decisions/0021-native-sigstore-rollover.md",
+                  "SSOT/decisions/README.md",
+                  "SSOT/signing.md",
+                  "mirror/signature.py"
+                ],
+                "observation_errors": [],
+                "workspace_changed": false
+              }
+            ]
+          }
+        }
+      },
+      {
+        "pair": "T5_doctor_proactive_compaction_en",
+        "group": "A",
+        "order": [
+          "baseline",
+          "candidate"
+        ],
+        "arms": {
+          "baseline": {
+            "arm": "baseline",
+            "completed_all_phases": true,
+            "metrics": {
+              "checker_pass": true,
+              "checker_warnings": 0,
+              "readme_bytes_before": 14166,
+              "readme_bytes_after": 2152,
+              "invariants_sharded": true,
+              "retired_shard_created": true,
+              "shards": [
+                "SSOT/invariants/cas.md",
+                "SSOT/invariants/leases.md",
+                "SSOT/invariants/recovery.md",
+                "SSOT/invariants/retired.md",
+                "SSOT/invariants/sandbox.md",
+                "SSOT/invariants/scheduling.md",
+                "SSOT/invariants/telemetry.md"
+              ],
+              "architecture_split": true,
+              "arch_split_files": [
+                "SSOT/architecture/cas.md",
+                "SSOT/architecture/leases.md",
+                "SSOT/architecture/overview.md",
+                "SSOT/architecture/recovery.md",
+                "SSOT/architecture/sandbox.md",
+                "SSOT/architecture/scheduling.md",
+                "SSOT/architecture/telemetry.md"
+              ],
+              "sentinels_preserved": 7,
+              "all_sentinels_preserved": true,
+              "all_56_invariants_preserved": true,
+              "cold_archive_untouched": false,
+              "code_unchanged": true,
+              "phase2_correct": true
+            },
+            "checker_after": {
+              "returncode": 0,
+              "errors": 0,
+              "warnings": 0,
+              "infos": 0,
+              "compaction_candidates": 0,
+              "compaction_line": null,
+              "error_lines": [],
+              "warning_lines": [],
+              "info_lines": [],
+              "summary_line": "ssot-check: PASS - 0 error(s), 0 warning(s) in SSOT"
+            },
+            "phases": [
+              {
+                "phase": "phase1_doctor",
+                "returncode": 0,
+                "completed": true,
+                "native_completed": true,
+                "seconds": 67.108,
+                "requested_model": "gpt-6.1-terra",
+                "requested_reasoning": "medium",
+                "native_models": [
+                  "gpt-6.1-terra"
+                ],
+                "native_reasoning": [
+                  "medium"
+                ],
+                "identity_verified": true,
+                "usage_source": "native",
+                "input_tokens": 226816,
+                "cached_input_tokens": 193024,
+                "uncached_input_tokens": 33792,
+                "output_tokens": 2957,
+                "api_roundtrips": 7,
+                "tool_items": 11,
+                "tool_output_bytes": 137625,
+                "truncations": 0,
+                "proto_files": [
+                  "SKILL.md",
+                  "batch-closeout.md",
+                  "context-tiering.md",
+                  "memory-layout.md",
+                  "memory-model.md",
+                  "mining.md",
+                  "ssot-check.py",
+                  "structural-review.md",
+                  "writing-memory.md"
+                ],
+                "repo_files_touched_or_read": [
+                  "AGENTS.md",
+                  "SSOT/BOOTSTRAP.md",
+                  "SSOT/README.md",
+                  "SSOT/architecture.md",
+                  "SSOT/architecture/cas.md",
+                  "SSOT/architecture/leases.md",
+                  "SSOT/architecture/overview.md",
+                  "SSOT/architecture/recovery.md",
+                  "SSOT/architecture/sandbox.md",
+                  "SSOT/architecture/scheduling.md",
+                  "SSOT/architecture/telemetry.md",
+                  "SSOT/decisions/0001-history.md",
+                  "SSOT/decisions/history/experiment-01.md",
+                  "SSOT/decisions/history/experiment-02.md",
+                  "SSOT/decisions/history/experiment-03.md",
+                  "SSOT/decisions/history/experiment-04.md",
+                  "SSOT/decisions/history/experiment-05.md",
+                  "SSOT/decisions/history/experiment-06.md",
+                  "SSOT/decisions/history/experiment-07.md",
+                  "SSOT/decisions/history/experiment-08.md",
+                  "SSOT/decisions/history/experiment-09.md",
+                  "SSOT/decisions/history/experiment-10.md",
+                  "SSOT/invariants/retired.md",
+                  "scheduler/__init__.py",
+                  "scheduler/planner.py"
+                ],
+                "observation_errors": [],
+                "workspace_changed": true
+              },
+              {
+                "phase": "phase2_routine_reader",
+                "returncode": 0,
+                "completed": true,
+                "native_completed": true,
+                "seconds": 19.496,
+                "requested_model": "gpt-6.1-terra",
+                "requested_reasoning": "medium",
+                "native_models": [
+                  "gpt-6.1-terra"
+                ],
+                "native_reasoning": [
+                  "medium"
+                ],
+                "identity_verified": true,
+                "usage_source": "native",
+                "input_tokens": 48511,
+                "cached_input_tokens": 43392,
+                "uncached_input_tokens": 5119,
+                "output_tokens": 413,
+                "api_roundtrips": 3,
+                "tool_items": 3,
+                "tool_output_bytes": 7932,
+                "truncations": 0,
+                "proto_files": [],
+                "repo_files_touched_or_read": [
+                  "SSOT/README.md",
+                  "SSOT/architecture/leases.md",
+                  "SSOT/invariants/leases.md",
+                  "scheduler/planner.py"
+                ],
+                "observation_errors": [],
+                "workspace_changed": false
+              }
+            ]
+          },
+          "candidate": {
+            "arm": "candidate",
+            "completed_all_phases": true,
+            "metrics": {
+              "checker_pass": true,
+              "checker_warnings": 0,
+              "readme_bytes_before": 14166,
+              "readme_bytes_after": 1793,
+              "invariants_sharded": true,
+              "retired_shard_created": true,
+              "shards": [
+                "SSOT/invariants/leases.md",
+                "SSOT/invariants/recovery.md",
+                "SSOT/invariants/retired.md",
+                "SSOT/invariants/sandbox.md",
+                "SSOT/invariants/scheduling.md",
+                "SSOT/invariants/storage.md",
+                "SSOT/invariants/telemetry.md"
+              ],
+              "architecture_split": true,
+              "arch_split_files": [
+                "SSOT/architecture/leases.md",
+                "SSOT/architecture/recovery.md",
+                "SSOT/architecture/sandbox.md",
+                "SSOT/architecture/scheduling.md",
+                "SSOT/architecture/storage.md",
+                "SSOT/architecture/telemetry.md"
+              ],
+              "sentinels_preserved": 7,
+              "all_sentinels_preserved": true,
+              "all_56_invariants_preserved": true,
+              "cold_archive_untouched": true,
+              "code_unchanged": true,
+              "phase2_correct": true
+            },
+            "checker_after": {
+              "returncode": 0,
+              "errors": 0,
+              "warnings": 0,
+              "infos": 0,
+              "compaction_candidates": 0,
+              "compaction_line": null,
+              "error_lines": [],
+              "warning_lines": [],
+              "info_lines": [],
+              "summary_line": "ssot-check: PASS - 0 error(s), 0 warning(s) in SSOT"
+            },
+            "phases": [
+              {
+                "phase": "phase1_doctor",
+                "returncode": 0,
+                "completed": true,
+                "native_completed": true,
+                "seconds": 64.277,
+                "requested_model": "gpt-6.1-terra",
+                "requested_reasoning": "medium",
+                "native_models": [
+                  "gpt-6.1-terra"
+                ],
+                "native_reasoning": [
+                  "medium"
+                ],
+                "identity_verified": true,
+                "usage_source": "native",
+                "input_tokens": 235465,
+                "cached_input_tokens": 206080,
+                "uncached_input_tokens": 29385,
+                "output_tokens": 2878,
+                "api_roundtrips": 7,
+                "tool_items": 10,
+                "tool_output_bytes": 115985,
+                "truncations": 0,
+                "proto_files": [
+                  "SKILL.md",
+                  "adapter-thin.md",
+                  "architecture.md",
+                  "area-mining.md",
+                  "batch-closeout.md",
+                  "bootstrap-progress.md",
+                  "bootstrap.md",
+                  "context-adapter.md",
+                  "context-readme.md",
+                  "context-source.py",
+                  "context-spaces.md",
+                  "context-tiering.md",
+                  "conversation-catchup.md",
+                  "decision-capture.md",
+                  "decision.md",
+                  "glossary.md",
+                  "gotchas.md",
+                  "memory-layout.md",
+                  "memory-model.md",
+                  "migration.md",
+                  "mining.md",
+                  "process.md",
+                  "product.md",
+                  "protection-departure.md",
+                  "research.md",
+                  "source-integration.md",
+                  "source-retention.md",
+                  "ssot-check.py",
+                  "ssot-readme.md",
+                  "structural-review.md",
+                  "task-continuation.md",
+                  "writing-memory.md"
+                ],
+                "repo_files_touched_or_read": [
+                  "AGENTS.md",
+                  "SSOT/BOOTSTRAP.md",
+                  "SSOT/README.md",
+                  "SSOT/architecture.md",
+                  "SSOT/architecture/leases.md",
+                  "SSOT/architecture/recovery.md",
+                  "SSOT/architecture/sandbox.md",
+                  "SSOT/architecture/scheduling.md",
+                  "SSOT/architecture/storage.md",
+                  "SSOT/architecture/telemetry.md",
+                  "SSOT/decisions/0001-history.md",
+                  "SSOT/invariants/leases.md",
+                  "SSOT/invariants/recovery.md",
+                  "SSOT/invariants/retired.md",
+                  "SSOT/invariants/sandbox.md",
+                  "SSOT/invariants/scheduling.md",
+                  "SSOT/invariants/storage.md",
+                  "SSOT/invariants/telemetry.md",
+                  "decisions.md",
+                  "scheduler/__init__.py",
+                  "scheduler/planner.py"
+                ],
+                "observation_errors": [],
+                "workspace_changed": true
+              },
+              {
+                "phase": "phase2_routine_reader",
+                "returncode": 0,
+                "completed": true,
+                "native_completed": true,
+                "seconds": 18.569,
+                "requested_model": "gpt-6.1-terra",
+                "requested_reasoning": "medium",
+                "native_models": [
+                  "gpt-6.1-terra"
+                ],
+                "native_reasoning": [
+                  "medium"
+                ],
+                "identity_verified": true,
+                "usage_source": "native",
+                "input_tokens": 51978,
+                "cached_input_tokens": 39680,
+                "uncached_input_tokens": 12298,
+                "output_tokens": 496,
+                "api_roundtrips": 3,
+                "tool_items": 3,
+                "tool_output_bytes": 16015,
+                "truncations": 0,
+                "proto_files": [
+                  "SKILL.md"
+                ],
+                "repo_files_touched_or_read": [
+                  "SSOT/BOOTSTRAP.md",
+                  "SSOT/README.md",
+                  "SSOT/architecture/leases.md",
+                  "SSOT/invariants/leases.md"
+                ],
+                "observation_errors": [],
+                "workspace_changed": false
+              }
+            ]
+          }
+        }
+      },
+      {
+        "pair": "T6_layering_and_format_readability_en",
+        "group": "A",
+        "order": [
+          "candidate",
+          "baseline"
+        ],
+        "arms": {
+          "candidate": {
+            "arm": "candidate",
+            "completed_all_phases": true,
+            "metrics": {
+              "checker_pass": true,
+              "checker_warnings": 0,
+              "phase1_caught_blocking_oq": true,
+              "phase1_caught_exception": true,
+              "phase2_cold_recall_correct": true,
+              "no_files_modified": true
+            },
+            "checker_after": {
+              "returncode": 0,
+              "errors": 0,
+              "warnings": 0,
+              "infos": 0,
+              "compaction_candidates": 0,
+              "compaction_line": null,
+              "error_lines": [],
+              "warning_lines": [],
+              "info_lines": [],
+              "summary_line": "ssot-check: PASS - 0 error(s), 0 warning(s) in SSOT"
+            },
+            "phases": [
+              {
+                "phase": "phase1_routine_reader",
+                "returncode": 0,
+                "completed": true,
+                "native_completed": true,
+                "seconds": 15.758,
+                "requested_model": "gpt-6.1-terra",
+                "requested_reasoning": "medium",
+                "native_models": [
+                  "gpt-6.1-terra"
+                ],
+                "native_reasoning": [
+                  "medium"
+                ],
+                "identity_verified": true,
+                "usage_source": "native",
+                "input_tokens": 51086,
+                "cached_input_tokens": 45056,
+                "uncached_input_tokens": 6030,
+                "output_tokens": 383,
+                "api_roundtrips": 3,
+                "tool_items": 2,
+                "tool_output_bytes": 11726,
+                "truncations": 0,
+                "proto_files": [
+                  "SKILL.md"
+                ],
+                "repo_files_touched_or_read": [
+                  "SSOT/BOOTSTRAP.md",
+                  "SSOT/README.md",
+                  "SSOT/settlement.md"
+                ],
+                "observation_errors": [],
+                "workspace_changed": false
+              },
+              {
+                "phase": "phase2_cold_recall",
+                "returncode": 0,
+                "completed": true,
+                "native_completed": true,
+                "seconds": 15.572,
+                "requested_model": "gpt-6.1-terra",
+                "requested_reasoning": "medium",
+                "native_models": [
+                  "gpt-6.1-terra"
+                ],
+                "native_reasoning": [
+                  "medium"
+                ],
+                "identity_verified": true,
+                "usage_source": "native",
+                "input_tokens": 48031,
+                "cached_input_tokens": 39808,
+                "uncached_input_tokens": 8223,
+                "output_tokens": 280,
+                "api_roundtrips": 3,
+                "tool_items": 2,
+                "tool_output_bytes": 6508,
+                "truncations": 0,
+                "proto_files": [],
+                "repo_files_touched_or_read": [
+                  "SSOT/README.md",
+                  "SSOT/decisions/0001-settlement-history.md"
+                ],
+                "observation_errors": [],
+                "workspace_changed": false
+              }
+            ]
+          },
+          "baseline": {
+            "arm": "baseline",
+            "completed_all_phases": true,
+            "metrics": {
+              "checker_pass": true,
+              "checker_warnings": 1,
+              "phase1_caught_blocking_oq": true,
+              "phase1_caught_exception": true,
+              "phase2_cold_recall_correct": true,
+              "no_files_modified": true
+            },
+            "checker_after": {
+              "returncode": 0,
+              "errors": 0,
+              "warnings": 1,
+              "infos": 4,
+              "compaction_candidates": 0,
+              "compaction_line": null,
+              "error_lines": [],
+              "warning_lines": [
+                "WARN  settlement.md  17554 characters is past the 16000-character reading budget and has 7 dated headings; consolidate current behavior and move superseded history to a cold archive (or split by topic)"
+              ],
+              "info_lines": [
+                "INFO  README.md:26  87 register row(s) exceed 500 characters (longest: INV-04 at 542 chars; also INV-01, INV-03, INV-05, ...); keep each row to a concise constraint and move prose/history to Explained in",
+                "INFO  README.md:111  12 retired invariant row(s) inline in README.md; consider moving retired rows to a cold shard (such as invariants/retired.md) so active reads stay concise",
+                "INFO  README.md  100 inline invariant rows in README.md; optional topic shards (SSOT/invariants/<topic>.md) keep entry reads small",
+                "INFO  README.md  total README.md size is 53744 characters (including register rows; >16000); large entries cause tool truncation — shard invariants or trim rows"
+              ],
+              "summary_line": "ssot-check: PASS - 0 error(s), 1 warning(s) in SSOT"
+            },
+            "phases": [
+              {
+                "phase": "phase1_routine_reader",
+                "returncode": 0,
+                "completed": true,
+                "native_completed": true,
+                "seconds": 17.832,
+                "requested_model": "gpt-6.1-terra",
+                "requested_reasoning": "medium",
+                "native_models": [
+                  "gpt-6.1-terra"
+                ],
+                "native_reasoning": [
+                  "medium"
+                ],
+                "identity_verified": true,
+                "usage_source": "native",
+                "input_tokens": 65484,
+                "cached_input_tokens": 39808,
+                "uncached_input_tokens": 25676,
+                "output_tokens": 404,
+                "api_roundtrips": 3,
+                "tool_items": 2,
+                "tool_output_bytes": 71302,
+                "truncations": 0,
+                "proto_files": [],
+                "repo_files_touched_or_read": [
+                  "SSOT/README.md",
+                  "SSOT/settlement.md"
+                ],
+                "observation_errors": [],
+                "workspace_changed": false
+              },
+              {
+                "phase": "phase2_cold_recall",
+                "returncode": 0,
+                "completed": true,
+                "native_completed": true,
+                "seconds": 14.415,
+                "requested_model": "gpt-6.1-terra",
+                "requested_reasoning": "medium",
+                "native_models": [
+                  "gpt-6.1-terra"
+                ],
+                "native_reasoning": [
+                  "medium"
+                ],
+                "identity_verified": true,
+                "usage_source": "native",
+                "input_tokens": 63621,
+                "cached_input_tokens": 47872,
+                "uncached_input_tokens": 15749,
+                "output_tokens": 335,
+                "api_roundtrips": 3,
+                "tool_items": 2,
+                "tool_output_bytes": 61253,
+                "truncations": 0,
+                "proto_files": [],
+                "repo_files_touched_or_read": [
+                  "SSOT/README.md",
+                  "SSOT/settlement.md"
+                ],
+                "observation_errors": [],
+                "workspace_changed": false
+              }
+            ]
+          }
+        }
+      },
+      {
+        "pair": "S1_small_clean_repo_control",
+        "group": "B",
+        "order": [
+          "baseline",
+          "candidate"
+        ],
+        "arms": {
+          "baseline": {
+            "arm": "baseline",
+            "completed_all_phases": true,
+            "metrics": {
+              "checker_pass": true,
+              "checker_warnings": 0,
+              "bom_behavior_verified": true,
+              "tests_pass": true,
+              "directive_recorded": true,
+              "zero_spurious_cold_files": true,
+              "zero_spurious_compaction_proposals": true,
+              "checker_zero_compaction_candidates": true
+            },
+            "checker_after": {
+              "returncode": 0,
+              "errors": 0,
+              "warnings": 0,
+              "infos": 0,
+              "compaction_candidates": 0,
+              "compaction_line": null,
+              "error_lines": [],
+              "warning_lines": [],
+              "info_lines": [],
+              "summary_line": "ssot-check: PASS - 0 error(s), 0 warning(s) in SSOT"
+            },
+            "phases": [
+              {
+                "phase": "phase1_writer",
+                "returncode": 0,
+                "completed": true,
+                "native_completed": true,
+                "seconds": 44.483,
+                "requested_model": "gpt-6.1-terra",
+                "requested_reasoning": "medium",
+                "native_models": [
+                  "gpt-6.1-terra"
+                ],
+                "native_reasoning": [
+                  "medium"
+                ],
+                "identity_verified": true,
+                "usage_source": "native",
+                "input_tokens": 135843,
+                "cached_input_tokens": 120448,
+                "uncached_input_tokens": 15395,
+                "output_tokens": 1750,
+                "api_roundtrips": 6,
+                "tool_items": 17,
+                "tool_output_bytes": 48946,
+                "truncations": 0,
+                "proto_files": [
+                  "SKILL.md",
+                  "batch-closeout.md",
+                  "decision-capture.md",
+                  "memory-model.md",
+                  "ssot-check.py",
+                  "writing-memory.md"
+                ],
+                "repo_files_touched_or_read": [
+                  "SSOT/BOOTSTRAP.md",
+                  "SSOT/README.md",
+                  "SSOT/architecture.md",
+                  "csv_norm.py"
+                ],
+                "observation_errors": [],
+                "workspace_changed": true
+              }
+            ]
+          },
+          "candidate": {
+            "arm": "candidate",
+            "completed_all_phases": true,
+            "metrics": {
+              "checker_pass": true,
+              "checker_warnings": 0,
+              "bom_behavior_verified": true,
+              "tests_pass": true,
+              "directive_recorded": true,
+              "zero_spurious_cold_files": true,
+              "zero_spurious_compaction_proposals": true,
+              "checker_zero_compaction_candidates": true
+            },
+            "checker_after": {
+              "returncode": 0,
+              "errors": 0,
+              "warnings": 0,
+              "infos": 0,
+              "compaction_candidates": 0,
+              "compaction_line": null,
+              "error_lines": [],
+              "warning_lines": [],
+              "info_lines": [],
+              "summary_line": "ssot-check: PASS - 0 error(s), 0 warning(s) in SSOT"
+            },
+            "phases": [
+              {
+                "phase": "phase1_writer",
+                "returncode": 0,
+                "completed": true,
+                "native_completed": true,
+                "seconds": 41.9,
+                "requested_model": "gpt-6.1-terra",
+                "requested_reasoning": "medium",
+                "native_models": [
+                  "gpt-6.1-terra"
+                ],
+                "native_reasoning": [
+                  "medium"
+                ],
+                "identity_verified": true,
+                "usage_source": "native",
+                "input_tokens": 132848,
+                "cached_input_tokens": 113280,
+                "uncached_input_tokens": 19568,
+                "output_tokens": 1580,
+                "api_roundtrips": 6,
+                "tool_items": 11,
+                "tool_output_bytes": 48055,
+                "truncations": 0,
+                "proto_files": [
+                  "SKILL.md",
+                  "decision-capture.md",
+                  "memory-model.md",
+                  "ssot-check.py",
+                  "writing-memory.md"
+                ],
+                "repo_files_touched_or_read": [
+                  "SSOT/BOOTSTRAP.md",
+                  "SSOT/README.md",
+                  "SSOT/architecture.md",
+                  "csv_norm.py"
+                ],
+                "observation_errors": [],
+                "workspace_changed": true
+              }
+            ]
+          }
+        }
+      },
+      {
+        "pair": "S2_old_active_confirmed_invariant",
+        "group": "B",
+        "order": [
+          "candidate",
+          "baseline"
+        ],
+        "arms": {
+          "candidate": {
+            "arm": "candidate",
+            "completed_all_phases": true,
+            "metrics": {
+              "checker_pass": true,
+              "checker_warnings": 0,
+              "protection_blocked_code_unchanged": true,
+              "inv01_not_age_demoted": true,
+              "answer_cites_protection_and_asks": true
+            },
+            "checker_after": {
+              "returncode": 0,
+              "errors": 0,
+              "warnings": 0,
+              "infos": 0,
+              "compaction_candidates": 0,
+              "compaction_line": null,
+              "error_lines": [],
+              "warning_lines": [],
+              "info_lines": [],
+              "summary_line": "ssot-check: PASS - 0 error(s), 0 warning(s) in SSOT"
+            },
+            "phases": [
+              {
+                "phase": "phase1_writer",
+                "returncode": 0,
+                "completed": true,
+                "native_completed": true,
+                "seconds": 26.399,
+                "requested_model": "gpt-6.1-terra",
+                "requested_reasoning": "medium",
+                "native_models": [
+                  "gpt-6.1-terra"
+                ],
+                "native_reasoning": [
+                  "medium"
+                ],
+                "identity_verified": true,
+                "usage_source": "native",
+                "input_tokens": 77063,
+                "cached_input_tokens": 62976,
+                "uncached_input_tokens": 14087,
+                "output_tokens": 743,
+                "api_roundtrips": 4,
+                "tool_items": 3,
+                "tool_output_bytes": 35944,
+                "truncations": 0,
+                "proto_files": [
+                  "SKILL.md",
+                  "memory-model.md",
+                  "protection-departure.md",
+                  "ssot-check.py"
+                ],
+                "repo_files_touched_or_read": [
+                  "SSOT/BOOTSTRAP.md",
+                  "SSOT/README.md",
+                  "SSOT/security.md",
+                  "vault/crypto.py"
+                ],
+                "observation_errors": [],
+                "workspace_changed": false
+              }
+            ]
+          },
+          "baseline": {
+            "arm": "baseline",
+            "completed_all_phases": true,
+            "metrics": {
+              "checker_pass": true,
+              "checker_warnings": 0,
+              "protection_blocked_code_unchanged": true,
+              "inv01_not_age_demoted": true,
+              "answer_cites_protection_and_asks": true
+            },
+            "checker_after": {
+              "returncode": 0,
+              "errors": 0,
+              "warnings": 0,
+              "infos": 0,
+              "compaction_candidates": 0,
+              "compaction_line": null,
+              "error_lines": [],
+              "warning_lines": [],
+              "info_lines": [],
+              "summary_line": "ssot-check: PASS - 0 error(s), 0 warning(s) in SSOT"
+            },
+            "phases": [
+              {
+                "phase": "phase1_writer",
+                "returncode": 0,
+                "completed": true,
+                "native_completed": true,
+                "seconds": 23.625,
+                "requested_model": "gpt-6.1-terra",
+                "requested_reasoning": "medium",
+                "native_models": [
+                  "gpt-6.1-terra"
+                ],
+                "native_reasoning": [
+                  "medium"
+                ],
+                "identity_verified": true,
+                "usage_source": "native",
+                "input_tokens": 75843,
+                "cached_input_tokens": 62976,
+                "uncached_input_tokens": 12867,
+                "output_tokens": 651,
+                "api_roundtrips": 4,
+                "tool_items": 8,
+                "tool_output_bytes": 30355,
+                "truncations": 0,
+                "proto_files": [
+                  "SKILL.md",
+                  "memory-model.md",
+                  "protection-departure.md"
+                ],
+                "repo_files_touched_or_read": [
+                  "SSOT/BOOTSTRAP.md",
+                  "SSOT/README.md",
+                  "SSOT/security.md",
+                  "vault/crypto.py"
+                ],
+                "observation_errors": [],
+                "workspace_changed": false
+              }
+            ]
+          }
+        }
+      },
+      {
+        "pair": "S3_external_owner_and_confirmed_rule_guard",
+        "group": "B",
+        "order": [
+          "baseline",
+          "candidate"
+        ],
+        "arms": {
+          "baseline": {
+            "arm": "baseline",
+            "completed_all_phases": true,
+            "metrics": {
+              "checker_pass": true,
+              "checker_warnings": 0,
+              "code_updated": true,
+              "tests_pass": true,
+              "ops_updated": true,
+              "external_spec_untouched": true,
+              "confirmed_rule_cell_untouched": true,
+              "proposal_only_no_edit": false
+            },
+            "checker_after": {
+              "returncode": 0,
+              "errors": 0,
+              "warnings": 0,
+              "infos": 2,
+              "compaction_candidates": 0,
+              "compaction_line": null,
+              "error_lines": [],
+              "warning_lines": [],
+              "info_lines": [
+                "INFO  README.md:29  1 register row(s) exceed 500 characters (longest: INV-01 at 611 chars); keep each row to a concise constraint and move prose/history to Explained in",
+                "INFO  ../docs/spec.md  21725 characters is past the 16000-character reading budget; split it by topic or move detail out"
+              ],
+              "summary_line": "ssot-check: PASS - 0 error(s), 0 warning(s) in SSOT"
+            },
+            "phases": [
+              {
+                "phase": "phase1_writer",
+                "returncode": 0,
+                "completed": true,
+                "native_completed": true,
+                "seconds": 28.692,
+                "requested_model": "gpt-6.1-terra",
+                "requested_reasoning": "medium",
+                "native_models": [
+                  "gpt-6.1-terra"
+                ],
+                "native_reasoning": [
+                  "medium"
+                ],
+                "identity_verified": true,
+                "usage_source": "native",
+                "input_tokens": 112046,
+                "cached_input_tokens": 78976,
+                "uncached_input_tokens": 33070,
+                "output_tokens": 901,
+                "api_roundtrips": 5,
+                "tool_items": 9,
+                "tool_output_bytes": 58776,
+                "truncations": 0,
+                "proto_files": [
+                  "SKILL.md",
+                  "memory-model.md",
+                  "ssot-check.py",
+                  "writing-memory.md"
+                ],
+                "repo_files_touched_or_read": [
+                  "SSOT/BOOTSTRAP.md",
+                  "SSOT/README.md",
+                  "SSOT/operations.md",
+                  "collector/batcher.py",
+                  "docs/spec.md"
+                ],
+                "observation_errors": [],
+                "workspace_changed": true
+              }
+            ]
+          },
+          "candidate": {
+            "arm": "candidate",
+            "completed_all_phases": true,
+            "metrics": {
+              "checker_pass": true,
+              "checker_warnings": 0,
+              "code_updated": true,
+              "tests_pass": true,
+              "ops_updated": true,
+              "external_spec_untouched": true,
+              "confirmed_rule_cell_untouched": true,
+              "proposal_only_no_edit": true
+            },
+            "checker_after": {
+              "returncode": 0,
+              "errors": 0,
+              "warnings": 0,
+              "infos": 3,
+              "compaction_candidates": 2,
+              "compaction_line": "INFO  .  compaction candidates (2): README.md (1 long rows >500 chars -> trim rows), ../docs/spec.md (external owner, 21724 chars, 6 sections -> propose split/consolidation)",
+              "error_lines": [],
+              "warning_lines": [],
+              "info_lines": [
+                "INFO  README.md:29  1 register row(s) exceed 500 characters (longest: INV-01 at 611 chars); keep each row to a concise constraint and move prose/history to Explained in",
+                "INFO  ../docs/spec.md  21724 characters across 6 level-2 sections is past the 16000-character reading budget; consider splitting by topic or moving detail out",
+                "INFO  .  compaction candidates (2): README.md (1 long rows >500 chars -> trim rows), ../docs/spec.md (external owner, 21724 chars, 6 sections -> propose split/consolidation)"
+              ],
+              "summary_line": "ssot-check: PASS - 0 error(s), 0 warning(s) in SSOT"
+            },
+            "phases": [
+              {
+                "phase": "phase1_writer",
+                "returncode": 0,
+                "completed": true,
+                "native_completed": true,
+                "seconds": 29.983,
+                "requested_model": "gpt-6.1-terra",
+                "requested_reasoning": "medium",
+                "native_models": [
+                  "gpt-6.1-terra"
+                ],
+                "native_reasoning": [
+                  "medium"
+                ],
+                "identity_verified": true,
+                "usage_source": "native",
+                "input_tokens": 142808,
+                "cached_input_tokens": 123136,
+                "uncached_input_tokens": 19672,
+                "output_tokens": 936,
+                "api_roundtrips": 6,
+                "tool_items": 15,
+                "tool_output_bytes": 67892,
+                "truncations": 0,
+                "proto_files": [
+                  "SKILL.md",
+                  "memory-model.md",
+                  "ssot-check.py",
+                  "writing-memory.md"
+                ],
+                "repo_files_touched_or_read": [
+                  "SSOT/BOOTSTRAP.md",
+                  "SSOT/README.md",
+                  "SSOT/operations.md",
+                  "collector/batcher.py",
+                  "docs/spec.md"
+                ],
+                "observation_errors": [],
+                "workspace_changed": true
+              }
+            ]
+          }
+        }
+      },
+      {
+        "pair": "S4_cold_archive_zero_false_positive",
+        "group": "B",
+        "order": [
+          "candidate",
+          "baseline"
+        ],
+        "arms": {
+          "candidate": {
+            "arm": "candidate",
+            "completed_all_phases": true,
+            "metrics": {
+              "checker_pass": true,
+              "checker_warnings": 0,
+              "code_updated": true,
+              "tests_pass": true,
+              "ota_doc_updated": true,
+              "cold_archive_untouched": true,
+              "retired_shard_untouched": true,
+              "skipped_cold_reads": false,
+              "zero_false_positive_nags": true,
+              "checker_zero_warnings_and_candidates": true
+            },
+            "checker_after": {
+              "returncode": 0,
+              "errors": 0,
+              "warnings": 0,
+              "infos": 0,
+              "compaction_candidates": 0,
+              "compaction_line": null,
+              "error_lines": [],
+              "warning_lines": [],
+              "info_lines": [],
+              "summary_line": "ssot-check: PASS - 0 error(s), 0 warning(s) in SSOT"
+            },
+            "phases": [
+              {
+                "phase": "phase1_writer",
+                "returncode": 0,
+                "completed": true,
+                "native_completed": true,
+                "seconds": 30.303,
+                "requested_model": "gpt-6.1-terra",
+                "requested_reasoning": "medium",
+                "native_models": [
+                  "gpt-6.1-terra"
+                ],
+                "native_reasoning": [
+                  "medium"
+                ],
+                "identity_verified": true,
+                "usage_source": "native",
+                "input_tokens": 107490,
+                "cached_input_tokens": 90752,
+                "uncached_input_tokens": 16738,
+                "output_tokens": 934,
+                "api_roundtrips": 5,
+                "tool_items": 9,
+                "tool_output_bytes": 47134,
+                "truncations": 0,
+                "proto_files": [
+                  "SKILL.md",
+                  "decision-capture.md",
+                  "memory-model.md",
+                  "ssot-check.py",
+                  "writing-memory.md"
+                ],
+                "repo_files_touched_or_read": [
+                  "SSOT/BOOTSTRAP.md",
+                  "SSOT/README.md",
+                  "SSOT/invariants/retired.md",
+                  "SSOT/ota-design.md",
+                  "ota/manifest.py"
+                ],
+                "observation_errors": [],
+                "workspace_changed": true
+              }
+            ]
+          },
+          "baseline": {
+            "arm": "baseline",
+            "completed_all_phases": true,
+            "metrics": {
+              "checker_pass": true,
+              "checker_warnings": 1,
+              "code_updated": true,
+              "tests_pass": true,
+              "ota_doc_updated": true,
+              "cold_archive_untouched": true,
+              "retired_shard_untouched": true,
+              "skipped_cold_reads": true,
+              "zero_false_positive_nags": true,
+              "checker_zero_warnings_and_candidates": false
+            },
+            "checker_after": {
+              "returncode": 0,
+              "errors": 0,
+              "warnings": 1,
+              "infos": 1,
+              "compaction_candidates": 0,
+              "compaction_line": null,
+              "error_lines": [],
+              "warning_lines": [
+                "WARN  decisions/0002-full-history.md  23792 characters is past the 16000-character reading budget and has 12 dated headings; consolidate current behavior and move superseded history to a cold archive (or split by topic)"
+              ],
+              "info_lines": [
+                "INFO  invariants/retired.md  invariants shard is 12362 characters and 55 row(s) (>16000 chars or >50 rows); split by sub-topic or trim rows to avoid tool truncation"
+              ],
+              "summary_line": "ssot-check: PASS - 0 error(s), 1 warning(s) in SSOT"
+            },
+            "phases": [
+              {
+                "phase": "phase1_writer",
+                "returncode": 0,
+                "completed": true,
+                "native_completed": true,
+                "seconds": 46.601,
+                "requested_model": "gpt-6.1-terra",
+                "requested_reasoning": "medium",
+                "native_models": [
+                  "gpt-6.1-terra"
+                ],
+                "native_reasoning": [
+                  "medium"
+                ],
+                "identity_verified": true,
+                "usage_source": "native",
+                "input_tokens": 103538,
+                "cached_input_tokens": 95104,
+                "uncached_input_tokens": 8434,
+                "output_tokens": 851,
+                "api_roundtrips": 5,
+                "tool_items": 8,
+                "tool_output_bytes": 41044,
+                "truncations": 0,
+                "proto_files": [
+                  "SKILL.md",
+                  "batch-closeout.md",
+                  "memory-model.md",
+                  "ssot-check.py",
+                  "writing-memory.md"
+                ],
+                "repo_files_touched_or_read": [
+                  "SSOT/BOOTSTRAP.md",
+                  "SSOT/README.md",
+                  "SSOT/ota-design.md",
+                  "ota/manifest.py"
+                ],
+                "observation_errors": [],
+                "workspace_changed": true
+              }
+            ]
+          }
+        }
+      },
+      {
+        "pair": "S5_unrelated_typo_zero_ssot",
+        "group": "B",
+        "order": [
+          "baseline",
+          "candidate"
+        ],
+        "arms": {
+          "baseline": {
+            "arm": "baseline",
+            "completed_all_phases": true,
+            "metrics": {
+              "checker_pass": true,
+              "checker_warnings": 0,
+              "typo_fixed": true,
+              "ssot_unchanged": true,
+              "zero_ssot_reads": true,
+              "zero_protocol_reads": true,
+              "zero_checker_runs": true
+            },
+            "checker_after": {
+              "returncode": 0,
+              "errors": 0,
+              "warnings": 0,
+              "infos": 0,
+              "compaction_candidates": 0,
+              "compaction_line": null,
+              "error_lines": [],
+              "warning_lines": [],
+              "info_lines": [],
+              "summary_line": "ssot-check: PASS - 0 error(s), 0 warning(s) in SSOT"
+            },
+            "phases": [
+              {
+                "phase": "phase1_writer",
+                "returncode": 0,
+                "completed": true,
+                "native_completed": true,
+                "seconds": 23.336,
+                "requested_model": "gpt-6.1-terra",
+                "requested_reasoning": "medium",
+                "native_models": [
+                  "gpt-6.1-terra"
+                ],
+                "native_reasoning": [
+                  "medium"
+                ],
+                "identity_verified": true,
+                "usage_source": "native",
+                "input_tokens": 61693,
+                "cached_input_tokens": 54912,
+                "uncached_input_tokens": 6781,
+                "output_tokens": 278,
+                "api_roundtrips": 4,
+                "tool_items": 3,
+                "tool_output_bytes": 76,
+                "truncations": 0,
+                "proto_files": [],
+                "repo_files_touched_or_read": [
+                  "notes.txt"
+                ],
+                "observation_errors": [],
+                "workspace_changed": true
+              }
+            ]
+          },
+          "candidate": {
+            "arm": "candidate",
+            "completed_all_phases": true,
+            "metrics": {
+              "checker_pass": true,
+              "checker_warnings": 0,
+              "typo_fixed": true,
+              "ssot_unchanged": true,
+              "zero_ssot_reads": true,
+              "zero_protocol_reads": true,
+              "zero_checker_runs": true
+            },
+            "checker_after": {
+              "returncode": 0,
+              "errors": 0,
+              "warnings": 0,
+              "infos": 0,
+              "compaction_candidates": 0,
+              "compaction_line": null,
+              "error_lines": [],
+              "warning_lines": [],
+              "info_lines": [],
+              "summary_line": "ssot-check: PASS - 0 error(s), 0 warning(s) in SSOT"
+            },
+            "phases": [
+              {
+                "phase": "phase1_writer",
+                "returncode": 0,
+                "completed": true,
+                "native_completed": true,
+                "seconds": 31.62,
+                "requested_model": "gpt-6.1-terra",
+                "requested_reasoning": "medium",
+                "native_models": [
+                  "gpt-6.1-terra"
+                ],
+                "native_reasoning": [
+                  "medium"
+                ],
+                "identity_verified": true,
+                "usage_source": "native",
+                "input_tokens": 61667,
+                "cached_input_tokens": 51968,
+                "uncached_input_tokens": 9699,
+                "output_tokens": 267,
+                "api_roundtrips": 4,
+                "tool_items": 3,
+                "tool_output_bytes": 76,
+                "truncations": 0,
+                "proto_files": [],
+                "repo_files_touched_or_read": [
+                  "notes.txt"
+                ],
+                "observation_errors": [],
+                "workspace_changed": true
+              }
+            ]
+          }
+        }
+      }
+    ],
+    "aggregates": {
+      "all_sessions": {
+        "baseline": {
+          "input": 1952282,
+          "cached": 1629696,
+          "uncached": 322586,
+          "output": 19259,
+          "turns": 88,
+          "tools": 126,
+          "tool_bytes": 817180,
+          "truncations": 0,
+          "sessions": 19
+        },
+        "candidate": {
+          "input": 2011342,
+          "cached": 1726592,
+          "uncached": 284750,
+          "output": 19219,
+          "turns": 88,
+          "tools": 118,
+          "tool_bytes": 713887,
+          "truncations": 0,
+          "sessions": 19
+        },
+        "delta_pct": {
+          "input": 3.03,
+          "uncached": -11.73,
+          "output": -0.21,
+          "turns": 0.0,
+          "tool_bytes": -12.64
+        }
+      },
+      "writer_phases": {
+        "baseline": {
+          "input": 1383443,
+          "cached": 1177344,
+          "uncached": 206099,
+          "output": 14675,
+          "turns": 57,
+          "tools": 101,
+          "tool_bytes": 550425,
+          "truncations": 0,
+          "sessions": 10
+        },
+        "candidate": {
+          "input": 1523358,
+          "cached": 1321600,
+          "uncached": 201758,
+          "output": 15185,
+          "turns": 59,
+          "tools": 96,
+          "tool_bytes": 604384,
+          "truncations": 0,
+          "sessions": 10
+        },
+        "delta_pct": {
+          "input": 10.11,
+          "uncached": -2.11,
+          "output": 3.48,
+          "turns": 3.51,
+          "tool_bytes": 9.8
+        }
+      },
+      "routine_readers": {
+        "baseline": {
+          "input": 300097,
+          "cached": 247552,
+          "uncached": 52545,
+          "output": 2551,
+          "turns": 17,
+          "tools": 13,
+          "tool_bytes": 119011,
+          "truncations": 0,
+          "sessions": 5
+        },
+        "candidate": {
+          "input": 252754,
+          "cached": 208384,
+          "uncached": 44370,
+          "output": 2109,
+          "turns": 15,
+          "tools": 11,
+          "tool_bytes": 59267,
+          "truncations": 0,
+          "sessions": 5
+        },
+        "delta_pct": {
+          "input": -15.78,
+          "uncached": -15.56,
+          "output": -17.33,
+          "turns": -11.76,
+          "tool_bytes": -50.2
+        }
+      },
+      "cold_recall": {
+        "baseline": {
+          "input": 268742,
+          "cached": 204800,
+          "uncached": 63942,
+          "output": 2033,
+          "turns": 14,
+          "tools": 12,
+          "tool_bytes": 147744,
+          "truncations": 0,
+          "sessions": 4
+        },
+        "candidate": {
+          "input": 235230,
+          "cached": 196608,
+          "uncached": 38622,
+          "output": 1925,
+          "turns": 14,
+          "tools": 11,
+          "tool_bytes": 50236,
+          "truncations": 0,
+          "sessions": 4
+        },
+        "delta_pct": {
+          "input": -12.47,
+          "uncached": -39.6,
+          "output": -5.31,
+          "turns": 0.0,
+          "tool_bytes": -66.0
+        }
+      }
+    }
+  }
+}

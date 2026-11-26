@@ -9,7 +9,7 @@
 
 ## 已完成
 
-<!-- 已完成的区域/来源单元及范围，附权威文档产物与反引号行内路径（如 `.ssot-work/checklist.md`；不要写成指向已忽略 `.ssot-work/` 的 Markdown 链接）。 -->
+<!-- 每个已完成的区域/来源单元只占简洁一行（范围、权威文档产物与反引号行内路径如 `.ssot-work/checklist.md`；不要写成指向已忽略 `.ssot-work/` 的 Markdown 链接）。 -->
 
 ## 下一步
 

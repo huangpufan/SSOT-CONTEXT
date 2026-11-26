@@ -2585,6 +2585,560 @@ class CheckerTest(unittest.TestCase):
         self.write("invariants/retired.md", retired_shard + "| INV-01 | product promise | Dup | [Retries](../architecture.md#failure-and-recovery) | retired | user, 2026-11-26 |\n")
         self.assert_error("duplicate invariant ID INV-01")
 
+    def test_cold_archive_and_retired_shard_exemptions_and_64k_truncation(self):
+        # 1. Legitimate cold archives (>16k chars, >=5 dated headings) must emit zero warm-bloat WARN/INFO
+        #    and zero compaction candidates, while still catching broken links inside cold archives.
+        self.valid()
+        big_history = "# Archived History\n\n" + "\n\n".join(
+            f"## 2026-08-{d:02d} Revision {d}\n\n" + ("Preserved superseded rationale and verbatim quote. " * 70)
+            for d in range(1, 8)
+        ) + "\n"
+        self.write("decisions/0002-ui-history.md", big_history)
+        self.write("research/bench-notes.md", big_history)
+        self.write("archive/2025.md", big_history)
+        self.write("auth-history.md", big_history)
+        self.write("custom-cold.md", "---\nssot_tier: cold\n---\n\n" + big_history)
+        out = self.assert_clean()
+        self.assertNotIn("WARN", out)
+        self.assertNotIn("reading budget", out)
+        self.assertNotIn("compaction candidates", out)
+        # Broken link inside a cold archive must still fail.
+        self.write("decisions/0002-ui-history.md", big_history + "\nSee [Broken](missing.md).\n")
+        self.assert_error("broken link: missing.md")
+        self.write("decisions/0002-ui-history.md", big_history)
+
+        # 2. Cold retired shards (>50 rows, >16k chars, >500-char rows) stay exempt from active shard nags,
+        #    and emit pure truncation INFO only past 64,000 chars.
+        long_rule = "Preserved historical invariant wording for archived reference " * 9
+        retired_rows = "\n".join(
+            f"| RET-{n:03d} | product promise | {long_rule} | [R](../architecture.md#failure-and-recovery) | retired | user, 2026-01-01 |"
+            for n in range(1, 56)
+        ) + "\n"
+        self.sharded_setup(
+            readme_invariants="- [Shipping](invariants/shipping.md)\n- [Webhooks](invariants/webhooks.md)\n- [Retired](invariants/retired.md)\n- [Old custom](invariants/old-custom.md)\n",
+        )
+        self.write("invariants/retired.md",
+                   "# Retired Invariants\n\n| ID | Kind | Rule | Explained in | Status | Source |\n|---|---|---|---|---|---|\n" + retired_rows)
+        self.write("invariants/old-custom.md",
+                   "---\nssot_tier: cold\n---\n\n# Old Custom\n\n| ID | Kind | Rule | Explained in | Status | Source |\n|---|---|---|---|---|---|\n"
+                   + retired_rows.replace("RET-", "OLD-"))
+        out_cold_shards = self.assert_clean()
+        self.assertNotIn("WARN", out_cold_shards)
+        self.assertNotIn("exceed 500 characters", out_cold_shards)
+        self.assertNotIn("retired invariant row(s) inline", out_cold_shards)
+        self.assertNotIn("invariants shard is", out_cold_shards)
+        self.assertNotIn("compaction candidates", out_cold_shards)
+        # Pushing a cold retired shard past 64,000 chars triggers pure truncation INFO.
+        huge_retired = "\n".join(
+            f"| RET-{n:03d} | product promise | {long_rule} | [R](../architecture.md#failure-and-recovery) | retired | user, 2026-01-01 |"
+            for n in range(1, 130)
+        ) + "\n"
+        self.write("invariants/retired.md",
+                   "# Retired Invariants\n\n| ID | Kind | Rule | Explained in | Status | Source |\n|---|---|---|---|---|---|\n" + huge_retired)
+        out_huge = self.assert_clean()
+        self.assertNotIn("WARN", out_huge)
+        self.assertIn("cold retired shard is", out_huge)
+        self.assertIn("compaction candidates (1): invariants/retired.md", out_huge)
+
+        # 3. Entry README with 3/3 retired rows is NOT misclassified as a cold shard.
+        import shutil
+        shutil.rmtree(os.path.join(self.ssot, "invariants"))
+        self.valid()
+        only_retired = "\n".join(
+            f"| INV-{n:02d} | product promise | Old rule {n} | [R](architecture.md#failure-and-recovery) | retired | user, 2026-06-0{n} |"
+            for n in range(1, 4)
+        )
+        self.invariant_row(only_retired)
+        out_entry_ret = self.assert_clean()
+        self.assertIn("3 retired invariant row(s) inline in README.md", out_entry_ret)
+
+    def test_intra_file_cold_tail_exemptions_inverted_layering_and_32k_offload(self):
+        # 1. Valid trailing cold tails (EN heading, ZH heading with ASCII/full-width parens, HTML marker)
+        #    keep warm_chars/dated/checkboxes above the boundary clean while checking links below.
+        cold_body = "\n\n".join(
+            f"### 2026-09-{d:02d} Superseded trial {d}\n\n" + ("Superseded log detail preserved for traceability. " * 70)
+            + "\n\n- [x] Old done task A\n- [x] Old done task B\n"
+            for d in range(1, 7)
+        )
+        for label, boundary in (
+            ("en-heading", "## History (cold)"),
+            ("en-archive", "## archive (cold)"),
+            ("zh-full", "## 历史记录（冷读）"),
+            ("zh-ascii", "## 历史归档(冷读)"),
+            ("html-marker", "<!-- ssot:cold -->\n\n## Superseded Experiments"),
+        ):
+            with self.subTest(boundary=label):
+                self.valid()
+                doc_text = "# Policy\n\n## Current behavior\n\nActive governing rule stays concise.\n\n" + boundary + "\n\n" + cold_body + "\n"
+                self.write("policy.md", doc_text)
+                out = self.assert_clean()
+                self.assertNotIn("WARN", out)
+                self.assertNotIn("reading budget", out)
+                self.assertNotIn("completed checklist", out)
+                self.assertNotIn("compaction candidates", out)
+        # Broken link inside the cold tail MUST still ERROR.
+        self.valid()
+        self.write("policy.md", "# Policy\n\n## Current\n\nShort.\n\n## History (cold)\n\nSee [Missing](nope.md).\n")
+        self.assert_error("broken link: nope.md")
+        # <!-- ssot:cold --> inside a fenced code block or inline code span must NOT exempt bloated warm text below it.
+        self.valid()
+        self.write("policy.md",
+                   "# Policy\n\n```md\n<!-- ssot:cold -->\n```\n\nAlso `<!-- ssot:cold -->` inline.\n\n"
+                   + ("Warm active prose that should still count toward budget. " * 320) + "\n")
+        out_fenced = self.assert_clean()
+        self.assertIn("WARN  policy.md", out_fenced)
+        self.assertIn("16000-character reading budget", out_fenced)
+
+        # 2. Inverted layering (>1,000 chars of non-cold ## sections below cold boundary) triggers INFO.
+        for label, body in (
+            ("heading", "# Policy\n\n## History (cold)\n\n### 2026-01-01 Old\n\nOld text.\n\n## Current behavior\n\n" + ("Active rule detail. " * 70) + "\n"),
+            ("marker", "# Policy\n\n<!-- ssot:cold -->\n\n## Old trials\n\nOld text.\n\n## Current behavior\n\n" + ("Active rule detail. " * 70) + "\n"),
+        ):
+            with self.subTest(inverted=label):
+                self.valid()
+                self.write("policy.md", body)
+                out_inv = self.assert_clean()
+                self.assertNotIn("WARN", out_inv)
+                self.assertIn("cold section starts above", out_inv)
+                self.assertIn("compaction candidates (1): policy.md", out_inv)
+
+        # 3. Valid cold tail whose total file size exceeds 32,000 chars emits offload INFO.
+        self.valid()
+        huge_tail = "# Policy\n\n## Current\n\nShort active spec.\n\n## History (cold)\n\n" + ("Archived verbatim quote and trial context. " * 800) + "\n"
+        self.write("policy.md", huge_tail)
+        out_32k = self.assert_clean()
+        self.assertNotIn("WARN", out_32k)
+        self.assertIn("including its cold tail (>32000)", out_32k)
+        self.assertIn("compaction candidates (1): policy.md", out_32k)
+
+    def test_html_comments_stripped_from_budget_and_entry_section_bloat(self):
+        # 1. HTML comments (such as <!-- ssot-source:... -->) do not inflate warm budget; fenced code still counts.
+        self.valid()
+        comments = "\n".join(f"<!-- ssot-source:thread-{n:03d} sha256=deadbeef -->" for n in range(150))
+        self.write("architecture.md", ARCHITECTURE + "\n" + comments + "\n" + ("Warm prose. " * 900) + "\n")
+        out_comments = self.assert_clean()
+        self.assertNotIn("WARN", out_comments)
+        self.assertNotIn("reading budget", out_comments)
+        self.write("architecture.md", ARCHITECTURE + "\n```python\n" + ("x = 'code dump inside fence'\n" * 650) + "```\n")
+        out_fence_dump = self.assert_clean()
+        self.assertIn("WARN  architecture.md", out_fence_dump)
+        self.assertIn("16000-character reading budget", out_fence_dump)
+
+        # 2. Entry prose >8k with >=5 dated headings emits dated-consolidation WARN and names largest non-Invariants section.
+        self.valid()
+        dated_entry = README + "\n\n## Activity log\n\n" + "\n\n".join(
+            f"### 2026-10-{d:02d} Update {d}\n\n" + ("Chronological log pasted into entry README. " * 40)
+            for d in range(1, 7)
+        ) + "\n"
+        self.write("README.md", dated_entry)
+        out_dated_entry = self.assert_clean()
+        self.assertIn("WARN  README.md", out_dated_entry)
+        self.assertIn("and has 6 dated headings; largest section: ## Activity log", out_dated_entry)
+        self.assertIn("entry section '## Activity log' is", out_dated_entry)
+
+        # 3. Entry <=8k total with a single >4k non-core section emits INFO; >4k core section (## Task routes) stays quiet.
+        self.valid()
+        self.write("README.md", README.replace(
+            "None yet.",
+            "Open item detail requiring follow-up decision. " * 95,
+        ))
+        out_oq = self.assert_clean()
+        self.assertNotIn("WARN", out_oq)
+        self.assertIn("entry section '## Open questions' is", out_oq)
+        self.assertIn("compaction candidates (1): README.md", out_oq)
+        self.valid()
+        self.write("README.md", README.replace(
+            "## Map",
+            "## Task routes\n\n" + ("Route signal detail pointing to architecture owner. " * 85) + "\n\n## Map",
+        ))
+        out_routes = self.assert_clean()
+        self.assertNotIn("WARN", out_routes)
+        self.assertNotIn("entry section", out_routes)
+        self.assertNotIn("compaction candidates", out_routes)
+
+    def test_early_chronological_warm_doc_mega_doc_h2_and_format5_shard_hint(self):
+        # 1. Warm doc 8k..16k with >=5 dated headings emits non-blocking INFO; <8k stays quiet.
+        self.valid()
+        mid_dated = "# Sync Engine\n\n" + "\n\n".join(
+            f"## 2026-11-{d:02d} Decision {d}\n\n" + ("Chronological update piling up in warm owner. " * 38)
+            for d in range(1, 7)
+        ) + "\n"
+        self.assertGreater(len(mid_dated), 8000)
+        self.assertLess(len(mid_dated), 16000)
+        self.write("sync.md", mid_dated)
+        out_mid = self.assert_clean()
+        self.assertNotIn("WARN", out_mid)
+        self.assertIn("INFO  sync.md", out_mid)
+        self.assertIn("with 6 dated headings; consolidate current state", out_mid)
+        self.assertIn("compaction candidates (1): sync.md", out_mid)
+
+        # 2. Multi-concern mega-doc (>16k chars, >=6 H2 sections, <5 dated headings) notes level-2 sections.
+        self.valid()
+        os.remove(os.path.join(self.ssot, "sync.md"))
+        mega_doc = "# System Architecture\n\n## Failure and recovery\n\nRetries are idempotent.\n\n" + "\n\n".join(
+            f"## Subsystem {n}\n\n" + ("Independent concern architecture specification and state ownership. " * 45)
+            for n in range(1, 7)
+        ) + "\n"
+        self.write("architecture.md", mega_doc)
+        out_mega = self.assert_clean()
+        self.assertIn("WARN  architecture.md", out_mega)
+        self.assertIn("across 7 level-2 sections is past the 16000-character reading budget; consider splitting by topic", out_mega)
+
+        # 3. Format-5 entry with >=50 inline rows suggests entry-relative invariants/<topic>.md, not SSOT/invariants/.
+        space = os.path.join(self.repo, "f5space")
+        os.makedirs(space)
+        with open(os.path.join(space, "rules.md"), "w", encoding="utf-8") as handle:
+            handle.write("# Rules\n\n## Core\n\nExplained.\n")
+        f5_rows = "\n".join(
+            f"| F5-{n:03d} | process rule | Concise space rule {n:03d} | [Core](rules.md#core) | confirmed | owner, 2026-05-02 |"
+            for n in range(1, 53)
+        )
+        entry = os.path.join(space, "CONTEXT.md")
+        with open(entry, "w", encoding="utf-8") as handle:
+            handle.write("---\nssot_format: 5\nlanguage: en\n---\n\n# Space\n\n## Invariants\n\n"
+                         "| ID | Kind | Rule | Explained in | Status | Source |\n|---|---|---|---|---|---|\n" + f5_rows + "\n")
+        code, f5_out = self.run_checker(entry)
+        self.assertEqual(code, 0, f5_out)
+        self.assertIn("invariants/<topic>.md (relative to entry dir)", f5_out)
+        self.assertNotIn("SSOT/invariants/<topic>.md", f5_out)
+
+    def test_cold_index_bloat_and_completed_checkboxes(self):
+        # 1. Clean concise decisions/README.md stays quiet; >8k emits INFO; >16k SSOT-owned emits WARN;
+        #    >=3 rows >250 chars or 1 row >350 chars emits rolled-up INFO.
+        self.valid()
+        self.write("decisions/0001-a.md", "# 0001\n\nAccepted.\n")
+        clean_idx = "# Decisions\n\n| ID | Date | Status | Topic | File |\n|---|---|---|---|---|\n" \
+                    "| 0001 | 2026-05-02 | accepted | Token bucket | [0001](0001-a.md) |\n"
+        self.write("decisions/README.md", clean_idx)
+        out_clean = self.assert_clean()
+        self.assertNotIn("WARN", out_clean)
+        self.assertNotIn("cold index", out_clean)
+        self.assertNotIn("compaction candidates", out_clean)
+
+        # Single row >350 chars triggers verbose-row INFO without size WARN.
+        verbose_idx = clean_idx + "| 0002 | 2026-05-03 | accepted | " + ("Full archive summary replayed inside index cell. " * 8) + " | [0001](0001-a.md) |\n"
+        self.write("decisions/README.md", verbose_idx)
+        out_row = self.assert_clean()
+        self.assertNotIn("WARN", out_row)
+        self.assertIn("cold-index table row(s) exceed 250 characters", out_row)
+        self.assertIn("compaction candidates (1): decisions/README.md", out_row)
+
+        # >=3 rows in (250, 350] chars also triggers rolled-up INFO.
+        soft_row = "| 0003 | 2026-05-04 | accepted | " + ("Verbose summary cell text. " * 9) + " | [0001](0001-a.md) |\n"
+        self.write("decisions/README.md", clean_idx + soft_row * 3)
+        out_soft = self.assert_clean()
+        self.assertIn("3 cold-index table row(s) exceed 250 characters", out_soft)
+
+        # Size >8k -> INFO; >16k SSOT-owned -> WARN.
+        self.write("decisions/README.md", clean_idx + ("| 0004 | 2026-05-05 | accepted | Short topic | [0001](0001-a.md) |\n" * 130))
+        out_8k = self.assert_clean()
+        self.assertNotIn("WARN", out_8k)
+        self.assertIn("INFO  decisions/README.md  cold index is", out_8k)
+        self.write("decisions/README.md", clean_idx + ("| 0004 | 2026-05-05 | accepted | Short topic | [0001](0001-a.md) |\n" * 260))
+        out_16k = self.assert_clean()
+        self.assertIn("WARN  decisions/README.md  cold index is", out_16k)
+
+        # 2. Completed checkboxes: >=5 in task/workaround/entry triggers INFO; <5 stays quiet;
+        #    active warm doc requires >=8 AND >=50%; fenced code checkboxes ignored.
+        self.valid()
+        os.remove(os.path.join(self.ssot, "decisions", "README.md"))
+        self.write("workarounds.md", "# Workarounds\n\n" + "\n".join(f"- [x] Fixed shim {n}" for n in range(1, 5)) + "\n")
+        self.assertNotIn("completed checklist", self.assert_clean())
+        self.write("workarounds.md", "# Workarounds\n\n" + "\n".join(f"- [x] Fixed shim {n}" for n in range(1, 6)) + "\n")
+        out_wa = self.assert_clean()
+        self.assertIn("5 completed checklist item(s) (`- [x]`) out of 5", out_wa)
+        self.assertNotIn("WARN", out_wa)
+        # Warm doc: 8 checked out of 20 (<50%) stays quiet; 8 checked out of 12 (>=50%) triggers INFO.
+        os.remove(os.path.join(self.ssot, "workarounds.md"))
+        self.valid()
+        self.write("architecture.md", ARCHITECTURE + "\n"
+                   + "\n".join(f"- [x] Done {n}" for n in range(8)) + "\n"
+                   + "\n".join(f"- [ ] Open {n}" for n in range(12)) + "\n")
+        self.assertNotIn("completed checklist", self.assert_clean())
+        self.write("architecture.md", ARCHITECTURE + "\n"
+                   + "\n".join(f"- [x] Done {n}" for n in range(8)) + "\n"
+                   + "\n".join(f"- [ ] Open {n}" for n in range(4)) + "\n")
+        self.assertIn("8 completed checklist item(s) (`- [x]`) out of 12", self.assert_clean())
+        # Fenced checkboxes do not count.
+        self.valid()
+        self.write("tasks.md", "# Tasks\n\n```md\n" + "\n".join(f"- [x] Example {n}" for n in range(10)) + "\n```\n")
+        self.assertNotIn("completed checklist", self.assert_clean())
+
+    def test_compaction_rollup_capping_clean_zero_noise_and_owners_scoping(self):
+        # 1. Clean repo emits zero compaction rollup lines.
+        self.valid()
+        self.assertNotIn("compaction candidates", self.assert_clean())
+
+        # 2. Six distinct bloated files emit ONE capped rollup line right before the verdict.
+        for n in range(1, 7):
+            self.write(f"tasks-{n}.md", f"# Tasks {n}\n\n" + "\n".join(f"- [x] Finished item {i}" for i in range(6)) + "\n")
+        out_cap = self.assert_clean()
+        self.assertEqual(out_cap.count("compaction candidates"), 1, out_cap)
+        self.assertIn("INFO  .  compaction candidates (6):", out_cap)
+        self.assertIn(", and 1 more", out_cap)
+        lines = [ln for ln in out_cap.splitlines() if ln.strip()]
+        self.assertIn("compaction candidates (6):", lines[-2])
+        self.assertTrue(lines[-1].startswith("ssot-check: PASS"))
+
+        # 3. --owners only checks selected files and never opens unselected bloated files.
+        unselected = os.path.join(self.ssot, "tasks-2.md")
+        observer = textwrap.dedent("""
+            import runpy, sys
+            watched, checker, *args = sys.argv[1:]
+            def audit(event, arguments):
+                if event == "open" and arguments[0] == watched:
+                    print("OPENED UNSELECTED", file=sys.stderr)
+            sys.addaudithook(audit)
+            sys.argv = [checker, *args]
+            runpy.run_path(checker, run_name="__main__")
+        """)
+        self.write("README.md", README + "\n- [Tasks 1](tasks-1.md)\n- [Tasks 2](tasks-2.md)\n")
+        proc = subprocess.run(
+            [sys.executable, "-c", observer, unselected, CHECKER,
+             os.path.join(self.ssot, "README.md"), "--owners", "tasks-1.md"],
+            cwd=self.repo, text=True, capture_output=True, check=False,
+        )
+        self.assertEqual(proc.returncode, 0, proc.stdout + proc.stderr)
+        self.assertNotIn("OPENED UNSELECTED", proc.stderr)
+        self.assertIn("compaction candidates (1): tasks-1.md", proc.stdout)
+        self.assertNotIn("tasks-2.md", proc.stdout)
+
+    def test_verifier_regressions_cold_shards_zh_core_research_markers_and_cold_paths(self):
+        import shutil
+        # 1. Active confirmed row inside invariants/retired.md warns and does not get cold exemptions;
+        #    active feature shard invariants/chat-history.md with 55 confirmed rows is not exempted.
+        long_rule = "Preserve exact ordering and auditability across retries " * 9
+        self.sharded_setup(
+            readme_invariants="- [Shipping](invariants/shipping.md)\n- [Webhooks](invariants/webhooks.md)\n"
+                              "- [Retired](invariants/retired.md)\n- [Chat history](invariants/chat-history.md)\n",
+        )
+        self.write("invariants/retired.md", textwrap.dedent(f"""\
+            # Retired Invariants
+
+            | ID | Kind | Rule | Explained in | Status | Source |
+            |---|---|---|---|---|---|
+            | RET-01 | product promise | {long_rule} | [Retries](../architecture.md#failure-and-recovery) | confirmed | user, 2026-05-02 |
+            """))
+        chat_rows = "\n".join(
+            f"| CHT-{n:03d} | product promise | Preserve chat history message {n:03d} | [Retries](../architecture.md#failure-and-recovery) | confirmed | user, 2026-05-02 |"
+            for n in range(1, 56)
+        )
+        self.write("invariants/chat-history.md",
+                   "# Chat History Invariants\n\n| ID | Kind | Rule | Explained in | Status | Source |\n|---|---|---|---|---|---|\n" + chat_rows + "\n")
+        out_shards = self.assert_clean()
+        self.assertIn("WARN  invariants/retired.md:5  1 active (confirmed/candidate) invariant row(s) in cold shard retired.md", out_shards)
+        self.assertIn("INFO  invariants/retired.md:5  1 register row(s) exceed 500 characters", out_shards)
+        self.assertIn("INFO  invariants/chat-history.md  invariants shard is", out_shards)
+        self.assertNotIn("WARN  invariants/chat-history.md", out_shards)
+
+        # 2. Shipped ZH core headings (## 文件地图 in F4, ## 权威文档与任务路由 in F5) stay quiet at 4.5k chars (<8k total).
+        shutil.rmtree(os.path.join(self.ssot, "invariants"))
+        self.valid()
+        zh_f4 = textwrap.dedent("""\
+            ---
+            ssot_format: 4
+            language: zh-CN
+            ---
+
+            # 示例
+
+            ## 文件地图
+
+            - [架构](architecture.md)：""" + ("说明核心文档路径与职责。" * 380) + """
+
+            ## 不变量
+
+            | ID | 类型 | 规则 | 解释位置 | 状态 | 来源 |
+            |---|---|---|---|---|---|
+            | INV-01 | 产品承诺 | 重试不重复扣款 | [架构](architecture.md#failure-and-recovery) | confirmed | 用户，2026-05-02 |
+            """)
+        self.write("README.md", zh_f4)
+        out_zh_f4 = self.assert_clean()
+        self.assertNotIn("WARN", out_zh_f4)
+        self.assertNotIn("entry section", out_zh_f4)
+        self.assertNotIn("compaction candidates", out_zh_f4)
+
+        space = os.path.join(self.repo, "f5zh")
+        os.makedirs(space)
+        with open(os.path.join(space, "guide.md"), "w", encoding="utf-8") as handle:
+            handle.write("# 指南\n")
+        zh_f5_entry = os.path.join(space, "CONTEXT.md")
+        with open(zh_f5_entry, "w", encoding="utf-8") as handle:
+            handle.write("---\nssot_format: 5\nlanguage: zh-CN\n---\n\n# 空间\n\n## 权威文档与任务路由\n\n- [指南](guide.md)："
+                         + ("说明现行规则文档位置与适用范围。" * 270) + "\n\n## 不变量\n\n暂无。\n")
+        code, out_zh_f5 = self.run_checker(zh_f5_entry)
+        self.assertEqual(code, 0, out_zh_f5)
+        self.assertNotIn("WARN", out_zh_f5)
+        self.assertNotIn("entry section", out_zh_f5)
+        self.assertNotIn("compaction candidates", out_zh_f5)
+
+        # 3. Active research/ (- Status: active / - 状态：active), ssot_tier: warm opt-out, and Format-5 bare history.md/archive.md.
+        self.valid()
+        big_body = ("Detailed active research evidence and findings. " * 380) + "\n"
+        self.write("research/active-en.md", "# Study EN\n\n- Date: 2026-11-26\n- Status: active <!-- WIP -->\n\n" + big_body)
+        self.write("research/active-zh.md", "# Study ZH\n\n- 日期：2026-11-26\n- 状态：active\n\n" + big_body)
+        self.write("research/concluded.md", "# Done Study\n\n- Status: concluded — see 0004\n\n" + big_body)
+        self.write("research/warm-override.md", "---\nssot_tier: warm\n---\n\n# Warm Override\n\n" + big_body)
+        self.write("history.md", "---\nssot_tier: warm\n---\n\n# Active History\n\n" + big_body)
+        out_res = self.assert_clean()
+        self.assertIn("WARN  research/active-en.md", out_res)
+        self.assertIn("WARN  research/active-zh.md", out_res)
+        self.assertIn("WARN  research/warm-override.md", out_res)
+        self.assertIn("WARN  history.md", out_res)
+        self.assertNotIn("concluded.md", out_res)
+
+        f5_hist = os.path.join(self.repo, "f5hist")
+        os.makedirs(f5_hist)
+        with open(os.path.join(f5_hist, "history.md"), "w", encoding="utf-8") as handle:
+            handle.write("# World History\n\n" + big_body)
+        with open(os.path.join(f5_hist, "archive.md"), "w", encoding="utf-8") as handle:
+            handle.write("# World Archive\n\n" + big_body)
+        with open(os.path.join(f5_hist, "old-history.md"), "w", encoding="utf-8") as handle:
+            handle.write("# Superseded Notes\n\n" + big_body)
+        f5_entry = os.path.join(f5_hist, "CONTEXT.md")
+        with open(f5_entry, "w", encoding="utf-8") as handle:
+            handle.write("---\nssot_format: 5\nlanguage: en\n---\n\n# Space\n\n"
+                         "- [History](history.md)\n- [Archive](archive.md)\n- [Old](old-history.md)\n\n## Invariants\n\nNone.\n")
+        code, out_f5h = self.run_checker(f5_entry)
+        self.assertEqual(code, 0, out_f5h)
+        self.assertIn("INFO  history.md", out_f5h)
+        self.assertIn("INFO  archive.md", out_f5h)
+        self.assertNotIn("old-history.md", out_f5h)
+
+        # 4. Cold-marker comment state machine & <!-- /ssot:cold --> bypass prevention.
+        shutil.rmtree(os.path.join(self.ssot, "research"))
+        os.remove(os.path.join(self.ssot, "history.md"))
+        self.valid()
+        # (a) Nested-looking text inside an outer single-line comment must NOT trigger cold tail.
+        self.write("outer-comment.md",
+                   "# Spec\n\n<!-- hint: use <!-- ssot:cold --> before heading -->\n\n" + big_body)
+        out_outer = self.assert_clean()
+        self.assertIn("WARN  outer-comment.md", out_outer)
+        os.remove(os.path.join(self.ssot, "outer-comment.md"))
+        # (b) Real <!-- ssot:cold --> on the same line after a multiline comment close MUST trigger cold tail.
+        self.write("after-close.md",
+                   "# Spec\n\n## Active\n\nShort.\n\n<!-- multiline\ncomment --> <!-- ssot:cold -->\n\n" + big_body)
+        out_after = self.assert_clean()
+        self.assertNotIn("WARN", out_after)
+        self.assertNotIn("after-close.md", out_after)
+        os.remove(os.path.join(self.ssot, "after-close.md"))
+        # (c) <!-- /ssot:cold --> followed by headingless 18k prose MUST trigger BOTH 16k WARN and inverted INFO.
+        self.write("closed-bypass.md",
+                   "# Spec\n\n<!-- ssot:cold -->\nOld.\n<!-- /ssot:cold -->\n\n" + big_body)
+        out_bypass = self.assert_clean()
+        self.assertIn("WARN  closed-bypass.md", out_bypass)
+        self.assertIn("cold section starts above", out_bypass)
+        os.remove(os.path.join(self.ssot, "closed-bypass.md"))
+
+        # 5. path_mentions() skips cold archives and intra-file cold tails, while still warning above cold boundary.
+        self.valid()
+        os.makedirs(os.path.join(self.repo, "src"))
+        with open(os.path.join(self.repo, "src", "old.py"), "w", encoding="utf-8") as handle:
+            handle.write("x = 1\n")
+        self.write("archive/v1.md", "# Archived\n\nUsed `src/old.py`.\n")
+        self.write("auth-history.md", "# Auth History\n\nUsed `src/old.py`.\n")
+        self.write("architecture.md", ARCHITECTURE + "\n## History (cold)\n\nReplaced `src/old.py`.\n")
+        self.git("init", "-q")
+        self.commit("baseline with old.py")
+        self.git("rm", "-q", "src/old.py")
+        self.commit("remove old.py")
+        out_paths_cold = self.assert_clean()
+        self.assertNotIn("`src/old.py` was removed", out_paths_cold)
+        # Mentioning src/old.py ABOVE ## History (cold) still warns.
+        self.write("architecture.md", ARCHITECTURE + "\nActive code in `src/old.py`.\n\n## History (cold)\n\nReplaced `src/old.py`.\n")
+        out_paths_warm = self.assert_clean()
+        self.assertIn("WARN  architecture.md:7  `src/old.py` was removed", out_paths_warm)
+        self.assertNotIn("also line", out_paths_warm)
+
+    def test_v2_f4_vs_f5_cold_offload_external_owner_and_concrete_shard_rollup(self):
+        # 1. F4 SSOT-owned dated warm doc (both 8k-16k early INFO and >16k WARN) suggests separate cold archive
+        #    (decisions/ or *-history.md), NEVER trailing ## History (cold) / cold tail.
+        self.valid()
+        mid_dated = "# Alert Policy\n\n" + "\n\n".join(
+            f"## 2026-11-{d:02d} Change {d}\n\n" + ("Superseded revision log detail. " * 46)
+            for d in range(1, 7)
+        ) + "\n"
+        self.write("alerts.md", mid_dated)
+        out_f4_mid = self.assert_clean()
+        self.assertIn("move superseded history to a cold archive (decisions/ or *-history.md)", out_f4_mid)
+        self.assertNotIn("trailing ## History (cold)", out_f4_mid)
+        self.assertIn("alerts.md (", out_f4_mid)
+        self.assertIn("consolidate + offload history to cold archive)", out_f4_mid)
+        self.assertNotIn("cold tail", out_f4_mid)
+
+        big_dated = "# Alert Policy\n\n" + "\n\n".join(
+            f"## 2026-11-{d:02d} Change {d}\n\n" + ("Superseded revision log detail. " * 90)
+            for d in range(1, 7)
+        ) + "\n"
+        self.write("alerts.md", big_dated)
+        out_f4_big = self.assert_clean()
+        self.assertIn("WARN  alerts.md", out_f4_big)
+        self.assertIn("move superseded history to a cold archive (decisions/ or *-history.md)", out_f4_big)
+        self.assertNotIn("trailing ## History (cold)", out_f4_big)
+        self.assertIn("consolidate + offload history to cold archive)", out_f4_big)
+        os.remove(os.path.join(self.ssot, "alerts.md"))
+
+        # 2. Format-5 chronological doc keeps (or trailing ## History (cold) if layout is fixed).
+        space = os.path.join(self.repo, "f5log")
+        os.makedirs(space)
+        with open(os.path.join(space, "decisions.md"), "w", encoding="utf-8") as handle:
+            handle.write(mid_dated)
+        entry = os.path.join(space, "CONTEXT.md")
+        with open(entry, "w", encoding="utf-8") as handle:
+            handle.write("---\nssot_format: 5\nlanguage: en\n---\n\n# Space\n\n- [Decisions](decisions.md)\n\n## Invariants\n\nNone.\n")
+        code, out_f5_log = self.run_checker(entry)
+        self.assertEqual(code, 0, out_f5_log)
+        self.assertIn("or trailing ## History (cold) if layout is fixed", out_f5_log)
+        self.assertIn("decisions.md (", out_f5_log)
+        self.assertIn("or ## History (cold) if layout fixed)", out_f5_log)
+
+        # 3. External canonical owner in Format 4 is explicitly tagged `external owner` in compaction rollup
+        #    so closeout can relay a 1-line proposal without opening untouched external files.
+        self.valid()
+        ext_mega = "# External Spec\n\n" + "\n\n".join(
+            f"## Concern {n}\n\n" + ("External specification owned outside SSOT directory. " * 60)
+            for n in range(1, 8)
+        ) + "\n"
+        self.write("../docs/spec.md", ext_mega)
+        self.write("README.md", README + "\n- [Spec](../docs/spec.md)\n")
+        out_ext = self.assert_clean()
+        self.assertNotIn("WARN", out_ext)
+        self.assertIn("INFO  ../docs/spec.md", out_ext)
+        self.assertIn("compaction candidates (1): ../docs/spec.md (external owner,", out_ext)
+        self.assertIn("7 sections -> propose split/consolidation)", out_ext)
+
+        # 4. Concrete entry sharding + retired offload rollup in Format 4 and Format 5.
+        self.valid()
+        f4_rows = [
+            f"| INV-{n:03d} | product promise | Active rule {n:03d} | [R](architecture.md#failure-and-recovery) | confirmed | user, 2026-05-02 |"
+            for n in range(1, 51)
+        ] + [
+            f"| INV-{n:03d} | product promise | Retired rule {n:03d} | [R](architecture.md#failure-and-recovery) | retired | user, 2026-06-01 |"
+            for n in range(51, 55)
+        ]
+        self.invariant_row("\n".join(f4_rows))
+        out_t3_f4 = self.assert_clean()
+        self.assertIn("compaction candidates (1): README.md (54 inline; 4 retired -> propose sharding into SSOT/invariants/<topic>.md + SSOT/invariants/retired.md)", out_t3_f4)
+
+        f5_t3 = os.path.join(self.repo, "f5t3")
+        os.makedirs(f5_t3)
+        with open(os.path.join(f5_t3, "rules.md"), "w", encoding="utf-8") as handle:
+            handle.write("# Rules\n\n## Core\n\nExplained.\n")
+        f5_rows = [
+            f"| F5-{n:03d} | process rule | Active rule {n:03d} | [Core](rules.md#core) | confirmed | owner, 2026-05-02 |"
+            for n in range(1, 51)
+        ] + [
+            f"| F5-{n:03d} | process rule | Old rule {n:03d} | [Core](rules.md#core) | retired | owner, 2026-06-01 |"
+            for n in range(51, 55)
+        ]
+        f5_entry = os.path.join(f5_t3, "CONTEXT.md")
+        with open(f5_entry, "w", encoding="utf-8") as handle:
+            handle.write("---\nssot_format: 5\nlanguage: en\n---\n\n# Space\n\n## Invariants\n\n"
+                         "| ID | Kind | Rule | Explained in | Status | Source |\n|---|---|---|---|---|---|\n" + "\n".join(f5_rows) + "\n")
+        code, out_t3_f5 = self.run_checker(f5_entry)
+        self.assertEqual(code, 0, out_t3_f5)
+        self.assertIn("compaction candidates (1): CONTEXT.md (54 inline; 4 retired -> propose sharding into invariants/<topic>.md + invariants/retired.md)", out_t3_f5)
+
 
 if __name__ == "__main__":
     unittest.main(verbosity=1)

@@ -970,8 +970,8 @@ else
   fail "hot/cold runtime file partition is out of sync with skills/"
 fi
 budget "SKILL.md entrypoints" "$(words "${ENTRY_FILES[@]}")" 3600 words
-budget "hot-path runtime protocol (core-4 SKILL.md + daily references)" "$(words "${HOT_RUNTIME_FILES[@]}")" 9200 words
-budget "conditional/cold runtime branches (incl. legacy shims)" "$(words "${COLD_RUNTIME_FILES[@]}")" 10400 words
+budget "hot-path runtime protocol (core-4 SKILL.md + daily references)" "$(words "${HOT_RUNTIME_FILES[@]}")" 10200 words
+budget "conditional/cold runtime branches (incl. legacy shims)" "$(words "${COLD_RUNTIME_FILES[@]}")" 11600 words
 measure_catalog_bytes() {
   local total=0 skill_file name desc entry
   for skill_file in "$@"; do
@@ -1025,8 +1025,8 @@ budget "checker" "$(bytes "$SKILLS/ssot-doctor/assets/scripts/ssot-check.py")" 9
 budget "bundle scripts" "$SCRIPT_BYTES" 131072 bytes
 if TOTAL_BYTES="$(git -C "$PROJECT_ROOT" ls-files -co --exclude-standard -z -- skills | xargs -0 cat | wc -c)" && (( TOTAL_BYTES > 0 )); then
   RUNTIME_ASSET_BYTES=$((TOTAL_BYTES - SCRIPT_BYTES))
-  budget "runtime assets (skills/ excluding scripts)" "$RUNTIME_ASSET_BYTES" 163840 bytes
-  budget "skills/ total" "$TOTAL_BYTES" 294912 bytes
+  budget "runtime assets (skills/ excluding scripts)" "$RUNTIME_ASSET_BYTES" 188416 bytes
+  budget "skills/ total" "$TOTAL_BYTES" 319488 bytes
 else
   fail "could not measure the runtime files in skills/"
 fi

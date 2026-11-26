@@ -21,11 +21,11 @@ It works in two kinds of place:
 
 - **One fact, one owner.** SSOT means Single Source of Truth: each durable fact has one maintained document responsible for keeping it accurate, and other documents link to it.
 - **People's rules stay people's decisions.** Confirmed rules are listed in the entry. Agents work within them, never alter them on their own, and stop to ask when a task conflicts with one.
-- **Keep daily reading small and history recoverable.** Hot task context, maintained topic owners, and cold historical records have different access costs; [tiering and reconciliation](./skills/ssot-preflight/references/context-tiering.md) handle consolidation and partial replacements without creating duplicate stores.
+- **Keep daily reading small and history recoverable.** Hot orientation entries, maintained current-state topic owners, and cold historical records stay clearly separated; [tiering and reconciliation](./skills/ssot-preflight/references/context-tiering.md) handle automatic compaction, lossless cold offloading, and partial replacements without creating duplicate stores.
 - **Keep kinds of material apart.** Facts, hypotheses, confirmed decisions, scoped [goals and preferences](./skills/ssot-preflight/references/memory-model.md#goals-and-preferences), authorized [experience records](./skills/ssot-preflight/references/context-spaces.md#what-the-material-means), and live state stay distinct.
-- **Write for someone new.** Plain words, situation before mechanism, and explicit scope so the next agent or a non-coding decision maker can act on it ([writing guide](./skills/ssot-preflight/references/writing-memory.md)).
+- **Write for someone new.** Plain words, current truth before cold history, short atomic paragraphs, and explicit scope so the next agent or a non-coding decision maker can act on it ([writing guide](./skills/ssot-preflight/references/writing-memory.md)).
 - **Routes are not permissions.** Agents check authorization before opening linked sources; actual file access is enforced by the host, and imported text is evidence rather than executable instructions.
-- **Say what was checked.** The read-only [checker](./skills/ssot-doctor/assets/scripts/ssot-check.py) verifies structure (links, anchors, register shape, confirmed-rule edits, and optional `--owners` restricted subsets), never truth. Reviews state findings, coverage, and gaps.
+- **Say what was checked.** The read-only [checker](./skills/ssot-doctor/assets/scripts/ssot-check.py) verifies structure (links, anchors, register shape, confirmed-rule edits, structural bloat candidates while exempting cold archives, and optional `--owners` restricted subsets), never truth. Reviews state findings, coverage, and gaps.
 - **Evolve from real context needs.** Improvements start from recurring long-term context needs and whole-task evidence rather than rule accumulation ([design direction](./DESIGN.md#accepted-direction-evolve-from-context-needs)).
 
 ## Quickstart
@@ -80,20 +80,20 @@ In a development repository only `SSOT/README.md` is required; the other files a
 
 ```text
  your-repo/SSOT/
- ├── README.md        What the project is, where to look for each task, the rules people decided, open questions
- ├── invariants/      Optional topic shards when the invariants register grows large
+ ├── README.md        What the project is, where to look for each task, blocking open questions, the rules people decided
+ ├── invariants/      Optional topic shards (and optional cold retired.md) when the invariants register grows large
  ├── product.md       Who uses it, what it promises, what it does not do
  ├── architecture.md  The parts, who owns which state, key flows, failure and recovery
  ├── process.md       How to build, test, release, and deploy
  ├── decisions/       Cold history of choices, superseded rules, and rejected options (skipped on routine reads)
- ├── gotchas.md       Traps that have already cost time
+ ├── gotchas.md       Traps and temporary workarounds that have already cost time
  ├── glossary.md      Project terms a newcomer would misread
- └── research/        Investigations whose conclusions still guide decisions
+ └── research/        Investigations whose conclusions still guide decisions (concluded studies skipped on routine reads)
 ```
 
 Existing maintained documents can stay the owners and are linked from the entry. A general space has no fixed layout: its entry states purpose, scope and protected rules, and links the documents that already own each topic. An unfinished general space links its own setup record. Several spaces can share a directory. Details are in the [memory model](./skills/ssot-preflight/references/memory-model.md) and the [space model](./skills/ssot-preflight/references/context-spaces.md).
 
-A reader can answer bounded lookups from one authorized owner and apply an approved single-owner prose edit in place with on-disk readback. When decisions supersede earlier guidance, warm topic owners consolidate current behavior while superseded wording, rejected trials, and lengthy quotes move to cold history (`decisions/` or topic history files) skipped on routine reads; older rules that still govern stay active. When an invariants register grows large, topic groups can move into optional shards (`SSOT/invariants/<topic>.md`, plus optional cold `invariants/retired.md`) checked across files by `ssot-check.py`. For deterministic commit-time checks across every agent without spending model tokens, wire the opt-in [`tools/ssot-precommit.sh`](./tools/ssot-precommit.sh) guard ([setup](./docs/2026-11-24-install-maintenance.md#optional-zero-token-git-pre-commit-guard)).
+A reader can answer bounded lookups from one authorized owner and apply an approved single-owner prose edit in place with on-disk readback. To stop long-term bloat automatically, warm topic owners keep current behavior on top, drop single-task verification receipts and resolved ephemera, and offload superseded wording, rejected trials, and lengthy quotes to separate cold files (`decisions/` or `*-history.md`, or a trailing cold section only when a general space stays single-file), while cold indexes stay one-line locators and active older rules remain hot or warm. `ssot-check.py` automatically surfaces structural bloat candidates (exempting cold archives and cold retired shards) so closeout compacts touched SSOT files in place and proposes untouched, external, or layout-split cleanups in one line without crossing write boundaries; large registers can shard into `SSOT/invariants/<topic>.md` plus cold `invariants/retired.md`. For deterministic commit-time checks across every agent without spending model tokens, wire the opt-in [`tools/ssot-precommit.sh`](./tools/ssot-precommit.sh) guard ([setup](./docs/2026-11-24-install-maintenance.md#optional-zero-token-git-pre-commit-guard)).
 
 ## Limits
 
