@@ -305,7 +305,7 @@ cleanup() {
 trap cleanup EXIT
 
 stage_targeted_snapshot() {
-  python3 - "$REPO_ROOT" "$STAGE_DIR" "$SSOT_TARGET" "$CHECKER" <<'PY'
+  python3 -B - "$REPO_ROOT" "$STAGE_DIR" "$SSOT_TARGET" "$CHECKER" <<'PY'
 import ast
 import importlib.util
 import os
@@ -415,8 +415,8 @@ if initial:
         cwd=repo, input=inp, check=True,
     )
 
-# Mark 160000 submodule gitlinks with a nested .git boundary so ssot-check.py's
-# repository_local() matches direct-mode WARN behavior instead of false broken-link ERROR.
+# Mark 160000 submodule gitlinks with a nested .git boundary so ssot-check.py
+# treats them as unpopulated submodules (INFO) instead of false broken-link ERROR.
 for sub in submodules:
     os.makedirs(os.path.join(stage, sub, ".git"), exist_ok=True)
 
@@ -524,7 +524,7 @@ if [[ "$need_snapshot" -eq 1 ]]; then
   git ls-files --stage -z | git_clean -C "$STAGE_DIR" update-index -z --index-info
   if ! stage_targeted_snapshot; then
     git checkout-index -a -f --prefix="$STAGE_DIR/"
-    python3 - "$REPO_ROOT" "$STAGE_DIR" <<'PY'
+    python3 -B - "$REPO_ROOT" "$STAGE_DIR" <<'PY'
 import os, subprocess, sys
 repo, stage = sys.argv[1:3]
 raw = subprocess.run(["git", "ls-files", "--stage", "-z"], cwd=repo, capture_output=True, check=True).stdout
@@ -552,7 +552,7 @@ if [[ "$has_head" -eq 1 ]]; then
 fi
 
 set +e
-python3 "$CHECKER" "${args[@]}"
+python3 -B "$CHECKER" "${args[@]}"
 rc=$?
 set -e
 

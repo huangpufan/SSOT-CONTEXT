@@ -8,6 +8,10 @@ Entries up to 2.86 were derived from the v2 protocol-upgrade ledger, which is pr
 
 ## [Unreleased]
 
+### Fixed
+- **`ssot-check.py` submodule link verification, CJK UTF-8 / Chinese cold-tier parity, and runtime speedups (`96,636 / 98,304 B`, `189/189` tests in `tests/test-ssot-check.py`):** Distinguished nested Git repositories and registered `.gitmodules` submodules inside `REPO_ROOT` from truly out-of-repo sibling links in Format 4—eliminating false-positive `link leaves the repository` warnings on submodule monorepos while validating file existence and `#heading`/`#L` anchors inside populated submodules, emitting non-blocking `INFO` for unpopulated submodules (including fresh non-recursive clones and `tools/ssot-precommit.sh` snapshot stubs), and keeping nested repos rejected as canonical invariant `Explained in` owners or crawled documents. Added non-blocking UTF-8 byte thresholds (`>24,000 B` for entries, warm docs, and active shards; `>900 B` for register rows; `>16,000 B` / `>500 B`–`700 B` for cold indexes; `>32,000 B` for cold tails; `>64,000 B` for cold retired shards) plus Chinese cold archive/index recognition (`决策历史`, `历史记录`, `历史归档`, `历史`, `归档`, `*索引`, `*-历史`/`*-归档`) and Format-5 `propose split/consolidation` action tagging so CJK-heavy repositories receive accurate token-scale bloat and truncation signals without false positives on healthy docs. Cached `os.path.realpath()`, single-pass per-document `markdown_lines()`, and `PathIndex.matching()` fast-rejects, cutting live checker latency by ~32–50% across multi-hundred-file and multi-thousand-commit repositories while deduplicating bloat/row-limit helpers to stay under the 96 KiB cap.
+- **`tools/ssot-precommit.sh` bytecode hygiene:** Invoked `python3 -B` in targeted snapshot, fallback snapshot, and checker execution so importing a repo-local `ssot-check.py` never creates untracked `__pycache__/*.pyc` files inside the consumer repository (which previously dirtied working trees and forced subsequent commits out of direct mode into snapshot mode); verified by `tests/test-precommit-hook.py`.
+
 ## [5.23] - 2026-11-26
 
 ### Changed

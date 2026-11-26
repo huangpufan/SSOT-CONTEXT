@@ -560,8 +560,13 @@ class PrecommitHookTest(unittest.TestCase):
         (self.repo / "docs/api.md").write_text("# API\n\n## Retries\n\nUnstaged.\n", encoding="utf-8")
         res_snap = self.git("commit", "-m", "link submodule in snapshot")
         self.assertEqual(res_snap.returncode, 0, res_snap.stdout + res_snap.stderr)
-        self.assertIn("link leaves the repository", res_snap.stdout + res_snap.stderr)
+        self.assertIn("nested repository/submodule is not populated here", res_snap.stdout + res_snap.stderr)
+        self.assertNotIn("link leaves the repository", res_snap.stdout + res_snap.stderr)
         self.assertNotIn("broken link", res_snap.stdout + res_snap.stderr)
+        self.assertFalse(
+            (self.repo / ".agents/skills/ssot-doctor/assets/scripts/__pycache__").exists(),
+            "targeted snapshot must invoke python3 -B and never write __pycache__ into the consumer repo",
+        )
 
         # Also test the fallback checkout-index -a snapshot path by wrapping ssot-check.py in a non-importable shim.
         wrapper = Path(self.tmp.name) / "wrap-checker.py"
@@ -573,8 +578,30 @@ class PrecommitHookTest(unittest.TestCase):
         self.git("add", "SSOT/architecture.md")
         res_fb = self.git("commit", "-m", "submodule fallback snapshot", env={**self.env, "SSOT_CHECKER": str(wrapper)})
         self.assertEqual(res_fb.returncode, 0, res_fb.stdout + res_fb.stderr)
-        self.assertIn("link leaves the repository", res_fb.stdout + res_fb.stderr)
+        self.assertIn("nested repository/submodule is not populated here", res_fb.stdout + res_fb.stderr)
+        self.assertNotIn("link leaves the repository", res_fb.stdout + res_fb.stderr)
         self.assertNotIn("broken link", res_fb.stdout + res_fb.stderr)
+
+        # Clean direct-mode commit with a valid populated submodule link passes with 0 warnings,
+        # while a broken heading anchor inside the populated submodule is blocked.
+        self.git("checkout", "--", "docs/api.md")
+        readme.write_text(
+            readme.read_text(encoding="utf-8") + "- [Sub Heading](../plugins/sub/README.md#submodule)\n",
+            encoding="utf-8",
+        )
+        self.git("add", "SSOT/README.md")
+        res_direct = self.git("commit", "-m", "valid populated submodule anchor")
+        self.assertEqual(res_direct.returncode, 0, res_direct.stdout + res_direct.stderr)
+        self.assertIn("0 error(s), 0 warning(s)", res_direct.stdout + res_direct.stderr)
+
+        readme.write_text(
+            readme.read_text(encoding="utf-8") + "- [Bad Sub Anchor](../plugins/sub/README.md#missing-anchor)\n",
+            encoding="utf-8",
+        )
+        self.git("add", "SSOT/README.md")
+        res_bad_anchor = self.git("commit", "-m", "broken populated submodule anchor")
+        self.assertEqual(res_bad_anchor.returncode, 1, res_bad_anchor.stdout + res_bad_anchor.stderr)
+        self.assertIn("missing heading anchor", res_bad_anchor.stdout + res_bad_anchor.stderr)
 
     def test_split_git_dir_and_work_tree_runs_cleanly_and_blocks_tamper(self):
         git_dir = Path(self.tmp.name) / "split.git"

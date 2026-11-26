@@ -45,26 +45,35 @@ import traceback
 from urllib.parse import unquote
 
 FORMAT = "4"
-# Reading budgets are counted in characters, not bytes, so documents in
-# languages with multi-byte scripts (Chinese, Japanese) are not penalised.
+# Reading budgets count characters so short CJK docs are not over-penalised;
+# higher UTF-8 byte thresholds (INFO) catch CJK token bloat and tool truncation.
 README_WARN_CHARS = 8000
 DOC_WARN_CHARS = 16000
+DOC_INFO_BYTES = 24000
 INLINE_SHARD_INFO_ROWS = 50
 TOTAL_ENTRY_INFO_CHARS = 16000
+TOTAL_ENTRY_INFO_BYTES = 24000
 SHARD_INFO_CHARS = 16000
+SHARD_INFO_BYTES = 24000
 SHARD_INFO_ROWS = 50
 COLD_SHARD_TRUNC_CHARS = 64000
+COLD_SHARD_TRUNC_BYTES = 64000
 ROW_INFO_CHARS = 500
+ROW_INFO_BYTES = 900
 REVIEWED_LAG_INFO_COMMITS = 100
 DATED_HISTORY_INFO_HEADINGS = 5
 DATED_EARLY_INFO_CHARS = 8000
 ENTRY_SECTION_INFO_CHARS = 4000
 COLD_TAIL_TRUNC_CHARS = 32000
+COLD_TAIL_TRUNC_BYTES = 32000
 COLD_TAIL_INVERTED_CHARS = 1000
 COLD_INDEX_INFO_CHARS = 8000
+COLD_INDEX_INFO_BYTES = 16000
 COLD_INDEX_ROW_SOFT_CHARS = 250
+COLD_INDEX_ROW_SOFT_BYTES = 500
 COLD_INDEX_ROW_SOFT_COUNT = 3
 COLD_INDEX_ROW_HARD_CHARS = 350
+COLD_INDEX_ROW_HARD_BYTES = 700
 MEGA_DOC_H2_SECTIONS = 6
 CHECKBOX_TASK_INFO_COUNT = 5
 CHECKBOX_WARM_INFO_COUNT = 8
@@ -73,9 +82,12 @@ COMPACTION_ROLLUP_LIMIT = 5
 COLD_SHARD_NAMES = ("retired", "archive", "history")
 WARM_TIERS = {"warm", "hot", "active"}
 COLD_DIRS = {"decisions", "research", "archive", "archives", "history"}
+COLD_ZH_DIR_TOKENS = ("决策历史", "历史记录", "历史归档")
+COLD_ZH_EXACT_DIRS = {"历史", "归档"}
 COLD_INDEX_NAMES = {"readme", "index"}
+COLD_INDEX_SUFFIXES = ("-index", "_index", "索引")
 COLD_INDEX_STEMS = {"decisions-index", "history-index"}
-COLD_STEM_SUFFIXES = ("-history", "_history", "-archive", "_archive")
+COLD_STEM_SUFFIXES = ("-history", "_history", "-archive", "_archive", "-历史", "_历史", "-归档", "_归档")
 COLD_EXACT_STEMS = {"history", "archive", "retired", "changelog"}
 ENTRY_CORE_SECTIONS = (
     "map", "地图", "文档地图", "文件地图", "索引",
@@ -125,18 +137,12 @@ CHECKBOX_RE = re.compile(r"^\s*(?:[-*+]|\d+[.)])\s+\[([ xX])\]\s")
 
 class Report:
     def __init__(self, root, documents=None):
-        self.root = root
-        self.documents = documents
-        self.lines = []
-        self.compactions = []
-        self.errors = 0
-        self.warnings = 0
-        self.unchecked = []  # parts the checker could not examine; any of them makes the run exit 3
+        self.root, self.documents = root, documents
+        self.lines, self.compactions, self.unchecked = [], [], []
+        self.errors = self.warnings = 0
 
     def add(self, level, path, line, message):
-        where = os.path.relpath(path, self.root) if path else "."
-        if line:
-            where += f":{line}"
+        where = (os.path.relpath(path, self.root) if path else ".") + (f":{line}" if line else "")
         self.lines.append(f"{level:<5} {where}  {message}")
         if level == "ERROR":
             self.errors += 1
@@ -144,8 +150,7 @@ class Report:
             self.warnings += 1
 
     def add_compaction(self, path, detail):
-        where = os.path.relpath(path, self.root) if path else "."
-        self.compactions.append((where, detail))
+        self.compactions.append((os.path.relpath(path, self.root) if path else ".", detail))
 
     def finish(self, target):
         if self.compactions:
@@ -154,7 +159,7 @@ class Report:
                 items = grouped.setdefault(where, [])
                 if detail not in items:
                     items.append(detail)
-            entries = [f"{where} ({'; '.join(details)})" for where, details in grouped.items()]
+            entries = [f"{w} ({'; '.join(ds)})" for w, ds in grouped.items()]
             shown = ", ".join(entries[:COMPACTION_ROLLUP_LIMIT])
             if len(entries) > COMPACTION_ROLLUP_LIMIT:
                 shown += f", and {len(entries) - COMPACTION_ROLLUP_LIMIT} more"
@@ -163,10 +168,8 @@ class Report:
             print(line)
         for item in self.unchecked:
             print(f"UNCHECKED {item}")
-        verdict = "INCOMPLETE" if self.unchecked else "FAIL" if self.errors else "PASS"
-        counts = f"{self.errors} error(s), {self.warnings} warning(s)"
-        if self.unchecked:
-            counts += f", {len(self.unchecked)} part(s) not checked"
+        verdict = "INCOMPLETE" if self.unchecked else ("FAIL" if self.errors else "PASS")
+        counts = f"{self.errors} error(s), {self.warnings} warning(s)" + (f", {len(self.unchecked)} part(s) not checked" if self.unchecked else "")
         print(f"ssot-check: {verdict} - {counts} in {target}")
         return {"INCOMPLETE": 3, "FAIL": 1, "PASS": 0}[verdict]
 
@@ -237,36 +240,30 @@ def markdown_lines(text):
 
 
 def strip_comments(line, in_comment, comments_out=None):
-    code_spans = [match.span() for match in INLINE_CODE_RE.finditer(line)]
+    spans = [m.span() for m in INLINE_CODE_RE.finditer(line)]
 
     def opener(start):
-        begin = line.find("<!--", start)
-        while begin != -1 and any(a <= begin < b for a, b in code_spans):
-            begin = line.find("<!--", begin + 4)
-        return begin
+        pos = line.find("<!--", start)
+        while pos != -1 and any(a <= pos < b for a, b in spans):
+            pos = line.find("<!--", pos + 4)
+        return pos
 
-    out = []
-    position = 0
-    opened_here = None
-    while position <= len(line):
+    out, pos, opened = [], 0, None
+    while pos <= len(line):
         if in_comment:
-            end = line.find("-->", position)
+            end = line.find("-->", pos)
             if end == -1:
                 return "".join(out), True
-            if comments_out is not None and opened_here is not None:
-                comments_out.append(line[opened_here:end])
-            position = end + 3
-            in_comment = False
-            opened_here = None
+            if comments_out is not None and opened is not None:
+                comments_out.append(line[opened:end])
+            pos, in_comment, opened = end + 3, False, None
         else:
-            begin = opener(position)
+            begin = opener(pos)
             if begin == -1:
-                out.append(line[position:])
+                out.append(line[pos:])
                 break
-            out.append(line[position:begin])
-            position = begin + 4
-            in_comment = True
-            opened_here = position
+            out.append(line[pos:begin])
+            pos, in_comment, opened = begin + 4, True, begin + 4
     return "".join(out), in_comment
 
 
@@ -276,10 +273,10 @@ def blank_inline_code(line):
 
 # --- headings and anchors --------------------------------------------------
 
-def headings(text):
+def headings(text, md_lines=None):
     """Yield (line_number, level, heading_text) for ATX and Setext headings."""
     previous = None  # (number, text) of the last paragraph line
-    for number, line in markdown_lines(text):
+    for number, line in (markdown_lines(text) if md_lines is None else md_lines):
         atx = ATX_RE.match(line)
         if atx:
             yield number, len(atx.group(1)), (atx.group(2) or "").strip()
@@ -309,6 +306,14 @@ def heading_text(raw):
     return re.sub(r"<[^>]+>", "", text).strip()
 
 
+def norm_heading(raw):
+    return re.sub(r"^[\d.)\s]+", "", raw).lower()
+
+
+def utf8_bytes(text):
+    return len(text.encode("utf-8"))
+
+
 def slug(text):
     """GitHub (github-slugger) anchor: lowercase, drop everything except
     letters, digits, underscore, hyphen and space, then each space -> '-'."""
@@ -316,21 +321,31 @@ def slug(text):
 
 
 _anchor_cache = {}
+_real_cache = {}
+SUBMODULE_ROOTS = set()
 REPO_ROOT = [os.sep]  # set in main(): the repository containing SSOT/
 GENERAL = [False]  # format 5 checks selected entry/direct local owners only
+
+
+def real_path(path):
+    res = _real_cache.get(path)
+    if res is None:
+        res = os.path.realpath(path)
+        _real_cache[path] = res
+    return res
 
 
 def anchors(path):
     if path not in _anchor_cache:
         text = read_text(path)
-        seen = {}
-        found = set()
-        for _, _, raw in headings(text):
+        md_lines = list(markdown_lines(text))
+        seen, found = {}, set()
+        for _, _, raw in headings(text, md_lines):
             base = slug(heading_text(raw))
             count = seen.get(base, 0)
             seen[base] = count + 1
             found.add(base if count == 0 else f"{base}-{count}")
-        for _, line in markdown_lines(text):
+        for _, line in md_lines:
             found.update(re.findall(r"<a\s+(?:name|id)=\"([^\"]+)\"", line))
         _anchor_cache[path] = found
     return _anchor_cache[path]
@@ -339,47 +354,42 @@ def anchors(path):
 # --- links -----------------------------------------------------------------
 
 def parse_destination(line, start):
-    """Parse an inline link destination starting right after '](' and return
-    it, or None when the text is not a well-formed link."""
-    position = start
-    while position < len(line) and line[position] in " \t":
-        position += 1
-    if position < len(line) and line[position] == "<":
-        end = line.find(">", position)
+    """Parse an inline link destination starting right after ']('."""
+    pos, n = start, len(line)
+    while pos < n and line[pos] in " \t":
+        pos += 1
+    if pos < n and line[pos] == "<":
+        end = line.find(">", pos)
         if end == -1:
             return None
-        destination, position = line[position + 1:end], end + 1
+        dest, pos = line[pos + 1:end], end + 1
     else:
-        depth = 0
-        begin = position
-        while position < len(line):
-            char = line[position]
-            if char == "\\" and position + 1 < len(line):
-                position += 2
+        depth, begin = 0, pos
+        while pos < n:
+            ch = line[pos]
+            if ch == "\\" and pos + 1 < n:
+                pos += 2
                 continue
-            if char in " \t":
+            if ch in " \t":
                 break
-            if char == "(":
+            if ch == "(":
                 depth += 1
-            elif char == ")":
+            elif ch == ")":
                 if depth == 0:
                     break
                 depth -= 1
-            position += 1
-        destination = line[begin:position]
-    while position < len(line) and line[position] in " \t":
-        position += 1
-    if position < len(line) and line[position] in "\"'(":
-        closer = ")" if line[position] == "(" else line[position]
-        end = line.find(closer, position + 1)
+            pos += 1
+        dest = line[begin:pos]
+    while pos < n and line[pos] in " \t":
+        pos += 1
+    if pos < n and line[pos] in "\"'(":
+        end = line.find(")" if line[pos] == "(" else line[pos], pos + 1)
         if end == -1:
             return None
-        position = end + 1
-        while position < len(line) and line[position] in " \t":
-            position += 1
-    if position < len(line) and line[position] == ")":
-        return destination
-    return None
+        pos = end + 1
+        while pos < n and line[pos] in " \t":
+            pos += 1
+    return dest if pos < n and line[pos] == ")" else None
 
 
 def links_in(line):
@@ -389,8 +399,8 @@ def links_in(line):
             yield destination
 
 
-def link_targets(text):
-    for number, line in markdown_lines(text):
+def link_targets(text, md_lines=None):
+    for number, line in (markdown_lines(text) if md_lines is None else md_lines):
         line = blank_inline_code(line)
         for destination in links_in(line):
             yield number, destination
@@ -413,6 +423,13 @@ def resolve(doc, target):
     return os.path.normpath(os.path.join(os.path.dirname(doc), path_part)), fragment
 
 
+def is_populated_dir(directory):
+    try:
+        return any(name != ".git" for name in os.listdir(directory))
+    except OSError:
+        return False
+
+
 def check_link(report, doc, number, target, local_links=None, missing_links=None):
     target = target.strip()
     if not target or SCHEME_RE.match(target):
@@ -424,6 +441,7 @@ def check_link(report, doc, number, target, local_links=None, missing_links=None
     resolved, fragment = resolve(doc, target)
     if report.documents is not None and resolved not in report.documents:
         return
+    nested = None
     if not repository_local(resolved):
         if GENERAL[0]:
             try:
@@ -436,16 +454,25 @@ def check_link(report, doc, number, target, local_links=None, missing_links=None
                 return
             report.add("INFO", doc, number, f"external-space route not read by this check: {target}")
             return
-        report.add("WARN", doc, number,
-                   f"link leaves the repository and only works where the same folders sit beside it: {target}")
-        return
-    if not os.path.exists(resolved):
+        nested = nested_git_root(resolved)
+        if nested is None:
+            report.add("WARN", doc, number,
+                       f"link leaves the repository and only works where the same folders sit beside it: {target}")
+            return
+        if real_path(resolved) != nested and not is_populated_dir(nested):
+            report.add("INFO", doc, number,
+                       f"nested repository/submodule is not populated here; link target not verified: {target}")
+            return
+        if not os.path.exists(resolved):
+            report.add("ERROR", doc, number, f"broken link (in nested repository): {target}")
+            return
+    elif not os.path.exists(resolved):
         if missing_links is not None:
             missing_links.append((doc, number, target, resolved))
         else:
             report.add("ERROR", doc, number, f"broken link: {target}")
         return
-    if local_links is not None and resolved != doc:
+    elif local_links is not None and resolved != doc:
         local_links.append((doc, number, target, resolved))
     if not fragment or not os.path.isfile(resolved):
         return
@@ -475,11 +502,11 @@ WRAP_MAX_WIDTH = 100    # every line of the run at most this wide (in characters
 BLOCK_START_RE = re.compile(r"^\s{0,3}(#|>|\||[-*+]\s|\d+[.)]\s|<|\[[^\]]+\]:|```|~~~)")
 
 
-def hard_wrapped_paragraphs(text):
+def hard_wrapped_paragraphs(text, md_lines=None):
     """Yield the first line number of each paragraph or list item that runs
     over WRAP_MIN_RUN or more short source lines."""
     run_start, run_length, in_item = None, 0, False
-    for number, line in markdown_lines(text):
+    for number, line in (markdown_lines(text) if md_lines is None else md_lines):
         stripped = line.strip()
         starts_item = bool(re.match(r"^\s*([-*+]|\d+[.)])\s", line))
         ends_run = not stripped or len(stripped) > WRAP_MAX_WIDTH or line.endswith(("  ", "\\")) \
@@ -501,8 +528,14 @@ def hard_wrapped_paragraphs(text):
 
 def doc_rel_parts(doc, ssot_dir):
     base = ssot_dir if inside(doc, ssot_dir) else REPO_ROOT[0]
-    rel = os.path.relpath(os.path.realpath(doc), os.path.realpath(base))
+    rel = os.path.relpath(real_path(doc), real_path(base))
     return [p.lower() for p in rel.split(os.sep) if p not in ("", ".")]
+
+
+def is_cold_dir_part(part):
+    return (part in COLD_DIRS
+            or re.sub(r"^\d+[-_.\s]+", "", part) in COLD_ZH_EXACT_DIRS
+            or any(tok in part for tok in COLD_ZH_DIR_TOKENS))
 
 
 def is_cold_index(doc, ssot_dir, readme):
@@ -510,14 +543,15 @@ def is_cold_index(doc, ssot_dir, readme):
     if not parts:
         return False
     stem = os.path.splitext(parts[-1])[0]
-    return stem in COLD_INDEX_STEMS or (bool(COLD_DIRS & set(parts[:-1])) and (stem in COLD_INDEX_NAMES or stem.endswith(("-index", "_index"))))
+    return stem in COLD_INDEX_STEMS or (any(is_cold_dir_part(p) for p in parts[:-1]) and (stem in COLD_INDEX_NAMES or stem.endswith(COLD_INDEX_SUFFIXES)))
 
 
-def is_active_research(text):
-    return any(ACTIVE_RESEARCH_RE.match(line) for _, (_, line) in zip(range(30), markdown_lines(text)))
+def is_active_research(text, md_lines=None):
+    src = markdown_lines(text) if md_lines is None else md_lines
+    return any(ACTIVE_RESEARCH_RE.match(line) for _, (_, line) in zip(range(30), src))
 
 
-def is_cold_archive(doc, ssot_dir, readme, text):
+def is_cold_archive(doc, ssot_dir, readme, text, md_lines=None):
     if doc == readme or is_cold_index(doc, ssot_dir, readme):
         return False
     tier = front_matter(text).get("ssot_tier", "").lower()
@@ -526,11 +560,11 @@ def is_cold_archive(doc, ssot_dir, readme, text):
     parts = doc_rel_parts(doc, ssot_dir)
     if not parts:
         return False
-    parents = set(parts[:-1])
-    if parents & (COLD_DIRS - {"research"}):
+    parents = parts[:-1]
+    if any(p != "research" and is_cold_dir_part(p) for p in parents):
         return True
     if "research" in parents:
-        return not is_active_research(text)
+        return not is_active_research(text, md_lines)
     stem = os.path.splitext(parts[-1])[0]
     if stem.endswith(COLD_STEM_SUFFIXES):
         return True
@@ -554,7 +588,7 @@ def is_cold_retired_shard(doc, text=None, row_count=0, retired_count=0, active_c
 
 
 def is_cold_heading(raw):
-    return bool(COLD_HEADING_RE.match(re.sub(r"^[\d.)\s]+", "", heading_text(raw)).strip()))
+    return bool(COLD_HEADING_RE.match(norm_heading(heading_text(raw)).strip()))
 
 
 def scan_document_lines(text):
@@ -626,12 +660,13 @@ def find_cold_boundary(vis_lines, all_headings, opens, closes):
     return cold_start, tuple(spans), len(inv)
 
 
-def measure_visible_chars(vis_lines, cold_start=None, inverted_spans=(), exclude_invariants=False):
-    return len("\n".join(
+def measure_visible(vis_lines, cold_start=None, inverted_spans=(), exclude_invariants=False):
+    joined = "\n".join(
         ln for n, ln in vis_lines
         if not in_cold_region(n, cold_start, inverted_spans)
         and not (exclude_invariants and re.match(rf"^\s*\|\s*[`*]*{ID_PAT}", ln))
-    ))
+    )
+    return len(joined), utf8_bytes(joined)
 
 
 def h2_sections(vis_lines, all_headings, end_line=None, exclude_invariants=False):
@@ -656,162 +691,149 @@ def is_task_like_doc(doc, readme):
     return doc == readme or stem in TASK_FILE_EXACT_STEMS or stem.startswith(TASK_FILE_STEM_PREFIXES)
 
 
-def check_cold_index_bloat(report, doc, text, vis_lines, is_ssot_owned):
+def fmt_size(chars, nbytes, c_lim, b_lim, extra=""):
+    if chars > c_lim:
+        return f"{chars} characters{extra} (>{c_lim})", f"{chars} chars"
+    return f"{nbytes} bytes ({chars} chars{extra}; >{b_lim} bytes)", f"{nbytes} bytes"
+
+
+def row_limit_summary(rows, c_lim, b_lim):
+    """Return (top_row, limit_label, top_size_label, compact_label) for rows=(num, key, chars, bytes)."""
+    c_hits = sum(r[2] > c_lim for r in rows)
+    if c_hits == len(rows):
+        top = max(rows, key=lambda r: r[2])
+        return top, f"{c_lim} characters", f"{top[2]} chars", f"{top[2]} chars", f">{c_lim} chars"
+    if c_hits == 0:
+        top = max(rows, key=lambda r: r[3])
+        return top, f"{b_lim} bytes", f"{top[3]} bytes / {top[2]} chars", f"{top[3]} bytes", f">{b_lim} bytes"
+    top = max(rows, key=lambda r: (r[2] > c_lim, r[2], r[3]))
+    return top, f"{c_lim} characters or {b_lim} bytes", f"{top[2]} chars / {top[3]} bytes", f"{top[2]} chars / {top[3]} bytes", f">{c_lim} chars/{b_lim} bytes"
+
+
+def check_cold_index_bloat(report, doc, md_lines, vis_lines, is_ssot_owned):
     ext = not GENERAL[0] and not is_ssot_owned
     prefix = "external owner, " if ext else ""
-    index_chars = measure_visible_chars(vis_lines)
-    if index_chars > COLD_INDEX_INFO_CHARS:
-        over_warn = index_chars > DOC_WARN_CHARS
-        threshold = DOC_WARN_CHARS if over_warn else COLD_INDEX_INFO_CHARS
+    ic, ib = measure_visible(vis_lines)
+    if ic > COLD_INDEX_INFO_CHARS or ib > COLD_INDEX_INFO_BYTES:
+        over_warn = ic > DOC_WARN_CHARS
+        sz, csz = fmt_size(ic, ib, DOC_WARN_CHARS if over_warn else COLD_INDEX_INFO_CHARS, COLD_INDEX_INFO_BYTES)
         report.add("WARN" if (over_warn and is_ssot_owned) else "INFO", doc, None,
-                   f"cold index is {index_chars} characters (>{threshold}); "
-                   "keep cold indexes to one-line topic/date locators rather than replaying archive summaries")
-        act = "propose trimming index" if ext else "trim to 1-line locators"
-        report.add_compaction(doc, f"{prefix}cold index {index_chars} chars -> {act}")
-    md_lines = list(markdown_lines(text))
-    line_lengths = {num: len(line) for num, line in md_lines}
-    soft_rows, has_hard = [], False
-    for table in pipe_tables(md_lines):
-        if len(table) < 3 or len(table[1][1]) != len(table[0][1]) \
-                or not all(SEPARATOR_CELL_RE.match(cell) for cell in table[1][1]):
+                   f"cold index is {sz}; keep cold indexes to one-line topic/date locators rather than replaying archive summaries")
+        report.add_compaction(doc, f"{prefix}cold index {csz} -> {'propose trimming index' if ext else 'trim to 1-line locators'}")
+    stats = {n: (len(ln), utf8_bytes(ln)) for n, ln in md_lines}
+    soft, has_hard = [], False
+    for tbl in pipe_tables(md_lines):
+        if len(tbl) < 3 or len(tbl[1][1]) != len(tbl[0][1]) or not all(SEPARATOR_CELL_RE.match(c) for c in tbl[1][1]):
             continue
-        for num, _ in table[2:]:
-            row_len = line_lengths.get(num, 0)
-            if row_len > COLD_INDEX_ROW_SOFT_CHARS:
-                soft_rows.append((num, row_len))
-                has_hard |= row_len > COLD_INDEX_ROW_HARD_CHARS
-    if len(soft_rows) >= COLD_INDEX_ROW_SOFT_COUNT or has_hard:
-        max_num, max_len = max(soft_rows, key=lambda item: item[1])
-        report.add("INFO", doc, max_num,
-                   f"{len(soft_rows)} cold-index table row(s) exceed {COLD_INDEX_ROW_SOFT_CHARS} characters "
-                   f"(longest: line {max_num} at {max_len} chars); "
+        for n, _ in tbl[2:]:
+            rl, rb = stats.get(n, (0, 0))
+            if rl > COLD_INDEX_ROW_SOFT_CHARS or rb > COLD_INDEX_ROW_SOFT_BYTES:
+                soft.append((n, n, rl, rb))
+                has_hard |= rl > COLD_INDEX_ROW_HARD_CHARS or rb > COLD_INDEX_ROW_HARD_BYTES
+    if len(soft) >= COLD_INDEX_ROW_SOFT_COUNT or has_hard:
+        top, lim_s, top_s, c_s, _ = row_limit_summary(soft, COLD_INDEX_ROW_SOFT_CHARS, COLD_INDEX_ROW_SOFT_BYTES)
+        report.add("INFO", doc, top[0],
+                   f"{len(soft)} cold-index table row(s) exceed {lim_s} (longest: line {top[0]} at {top_s}); "
                    "keep cold indexes to one-line locators without summary columns")
-        act = "propose trimming index cells" if ext else "trim index cells"
-        report.add_compaction(doc, f"{prefix}{len(soft_rows)} verbose index rows (max {max_len} chars) -> {act}")
+        report.add_compaction(doc, f"{prefix}{len(soft)} verbose index rows (max {c_s}) -> {'propose trimming index cells' if ext else 'trim index cells'}")
 
 
-def check_completed_checkboxes(report, doc, readme, text, cold_start, inverted_spans=(), is_external=False):
-    checked, total, first_checked = 0, 0, None
-    for num, line in markdown_lines(text):
-        if in_cold_region(num, cold_start, inverted_spans):
+def check_completed_checkboxes(report, doc, readme, md_lines, cold_start, inverted_spans=(), is_external=False):
+    checked = total = 0
+    first_checked = None
+    for n, line in md_lines:
+        if in_cold_region(n, cold_start, inverted_spans):
             continue
-        match = CHECKBOX_RE.match(line)
-        if not match:
-            continue
-        total += 1
-        if match.group(1).lower() == "x":
-            checked += 1
-            if first_checked is None:
-                first_checked = num
-    if (is_task_like_doc(doc, readme) and checked >= CHECKBOX_TASK_INFO_COUNT) \
-            or (checked >= CHECKBOX_WARM_INFO_COUNT and checked * 2 >= total):
+        m = CHECKBOX_RE.match(line)
+        if m:
+            total += 1
+            if m.group(1).lower() == "x":
+                checked += 1
+                first_checked = first_checked or n
+    if (is_task_like_doc(doc, readme) and checked >= CHECKBOX_TASK_INFO_COUNT) or (checked >= CHECKBOX_WARM_INFO_COUNT and checked * 2 >= total):
         report.add("INFO", doc, first_checked,
-                   f"{checked} completed checklist item(s) (`- [x]`) out of {total} in active document; "
-                   "archive or remove finished items so active reads stay concise")
-        detail = (f"external owner, {checked} completed checkboxes -> propose pruning"
-                  if is_external else f"{checked} completed checkboxes -> prune/archive finished items")
-        report.add_compaction(doc, detail)
+                   f"{checked} completed checklist item(s) (`- [x]`) out of {total} in active document; archive or remove finished items so active reads stay concise")
+        report.add_compaction(doc, f"external owner, {checked} completed checkboxes -> propose pruning" if is_external else f"{checked} completed checkboxes -> prune/archive finished items")
 
 
-def check_document_bloat(report, doc, readme, ssot_dir, text, shard_paths, cold_shards):
+def check_document_bloat(report, doc, readme, ssot_dir, text, shard_paths, cold_shards, md_lines=None):
     if "/.bootstrap/" in doc:
         return None
-    is_register_doc = doc == readme or doc in shard_paths
-    is_ssot_owned = doc == readme or (inside(doc, ssot_dir) and (not GENERAL[0] or doc in shard_paths))
-    is_external = not GENERAL[0] and not is_ssot_owned
-    vis_lines, cold_opens, cold_closes = scan_document_lines(text)
+    md_lines = list(markdown_lines(text)) if md_lines is None else md_lines
+    is_reg = doc == readme or doc in shard_paths
+    is_owned = doc == readme or (inside(doc, ssot_dir) and (not GENERAL[0] or doc in shard_paths))
+    ext = not GENERAL[0] and not is_owned
+    vis, opens, closes = scan_document_lines(text)
     if is_cold_index(doc, ssot_dir, readme):
-        check_cold_index_bloat(report, doc, text, vis_lines, is_ssot_owned)
+        check_cold_index_bloat(report, doc, md_lines, vis, is_owned)
         return "cold"
-    if doc in cold_shards or (doc not in shard_paths and is_cold_archive(doc, ssot_dir, readme, text)):
+    if doc in cold_shards or (doc not in shard_paths and is_cold_archive(doc, ssot_dir, readme, text, md_lines)):
         return "cold"
-    all_headings = list(headings(text))
-    cold_start, inverted_spans, inverted_chars = find_cold_boundary(vis_lines, all_headings, cold_opens, cold_closes)
-    warm_chars = measure_visible_chars(vis_lines, cold_start, inverted_spans, exclude_invariants=is_register_doc)
-    warm_headings = [(num, lvl, raw) for num, lvl, raw in all_headings if not in_cold_region(num, cold_start, inverted_spans)]
-    warm_dated = sum(1 for _, _, raw in warm_headings if DATE_RE.search(raw))
-    limit = README_WARN_CHARS if doc == readme else DOC_WARN_CHARS
-    cold_dest = ("a cold archive (or trailing ## History (cold) if layout is fixed)"
-                 if (GENERAL[0] or is_external) else "a cold archive (decisions/ or *-history.md)")
-    dated_action = ("propose consolidation/cold archive" if is_external
-                    else "consolidate + cold archive (or ## History (cold) if layout fixed)" if GENERAL[0]
-                    else "consolidate + offload history to cold archive")
-    prefix = "external owner, " if is_external else ""
+    all_h = list(headings(text, md_lines))
+    c_start, inv_spans, inv_chars = find_cold_boundary(vis, all_h, opens, closes)
+    wc, wb = measure_visible(vis, c_start, inv_spans, exclude_invariants=is_reg)
+    tb = utf8_bytes(text)
+    wh = [(n, l, r) for n, l, r in all_h if not in_cold_region(n, c_start, inv_spans)]
+    wd = sum(1 for _, _, r in wh if DATE_RE.search(r))
+    lim = README_WARN_CHARS if doc == readme else DOC_WARN_CHARS
+    cdest = "a cold archive (or trailing ## History (cold) if layout is fixed)" if (GENERAL[0] or ext) else "a cold archive (decisions/ or *-history.md)"
+    dact = "propose consolidation/cold archive" if ext else ("consolidate + cold archive (or ## History (cold) if layout fixed)" if GENERAL[0] else "consolidate + offload history to cold archive")
+    pfx = "external owner, " if ext else ""
+    sact = "propose split/consolidation" if (ext or GENERAL[0]) else "split by topic"
+    dated_tail = f"consolidate current behavior and move superseded history to {cdest}"
+    split_tail = "split it by topic or move detail out"
+    def emit(level, line, msg, cand):
+        report.add(level, doc, line, msg)
+        report.add_compaction(doc, cand)
     if doc == readme:
-        secs = h2_sections(vis_lines, all_headings, cold_start, exclude_invariants=True)
-        non_inv_secs = [(n, t, c) for n, t, c in secs
-                        if not re.sub(r"^[\d.)\s]+", "", t).lower().startswith(INVARIANT_HEADINGS)]
-        if warm_chars > limit:
-            top = max(non_inv_secs, key=lambda item: item[2]) if non_inv_secs else None
-            largest = f"; largest section: ## {top[1]} ({top[2]} chars)" if top and top[2] > 0 else ""
-            if warm_dated >= DATED_HISTORY_INFO_HEADINGS:
-                report.add("WARN", doc, None,
-                           f"{warm_chars} characters is past the {limit}-character reading budget "
-                           f"(invariant rows not counted) and has {warm_dated} dated headings{largest}; "
-                           f"consolidate current behavior and move superseded history to {cold_dest}")
-                report.add_compaction(doc, f"{warm_chars} entry chars, {warm_dated} dated headings -> {dated_action}")
+        secs = h2_sections(vis, all_h, c_start, exclude_invariants=True)
+        non_inv = [(n, t, c) for n, t, c in secs if not norm_heading(t).startswith(INVARIANT_HEADINGS)]
+        if wc > lim:
+            top = max(non_inv, key=lambda x: x[2]) if non_inv else None
+            lg = f"; largest section: ## {top[1]} ({top[2]} chars)" if top and top[2] > 0 else ""
+            if wd >= DATED_HISTORY_INFO_HEADINGS:
+                emit("WARN", None, f"{wc} characters is past the {lim}-character reading budget (invariant rows not counted) and has {wd} dated headings{lg}; {dated_tail}", f"{wc} entry chars, {wd} dated headings -> {dact}")
             else:
-                report.add("WARN", doc, None,
-                           f"{warm_chars} characters is past the {limit}-character reading budget "
-                           f"(invariant rows not counted){largest}; split it by topic or move detail out")
-                report.add_compaction(doc, f"{warm_chars} entry prose chars -> trim/split entry")
-        for sec_line, title, sec_chars in non_inv_secs:
-            if not re.sub(r"^[\d.)\s]+", "", title).lower().startswith(ENTRY_CORE_SECTIONS) and sec_chars > ENTRY_SECTION_INFO_CHARS:
-                report.add("INFO", doc, sec_line,
-                           f"entry section '## {title}' is {sec_chars} characters (>{ENTRY_SECTION_INFO_CHARS}); "
-                           "move detail to a topic owner or prune resolved items")
-                report.add_compaction(doc, f"## {title} ({sec_chars} chars) -> move detail or prune")
-        if len(text) > TOTAL_ENTRY_INFO_CHARS:
-            report.add("INFO", doc, None,
-                       f"total {os.path.basename(readme)} size is {len(text)} characters "
-                       f"(including register rows; >{TOTAL_ENTRY_INFO_CHARS}); "
-                       "large entries cause tool truncation — shard invariants or trim rows")
-            rel_readme = os.path.relpath(readme, report.root)
-            if not any(w == rel_readme and "sharding" in d for w, d in report.compactions):
-                report.add_compaction(doc, f"{len(text)} total chars -> propose sharding/trimming entry")
+                emit("WARN", None, f"{wc} characters is past the {lim}-character reading budget (invariant rows not counted){lg}; {split_tail}", f"{wc} entry prose chars -> trim/split entry")
+        for sl, title, sc in non_inv:
+            if not norm_heading(title).startswith(ENTRY_CORE_SECTIONS) and sc > ENTRY_SECTION_INFO_CHARS:
+                emit("INFO", sl, f"entry section '## {title}' is {sc} characters (>{ENTRY_SECTION_INFO_CHARS}); move detail to a topic owner or prune resolved items", f"## {title} ({sc} chars) -> move detail or prune")
+        if len(text) > TOTAL_ENTRY_INFO_CHARS or tb > TOTAL_ENTRY_INFO_BYTES:
+            sz, csz = fmt_size(len(text), tb, TOTAL_ENTRY_INFO_CHARS, TOTAL_ENTRY_INFO_BYTES, ", including register rows")
+            if len(text) > TOTAL_ENTRY_INFO_CHARS:
+                sz = f"{len(text)} characters (including register rows; >{TOTAL_ENTRY_INFO_CHARS})"
+            report.add("INFO", doc, None, f"total {os.path.basename(readme)} size is {sz}; large entries cause tool truncation — shard invariants or trim rows")
+            if not any(w == os.path.relpath(readme, report.root) and "sharding" in d for w, d in report.compactions):
+                report.add_compaction(doc, f"{csz} total -> propose sharding/trimming entry")
     else:
-        h2_count = sum(1 for _, lvl, _ in warm_headings if lvl == 2)
-        if warm_chars > limit:
-            level = "WARN" if is_ssot_owned else "INFO"
-            if warm_dated >= DATED_HISTORY_INFO_HEADINGS:
-                report.add(level, doc, None,
-                           f"{warm_chars} characters is past the {limit}-character reading budget "
-                           f"and has {warm_dated} dated headings; consolidate current behavior and "
-                           f"move superseded history to {cold_dest}")
-                report.add_compaction(doc, f"{prefix}{warm_chars} chars, {warm_dated} dated headings -> {dated_action}")
-            elif not is_register_doc and h2_count >= MEGA_DOC_H2_SECTIONS:
-                report.add(level, doc, None,
-                           f"{warm_chars} characters across {h2_count} level-2 sections is past the {limit}-character "
-                           "reading budget; consider splitting by topic or moving detail out")
-                act = "propose split/consolidation" if is_external else "split by topic"
-                report.add_compaction(doc, f"{prefix}{warm_chars} chars, {h2_count} sections -> {act}")
+        h2 = sum(1 for _, l, _ in wh if l == 2)
+        if wc > lim:
+            lvl = "WARN" if is_owned else "INFO"
+            if wd >= DATED_HISTORY_INFO_HEADINGS:
+                emit(lvl, None, f"{wc} characters is past the {lim}-character reading budget and has {wd} dated headings; {dated_tail}", f"{pfx}{wc} chars, {wd} dated headings -> {dact}")
+            elif not is_reg and h2 >= MEGA_DOC_H2_SECTIONS:
+                emit(lvl, None, f"{wc} characters across {h2} level-2 sections is past the {lim}-character reading budget; consider splitting by topic or moving detail out", f"{pfx}{wc} chars, {h2} sections -> {sact}")
             else:
-                report.add(level, doc, None,
-                           f"{warm_chars} characters is past the {limit}-character reading budget"
-                           f"{' (invariant rows not counted)' if is_register_doc else ''}; "
-                           "split it by topic or move detail out")
-                act = "propose split/consolidation" if is_external else "split by topic"
-                report.add_compaction(doc, f"{prefix}{warm_chars} chars -> {act}")
-        elif warm_chars > DATED_EARLY_INFO_CHARS and warm_dated >= DATED_HISTORY_INFO_HEADINGS:
-            report.add("INFO", doc, None,
-                       f"{warm_chars} characters with {warm_dated} dated headings; "
-                       f"consolidate current state and move superseded history to {cold_dest}")
-            report.add_compaction(doc, f"{prefix}{warm_chars} chars, {warm_dated} dated headings -> {dated_action}")
-    if cold_start is not None:
-        if inverted_chars > COLD_TAIL_INVERTED_CHARS:
-            report.add("INFO", doc, cold_start,
-                       f"cold section starts above {inverted_chars} characters of non-cold sections; "
-                       "move active sections above the cold boundary so partial head-reads land on current state")
-            act = "propose reordering top-down" if is_external else "reorder top-down"
-            report.add_compaction(doc, f"{prefix}inverted cold tail ({inverted_chars} active chars below) -> {act}")
-        if len(text) > COLD_TAIL_TRUNC_CHARS:
-            report.add("INFO", doc, cold_start,
-                       f"total file size is {len(text)} characters including its cold tail (>{COLD_TAIL_TRUNC_CHARS}); "
-                       "offload the cold tail to a separate cold history file to avoid tool truncation")
-            act = "propose offloading cold tail" if is_external else "offload cold tail"
-            report.add_compaction(doc, f"{prefix}{len(text)} chars incl. cold tail -> {act}")
-    check_completed_checkboxes(report, doc, readme, text, cold_start, inverted_spans, is_external)
-    return cold_start, inverted_spans
+                emit(lvl, None, f"{wc} characters is past the {lim}-character reading budget{' (invariant rows not counted)' if is_reg else ''}; {split_tail}", f"{pfx}{wc} chars -> {sact}")
+        elif wc > DATED_EARLY_INFO_CHARS and wd >= DATED_HISTORY_INFO_HEADINGS:
+            emit("INFO", None, f"{wc} characters with {wd} dated headings; consolidate current state and move superseded history to {cdest}", f"{pfx}{wc} chars, {wd} dated headings -> {dact}")
+        elif wb > DOC_INFO_BYTES:
+            if wd >= DATED_HISTORY_INFO_HEADINGS:
+                emit("INFO", None, f"{wb} bytes ({wc} chars; >{DOC_INFO_BYTES} bytes) with {wd} dated headings; {dated_tail}", f"{pfx}{wb} bytes, {wd} dated headings -> {dact}")
+            else:
+                sec = f" across {h2} level-2 sections" if not is_reg and h2 >= MEGA_DOC_H2_SECTIONS else ""
+                csec = f", {h2} sections" if sec else ""
+                emit("INFO", None, f"{wb} bytes ({wc} chars{sec}; >{DOC_INFO_BYTES} bytes) is past the UTF-8 reading budget; {split_tail}", f"{pfx}{wb} bytes{csec} -> {sact}")
+    if c_start is not None:
+        if inv_chars > COLD_TAIL_INVERTED_CHARS:
+            emit("INFO", c_start, f"cold section starts above {inv_chars} characters of non-cold sections; move active sections above the cold boundary so partial head-reads land on current state",
+                 f"{pfx}inverted cold tail ({inv_chars} active chars below) -> {'propose reordering top-down' if ext else 'reorder top-down'}")
+        if len(text) > COLD_TAIL_TRUNC_CHARS or tb > COLD_TAIL_TRUNC_BYTES:
+            sz, csz = fmt_size(len(text), tb, COLD_TAIL_TRUNC_CHARS, COLD_TAIL_TRUNC_BYTES, " including its cold tail")
+            emit("INFO", c_start, f"total file size is {sz}; offload the cold tail to a separate cold history file to avoid tool truncation",
+                 f"{pfx}{csz} incl. cold tail -> {'propose offloading cold tail' if ext else 'offload cold tail'}")
+    check_completed_checkboxes(report, doc, readme, md_lines, c_start, inv_spans, ext)
+    return c_start, inv_spans
 
 
 # --- the invariants register -------------------------------------------------
@@ -831,8 +853,8 @@ def table_cells(line):
 
 
 def inside(path, root):
-    real_path, real_root = os.path.realpath(path), os.path.realpath(root)
-    return os.path.commonpath([real_path, real_root]) == real_root
+    rp, rr = real_path(path), real_path(root)
+    return rp == rr or rp.startswith(rr + os.sep) if rr != os.sep else rp.startswith(os.sep)
 
 
 def pipe_tables(lines):
@@ -856,9 +878,9 @@ def pipe_tables(lines):
 def register_tables(lines, text):
     """The Invariants section's lines and its pipe tables (lists of (line number, cells)); None if no section."""
     section = None
-    for number, level, raw in headings(text):
+    for number, level, raw in headings(text, lines):
         if section is None:
-            if re.sub(r"^[\d.)\s]+", "", raw).lower().startswith(INVARIANT_HEADINGS):
+            if norm_heading(raw).startswith(INVARIANT_HEADINGS):
                 section = [number, level, None]
         elif level <= section[1]:
             section[2] = number
@@ -952,94 +974,76 @@ def register_rows(text, doc_path=None):
 
 def validate_register_tables(report, doc, lines, body, tables, seen, shard_lines=(), doc_text=None, is_entry=False):
     refdefs = refdef_map(lines)
-    line_lengths = {number: len(line) for number, line in lines}
-    row_count = 0
-    long_rows = []
-    retired_rows = []
-    active_rows = []
+    stats = {n: (len(ln), utf8_bytes(ln)) for n, ln in lines}
+    row_count, long_rows, retired_rows, active_rows = 0, [], [], []
     if not tables:
-        for number, line in body:
-            if number in shard_lines:
-                continue
-            if re.search(rf"\b{ID_PAT}\b", blank_inline_code(line)):
-                report.add("ERROR", doc, number,
-                           f"invariants must be written as a table ({INVARIANT_COLUMNS}) so they can be checked")
+        for n, ln in body:
+            if n not in shard_lines and re.search(rf"\b{ID_PAT}\b", blank_inline_code(ln)):
+                report.add("ERROR", doc, n, f"invariants must be written as a table ({INVARIANT_COLUMNS}) so they can be checked")
                 break
-    for table in tables:
-        header_number, header = table[0]
-        if len(header) != 6:
-            report.add("ERROR", doc, header_number, f"invariants table needs 6 columns: {INVARIANT_COLUMNS}")
+    for tbl in tables:
+        hn, hdr = tbl[0]
+        if len(hdr) != 6:
+            report.add("ERROR", doc, hn, f"invariants table needs 6 columns: {INVARIANT_COLUMNS}")
             continue
-        if any(cell.strip("`* ").lower() not in names for cell, names in zip(header, INVARIANT_HEADERS)):
-            report.add("ERROR", doc, header_number,
-                       f"invariants table columns must be, in order: {INVARIANT_COLUMNS} "
-                       "(or 类型 / 规则 / 解释位置 / 状态 / 来源)")
+        if any(c.strip("`* ").lower() not in names for c, names in zip(hdr, INVARIANT_HEADERS)):
+            report.add("ERROR", doc, hn, f"invariants table columns must be, in order: {INVARIANT_COLUMNS} (or 类型 / 规则 / 解释位置 / 状态 / 来源)")
             continue
-        if len(table) < 2 or len(table[1][1]) != len(header) \
-                or not all(SEPARATOR_CELL_RE.match(cell) for cell in table[1][1]):
-            report.add("ERROR", doc, header_number,
-                       "invariants table needs a separator row (|---|---|...) under its header")
+        if len(tbl) < 2 or len(tbl[1][1]) != 6 or not all(SEPARATOR_CELL_RE.match(c) for c in tbl[1][1]):
+            report.add("ERROR", doc, hn, "invariants table needs a separator row (|---|---|...) under its header")
             continue
-        for number, cells in table[2:]:
+        for n, cells in tbl[2:]:
             if len(cells) != 6:
-                report.add("ERROR", doc, number, "invariants row does not have 6 cells")
+                report.add("ERROR", doc, n, "invariants row does not have 6 cells")
                 continue
             ident, kind, rule, explained, status, source = cells
             ident, status = ident.strip("`* "), status.strip("`* ")
             if not INVARIANT_ID_RE.match(ident):
-                report.add("ERROR", doc, number, f"invariant ID '{ident}' should look like INV-01")
+                report.add("ERROR", doc, n, f"invariant ID '{ident}' should look like INV-01")
             elif ident in seen:
-                first_doc, first_line = seen[ident]
-                where = f"line {first_line}" if first_doc == doc else f"{os.path.relpath(first_doc, report.root)}:{first_line}"
-                report.add("ERROR", doc, number, f"duplicate invariant ID {ident} (first on {where})")
+                fd, fl = seen[ident]
+                where = f"line {fl}" if fd == doc else f"{os.path.relpath(fd, report.root)}:{fl}"
+                report.add("ERROR", doc, n, f"duplicate invariant ID {ident} (first on {where})")
             else:
-                seen[ident] = (doc, number)
+                seen[ident] = (doc, n)
                 row_count += 1
-                row_len = line_lengths.get(number, 0)
-                if row_len > ROW_INFO_CHARS:
-                    long_rows.append((number, ident, row_len))
+                rl, rb = stats.get(n, (0, 0))
+                if rl > ROW_INFO_CHARS or rb > ROW_INFO_BYTES:
+                    long_rows.append((n, ident, rl, rb))
             if not kind:
-                report.add("ERROR", doc, number,
-                           f"invariant {ident} needs a kind (product promise, architecture invariant, or process rule)")
+                report.add("ERROR", doc, n, f"invariant {ident} needs a kind (product promise, architecture invariant, or process rule)")
             if not rule:
-                report.add("ERROR", doc, number, f"invariant {ident} has an empty rule")
+                report.add("ERROR", doc, n, f"invariant {ident} has an empty rule")
             targets = line_links(explained, refdefs)
             if not targets:
-                report.add("ERROR", doc, number, f"invariant {ident} needs a link to where it is explained")
+                report.add("ERROR", doc, n, f"invariant {ident} needs a link to where it is explained")
             for target in targets:
                 path = None if SCHEME_RE.match(target) else resolve(doc, target)[0]
                 if GENERAL[0] and (path is None or not repository_local(path)):
-                    report.add("INFO", doc, number, f"external explanation not checked: {target}")
-                    continue
-                if path is None or not repository_local(path) or not path.lower().endswith(".md"):
-                    report.add("ERROR", doc, number,
-                               f"invariant {ident} needs a Markdown explanation in the same repository ({target}); "
-                               "URLs, other repositories, and symlink escapes are not explanations")
+                    report.add("INFO", doc, n, f"external explanation not checked: {target}")
+                elif path is None or not repository_local(path) or not path.lower().endswith(".md"):
+                    report.add("ERROR", doc, n, f"invariant {ident} needs a Markdown explanation in the same repository ({target}); URLs, other repositories, and symlink escapes are not explanations")
             if status.lower() not in INVARIANT_STATUSES:
-                report.add("ERROR", doc, number,
-                           f"invariant {ident} status '{status}' must be confirmed, candidate, or retired")
+                report.add("ERROR", doc, n, f"invariant {ident} status '{status}' must be confirmed, candidate, or retired")
             elif status.lower() == "retired":
-                retired_rows.append((number, ident))
+                retired_rows.append((n, ident))
             else:
-                active_rows.append((number, ident))
+                active_rows.append((n, ident))
             if not source:
-                report.add("ERROR", doc, number,
-                           f"invariant {ident} needs a source (user directive, decision, or date)")
+                report.add("ERROR", doc, n, f"invariant {ident} needs a source (user directive, decision, or date)")
     if active_rows and is_declared_cold_shard(doc, doc_text, is_entry=is_entry):
         report.add("WARN", doc, active_rows[0][0],
-                   f"{len(active_rows)} active (confirmed/candidate) invariant row(s) in cold shard "
-                   f"{os.path.basename(doc)}; routine preflight skips cold shards — move active rules "
-                   "to an active shard or set ssot_tier: warm")
+                   f"{len(active_rows)} active (confirmed/candidate) invariant row(s) in cold shard {os.path.basename(doc)}; "
+                   "routine preflight skips cold shards — move active rules to an active shard or set ssot_tier: warm")
     cold_shard = is_cold_retired_shard(doc, doc_text, row_count, len(retired_rows), len(active_rows), is_entry=is_entry)
     if long_rows and not cold_shard:
-        max_num, max_id, max_len = max(long_rows, key=lambda item: item[2])
-        others = [ident for _, ident, _ in long_rows if ident != max_id][:3]
+        top, lim_s, top_s, _, clim = row_limit_summary(long_rows, ROW_INFO_CHARS, ROW_INFO_BYTES)
+        others = [ident for _, ident, _, _ in long_rows if ident != top[1]][:3]
         extra = f"; also {', '.join(others)}{', ...' if len(long_rows) > 4 else ''}" if others else ""
-        report.add("INFO", doc, max_num,
-                   f"{len(long_rows)} register row(s) exceed {ROW_INFO_CHARS} characters "
-                   f"(longest: {max_id} at {max_len} chars{extra}); "
+        report.add("INFO", doc, top[0],
+                   f"{len(long_rows)} register row(s) exceed {lim_s} (longest: {top[1]} at {top_s}{extra}); "
                    "keep each row to a concise constraint and move prose/history to Explained in")
-        report.add_compaction(doc, f"{len(long_rows)} long rows >{ROW_INFO_CHARS} chars -> trim rows")
+        report.add_compaction(doc, f"{len(long_rows)} long rows {clim} -> trim rows")
     if len(retired_rows) >= RETIRED_INLINE_INFO_ROWS and not cold_shard:
         report.add("INFO", doc, retired_rows[0][0],
                    f"{len(retired_rows)} retired invariant row(s) inline in {os.path.basename(doc)}; "
@@ -1057,15 +1061,15 @@ def looks_like_invariants_table(table):
     return any(INVARIANT_ID_RE.match(cells[0].strip("`* ")) for _, cells in table[1:] if cells)
 
 
-def invariants_sections(text):
+def invariants_sections(text, md_lines=None):
     """Return list of (start_line, end_line_or_None) spans for all INVARIANT_HEADINGS sections."""
     sections = []
     current = None
-    for number, level, raw in headings(text):
+    for number, level, raw in headings(text, md_lines):
         if current is not None and level <= current[1]:
             sections.append((current[0], number))
             current = None
-        if current is None and re.sub(r"^[\d.)\s]+", "", raw).lower().startswith(INVARIANT_HEADINGS):
+        if current is None and norm_heading(raw).startswith(INVARIANT_HEADINGS):
             current = (number, level)
     if current is not None:
         sections.append((current[0], None))
@@ -1073,7 +1077,7 @@ def invariants_sections(text):
 
 
 def shard_register_tables(lines, text):
-    sections = invariants_sections(text)
+    sections = invariants_sections(text, lines)
     if not sections:
         all_tables = pipe_tables(lines)
         inv_tables = [table for table in all_tables if looks_like_invariants_table(table)]
@@ -1104,37 +1108,34 @@ def check_invariants(report, readme, text, ssot_dir):
     inline_rows, _, inline_retired = validate_register_tables(report, readme, lines, body, tables, seen, shard_lines, text, is_entry=True)
     inv_base = "invariants" if GENERAL[0] or os.path.basename(ssot_dir) != "SSOT" else "SSOT/invariants"
     if inline_rows >= INLINE_SHARD_INFO_ROWS:
-        shard_target = (f"{inv_base}/<topic>.md (relative to entry dir)"
-                        if inv_base == "invariants" else f"{inv_base}/<topic>.md")
-        report.add("INFO", readme, None,
-                   f"{inline_rows} inline invariant rows in {os.path.basename(readme)}; "
-                   f"optional topic shards ({shard_target}) keep entry reads small")
+        target = f"{inv_base}/<topic>.md (relative to entry dir)" if inv_base == "invariants" else f"{inv_base}/<topic>.md"
+        report.add("INFO", readme, None, f"{inline_rows} inline invariant rows in {os.path.basename(readme)}; optional topic shards ({target}) keep entry reads small")
         if inline_retired >= RETIRED_INLINE_INFO_ROWS:
             report.add_compaction(readme, f"{inline_rows} inline; {inline_retired} retired -> propose sharding into {inv_base}/<topic>.md + {inv_base}/retired.md")
         else:
             report.add_compaction(readme, f"{inline_rows} inline -> propose sharding into {inv_base}/<topic>.md")
     elif inline_retired >= RETIRED_INLINE_INFO_ROWS:
-        act = (f"move to {inv_base}/retired.md" if any(is_declared_cold_shard(p, t) for p, t in shards)
-               else f"propose {inv_base}/retired.md")
+        act = f"move to {inv_base}/retired.md" if any(is_declared_cold_shard(p, t) for p, t in shards) else f"propose {inv_base}/retired.md"
         report.add_compaction(readme, f"{inline_retired} retired -> {act}")
     cold_shards = set()
-    for shard_path, shard_text in shards:
-        shard_lines_md = list(markdown_lines(shard_text))
-        sbody, stables = shard_register_tables(shard_lines_md, shard_text)
-        shard_rows, is_cold, _ = validate_register_tables(report, shard_path, shard_lines_md, sbody, stables, seen, (), shard_text)
+    for sp, st in shards:
+        sl = list(markdown_lines(st))
+        sb, stbl = shard_register_tables(sl, st)
+        srows, is_cold, _ = validate_register_tables(report, sp, sl, sb, stbl, seen, (), st)
+        sb_len = utf8_bytes(st)
         if is_cold:
-            cold_shards.add(shard_path)
-            if len(shard_text) > COLD_SHARD_TRUNC_CHARS:
-                report.add("INFO", shard_path, None,
-                           f"cold retired shard is {len(shard_text)} characters (>{COLD_SHARD_TRUNC_CHARS}); "
-                           "split by year or topic to avoid tool truncation")
-                report.add_compaction(shard_path, f"cold shard {len(shard_text)} chars -> split cold archive")
-        elif len(shard_text) > SHARD_INFO_CHARS or shard_rows > SHARD_INFO_ROWS:
-            report.add("INFO", shard_path, None,
-                       f"invariants shard is {len(shard_text)} characters and {shard_rows} row(s) "
-                       f"(>{SHARD_INFO_CHARS} chars or >{SHARD_INFO_ROWS} rows); "
-                       "split by sub-topic or trim rows to avoid tool truncation")
-            report.add_compaction(shard_path, f"{len(shard_text)} chars/{shard_rows} rows -> split shard")
+            cold_shards.add(sp)
+            if len(st) > COLD_SHARD_TRUNC_CHARS or sb_len > COLD_SHARD_TRUNC_BYTES:
+                sz, csz = fmt_size(len(st), sb_len, COLD_SHARD_TRUNC_CHARS, COLD_SHARD_TRUNC_BYTES)
+                report.add("INFO", sp, None, f"cold retired shard is {sz}; split by year or topic to avoid tool truncation")
+                report.add_compaction(sp, f"cold shard {csz} -> split cold archive")
+        elif len(st) > SHARD_INFO_CHARS or sb_len > SHARD_INFO_BYTES or srows > SHARD_INFO_ROWS:
+            if len(st) > SHARD_INFO_CHARS or srows > SHARD_INFO_ROWS:
+                sz, csz = f"{len(st)} characters and {srows} row(s) (>{SHARD_INFO_CHARS} chars or >{SHARD_INFO_ROWS} rows)", f"{len(st)} chars"
+            else:
+                sz, csz = f"{sb_len} bytes ({len(st)} chars) and {srows} row(s) (>{SHARD_INFO_BYTES} bytes)", f"{sb_len} bytes"
+            report.add("INFO", sp, None, f"invariants shard is {sz}; split by sub-topic or trim rows to avoid tool truncation")
+            report.add_compaction(sp, f"{csz}/{srows} rows -> split shard")
     return shards, cold_shards
 
 
@@ -1193,14 +1194,14 @@ HISTORY_DIRS = {"decisions", "research"}
 SKIP_FILES = {"STATUS.md", "HISTORY.md", "_manifest.md"}  # v2 ledgers: never current guidance
 
 
-def path_mentions(ssot_dir, doc, text, cold_start=None, inverted_spans=()):
+def path_mentions(ssot_dir, doc, text, cold_start=None, inverted_spans=(), md_lines=None):
     """Yield (line, path, line_text) for inline code spans that hold only a path.
     A link's own label is skipped: the link target is what the link check tests."""
     relative = os.path.relpath(doc, ssot_dir).split(os.sep)
     if HISTORY_DIRS & {part.lower() for part in relative[:-1]} or ".bootstrap" in relative \
             or relative[-1] in SKIP_FILES:
         return
-    for number, line in markdown_lines(text):
+    for number, line in (markdown_lines(text) if md_lines is None else md_lines):
         if in_cold_region(number, cold_start, inverted_spans):
             continue
         labels = [m.span() for m in LABEL_RE.finditer(line)] + [m.span() for m in REF_LABEL_RE.finditer(line)]
@@ -1221,24 +1222,33 @@ class PathIndex:
 
     def __init__(self, mentions):
         self.exact = {path for path, is_exact in mentions if is_exact}
+        self.exact_roots = {path.split("/", 1)[0] for path in self.exact}
         self.loose = {}
         for path, is_exact in mentions:
             if not is_exact:
                 self.loose.setdefault(path.rsplit("/", 1)[-1], set()).add(path)
+        self.loose_keys = set(self.loose)
 
     def matching(self, path):
         """Yield (mention, exact) for every mention that `path` falls under."""
+        if not self.exact and not self.loose:
+            return
         parts = path.split("/")
+        has_exact = bool(self.exact) and parts[0] in self.exact_roots
+        has_loose = bool(self.loose) and any(seg in self.loose_keys for seg in parts)
+        if not has_exact and not has_loose:
+            return
         for end in range(1, len(parts) + 1):
             head = None
-            if self.exact:
+            if has_exact:
                 head = "/".join(parts[:end])
                 if head in self.exact:
                     yield head, True
-            for mention in self.loose.get(parts[end - 1], ()):
-                head = head or "/".join(parts[:end])
-                if head == mention or head.endswith("/" + mention):
-                    yield mention, False
+            if has_loose:
+                for mention in self.loose.get(parts[end - 1], ()):
+                    head = head or "/".join(parts[:end])
+                    if head == mention or head.endswith("/" + mention):
+                        yield mention, False
 
 
 def present_paths(top):
@@ -1325,7 +1335,7 @@ def check_removed_paths(report, ssot_dir, mentions, since):
     if not mentions and not since:
         return
     try:
-        top = os.path.realpath(git_output(ssot_dir, "rev-parse", "--show-toplevel").rstrip("\n"))
+        top = real_path(git_output(ssot_dir, "rev-parse", "--show-toplevel").rstrip("\n"))
     except FileNotFoundError:
         if since:
             report.unchecked.append(f"--since {since}: git is not available")
@@ -1345,7 +1355,7 @@ def check_removed_paths(report, ssot_dir, mentions, since):
     if head == GIT_NO:
         if since:
             report.unchecked.append(f"--since {since}: repository has no commits")
-        return  # no commits yet, so nothing has been removed
+        return
     if head != 0:
         report.unchecked.append(f"mentions of removed files: git failed ({stderr.strip() or head})")
         return
@@ -1354,18 +1364,18 @@ def check_removed_paths(report, ssot_dir, mentions, since):
         return
     if not mentions:
         return
-    pending = {}  # (doc, (path, exact)) -> [(line, text)]
-    for doc, number, written, text in mentions:
+    pending = {}
+    for doc, num, written, text in mentions:
         if written.startswith(("./", "../")):
             full = os.path.normpath(os.path.join(os.path.dirname(doc), written))
             if os.path.lexists(full) or not inside(full, top):
                 continue
-            key = (os.path.relpath(os.path.realpath(full), top).replace(os.sep, "/"), True)
+            key = (os.path.relpath(real_path(full), top).replace(os.sep, "/"), True)
         elif os.path.lexists(os.path.join(top, written)):
             continue
         else:
             key = (written, False)
-        pending.setdefault((doc, key), []).append((number, text))
+        pending.setdefault((doc, key), []).append((num, text))
     if not pending:
         return
     try:
@@ -1385,41 +1395,35 @@ def check_removed_paths(report, ssot_dir, mentions, since):
     for (doc, key), places in sorted(pending.items(), key=lambda item: (item[0][0], item[1][0][0])):
         matches = events.get(key)
         if not matches:
-            unknown += 1  # never in the history we have: a runtime path, a planned file, or an abbreviation
+            unknown += 1
             continue
-        commits = {commit for _, commit, _, _ in matches} - {None}
+        commits = {c for _, c, _, _ in matches} - {None}
         places = [(n, t) for n, t in places if not any(c.startswith(h) for h in HEX_RE.findall(t) for c in commits)]
         if not places:
-            continue  # the line names the commit that removed the file: a deliberate mention of the past
+            continue
         old, commit, date, new = matches[0]
         if recent is not None and commit is not None and commit not in recent:
             older += 1
             continue
         path = key[0]
-        itself = [event for event in matches if event[0] == path or event[0].endswith("/" + path)]
+        itself = [ev for ev in matches if ev[0] == path or ev[0].endswith("/" + path)]
         when = f"in {commit[:10]} ({date})" if commit else "in uncommitted changes"
         if not itself:
             name = f"`{path}` (a folder)"
-        elif len({event[0] for event in itself}) > 1:
-            name = f"`{path}` (matches {len({event[0] for event in itself})} removed files; the newest is `{old}`)"
+        elif len({ev[0] for ev in itself}) > 1:
+            name = f"`{path}` (matches {len({ev[0] for ev in itself})} removed files; the newest is `{old}`)"
         else:
             name = f"`{path}`" if old == path else f"`{path}` (`{old}`)"
-        moved = itself and new and new in present
-        what = f"was moved to `{new}` {when}" if moved else f"was removed {when}"
+        what = f"was moved to `{new}` {when}" if (itself and new and new in present) else f"was removed {when}"
         also = f" (also line {', '.join(str(n) for n, _ in places[1:])})" if len(places) > 1 else ""
         report.add("WARN", doc, places[0][0], f"{name} {what}{also}")
         found += 1
     if found:
-        report.add("INFO", None, None,
-                   f"{found} mention(s) of files that no longer exist: correct the ones that describe current "
-                   "code; a deliberate mention of the past may stay, and naming the removing commit on its line "
-                   "silences this warning")
+        report.add("INFO", None, None, f"{found} mention(s) of files that no longer exist: correct the ones that describe current code; a deliberate mention of the past may stay, and naming the removing commit on its line silences this warning")
     if older:
-        report.add("INFO", None, None, f"{older} mention(s) of files removed before {since} are not listed; "
-                                       "run without --since to see them")
+        report.add("INFO", None, None, f"{older} mention(s) of files removed before {since} are not listed; run without --since to see them")
     if unknown and shallow:
-        report.add("INFO", None, None, "this clone has shallow history, so files removed before its oldest "
-                                       "commit are not recognised")
+        report.add("INFO", None, None, "this clone has shallow history, so files removed before its oldest commit are not recognised")
 
 
 # --- confirmed invariants ------------------------------------------------------
@@ -1436,13 +1440,12 @@ DATE_RE = re.compile(r"\b\d{4}-\d{2}-\d{2}\b")
 
 
 def check_confirmed(report, readme, text, since, ssot_dir=None, current_shards=()):
-    base, directory = since or "HEAD", os.path.dirname(readme)
-    entry = os.path.basename(readme)
+    base, directory, entry = since or "HEAD", os.path.dirname(readme), os.path.basename(readme)
     ssot_dir = ssot_dir or directory
     try:
         code, stderr = git(directory, "rev-parse", "--verify", "--quiet", f"{base}:./{entry}")
         if code == GIT_NO:
-            return  # no commit yet, or the README is newer than the base
+            return
         if code != 0:
             if "not a git repository" in stderr:
                 report.add("INFO", None, None, "not in a git work tree, so changes to confirmed invariants were not checked")
@@ -1451,22 +1454,20 @@ def check_confirmed(report, readme, text, since, ssot_dir=None, current_shards=(
             return
         old_readme = git_output(directory, "cat-file", "blob", f"{base}:./{entry}")
         if front_matter(old_readme).get("ssot_format") not in {"3", FORMAT, "5"}:
-            return  # a v2 base has other columns; the migration's own check covers its rows
+            return
         old = register_rows(old_readme, readme)
-        # Also load any register shards linked from base commit's ## Invariants section.
         old_lines = list(markdown_lines(old_readme))
         old_found = register_tables(old_lines, old_readme)
         old_links = non_table_invariants_links(old_lines, old_found[0]) if old_found else []
         if old_links:
-            git_top = os.path.realpath(git_output(directory, "rev-parse", "--show-toplevel").strip())
-            real_dir = os.path.realpath(directory)
-            real_readme = os.path.join(real_dir, entry)
+            git_top = real_path(git_output(directory, "rev-parse", "--show-toplevel").strip())
+            real_readme = os.path.join(real_path(directory), entry)
             seen_old = set()
             for _, target in old_links:
                 if not is_local_link(target):
                     continue
-                shard_path, _ = resolve(readme, target)
-                if shard_path == readme or shard_path in seen_old or not shard_path.lower().endswith(".md"):
+                sp, _ = resolve(readme, target)
+                if sp == readme or sp in seen_old or not sp.lower().endswith(".md"):
                     continue
                 old_abs, _ = resolve(real_readme, target)
                 if os.path.commonpath([old_abs, git_top]) != git_top:
@@ -1474,17 +1475,17 @@ def check_confirmed(report, readme, text, since, ssot_dir=None, current_shards=(
                 rel = os.path.relpath(old_abs, git_top).replace(os.sep, "/")
                 if rel.startswith(".."):
                     continue
-                scode, sstderr = git(directory, "rev-parse", "--verify", "--quiet", f"{base}:{rel}")
-                if scode == GIT_NO:
+                sc, se = git(directory, "rev-parse", "--verify", "--quiet", f"{base}:{rel}")
+                if sc == GIT_NO:
                     continue
-                if scode != 0:
-                    report.unchecked.append(f"confirmed invariants shard {rel}: git failed ({sstderr.strip() or scode})")
+                if sc != 0:
+                    report.unchecked.append(f"confirmed invariants shard {rel}: git failed ({se.strip() or sc})")
                     continue
-                shard_blob = git_output(directory, "cat-file", "blob", f"{base}:{rel}")
-                if is_register_shard(shard_path, ssot_dir, shard_blob):
-                    seen_old.add(shard_path)
-                    _, old_tables = shard_register_tables(list(markdown_lines(shard_blob)), shard_blob)
-                    for ident, row in rows_from_tables(old_tables, shard_path).items():
+                blob = git_output(directory, "cat-file", "blob", f"{base}:{rel}")
+                if is_register_shard(sp, ssot_dir, blob):
+                    seen_old.add(sp)
+                    _, ot = shard_register_tables(list(markdown_lines(blob)), blob)
+                    for ident, row in rows_from_tables(ot, sp).items():
                         old.setdefault(ident, row)
     except OSError:
         report.add("INFO", None, None, "git is not available, so changes to confirmed invariants were not checked")
@@ -1493,14 +1494,13 @@ def check_confirmed(report, readme, text, since, ssot_dir=None, current_shards=(
         report.unchecked.append(f"confirmed invariants: git failed ({error})")
         return
     new, when = register_rows(text, readme), f"since {since}" if since else "since the last commit"
-    for shard_path, shard_text in current_shards:
-        _, new_tables = shard_register_tables(list(markdown_lines(shard_text)), shard_text)
-        for ident, row in rows_from_tables(new_tables, shard_path).items():
+    for sp, st in current_shards:
+        _, nt = shard_register_tables(list(markdown_lines(st)), st)
+        for ident, row in rows_from_tables(nt, sp).items():
             new.setdefault(ident, row)
-    def comparable(cell, column):
-        if column == 2:  # Exact names and code span contents can be part of the contract.
-            return re.sub(r"(?<!`)(`+)(?!`).*?(?<!`)\1(?!`)|\s+",
-                          lambda m: m[0] if m[1] else " ", cell)
+    def comparable(cell, col):
+        if col == 2:
+            return re.sub(r"(?<!`)(`+)(?!`).*?(?<!`)\1(?!`)|\s+", lambda m: m[0] if m[1] else " ", cell)
         return " ".join(cell.strip("`* ").split()).lower()
 
     approved = []
@@ -1508,19 +1508,17 @@ def check_confirmed(report, readme, text, since, ssot_dir=None, current_shards=(
         if comparable(cells[4], 4) != "confirmed":
             continue
         if ident not in new:
-            report.add("ERROR", old_doc, None, f"confirmed invariant {ident} was removed {when}; restore it "
-                                               "(a rule the user retires keeps its row, with status retired)")
+            report.add("ERROR", old_doc, None, f"confirmed invariant {ident} was removed {when}; restore it (a rule the user retires keeps its row, with status retired)")
             continue
-        new_doc, number, now = new[ident]
-        changed = [name for name, at in (("kind", 1), ("rule", 2), ("status", 4))
-                   if comparable(cells[at], at) != comparable(now[at], at)]
+        new_doc, num, now = new[ident]
+        changed = [nm for nm, at in (("kind", 1), ("rule", 2), ("status", 4)) if comparable(cells[at], at) != comparable(now[at], at)]
         if not changed:
             continue
         dates, before = DATE_RE.findall(now[5]), DATE_RE.findall(cells[5])
-        if any(dates.count(date) > before.count(date) for date in dates):  # a same-day change adds the date again
+        if any(dates.count(d) > before.count(d) for d in dates):
             approved.append(ident)
             continue
-        report.add("ERROR", new_doc, number,
+        report.add("ERROR", new_doc, num,
                    f"confirmed invariant {ident} changed its {' and '.join(changed)} {when}. An editorial correction can cite the existing "
                    "decision; changing the protection requires acceptance. First check this task and existing owners for "
                    "human-decision evidence (memory-model section 3). With matching acceptance, keep only the "
@@ -1530,8 +1528,7 @@ def check_confirmed(report, readme, text, since, ssot_dir=None, current_shards=(
                    "protection and report the conflict. Do not revert only the register to hide disagreement "
                    "with accepted owners or code, or treat a passing check as truth")
     if approved:
-        report.add("INFO", readme, None, f"confirmed invariant(s) {', '.join(approved)} changed {when} with a newly "
-                                         "dated Source; verify the accepted decision and scope, then show each change to the user")
+        report.add("INFO", readme, None, f"confirmed invariant(s) {', '.join(approved)} changed {when} with a newly dated Source; verify the accepted decision and scope, then show each change to the user")
 
 
 BLOCK_MARK_RE = re.compile(r"^<!-- SSOT-(CONTEXT|SKILL):(BEGIN|END) -->$", re.M)
@@ -1551,47 +1548,56 @@ def check_gitignored_links(report, ssot_dir, local_links, entry=None, missing_li
         for doc, num, target, _ in missing_links:
             report.add("ERROR", doc, num, f"broken link: {target}")
         return
+    rel_cache = {}
+
     def rel_in_top(path, dereference=True):
+        ckey = (path, dereference)
+        if ckey in rel_cache:
+            return rel_cache[ckey]
+        res = None
         if dereference:
-            target_path = os.path.realpath(path)
-            if os.path.commonpath([target_path, top]) != top:
-                return None
-            rel = os.path.relpath(target_path, top).replace(os.sep, "/")
-            return None if rel in (".", "") or rel.startswith("../") else rel
+            target_path = real_path(path)
+            if target_path == top or target_path.startswith(top + os.sep):
+                rel = os.path.relpath(target_path, top).replace(os.sep, "/")
+                res = None if rel in (".", "") or rel.startswith("../") else rel
+            rel_cache[ckey] = res
+            return res
         # Preserve in-repo symlinks (both intermediate dirs and leaf) while handling
         # symlinked repo roots; stop at the first in-repo symlink so git check-ignore
         # never fails with "beyond a symbolic link".
         cur = os.path.normpath(os.path.abspath(path))
-        tail, parts = [], None
-        while True:
-            if os.path.realpath(cur) == top:
-                parts = list(reversed(tail)) if tail else None
-            parent, name = os.path.split(cur)
-            if parent == cur:
-                break
-            tail.append(name)
-            cur = parent
-        if not parts:
-            return None
-        prefix = top
-        for idx, part in enumerate(parts):
-            prefix = os.path.join(prefix, part)
-            if os.path.islink(prefix):
-                return "/".join(parts[:idx + 1])
-        return "/".join(parts)
+        if cur.startswith(top + os.sep):
+            parts = cur[len(top) + 1:].split(os.sep)
+        else:
+            tail, parts = [], None
+            while True:
+                if real_path(cur) == top:
+                    parts = list(reversed(tail)) if tail else None
+                    break
+                parent, name = os.path.split(cur)
+                if parent == cur:
+                    break
+                tail.append(name)
+                cur = parent
+        if parts:
+            prefix = top
+            res = "/".join(parts)
+            for idx, part in enumerate(parts):
+                prefix = os.path.join(prefix, part)
+                if os.path.islink(prefix):
+                    res = "/".join(parts[:idx + 1])
+                    break
+        rel_cache[ckey] = res
+        return res
 
     local_entries, missing_entries, unique = [], [], {}
-    for doc, num, target, resolved in local_links:
-        rels = tuple(dict.fromkeys(r for r in (rel_in_top(resolved, False), rel_in_top(resolved, True)) if r))
-        if rels:
-            local_entries.append((doc, num, target, rels))
-            for rel in rels:
-                unique[rel] = None
-    for doc, num, target, resolved in missing_links:
-        rels = tuple(dict.fromkeys(r for r in (rel_in_top(resolved, False), rel_in_top(resolved, True)) if r))
-        missing_entries.append((doc, num, target, rels))
-        for rel in rels:
-            unique[rel] = None
+    for src, dst, require_rel in ((local_links, local_entries, True), (missing_links, missing_entries, False)):
+        for doc, num, target, resolved in src:
+            rels = tuple(dict.fromkeys(r for r in (rel_in_top(resolved, False), rel_in_top(resolved, True)) if r))
+            if rels or not require_rel:
+                dst.append((doc, num, target, rels))
+                for rel in rels:
+                    unique[rel] = None
     entry_rel = rel_in_top(entry) if GENERAL[0] and entry else None
     if entry_rel:
         unique[entry_rel] = None
@@ -1629,46 +1635,38 @@ def extract_managed_block(text):
 
 
 def check_instruction_blocks(report, root):
-    tpl_root = os.path.normpath(os.path.join(
-        os.path.dirname(os.path.realpath(__file__)), "..", "..", "..", "ssot-bootstrap", "assets", "templates"))
+    tpl_root = os.path.normpath(os.path.join(os.path.dirname(real_path(__file__)), "..", "..", "..", "ssot-bootstrap", "assets", "templates"))
     if not os.path.isdir(tpl_root):
         return
     def is_zh(s):
         probe = s
         if "ssot_format: 5" in probe:
             hit = F5_ENTRY_RE.search(probe)
-            if hit:
-                ent = (hit.group(1) or hit.group(2)).strip()
-                if ent:
-                    probe = probe.replace(ent, "")
+            ent = (hit.group(1) or hit.group(2)).strip() if hit else ""
+            if ent:
+                probe = probe.replace(ent, "")
         return any(k in probe for k in ("工作流", "长期 context", "保护规则", "回读", "本空间", "建库"))
     checked = set()
     for name in INSTRUCTION_FILES:
         path = os.path.join(root, name)
         if not os.path.isfile(path):
             continue
-        real = os.path.realpath(path)
+        real = real_path(path)
         if real in checked or not inside(real, root):
             continue
         checked.add(real)
         cur, legacy = extract_managed_block(read_text(path))
         if not cur:
             continue
-        lang = "zh" if is_zh(cur) else "en"
-        fmt5 = "ssot_format: 5" in cur
+        lang, fmt5 = ("zh" if is_zh(cur) else "en"), ("ssot_format: 5" in cur)
         tpl = "context-adapter.md" if fmt5 else "adapter-thin.md"
         lt, ft = os.path.join(tpl_root, lang, tpl), os.path.join(tpl_root, tpl)
-        tpl_path = lt if os.path.isfile(lt) else ft if os.path.isfile(ft) else None
-        if not tpl_path:
-            continue
-        exp, _ = extract_managed_block(read_text(tpl_path))
+        tpl_path = lt if os.path.isfile(lt) else (ft if os.path.isfile(ft) else None)
+        exp, _ = extract_managed_block(read_text(tpl_path)) if tpl_path else (None, False)
         if not exp:
             continue
         if tpl_path == ft and ("zh" if is_zh(exp) else "en") != lang:
-            exp_lang = "zh" if is_zh(exp) else "en"
-            report.add("INFO", path, None,
-                       f"managed block is {lang} while installed templates are {exp_lang}; "
-                       f"run the SSOT-CONTEXT installer with --check-block --lang {lang} to verify against {lang} templates")
+            report.add("INFO", path, None, f"managed block is {lang} while installed templates are {'zh' if is_zh(exp) else 'en'}; run the SSOT-CONTEXT installer with --check-block --lang {lang} to verify against {lang} templates")
             continue
         if fmt5:
             hit = F5_ENTRY_RE.search(cur)
@@ -1677,13 +1675,8 @@ def check_instruction_blocks(report, root):
                 continue
             exp = exp.replace("ENTRY", entry)
         if cur != exp:
-            note = " (legacy SSOT-SKILL markers)" if legacy else ""
-            report.add("INFO", path, None,
-                       f"managed block differs from installed templates{note}; "
-                       "run the SSOT-CONTEXT installer with --check-block / --sync-block")
+            report.add("INFO", path, None, f"managed block differs from installed templates{' (legacy SSOT-SKILL markers)' if legacy else ''}; run the SSOT-CONTEXT installer with --check-block / --sync-block")
 
-
-# --- reviewed_through ----------------------------------------------------------
 
 def check_reviewed_through(report, readme, value, since=None):
     if not value:
@@ -1692,39 +1685,29 @@ def check_reviewed_through(report, readme, value, since=None):
         report.add("WARN", readme, 1, "reviewed_through is still the template placeholder")
         return
     if not SHA_RE.match(value):
-        report.add("ERROR", readme, 1,
-                   f"reviewed_through '{value}' must be a commit SHA; a branch name or HEAD moves on its own")
+        report.add("ERROR", readme, 1, f"reviewed_through '{value}' must be a commit SHA; a branch name or HEAD moves on its own")
         return
     directory = os.path.dirname(readme)
     try:
         code, stderr = git(directory, "rev-parse", "--is-inside-work-tree")
         if code != 0:
-            if "not a git repository" in stderr:
-                report.unchecked.append("reviewed_through: SSOT is not inside a git work tree")
-            else:
-                report.unchecked.append(f"reviewed_through: git failed ({stderr.strip() or f'exit code {code}'})")
+            report.unchecked.append("reviewed_through: SSOT is not inside a git work tree" if "not a git repository" in stderr else f"reviewed_through: git failed ({stderr.strip() or f'exit code {code}'})")
             return
         exists, _ = git(directory, "rev-parse", "--verify", "--quiet", f"{value}^{{commit}}")
         if exists == GIT_NO:
-            report.add("WARN", readme, 1,
-                       f"reviewed_through {value} is not a commit in this repository (rebased or squashed?); "
-                       "ask the user where catch-up should start")
+            report.add("WARN", readme, 1, f"reviewed_through {value} is not a commit in this repository (rebased or squashed?); ask the user where catch-up should start")
             return
         ancestor = git(directory, "merge-base", "--is-ancestor", value, "HEAD")[0] if exists == 0 else exists
         if ancestor == GIT_NO:
-            report.add("WARN", readme, 1,
-                       f"reviewed_through {value} is not an ancestor of HEAD, so the commits since then "
-                       "are not a simple range; ask the user where catch-up should start")
+            report.add("WARN", readme, 1, f"reviewed_through {value} is not an ancestor of HEAD, so the commits since then are not a simple range; ask the user where catch-up should start")
         elif ancestor != 0:
             report.unchecked.append(f"reviewed_through: git failed with exit code {ancestor}")
         elif not since:
             try:
-                shallow = git_output(directory, "rev-parse", "--is-shallow-repository").strip() == "true"
-                if not shallow:
+                if git_output(directory, "rev-parse", "--is-shallow-repository").strip() != "true":
                     behind = int(git_output(directory, "rev-list", "--count", f"{value}..HEAD").strip())
                     if behind >= REVIEWED_LAG_INFO_COMMITS:
-                        report.add("INFO", readme, 1,
-                                   f"reviewed_through {value} is {behind} commits behind HEAD; consider a Doctor catch-up review")
+                        report.add("INFO", readme, 1, f"reviewed_through {value} is {behind} commits behind HEAD; consider a Doctor catch-up review")
             except (GitError, ValueError):
                 pass
     except OSError:
@@ -1769,18 +1752,40 @@ def repository_root(directory):
     return os.path.realpath(fallback)
 
 
-def repository_local(path):
+def load_submodule_roots(root):
+    gm = os.path.join(root, ".gitmodules")
+    roots = set()
+    if not os.path.isfile(gm):
+        return roots
+    for line in read_text(gm).splitlines():
+        match = re.match(r"^\s*path\s*=\s*(.+?)\s*$", line)
+        if match:
+            sub = os.path.normpath(os.path.join(root, match.group(1).strip("'\"")))
+            if inside(sub, root) and real_path(sub) != real_path(root):
+                roots.add(real_path(sub))
+    return roots
+
+
+def nested_git_root(path):
     if not inside(path, REPO_ROOT[0]):
-        return False
+        return None
     # A nested worktree/submodule owns different facts even inside this root.
-    directory = os.path.realpath(path)
+    directory = real_path(path)
     if not os.path.isdir(directory):
         directory = os.path.dirname(directory)
-    while directory != REPO_ROOT[0]:
-        if os.path.lexists(os.path.join(directory, ".git")):
-            return False
-        directory = os.path.dirname(directory)
-    return True
+    root = real_path(REPO_ROOT[0])
+    while directory != root:
+        if directory in SUBMODULE_ROOTS or os.path.lexists(os.path.join(directory, ".git")):
+            return directory
+        parent = os.path.dirname(directory)
+        if parent == directory:
+            break
+        directory = parent
+    return None
+
+
+def repository_local(path):
+    return inside(path, REPO_ROOT[0]) and nested_git_root(path) is None
 
 
 def checked_documents(ssot_dir, readme, report, shard_paths=()):
@@ -1846,8 +1851,7 @@ def main(argv):
     if since == "" or (since and since.startswith("-")):
         parser.error("--since requires a commit")
     selected = os.path.abspath(args.entry)
-    named_entry = os.path.isfile(selected)
-    scoped = args.owners is not None
+    named_entry, scoped = os.path.isfile(selected), args.owners is not None
     if scoped and not named_entry:
         parser.error("--owners requires an explicit entry file")
     space_root = None
@@ -1863,26 +1867,26 @@ def main(argv):
         return 2
     documents = None
     if scoped:
-        documents = {os.path.abspath(os.path.join(ssot_dir, name)) for name in args.owners}
-        documents.add(selected)
+        documents = {os.path.abspath(os.path.join(ssot_dir, name)) for name in args.owners} | {selected}
         entry_dir = os.path.realpath(ssot_dir)
         if os.path.realpath(selected) != os.path.join(entry_dir, os.path.basename(selected)):
             parser.error("select the entry file by its actual path")
+    _anchor_cache.clear()
+    _real_cache.clear()
+    UNDECODABLE.clear()
+    SUBMODULE_ROOTS.clear()
     report = Report(ssot_dir, documents)
     REPO_ROOT[0] = space_root or repository_root(ssot_dir)
+    SUBMODULE_ROOTS.update(load_submodule_roots(REPO_ROOT[0]))
     readme = selected if named_entry else os.path.join(ssot_dir, "README.md")
     GENERAL[0] = False
-
-    legacy = False
-    shards = []
-    cold_shards = set()
-    text = meta = None
-    if named_entry and os.path.isfile(readme) and inside(readme, space_root or os.path.realpath(ssot_dir)):
+    legacy, shards, cold_shards, text, meta = False, [], set(), None, None
+    if named_entry and os.path.isfile(readme) and inside(readme, space_root or real_path(ssot_dir)):
         text = read_text(readme)
         meta = front_matter(text)
         if meta.get("ssot_format") == "5":
             GENERAL[0] = True
-            REPO_ROOT[0] = space_root or os.path.realpath(ssot_dir)
+            REPO_ROOT[0] = space_root or real_path(ssot_dir)
     if not os.path.isfile(readme):
         report.add("ERROR", readme, None, "missing SSOT/README.md (the entry every task starts from)")
     elif not repository_local(readme):
@@ -1897,20 +1901,18 @@ def main(argv):
         if space_root and not GENERAL[0]:
             parser.error("--space-root requires a format-5 entry")
         if GENERAL[0]:
-            REPO_ROOT[0] = space_root or os.path.realpath(ssot_dir)
+            REPO_ROOT[0] = space_root or real_path(ssot_dir)
             if not scoped:
                 report.add("INFO", readme, None, "format 5: selected entry and direct local owners; external routes are not read")
         selected_repo_readme = scoped and meta.get("ssot_format") == FORMAT and os.path.basename(readme) == "README.md"
         if named_entry and not (GENERAL[0] or selected_repo_readme):
-            report.add("ERROR", readme, 1,
-                       "a named entry file requires ssot_format: 5 or a format-4 README with --owners "
-                       "(for format 4, pass the SSOT directory instead)")
+            report.add("ERROR", readme, 1, "a named entry file requires ssot_format: 5 or a format-4 README with --owners (for format 4, pass the SSOT directory instead)")
             return report.finish(readme)
         if scoped:
             names = []
             for path in sorted(documents):
                 relative = os.path.relpath(path, ssot_dir)
-                if not inside(path, REPO_ROOT[0]) or os.path.realpath(path) != os.path.normpath(os.path.join(entry_dir, relative)):
+                if not inside(path, REPO_ROOT[0]) or real_path(path) != os.path.normpath(os.path.join(entry_dir, relative)):
                     parser.error(f"select a file inside the repository or space by its actual path: {relative}")
                 names.append(relative)
             report.add("INFO", readme, None, f"selected files: {', '.join(names)}. Other link targets and Git history excluded")
@@ -1923,46 +1925,38 @@ def main(argv):
                 check_reviewed_through(report, readme, meta.get("reviewed_through"), since)
             if not GENERAL[0] and not scoped:
                 for path in ledgers(ssot_dir):
-                    report.add("WARN", path, None,
-                               "v2 ledger left after migration; extract anything still valid, then remove it")
+                    report.add("WARN", path, None, "v2 ledger left after migration; extract anything still valid, then remove it")
         elif meta.get("ssot_format") in {"2", "3"} or ("ssot_format" not in meta and any(ledgers(ssot_dir))):
             legacy = True
-            version = meta.get("ssot_format", "2")
-            report.add("INFO", readme, None, f"v{version} layout; use ssot-bootstrap to migrate to format 4")
+            report.add("INFO", readme, None, f"v{meta.get('ssot_format', '2')} layout; use ssot-bootstrap to migrate to format 4")
             report.unchecked.append("legacy SSOT requires migration; format 4 ownership was not checked")
         else:
-            report.add("ERROR", readme, 1, "front matter needs supported `ssot_format: 4` or `ssot_format: 5`; "
-                       "for an unknown format, identify/upgrade its writer without downgrading the data")
+            report.add("ERROR", readme, 1, "front matter needs supported `ssot_format: 4` or `ssot_format: 5`; for an unknown format, identify/upgrade its writer without downgrading the data")
 
     checkpoint = os.path.join(ssot_dir, "BOOTSTRAP.md")
     if not GENERAL[0] and not scoped and os.path.isfile(checkpoint):
         report.add("INFO", checkpoint, None, "bootstrap is unfinished; continue it with ssot-bootstrap")
 
     shard_paths = {path for path, _ in shards}
-    mentions = []
-    local_links = [] if not scoped else None
-    missing_links = [] if not scoped else None
+    mentions, local_links, missing_links = [], ([] if not scoped else None), ([] if not scoped else None)
     for doc in checked_documents(ssot_dir, readme, report, shard_paths):
         if not repository_local(doc):
             report.add("ERROR", doc, None, "document leaves the repository (possibly through a symlink)")
             continue
         text = read_text(doc)
-        if doc != readme and doc not in shard_paths and not scoped and not legacy:
-            if is_register_shard(doc, ssot_dir, text):
-                report.add("ERROR", doc, None,
-                           f"unlinked invariants shard is not linked under ## Invariants in {os.path.basename(readme)}")
-        cold_info = check_document_bloat(report, doc, readme, ssot_dir, text, shard_paths, cold_shards) if not legacy else None
+        md_lines = list(markdown_lines(text))
+        if doc != readme and doc not in shard_paths and not scoped and not legacy and is_register_shard(doc, ssot_dir, text):
+            report.add("ERROR", doc, None, f"unlinked invariants shard is not linked under ## Invariants in {os.path.basename(readme)}")
+        cold_info = check_document_bloat(report, doc, readme, ssot_dir, text, shard_paths, cold_shards, md_lines) if not legacy else None
         if cold_info != "cold":
             c_start, c_inv = cold_info if isinstance(cold_info, tuple) else (None, ())
-            mentions.extend((doc, number, path, line) for number, path, line in path_mentions(ssot_dir, doc, text, c_start, c_inv))
-        for number, target in link_targets(text):
+            mentions.extend((doc, number, path, line) for number, path, line in path_mentions(ssot_dir, doc, text, c_start, c_inv, md_lines))
+        for number, target in link_targets(text, md_lines):
             check_link(report, doc, number, target, local_links, missing_links)
-        wrapped = list(hard_wrapped_paragraphs(text))
+        wrapped = list(hard_wrapped_paragraphs(text, md_lines))
         if wrapped and not legacy:
             lines = ", ".join(str(n) for n in wrapped[:5]) + (", ..." if len(wrapped) > 5 else "")
-            report.add("WARN", doc, wrapped[0],
-                       f"{len(wrapped)} paragraph(s) are broken across short lines (lines {lines}); "
-                       "write each paragraph or list item as one line and let the editor wrap it")
+            report.add("WARN", doc, wrapped[0], f"{len(wrapped)} paragraph(s) are broken across short lines (lines {lines}); write each paragraph or list item as one line and let the editor wrap it")
     if not scoped:
         check_gitignored_links(report, ssot_dir, local_links, readme, missing_links)
         check_removed_paths(report, ssot_dir, mentions, since)
@@ -1970,7 +1964,6 @@ def main(argv):
             check_instruction_blocks(report, REPO_ROOT[0])
     for path in sorted(UNDECODABLE):
         report.add("WARN", path, None, "not valid UTF-8; undecodable bytes were replaced while checking")
-
     surface = readme if GENERAL[0] else ssot_dir
     return report.finish(surface + " (selected files only)" if scoped else surface)
 

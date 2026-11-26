@@ -3139,6 +3139,141 @@ class CheckerTest(unittest.TestCase):
         self.assertEqual(code, 0, out_t3_f5)
         self.assertIn("compaction candidates (1): CONTEXT.md (54 inline; 4 retired -> propose sharding into invariants/<topic>.md + invariants/retired.md)", out_t3_f5)
 
+    def test_submodule_links_validate_populated_targets_and_handle_unpopulated_cleanly(self):
+        self.valid()
+        # 1. Populated nested git repo / submodule inside repo root: valid file + heading anchor -> 0 warnings.
+        sub_dir = os.path.join(self.repo, "plugins", "child-mod")
+        os.makedirs(sub_dir)
+        subprocess.run(["git", "init", "-q", sub_dir], check=True)
+        with open(os.path.join(sub_dir, "README.md"), "w", encoding="utf-8") as handle:
+            handle.write("# Child Plugin\n\n## Runtime Contract\n\nDetails.\n")
+        self.write(
+            "notes.md",
+            "# Notes\n\n"
+            "- [Root](../plugins/child-mod)\n"
+            "- [Doc](../plugins/child-mod/README.md)\n"
+            "- [Section](../plugins/child-mod/README.md#runtime-contract)\n",
+        )
+        out_ok = self.assert_clean()
+        self.assertIn("0 error(s), 0 warning(s)", out_ok)
+        self.assertNotIn("link leaves the repository", out_ok)
+
+        # 2. Broken file inside populated submodule -> ERROR.
+        self.write("notes.md", "# Notes\n\n- [Missing](../plugins/child-mod/absent.md)\n")
+        self.assert_error("broken link (in nested repository): ../plugins/child-mod/absent.md")
+
+        # 3. Broken heading anchor inside populated submodule -> ERROR.
+        self.write("notes.md", "# Notes\n\n- [BadAnchor](../plugins/child-mod/README.md#no-such-heading)\n")
+        self.assert_error("missing heading anchor: ../plugins/child-mod/README.md#no-such-heading")
+
+        # 4. Unpopulated submodule declared in .gitmodules (empty dir, no .git) -> INFO, 0 errors, 0 warnings.
+        empty_sub = os.path.join(self.repo, "services", "uninit-svc")
+        os.makedirs(empty_sub)
+        with open(os.path.join(self.repo, ".gitmodules"), "w", encoding="utf-8") as handle:
+            handle.write('[submodule "services/uninit-svc"]\n\tpath = services/uninit-svc\n\turl = https://example.test/uninit.git\n')
+        self.write("notes.md", "# Notes\n\n- [Uninit](../services/uninit-svc/README.md#api)\n")
+        out_uninit = self.assert_clean()
+        self.assertIn("0 error(s), 0 warning(s)", out_uninit)
+        self.assertIn("nested repository/submodule is not populated here", out_uninit)
+        self.assertNotIn("link leaves the repository", out_uninit)
+
+        # 5. Unpopulated stub containing only .git (like pre-commit snapshot) -> INFO, 0 errors, 0 warnings.
+        stub_sub = os.path.join(self.repo, "plugins", "stub-mod")
+        os.makedirs(os.path.join(stub_sub, ".git"))
+        self.write("notes.md", "# Notes\n\n- [Stub](../plugins/stub-mod/README.md)\n")
+        out_stub = self.assert_clean()
+        self.assertIn("0 error(s), 0 warning(s)", out_stub)
+        self.assertIn("nested repository/submodule is not populated here", out_stub)
+
+        # 6. Link truly leaving the repository still emits WARN.
+        self.write("notes.md", "# Notes\n\n- [Sibling](../../other-repo/README.md)\n")
+        out_leave = self.assert_clean()
+        self.assertIn("link leaves the repository", out_leave)
+
+        # 7. Invariant Explained in pointing into a submodule is still rejected as ERROR.
+        self.write("notes.md", "# Notes\n\nClean.\n")
+        self.invariant_row("| INV-02 | architecture invariant | Rule | [Sub](../plugins/child-mod/README.md#runtime-contract) | confirmed | user, 2026-06-01 |")
+        self.assert_error("needs a Markdown explanation in the same repository")
+
+    def test_cjk_utf8_byte_thresholds_and_chinese_cold_classification(self):
+        self.valid()
+        # 1. Healthy CJK warm doc (~6,400 chars / ~19,200 bytes) stays clean.
+        self.write("healthy-zh.md", "# 中文模块\n\n" + ("中文说明段落用于验证健康长度不会误报。" * 320) + "\n")
+        out_healthy = self.assert_clean()
+        self.assertIn("0 error(s), 0 warning(s)", out_healthy)
+        self.assertNotIn("compaction candidates", out_healthy)
+
+        # 2. Oversized CJK warm doc (~9,000 chars / ~27,000 bytes, under 16k chars but over 24k UTF-8 bytes)
+        #    surfaces as INFO + compaction candidate across 6 H2 sections.
+        sections = "\n\n".join(f"## 主题{i}\n\n" + ("这是超过两万四千字节的中文说明。" * 100) for i in range(1, 7))
+        self.write("big-zh.md", "# 中文巨型文档\n\n" + sections + "\n")
+        out_big = self.assert_clean()
+        self.assertIn("0 error(s), 0 warning(s)", out_big)
+        self.assertIn("past the UTF-8 reading budget", out_big)
+        self.assertIn("compaction candidates (1): big-zh.md", out_big)
+        self.assertIn("6 sections -> split by topic", out_big)
+        os.remove(os.path.join(self.ssot, "big-zh.md"))
+
+        # 3. CJK invariant row >900 bytes (<500 chars) and mixed char+byte rows.
+        zh_rule = "这是用来测试中文单行不变量字节上限的规则描述" * 16  # 352 chars, 1,056 bytes
+        self.invariant_row(f"| INV-02 | 流程规则 | {zh_rule} | [架构](architecture.md#failure-and-recovery) | confirmed | 用户，2026-06-01 |")
+        out_row = self.assert_clean()
+        self.assertIn("exceed 900 bytes", out_row)
+        self.assertIn("compaction candidates (1): README.md (1 long rows >900 bytes -> trim rows)", out_row)
+
+        long_ascii = "x" * 520
+        self.invariant_row(
+            f"| INV-02 | 流程规则 | {zh_rule} | [架构](architecture.md#failure-and-recovery) | confirmed | 用户，2026-06-01 |\n"
+            f"| INV-03 | process rule | {long_ascii} | [Arch](architecture.md#failure-and-recovery) | confirmed | user, 2026-06-01 |"
+        )
+        out_mixed = self.assert_clean()
+        self.assertIn("exceed 500 characters or 900 bytes", out_mixed)
+        self.assertIn("INV-02", out_mixed)
+        self.assertIn("INV-03", out_mixed)
+
+        # 4. CJK cold tail >32,000 bytes (<32,000 chars) triggers offload INFO.
+        self.valid()
+        cold_tail_zh = "# 策略\n\n现行规则很短。\n\n## 历史记录（冷读）\n\n" + ("这是旧版本历史归档记录。" * 1000) + "\n"
+        self.write("policy-zh.md", cold_tail_zh)
+        out_tail = self.assert_clean()
+        self.assertIn("0 error(s), 0 warning(s)", out_tail)
+        self.assertIn("including its cold tail; >32000 bytes)", out_tail)
+        self.assertIn("offload cold tail", out_tail)
+        os.remove(os.path.join(self.ssot, "policy-zh.md"))
+
+        # 5. Chinese cold archive dir (04_设计决策历史/) is exempt from reading budget while still checking links;
+        #    Chinese cold index (04_设计决策历史/00_索引.md) catches bloated summary rows (>500 bytes).
+        self.write("04_设计决策历史/2026-11.md", "# 历史决策\n\n" + ("这是一份很长的中文历史决策归档文档。" * 600) + "\n")
+        self.write("topic-历史.md", "# 专题历史\n\n" + ("这是专题历史归档。" * 1200) + "\n")
+        out_cold_zh = self.assert_clean()
+        self.assertIn("0 error(s), 0 warning(s)", out_cold_zh)
+        self.assertNotIn("compaction candidates", out_cold_zh)
+
+        self.write(
+            "04_设计决策历史/00_索引.md",
+            "# 决策索引\n\n| 编号 | 摘要 | 链接 |\n|---|---|---|\n"
+            + "".join(
+                f"| D-0{i} | {'把历史讨论和原话全塞进索引单元格导致膨胀' * 10} | [归档](2026-11.md) |\n"
+                for i in range(1, 4)
+            ),
+        )
+        out_cidx = self.assert_clean()
+        self.assertIn("cold-index table row(s) exceed 500 bytes", out_cidx)
+        self.assertIn("04_设计决策历史/00_索引.md", out_cidx)
+
+        # 6. Format-5 CJK doc >24,000 bytes uses propose split/consolidation (not auto-split).
+        f5_dir = os.path.join(self.repo, "f5zh")
+        os.makedirs(f5_dir)
+        with open(os.path.join(f5_dir, "guide.md"), "w", encoding="utf-8") as handle:
+            handle.write("# 指南\n\n" + ("中文通用空间正文内容超过两万四千字节。" * 500) + "\n")
+        f5_entry = os.path.join(f5_dir, "README.md")
+        with open(f5_entry, "w", encoding="utf-8") as handle:
+            handle.write("---\nssot_format: 5\nlanguage: zh-CN\n---\n\n# 空间\n\n- [指南](guide.md)\n\n## 不变量\n\n暂无。\n")
+        code, out_f5 = self.run_checker(f5_entry)
+        self.assertEqual(code, 0, out_f5)
+        self.assertIn("compaction candidates (1): guide.md (", out_f5)
+        self.assertIn("bytes -> propose split/consolidation)", out_f5)
+
 
 if __name__ == "__main__":
     unittest.main(verbosity=1)
