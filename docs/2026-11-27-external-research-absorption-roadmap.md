@@ -1,6 +1,6 @@
 # 外部前沿论文与开源项目系统调研、多模型评审、Batch 1 实验裁决与长期吸收路线图
 
-**2026-11-27，围绕“系统获取、研究、评价、实验并长期吸收外部前沿论文与开源项目（不限于 Agent 记忆）”的目标，我们完成了跨 5 个研究与工程轨道的 2025–2026 年 11 月一手语料采集（90+ 篇 arXiv 论文、17 个 2026 下半年代表性开源项目及此前 69 仓库扫描基线），组织了多模型独立红队评审（两轮 Codex Astra `gpt-6.2-astra xhigh` + Codex Terra `gpt-6.1-terra medium` + 本会话综合），并在隔离沙箱下执行了 12 次 `gpt-6.1-terra medium` 原生基线预筛试验。** 最终裁决：**保持协议 `5.23` 不变（`+0` 协议词数、不发 `5.24`）**，拒绝“代码-文档同提交卡点”反模式，**正式吸收零模型 token 的显式反向链接只读工具 [`tools/ssot-backlinks.py`](../tools/ssot-backlinks.py)**（经 Astra 8 项安全/解析审计全量加固并通过 9/9 回归测试与 CI 接入），同时将本次基线预筛暴露出的单文档快路径归档回执残留列为 Batch 2 头号实验项，并确立 Batches 2–4 长期重开触发路线图。
+**2026-11-27，围绕“系统获取、研究、评价、实验并长期吸收外部前沿论文与开源项目（不限于 Agent 记忆）”的目标，我们完成了跨 5 个研究与工程轨道的 2025–2026 年 11 月一手语料采集（90+ 篇 arXiv 论文、17 个 2026 下半年代表性开源项目及此前 69 仓库扫描基线），组织了多模型独立红队评审（两轮 Codex Astra `gpt-6.2-astra xhigh` + Codex Terra `gpt-6.1-terra medium` + 本会话综合），并在隔离沙箱下执行了 12 次 `gpt-6.1-terra medium` 原生基线预筛试验。** Batch 1 裁决保持协议 `5.23` 不变、拒绝“代码-文档同提交卡点”反模式、正式吸收零模型 token 的显式反向链接只读工具 [`tools/ssot-backlinks.py`](../tools/ssot-backlinks.py)，并确立 Batches 2–4 重开触发路线图。**后续进展（同日完成）：** Batches 2–4 全量 14 项实证、Codex Astra 第三轮终审、协议 `5.24` 采纳（单文档快路径去回执并守住现行临时窗口与未确认提案）、`tools/ssot-backlinks.py` 5 项存量安全/解析修复（暂缓 `--include-mentions`）与 [`METHOD.md`](../tests/benchmark/METHOD.md) 方法论升级已全部完结，详见 [Batches 2–4 全量实证与协议 `5.24` 报告](2026-11-27-external-research-batches2-4-v5.24.md)。
 
 ## 一、调研范围与一手语料分布
 

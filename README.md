@@ -132,7 +132,7 @@ Updating preserves symlinked skill installs, never rewrites your context documen
 - [Install guide](./INSTALL.md) and [maintenance/recovery reference](./docs/2026-11-24-install-maintenance.md): fresh setup, block sync, upgrade, removal, symlinks, pre-commit guard, and recovery.
 - [Design](./DESIGN.md): why the bundle is shaped this way and what v3 removed.
 - [Stage 5 real-session audit](./docs/2026-11-24-real-session-stage5-audit.md) and [long-term route review](./docs/2026-11-20-context-evolution-route.md): live consumer telemetry, current stage, and next priorities.
-- [External research & absorption roadmap](./docs/2026-11-27-external-research-absorption-roadmap.md) and [`tools/ssot-backlinks.py`](./tools/ssot-backlinks.py): multi-model paper/OSS evaluation, Batch 1 prescreen receipts, Batches 2–4 reopening triggers, and opt-in working-tree reverse-link lookup.
+- [External research roadmap](./docs/2026-11-27-external-research-absorption-roadmap.md), [Batches 2–4 & 5.24 study](./docs/2026-11-27-external-research-batches2-4-v5.24.md), and [`tools/ssot-backlinks.py`](./tools/ssot-backlinks.py): multi-model paper/OSS evaluation, 62-run empirical program, 5.24 closeout standing guard, and opt-in working-tree reverse-link lookup.
 - [Evaluation and recorded release studies](./tests/benchmark/README.md#recorded-studies-and-additional-lanes): paired native trials, cold handoffs, plain-docs controls, and evidence limits.
 - [Evolving research and creative projects](./docs/2026-11-14-evolving-research-and-creative-projects.md) (Chinese guide): practical examples for format-5 spaces.
 - [Changelog](./CHANGELOG.md), [Contributing](./CONTRIBUTING.md), [AGENTS.md](./AGENTS.md), and [Security policy](./SECURITY.md).

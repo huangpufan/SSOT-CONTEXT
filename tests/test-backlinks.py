@@ -242,6 +242,53 @@ class TestSSOTBacklinks(unittest.TestCase):
         self.assertIn("no explicit link in the selected sources", res.stdout)
         self.assertNotIn("no constraints", res.stdout.lower())
 
+    def test_fence_html_comment_multiline_refdef_unmatched_ticks_fifo_and_surrogates(self):
+        # 1) HTML comment opener inside fenced code block must NOT hide links after fence
+        # 2) Refdef-shaped line inside multiline code span closing later on same line must NOT match
+        # 3) Unmatched single backtick must NOT swallow a later valid double-backtick span
+        (self.root / "SSOT" / "hard.md").write_text(
+            "# Hard Cases\n\n"
+            "```\n"
+            "<!-- literal comment opener inside fence\n"
+            "```\n"
+            "After fence: [ok-after-fence](../src/payments/a.py)\n\n"
+            "Start multiline ``code\n"
+            "[fake-ref]: ../src/payments/a.py `` and [real-after-close](../src/payments/a.py)\n\n"
+            "Unmatched single ` then valid ``[in-code](../src/payments/a.py)`` then [after-unmatched](../src/payments/a.py)\n",
+            encoding="utf-8",
+        )
+        res = self.run_cli("--json", "--source", "SSOT/hard.md", "--", "src/payments/a.py")
+        self.assertEqual(res.returncode, 0, res.stderr)
+        hits = json.loads(res.stdout)["results"]["src/payments/a.py"]
+        self.assertEqual(
+            [(h["line"], h["kind"]) for h in hits],
+            [(6, "inline_link"), (9, "inline_link"), (11, "inline_link")],
+        )
+
+        # 4) Selected FIFO must fail fast with exit 3 (never block)
+        fifo = self.root / "SSOT" / "pipe.md"
+        os.mkfifo(fifo)
+        res_fifo = subprocess.run(
+            [sys.executable, "-B", str(TOOL), "--json", "--source", "SSOT/pipe.md", "--", "src/payments/a.py"],
+            cwd=self.root,
+            capture_output=True,
+            text=True,
+            timeout=5,
+        )
+        self.assertEqual(res_fifo.returncode, 3)
+        self.assertTrue(json.loads(res_fifo.stdout)["incomplete_coverage"])
+
+        # 5) Non-UTF-8 POSIX target argv bytes must return exit 2 with valid UTF-8 JSON stdout
+        res_bad_utf8 = subprocess.run(
+            [sys.executable.encode(), b"-B", str(TOOL).encode(), b"--json",
+             b"--source", b"SSOT/hard.md", b"--", b"src/payments/bad\xff.py"],
+            cwd=self.root,
+            capture_output=True,
+        )
+        self.assertEqual(res_bad_utf8.returncode, 2)
+        parsed = json.loads(res_bad_utf8.stdout.decode("utf-8"))
+        self.assertEqual(len(parsed["invalid_targets"]), 1)
+
     def test_unreadable_file_permission_denied(self):
         if os.geteuid() == 0:
             self.skipTest("running as root ignores chmod 000")

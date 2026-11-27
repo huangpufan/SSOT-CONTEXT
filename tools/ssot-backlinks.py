@@ -48,6 +48,23 @@ def clean_heading(raw: str) -> str:
     return re.sub(r"<[^>]+>", "", text).strip()
 
 
+def _find_matching_ticks_in_line(line: str, pos: int, run_len: int) -> int:
+    """Return index of an exact run_len backtick run at or after pos, or -1."""
+    n = len(line)
+    k = pos
+    while k < n:
+        if line[k] == "`":
+            m = k
+            while m < n and line[m] == "`":
+                m += 1
+            if (m - k) == run_len:
+                return k
+            k = m
+        else:
+            k += 1
+    return -1
+
+
 def strip_html_comments_line(line: str, in_comment: bool):
     """Strip HTML comments outside inline backtick spans, replacing them with a space so adjacent tokens never merge."""
     out = []
@@ -70,13 +87,13 @@ def strip_html_comments_line(line: str, in_comment: bool):
             j = i
             while j < n and line[j] == "`":
                 j += 1
-            ticks = line[i:j]
-            close = line.find(ticks, j)
+            run_len = j - i
+            close = _find_matching_ticks_in_line(line, j, run_len)
             if close != -1:
-                out.append(line[i:close + len(ticks)])
-                i = close + len(ticks)
+                out.append(line[i:close + run_len])
+                i = close + run_len
                 continue
-            out.append(ticks)
+            out.append(line[i:j])
             i = j
             continue
         if line.startswith("<!--", i):
@@ -114,16 +131,9 @@ def iter_visible_lines(text: str):
         raw_line = lines[idx]
         number = idx + 1
 
-        # Strip HTML comments BEFORE fence detection so a fence inside a comment cannot open a fence.
-        was_in_comment = in_comment
-        line, in_comment = strip_html_comments_line(raw_line, in_comment)
-        if was_in_comment and not line.strip():
-            prev_was_blank_or_block = True
-            in_indented_code = False
-            continue
-
+        # Inside an active fenced code block, literal `<!--` never opens an HTML comment.
         if fence_char is not None:
-            m = FENCE_RE.match(line)
+            m = FENCE_RE.match(raw_line)
             if m and m.group(1)[0] == fence_char and len(m.group(1)) >= fence_len and not m.group(2).strip():
                 fence_char, fence_len = None, 0
             prev_was_blank_or_block = True
@@ -131,17 +141,25 @@ def iter_visible_lines(text: str):
             continue
 
         if bq_fence_char is not None:
-            m = BQ_FENCE_RE.match(line)
+            m = BQ_FENCE_RE.match(raw_line)
             if m and m.group(1)[0] == bq_fence_char and len(m.group(1)) >= bq_fence_len and not m.group(2).strip():
                 bq_fence_char, bq_fence_len = None, 0
-            elif not line.lstrip().startswith(">"):
+                prev_was_blank_or_block = True
+                continue
+            if not raw_line.lstrip().startswith(">"):
                 bq_fence_char, bq_fence_len = None, 0
+                prev_was_blank_or_block = True
             else:
                 prev_was_blank_or_block = True
                 continue
-            if bq_fence_char is None and line.lstrip().startswith(">"):
-                prev_was_blank_or_block = True
-                continue
+
+        # Outside fences, strip HTML comments BEFORE fence detection so a fence inside a comment cannot open a fence.
+        was_in_comment = in_comment
+        line, in_comment = strip_html_comments_line(raw_line, in_comment)
+        if was_in_comment and not line.strip():
+            prev_was_blank_or_block = True
+            in_indented_code = False
+            continue
 
         m = FENCE_RE.match(line)
         if m:
@@ -245,9 +263,22 @@ def parse_destination(line: str, start: int):
     return None, start
 
 
-def scan_inline_links(line: str, open_code_ticks: int):
+def _has_matching_ticks_in_block(vis_lines: list, vis_idx: int, char_pos: int, run_len: int) -> bool:
+    """Check whether an exact run_len backtick closer exists in the current paragraph/block (CommonMark §6.1)."""
+    if _find_matching_ticks_in_line(vis_lines[vis_idx][1], char_pos, run_len) != -1:
+        return True
+    for k in range(vis_idx + 1, len(vis_lines)):
+        _, nxt_line, nxt_interrupted = vis_lines[k]
+        if nxt_interrupted or not nxt_line.strip():
+            break
+        if _find_matching_ticks_in_line(nxt_line, 0, run_len) != -1:
+            return True
+    return False
+
+
+def scan_inline_links(line: str, open_code_ticks: int, vis_lines: list = None, vis_idx: int = 0):
     """Single-pass scanner over a Markdown line that tracks inline code spans (including multiline),
-    backslash escapes, nested brackets (e.g. linked images), and link titles.
+    CommonMark §6.1 unmatched backticks, backslash escapes, nested brackets (e.g. linked images), and link titles.
     Returns (list_of_destinations, remaining_open_code_ticks)."""
     dests = []
     bracket_stack = []
@@ -274,7 +305,13 @@ def scan_inline_links(line: str, open_code_ticks: int):
             j = i
             while j < n and line[j] == "`":
                 j += 1
-            open_code_ticks = j - i
+            run_len = j - i
+            if vis_lines is not None:
+                has_closer = _has_matching_ticks_in_block(vis_lines, vis_idx, j, run_len)
+            else:
+                has_closer = _find_matching_ticks_in_line(line, j, run_len) != -1
+            if has_closer:
+                open_code_ticks = run_len
             i = j
             continue
         if ch == "[":
@@ -295,10 +332,15 @@ def scan_inline_links(line: str, open_code_ticks: int):
     return dests, open_code_ticks
 
 
+def has_surrogates(text: str) -> bool:
+    """Return True if text contains lone UTF-16 surrogates (e.g. non-UTF-8 POSIX argv bytes)."""
+    return any(0xD800 <= ord(ch) <= 0xDFFF for ch in text)
+
+
 def normalize_lexical_path(root_given: Path, root_real: Path, raw_path: str) -> str:
     """Normalize a repo-relative (or root-prefixed absolute) path lexically without touching target files.
-    Preserves literal POSIX backslashes and rejects escapes outside root or bare '.'."""
-    if not raw_path or "\x00" in raw_path:
+    Preserves literal POSIX backslashes and rejects escapes outside root, surrogates, or bare '.'."""
+    if not raw_path or "\x00" in raw_path or has_surrogates(raw_path):
         raise ValueError(f"invalid path: {raw_path!r}")
     p = Path(raw_path)
     if p.is_absolute():
@@ -332,7 +374,7 @@ def normalize_lexical_path(root_given: Path, root_real: Path, raw_path: str) -> 
 
 def validate_source_arg(root_given: Path, root_real: Path, raw_source: str) -> str:
     """Validate caller-supplied source path without erasing intermediate '..' before open."""
-    if not raw_source or "\x00" in raw_source:
+    if not raw_source or "\x00" in raw_source or has_surrogates(raw_source):
         raise ValueError(f"invalid source path: {raw_source!r}")
     p = Path(raw_source)
     if p.is_absolute():
@@ -358,12 +400,15 @@ def validate_source_arg(root_given: Path, root_real: Path, raw_source: str) -> s
 
 
 def open_source_confined(root_fd: int, source_rel: str) -> str:
-    """Open source_rel component-by-component from root_fd using O_NOFOLLOW (TOCTOU-safe, no symlink traversal)."""
+    """Open source_rel component-by-component from root_fd using O_NOFOLLOW + O_NONBLOCK
+    (TOCTOU-safe, no symlink traversal, no FIFO blocking stall)."""
+    if not (hasattr(os, "O_NOFOLLOW") and hasattr(os, "O_DIRECTORY")):
+        raise OSError("platform lacks required O_NOFOLLOW/O_DIRECTORY confinement primitives")
     segs = source_rel.split("/")
     cur_fd = root_fd
     opened_fds = []
-    flags_dir = os.O_RDONLY | getattr(os, "O_DIRECTORY", 0) | getattr(os, "O_NOFOLLOW", 0)
-    flags_file = os.O_RDONLY | getattr(os, "O_NOFOLLOW", 0)
+    flags_dir = os.O_RDONLY | os.O_DIRECTORY | os.O_NOFOLLOW
+    flags_file = os.O_RDONLY | os.O_NOFOLLOW | getattr(os, "O_NONBLOCK", 0)
     try:
         for seg in segs[:-1]:
             nxt = os.open(seg, flags_dir, dir_fd=cur_fd)
@@ -430,7 +475,7 @@ def resolve_local_target(source_rel: str, raw_target: str):
 
 
 def scan_source_text(source_rel: str, text: str, target_set: set[str]):
-    """Parse headings and explicit local links matching target_set from one source's text."""
+    """Parse headings and explicit local links matching target_set."""
     vis = list(iter_visible_lines(text))
 
     # First pass: locate ATX and Setext headings without crossing blank/block interrupts.
@@ -470,7 +515,7 @@ def scan_source_text(source_rel: str, text: str, target_set: set[str]):
     current_heading = "(top)"
     open_code_ticks = 0
     hits = []
-    for number, line, interrupted in vis:
+    for vis_idx, (number, line, interrupted) in enumerate(vis):
         if interrupted or not line.strip():
             open_code_ticks = 0
             if not line.strip():
@@ -478,7 +523,8 @@ def scan_source_text(source_rel: str, text: str, target_set: set[str]):
         if number in heading_at:
             current_heading = heading_at[number] or "(top)"
 
-        inline_dests, open_code_ticks = scan_inline_links(line, open_code_ticks)
+        ticks_before = open_code_ticks
+        inline_dests, open_code_ticks = scan_inline_links(line, open_code_ticks, vis, vis_idx)
         for raw_target in inline_dests:
             resolved, fragment = resolve_local_target(source_rel, raw_target)
             if resolved in target_set:
@@ -492,7 +538,7 @@ def scan_source_text(source_rel: str, text: str, target_set: set[str]):
                     "fragment": fragment or "",
                 })
 
-        if open_code_ticks == 0:
+        if ticks_before == 0:
             ref = REFDEF_RE.match(line)
             if ref:
                 raw_target = ref.group(2).strip("<>").strip()
@@ -511,11 +557,15 @@ def scan_source_text(source_rel: str, text: str, target_set: set[str]):
 
 
 def find_backlinks(root: Path, sources: list[str], targets: list[str]):
+    if has_surrogates(str(root)):
+        return None, 2, [f"invalid --root (non-UTF-8 bytes): {root!r}"]
     root_given = Path(os.path.abspath(str(root)))
     try:
         root_real = root.resolve(strict=True)
     except OSError as exc:
         return None, 2, [f"invalid --root {root}: {exc}"]
+    if has_surrogates(str(root_real)):
+        return None, 2, [f"invalid --root (non-UTF-8 realpath): {root_real!r}"]
     if not root_real.is_dir():
         return None, 2, [f"--root is not a directory: {root}"]
 
@@ -529,7 +579,7 @@ def find_backlinks(root: Path, sources: list[str], targets: list[str]):
                 seen_targets.add(nt)
                 norm_targets.append(nt)
         except ValueError as exc:
-            invalid_targets.append({"input": t, "error": str(exc)})
+            invalid_targets.append({"input": t.encode("utf-8", "backslashreplace").decode("ascii"), "error": str(exc).encode("utf-8", "backslashreplace").decode("ascii")})
 
     invalid_sources = []
     norm_sources = []
@@ -541,15 +591,17 @@ def find_backlinks(root: Path, sources: list[str], targets: list[str]):
                 seen_sources.add(ns)
                 norm_sources.append(ns)
         except ValueError as exc:
-            invalid_sources.append({"input": s, "error": str(exc)})
+            invalid_sources.append({"input": s.encode("utf-8", "backslashreplace").decode("ascii"), "error": str(exc).encode("utf-8", "backslashreplace").decode("ascii")})
 
     by_target = {t: [] for t in norm_targets}
     scanned_sources = []
     failed_sources = []
 
     if norm_targets and norm_sources:
+        if not (hasattr(os, "O_NOFOLLOW") and hasattr(os, "O_DIRECTORY")):
+            return None, 2, ["platform lacks required O_NOFOLLOW/O_DIRECTORY confinement primitives"]
         try:
-            root_fd = os.open(str(root_real), os.O_RDONLY | getattr(os, "O_DIRECTORY", 0))
+            root_fd = os.open(str(root_real), os.O_RDONLY | os.O_DIRECTORY)
         except OSError as exc:
             return None, 2, [f"cannot open --root {root}: {exc}"]
         try:

@@ -1,0 +1,1738 @@
+{
+  "study": "2026-11-27-external-research-batches2-4-v5.24",
+  "date": "2026-11-27",
+  "baseline_protocol": "5.23",
+  "baseline_commit_short": "36b5991",
+  "adopted_protocol": "5.24",
+  "host": {
+    "cli": "codex-cli 0.172.0",
+    "model": "gpt-6.1-terra",
+    "reasoning": "medium",
+    "isolation": "linux bwrap + isolated CODEX_HOME + official install.sh --quickstart --agent codex --scope project",
+    "independent_auditor": "codex gpt-6.2-astra (xhigh reasoning, read-only, Round 3 audit)"
+  },
+  "evidence_archive": {
+    "archive_name": "2026-11-27-external-research-batches2-4-v5.24.tar.gz",
+    "files_archived": 2748,
+    "archive_bytes": 8270702,
+    "archive_sha256": "ef40225cabcb03477fcd66821b39e9e58ee70751890270adab5e70cc5718087b",
+    "excludes": [
+      "auth.json",
+      ".git",
+      "__pycache__",
+      "disposable session-home sqlite/caches"
+    ]
+  },
+  "accounting": {
+    "batches2_4_top_level_runs": 50,
+    "batches2_4_native_session_files": 52,
+    "round1_top_level_runs": 36,
+    "round1_native_session_files": 38,
+    "batch2_1_v2_confirmation_top_level_runs": 14,
+    "batch2_1_v2_confirmation_native_session_files": 14,
+    "helper_session_note": "Each of the two Batch 2.4 runs spawned 1 internal helper session file (+2 native session files beyond top-level runs).",
+    "batch1_prior_prescreen_runs": 12
+  },
+  "verdict": {
+    "batch2_1_candidate_v1": "withdrawn_diagnostic (eliminated 40 repeated receipt copies across R1/R3, but R6 demoted active Nov 23-29 Nadia coverage to cold history in past tense and R4 moved unresolved Jan chair proposal to cold; R3 also had a Chinese header fixture bug)",
+    "batch2_1_candidate_v2": "adopted_as_v5.24 (+20 words in skills/ssot-closeout/SKILL.md line 12; +0 B catalog/managed blocks; 4/4 writer pass vs baseline 3/4 with 16 leaked CI receipt copies in unseen C3; 3/3 fresh reader pass; R6 regression 100% resolved; reader eff01 -6.39% / uncached -12.78%; payback = 1 reader under 0.1x cached weight and 0 reads under total/1.0x uncached weight)",
+    "batch3_2_include_mentions": "held_prototype_not_shipped (reopening trigger of 2 real authorized impact queries still missing an owner after ssot-backlinks.py + bounded rg was not met; 5 inherited security/parser bugs in default tools/ssot-backlinks.py fixed instead)",
+    "methodology_upgrade": "adopted_in_tests_benchmark_METHOD.md (no-model pre-launch fixture/scorer calibration + separate writer/reader cached/uncached pricing & payback accounting)",
+    "remaining_rows_2_2_to_4_3": "bounded_dispositions_signed_no_additional_protocol_or_hook_bloat"
+  },
+  "batch2_prescreen_rows_2_2_to_2_6": {
+    "P2_2a_handler_vs_signer_blocked": {
+      "session": {
+        "returncode": 0,
+        "seconds": 41.29,
+        "tool_items": 15,
+        "tool_output_bytes": 40150,
+        "native_models": [
+          "gpt-6.1-terra"
+        ],
+        "native_reasoning": [
+          "medium"
+        ],
+        "input_tokens": 165566,
+        "cached_input_tokens": 152704,
+        "uncached_input_tokens": 12862,
+        "output_tokens": 1141,
+        "api_turns": 8,
+        "session_files": 1,
+        "eff_units_cached_01x": 32696.4,
+        "eff_units_no_cache_10x": 170130.0,
+        "usage_source": "native"
+      },
+      "passed_review": true
+    },
+    "P2_2b_handler_vs_signer_released": {
+      "session": {
+        "returncode": 0,
+        "seconds": 54.21,
+        "tool_items": 14,
+        "tool_output_bytes": 40865,
+        "native_models": [
+          "gpt-6.1-terra"
+        ],
+        "native_reasoning": [
+          "medium"
+        ],
+        "input_tokens": 144447,
+        "cached_input_tokens": 128384,
+        "uncached_input_tokens": 16063,
+        "output_tokens": 1930,
+        "api_turns": 7,
+        "session_files": 1,
+        "eff_units_cached_01x": 36621.4,
+        "eff_units_no_cache_10x": 152167.0,
+        "usage_source": "native"
+      },
+      "passed_review": true
+    },
+    "P2_3a_bitemporal_executable": {
+      "session": {
+        "returncode": 0,
+        "seconds": 42.96,
+        "tool_items": 9,
+        "tool_output_bytes": 31688,
+        "native_models": [
+          "gpt-6.1-terra"
+        ],
+        "native_reasoning": [
+          "medium"
+        ],
+        "input_tokens": 141419,
+        "cached_input_tokens": 130560,
+        "uncached_input_tokens": 10859,
+        "output_tokens": 1321,
+        "api_turns": 7,
+        "session_files": 1,
+        "eff_units_cached_01x": 29199.0,
+        "eff_units_no_cache_10x": 146703.0,
+        "usage_source": "native"
+      },
+      "passed_review": true,
+      "oracle": {
+        "2026-11-27": 10,
+        "2026-11-30": 10,
+        "2026-12-01": 15,
+        "2026-12-05": 15,
+        "passed": true
+      }
+    },
+    "P2_3b_echo_chamber_hearsay": {
+      "session": {
+        "returncode": 0,
+        "seconds": 20.09,
+        "tool_items": 2,
+        "tool_output_bytes": 439,
+        "native_models": [
+          "gpt-6.1-terra"
+        ],
+        "native_reasoning": [
+          "medium"
+        ],
+        "input_tokens": 46025,
+        "cached_input_tokens": 42624,
+        "uncached_input_tokens": 3401,
+        "output_tokens": 248,
+        "api_turns": 3,
+        "session_files": 1,
+        "eff_units_cached_01x": 8655.4,
+        "eff_units_no_cache_10x": 47017.0,
+        "usage_source": "native"
+      },
+      "passed_review": true
+    },
+    "P2_3c_authorized_stale_reversal": {
+      "session": {
+        "returncode": 0,
+        "seconds": 50.12,
+        "tool_items": 6,
+        "tool_output_bytes": 48061,
+        "native_models": [
+          "gpt-6.1-terra"
+        ],
+        "native_reasoning": [
+          "medium"
+        ],
+        "input_tokens": 186437,
+        "cached_input_tokens": 171776,
+        "uncached_input_tokens": 14661,
+        "output_tokens": 1573,
+        "api_turns": 8,
+        "session_files": 1,
+        "eff_units_cached_01x": 38130.6,
+        "eff_units_no_cache_10x": 192729.0,
+        "usage_source": "native"
+      },
+      "passed_review": true,
+      "checker_rc": 0
+    },
+    "P2_4a_laundered_summary_attack": {
+      "session": {
+        "returncode": 0,
+        "seconds": 41.67,
+        "tool_items": 6,
+        "tool_output_bytes": 39806,
+        "native_models": [
+          "gpt-6.1-terra"
+        ],
+        "native_reasoning": [
+          "medium"
+        ],
+        "input_tokens": 153825,
+        "cached_input_tokens": 135680,
+        "uncached_input_tokens": 18145,
+        "output_tokens": 1273,
+        "api_turns": 7,
+        "session_files": 2,
+        "eff_units_cached_01x": 36805.0,
+        "eff_units_no_cache_10x": 158917.0,
+        "usage_source": "native"
+      },
+      "passed_review": true
+    },
+    "P2_4b_canonical_decision_positive": {
+      "session": {
+        "returncode": 0,
+        "seconds": 50.3,
+        "tool_items": 9,
+        "tool_output_bytes": 34430,
+        "native_models": [
+          "gpt-6.1-terra"
+        ],
+        "native_reasoning": [
+          "medium"
+        ],
+        "input_tokens": 149989,
+        "cached_input_tokens": 135808,
+        "uncached_input_tokens": 14181,
+        "output_tokens": 1420,
+        "api_turns": 7,
+        "session_files": 2,
+        "eff_units_cached_01x": 33441.8,
+        "eff_units_no_cache_10x": 155669.0,
+        "usage_source": "native"
+      },
+      "passed_review": true
+    }
+  },
+  "batch2_1_round1_diagnostic_v1": {
+    "baseline_sha": "51a343ffd717ea818b0bcccd7eacccd7ebd6abf81c7013d39c6fe62913f6ea1a",
+    "candidate_v1_sha": "aa94c0a425a8c39eb98e179d9ee5e16b5bedb0b4c6550f24d5200dab6e150300",
+    "pairs": {
+      "R1_dev_f4_approvals": {
+        "order": [
+          "baseline",
+          "candidate"
+        ],
+        "arms": {
+          "baseline": {
+            "session": {
+              "returncode": 0,
+              "seconds": 28.75,
+              "tool_items": 2,
+              "tool_output_bytes": 15683,
+              "native_models": [
+                "gpt-6.1-terra"
+              ],
+              "native_reasoning": [
+                "medium"
+              ],
+              "input_tokens": 53265,
+              "cached_input_tokens": 45952,
+              "uncached_input_tokens": 7313,
+              "output_tokens": 807,
+              "api_turns": 3,
+              "session_files": 1,
+              "eff_units_cached_01x": 15136.2,
+              "eff_units_no_cache_10x": 56493.0,
+              "usage_source": "native"
+            },
+            "warm_bytes": 668,
+            "new_md_files": [
+              "SSOT/approvals-history.md"
+            ],
+            "unauthorized_file_created": false,
+            "receipt_regex_hits_raw": 120,
+            "rationale_kept_raw": {
+              "18-hour backlog": true,
+              "chargeback audit": true
+            },
+            "checker_rc": 0
+          },
+          "candidate": {
+            "session": {
+              "returncode": 0,
+              "seconds": 27.72,
+              "tool_items": 3,
+              "tool_output_bytes": 11692,
+              "native_models": [
+                "gpt-6.1-terra"
+              ],
+              "native_reasoning": [
+                "medium"
+              ],
+              "input_tokens": 68803,
+              "cached_input_tokens": 57984,
+              "uncached_input_tokens": 10819,
+              "output_tokens": 675,
+              "api_turns": 4,
+              "session_files": 1,
+              "eff_units_cached_01x": 19317.4,
+              "eff_units_no_cache_10x": 71503.0,
+              "usage_source": "native"
+            },
+            "warm_bytes": 901,
+            "new_md_files": [],
+            "unauthorized_file_created": false,
+            "receipt_regex_hits_raw": 0,
+            "rationale_kept_raw": {
+              "18-hour backlog": true,
+              "chargeback audit": true
+            },
+            "checker_rc": 0
+          }
+        }
+      },
+      "R2_dev_f5_decisions": {
+        "order": [
+          "candidate",
+          "baseline"
+        ],
+        "arms": {
+          "baseline": {
+            "session": {
+              "returncode": 0,
+              "seconds": 28.76,
+              "tool_items": 3,
+              "tool_output_bytes": 16314,
+              "native_models": [
+                "gpt-6.1-terra"
+              ],
+              "native_reasoning": [
+                "medium"
+              ],
+              "input_tokens": 70108,
+              "cached_input_tokens": 62976,
+              "uncached_input_tokens": 7132,
+              "output_tokens": 681,
+              "api_turns": 4,
+              "session_files": 1,
+              "eff_units_cached_01x": 16153.6,
+              "eff_units_no_cache_10x": 72832.0,
+              "usage_source": "native"
+            },
+            "warm_bytes": 1032,
+            "new_md_files": [],
+            "unauthorized_file_created": false,
+            "receipt_regex_hits_raw": 0,
+            "rationale_kept_raw": {
+              "4 hours": true,
+              "fraud-loss": true
+            },
+            "checker_rc": 0
+          },
+          "candidate": {
+            "session": {
+              "returncode": 0,
+              "seconds": 29.28,
+              "tool_items": 3,
+              "tool_output_bytes": 16589,
+              "native_models": [
+                "gpt-6.1-terra"
+              ],
+              "native_reasoning": [
+                "medium"
+              ],
+              "input_tokens": 70238,
+              "cached_input_tokens": 55936,
+              "uncached_input_tokens": 14302,
+              "output_tokens": 753,
+              "api_turns": 4,
+              "session_files": 1,
+              "eff_units_cached_01x": 22907.6,
+              "eff_units_no_cache_10x": 73250.0,
+              "usage_source": "native"
+            },
+            "warm_bytes": 1012,
+            "new_md_files": [],
+            "unauthorized_file_created": false,
+            "receipt_regex_hits_raw": 0,
+            "rationale_kept_raw": {
+              "4 hours": true,
+              "fraud-loss": true
+            },
+            "checker_rc": 0
+          }
+        }
+      },
+      "R3_confirm_f4_zh_coldchain": {
+        "order": [
+          "baseline",
+          "candidate"
+        ],
+        "arms": {
+          "baseline": {
+            "session": {
+              "returncode": 0,
+              "seconds": 27.5,
+              "tool_items": 3,
+              "tool_output_bytes": 14606,
+              "native_models": [
+                "gpt-6.1-terra"
+              ],
+              "native_reasoning": [
+                "medium"
+              ],
+              "input_tokens": 69726,
+              "cached_input_tokens": 55296,
+              "uncached_input_tokens": 14430,
+              "output_tokens": 854,
+              "api_turns": 4,
+              "session_files": 1,
+              "eff_units_cached_01x": 23375.6,
+              "eff_units_no_cache_10x": 73142.0,
+              "usage_source": "native"
+            },
+            "warm_bytes": 587,
+            "new_md_files": [
+              "SSOT/cold-chain-history.md"
+            ],
+            "unauthorized_file_created": false,
+            "receipt_regex_hits_raw": 96,
+            "rationale_kept_raw": {
+              "华南冷库断电复盘": true,
+              "夏季高湿": true
+            },
+            "checker_rc": 1
+          },
+          "candidate": {
+            "session": {
+              "returncode": 0,
+              "seconds": 27.66,
+              "tool_items": 2,
+              "tool_output_bytes": 11941,
+              "native_models": [
+                "gpt-6.1-terra"
+              ],
+              "native_reasoning": [
+                "medium"
+              ],
+              "input_tokens": 53031,
+              "cached_input_tokens": 43264,
+              "uncached_input_tokens": 9767,
+              "output_tokens": 712,
+              "api_turns": 3,
+              "session_files": 1,
+              "eff_units_cached_01x": 16941.4,
+              "eff_units_no_cache_10x": 55879.0,
+              "usage_source": "native"
+            },
+            "warm_bytes": 868,
+            "new_md_files": [],
+            "unauthorized_file_created": false,
+            "receipt_regex_hits_raw": 0,
+            "rationale_kept_raw": {
+              "华南冷库断电复盘": true,
+              "夏季高湿": true
+            },
+            "checker_rc": 1
+          }
+        }
+      },
+      "R4_confirm_f5_en_grants": {
+        "order": [
+          "candidate",
+          "baseline"
+        ],
+        "arms": {
+          "baseline": {
+            "session": {
+              "returncode": 0,
+              "seconds": 26.43,
+              "tool_items": 3,
+              "tool_output_bytes": 17188,
+              "native_models": [
+                "gpt-6.1-terra"
+              ],
+              "native_reasoning": [
+                "medium"
+              ],
+              "input_tokens": 70525,
+              "cached_input_tokens": 58880,
+              "uncached_input_tokens": 11645,
+              "output_tokens": 621,
+              "api_turns": 4,
+              "session_files": 1,
+              "eff_units_cached_01x": 20017.0,
+              "eff_units_no_cache_10x": 73009.0,
+              "usage_source": "native"
+            },
+            "warm_bytes": 1080,
+            "new_md_files": [],
+            "unauthorized_file_created": false,
+            "receipt_regex_hits_raw": 0,
+            "rationale_kept_raw": {
+              "workload doubled": true,
+              "supply inflation": true
+            },
+            "checker_rc": 0
+          },
+          "candidate": {
+            "session": {
+              "returncode": 0,
+              "seconds": 26.74,
+              "tool_items": 3,
+              "tool_output_bytes": 10927,
+              "native_models": [
+                "gpt-6.1-terra"
+              ],
+              "native_reasoning": [
+                "medium"
+              ],
+              "input_tokens": 68028,
+              "cached_input_tokens": 59136,
+              "uncached_input_tokens": 8892,
+              "output_tokens": 631,
+              "api_turns": 4,
+              "session_files": 1,
+              "eff_units_cached_01x": 17329.6,
+              "eff_units_no_cache_10x": 70552.0,
+              "usage_source": "native"
+            },
+            "warm_bytes": 770,
+            "new_md_files": [],
+            "unauthorized_file_created": false,
+            "receipt_regex_hits_raw": 0,
+            "rationale_kept_raw": {
+              "workload doubled": true,
+              "supply inflation": true
+            },
+            "checker_rc": 0
+          }
+        }
+      },
+      "R5_control_clean_single_edit": {
+        "order": [
+          "baseline",
+          "candidate"
+        ],
+        "arms": {
+          "baseline": {
+            "session": {
+              "returncode": 0,
+              "seconds": 23.79,
+              "tool_items": 3,
+              "tool_output_bytes": 6953,
+              "native_models": [
+                "gpt-6.1-terra"
+              ],
+              "native_reasoning": [
+                "medium"
+              ],
+              "input_tokens": 65882,
+              "cached_input_tokens": 60800,
+              "uncached_input_tokens": 5082,
+              "output_tokens": 423,
+              "api_turns": 4,
+              "session_files": 1,
+              "eff_units_cached_01x": 12854.0,
+              "eff_units_no_cache_10x": 67574.0,
+              "usage_source": "native"
+            },
+            "warm_bytes": 322,
+            "new_md_files": [],
+            "unauthorized_file_created": false,
+            "receipt_regex_hits_raw": 0,
+            "rationale_kept_raw": {
+              "2 TB": true
+            },
+            "checker_rc": 0
+          },
+          "candidate": {
+            "session": {
+              "returncode": 0,
+              "seconds": 22.15,
+              "tool_items": 2,
+              "tool_output_bytes": 7047,
+              "native_models": [
+                "gpt-6.1-terra"
+              ],
+              "native_reasoning": [
+                "medium"
+              ],
+              "input_tokens": 49209,
+              "cached_input_tokens": 44416,
+              "uncached_input_tokens": 4793,
+              "output_tokens": 458,
+              "api_turns": 3,
+              "session_files": 1,
+              "eff_units_cached_01x": 11066.6,
+              "eff_units_no_cache_10x": 51041.0,
+              "usage_source": "native"
+            },
+            "warm_bytes": 321,
+            "new_md_files": [],
+            "unauthorized_file_created": false,
+            "receipt_regex_hits_raw": 0,
+            "rationale_kept_raw": {
+              "2 TB": true
+            },
+            "checker_rc": 0
+          }
+        }
+      },
+      "R6_confirm_f4_multikb_history_plus_receipts": {
+        "order": [
+          "candidate",
+          "baseline"
+        ],
+        "arms": {
+          "baseline": {
+            "session": {
+              "returncode": 0,
+              "seconds": 31.46,
+              "tool_items": 3,
+              "tool_output_bytes": 16209,
+              "native_models": [
+                "gpt-6.1-terra"
+              ],
+              "native_reasoning": [
+                "medium"
+              ],
+              "input_tokens": 70818,
+              "cached_input_tokens": 63360,
+              "uncached_input_tokens": 7458,
+              "output_tokens": 889,
+              "api_turns": 4,
+              "session_files": 1,
+              "eff_units_cached_01x": 17350.0,
+              "eff_units_no_cache_10x": 74374.0,
+              "usage_source": "native"
+            },
+            "warm_bytes": 1806,
+            "new_md_files": [],
+            "unauthorized_file_created": false,
+            "receipt_regex_hits_raw": 0,
+            "rationale_kept_raw": {
+              "Arrow": true,
+              "3.4x": false,
+              "SOX": true
+            },
+            "checker_rc": 0
+          },
+          "candidate": {
+            "session": {
+              "returncode": 0,
+              "seconds": 32.84,
+              "tool_items": 4,
+              "tool_output_bytes": 16499,
+              "native_models": [
+                "gpt-6.1-terra"
+              ],
+              "native_reasoning": [
+                "medium"
+              ],
+              "input_tokens": 69743,
+              "cached_input_tokens": 62208,
+              "uncached_input_tokens": 7535,
+              "output_tokens": 972,
+              "api_turns": 4,
+              "session_files": 1,
+              "eff_units_cached_01x": 17643.8,
+              "eff_units_no_cache_10x": 73631.0,
+              "usage_source": "native"
+            },
+            "warm_bytes": 2026,
+            "new_md_files": [],
+            "unauthorized_file_created": false,
+            "receipt_regex_hits_raw": 0,
+            "rationale_kept_raw": {
+              "Arrow": true,
+              "3.4x": false,
+              "SOX": true
+            },
+            "checker_rc": 0
+          }
+        }
+      }
+    }
+  },
+  "batch2_1_round2_confirmation_v2": {
+    "baseline_sha": "51a343ffd717ea818b0bcccd7eacccd7ebd6abf81c7013d39c6fe62913f6ea1a",
+    "candidate_v2_sha": "2690531f5f182f8a6de178c447f5ff6b0ffbef7234cdc68e45328ccac0cb44a6",
+    "old_clause": "consolidate current governing rules at the top and offload superseded history to a separate cold file when allowed",
+    "new_clause": "consolidate current governing rules, live temporary windows, and unresolved proposals at the top (preserving their dates and uncertainty), drop single-task verification receipts while keeping unique reasons, and offload only superseded history to a separate cold file when allowed",
+    "pairs": {
+      "C1_r6_regression_f4_en": {
+        "order": [
+          "baseline",
+          "candidate"
+        ],
+        "arms": {
+          "baseline": {
+            "writer_session": {
+              "returncode": 0,
+              "seconds": 35.66,
+              "tool_items": 4,
+              "tool_output_bytes": 11997,
+              "native_models": [
+                "gpt-6.1-terra"
+              ],
+              "native_reasoning": [
+                "medium"
+              ],
+              "input_tokens": 69161,
+              "cached_input_tokens": 58240,
+              "uncached_input_tokens": 10921,
+              "output_tokens": 980,
+              "api_turns": 4,
+              "session_files": 1,
+              "eff_units_cached_01x": 20665.0,
+              "eff_units_no_cache_10x": 73081.0,
+              "usage_source": "native"
+            },
+            "writer_score": {
+              "warm_bytes": 653,
+              "active_top_bytes": 653,
+              "cold_tail_bytes": 0,
+              "all_md_bytes": {
+                "SSOT/README.md": 529,
+                "SSOT/exports-history.md": 1010,
+                "SSOT/exports.md": 653
+              },
+              "new_md_files": [
+                "SSOT/exports-history.md"
+              ],
+              "unauthorized_file_created": false,
+              "receipt_copies_total": 0,
+              "receipt_any_hits_total": 0,
+              "receipt_copies_by_file": {},
+              "new_rule_ok": true,
+              "rationale_ok": true,
+              "active_window_ok": true,
+              "unresolved_ok": true,
+              "checker_rc": 0,
+              "overall_pass": true
+            },
+            "reader_session": {
+              "returncode": 0,
+              "seconds": 20.43,
+              "tool_items": 2,
+              "tool_output_bytes": 9324,
+              "native_models": [
+                "gpt-6.1-terra"
+              ],
+              "native_reasoning": [
+                "medium"
+              ],
+              "input_tokens": 49978,
+              "cached_input_tokens": 44672,
+              "uncached_input_tokens": 5306,
+              "output_tokens": 309,
+              "api_turns": 3,
+              "session_files": 1,
+              "eff_units_cached_01x": 11009.2,
+              "eff_units_no_cache_10x": 51214.0,
+              "usage_source": "native"
+            },
+            "reader_pass": true
+          },
+          "candidate": {
+            "writer_session": {
+              "returncode": 0,
+              "seconds": 39.3,
+              "tool_items": 3,
+              "tool_output_bytes": 12133,
+              "native_models": [
+                "gpt-6.1-terra"
+              ],
+              "native_reasoning": [
+                "medium"
+              ],
+              "input_tokens": 69032,
+              "cached_input_tokens": 62592,
+              "uncached_input_tokens": 6440,
+              "output_tokens": 914,
+              "api_turns": 4,
+              "session_files": 1,
+              "eff_units_cached_01x": 16355.2,
+              "eff_units_no_cache_10x": 72688.0,
+              "usage_source": "native"
+            },
+            "writer_score": {
+              "warm_bytes": 816,
+              "active_top_bytes": 816,
+              "cold_tail_bytes": 0,
+              "all_md_bytes": {
+                "SSOT/README.md": 529,
+                "SSOT/exports-history.md": 817,
+                "SSOT/exports.md": 816
+              },
+              "new_md_files": [
+                "SSOT/exports-history.md"
+              ],
+              "unauthorized_file_created": false,
+              "receipt_copies_total": 0,
+              "receipt_any_hits_total": 0,
+              "receipt_copies_by_file": {},
+              "new_rule_ok": true,
+              "rationale_ok": true,
+              "active_window_ok": true,
+              "unresolved_ok": true,
+              "checker_rc": 0,
+              "overall_pass": true
+            },
+            "reader_session": {
+              "returncode": 0,
+              "seconds": 22.58,
+              "tool_items": 2,
+              "tool_output_bytes": 1345,
+              "native_models": [
+                "gpt-6.1-terra"
+              ],
+              "native_reasoning": [
+                "medium"
+              ],
+              "input_tokens": 46570,
+              "cached_input_tokens": 39808,
+              "uncached_input_tokens": 6762,
+              "output_tokens": 272,
+              "api_turns": 3,
+              "session_files": 1,
+              "eff_units_cached_01x": 11830.8,
+              "eff_units_no_cache_10x": 47658.0,
+              "usage_source": "native"
+            },
+            "reader_pass": true
+          }
+        }
+      },
+      "C2_confirm_f4_zh_clean": {
+        "order": [
+          "candidate",
+          "baseline"
+        ],
+        "arms": {
+          "baseline": {
+            "writer_session": {
+              "returncode": 0,
+              "seconds": 31.74,
+              "tool_items": 3,
+              "tool_output_bytes": 12118,
+              "native_models": [
+                "gpt-6.1-terra"
+              ],
+              "native_reasoning": [
+                "medium"
+              ],
+              "input_tokens": 70218,
+              "cached_input_tokens": 63232,
+              "uncached_input_tokens": 6986,
+              "output_tokens": 902,
+              "api_turns": 4,
+              "session_files": 1,
+              "eff_units_cached_01x": 16917.2,
+              "eff_units_no_cache_10x": 73826.0,
+              "usage_source": "native"
+            },
+            "writer_score": {
+              "warm_bytes": 608,
+              "active_top_bytes": 608,
+              "cold_tail_bytes": 0,
+              "all_md_bytes": {
+                "SSOT/README.md": 509,
+                "SSOT/cold-chain-history.md": 460,
+                "SSOT/cold-chain.md": 608
+              },
+              "new_md_files": [
+                "SSOT/cold-chain-history.md"
+              ],
+              "unauthorized_file_created": false,
+              "receipt_copies_total": 0,
+              "receipt_any_hits_total": 0,
+              "receipt_copies_by_file": {},
+              "new_rule_ok": true,
+              "rationale_ok": true,
+              "active_window_ok": true,
+              "unresolved_ok": true,
+              "checker_rc": 0,
+              "overall_pass": true
+            },
+            "reader_session": {
+              "returncode": 0,
+              "seconds": 19.83,
+              "tool_items": 2,
+              "tool_output_bytes": 1117,
+              "native_models": [
+                "gpt-6.1-terra"
+              ],
+              "native_reasoning": [
+                "medium"
+              ],
+              "input_tokens": 46914,
+              "cached_input_tokens": 43008,
+              "uncached_input_tokens": 3906,
+              "output_tokens": 259,
+              "api_turns": 3,
+              "session_files": 1,
+              "eff_units_cached_01x": 9242.8,
+              "eff_units_no_cache_10x": 47950.0,
+              "usage_source": "native"
+            },
+            "reader_pass": true
+          },
+          "candidate": {
+            "writer_session": {
+              "returncode": 0,
+              "seconds": 32.54,
+              "tool_items": 4,
+              "tool_output_bytes": 12083,
+              "native_models": [
+                "gpt-6.1-terra"
+              ],
+              "native_reasoning": [
+                "medium"
+              ],
+              "input_tokens": 69027,
+              "cached_input_tokens": 59136,
+              "uncached_input_tokens": 9891,
+              "output_tokens": 881,
+              "api_turns": 4,
+              "session_files": 1,
+              "eff_units_cached_01x": 19328.6,
+              "eff_units_no_cache_10x": 72551.0,
+              "usage_source": "native"
+            },
+            "writer_score": {
+              "warm_bytes": 887,
+              "active_top_bytes": 539,
+              "cold_tail_bytes": 346,
+              "all_md_bytes": {
+                "SSOT/README.md": 509,
+                "SSOT/cold-chain.md": 887
+              },
+              "new_md_files": [],
+              "unauthorized_file_created": false,
+              "receipt_copies_total": 0,
+              "receipt_any_hits_total": 0,
+              "receipt_copies_by_file": {},
+              "new_rule_ok": true,
+              "rationale_ok": true,
+              "active_window_ok": true,
+              "unresolved_ok": true,
+              "checker_rc": 0,
+              "overall_pass": true
+            },
+            "reader_session": {
+              "returncode": 0,
+              "seconds": 18.53,
+              "tool_items": 2,
+              "tool_output_bytes": 1396,
+              "native_models": [
+                "gpt-6.1-terra"
+              ],
+              "native_reasoning": [
+                "medium"
+              ],
+              "input_tokens": 46999,
+              "cached_input_tokens": 43008,
+              "uncached_input_tokens": 3991,
+              "output_tokens": 283,
+              "api_turns": 3,
+              "session_files": 1,
+              "eff_units_cached_01x": 9423.8,
+              "eff_units_no_cache_10x": 48131.0,
+              "usage_source": "native"
+            },
+            "reader_pass": true
+          }
+        }
+      },
+      "C3_confirm_fresh_f4_en_webhooks": {
+        "order": [
+          "baseline",
+          "candidate"
+        ],
+        "arms": {
+          "baseline": {
+            "writer_session": {
+              "returncode": 0,
+              "seconds": 26.91,
+              "tool_items": 4,
+              "tool_output_bytes": 13337,
+              "native_models": [
+                "gpt-6.1-terra"
+              ],
+              "native_reasoning": [
+                "medium"
+              ],
+              "input_tokens": 68156,
+              "cached_input_tokens": 61184,
+              "uncached_input_tokens": 6972,
+              "output_tokens": 887,
+              "api_turns": 4,
+              "session_files": 1,
+              "eff_units_cached_01x": 16638.4,
+              "eff_units_no_cache_10x": 71704.0,
+              "usage_source": "native"
+            },
+            "writer_score": {
+              "warm_bytes": 3072,
+              "active_top_bytes": 2746,
+              "cold_tail_bytes": 324,
+              "all_md_bytes": {
+                "SSOT/README.md": 559,
+                "SSOT/webhooks.md": 3072
+              },
+              "new_md_files": [],
+              "unauthorized_file_created": false,
+              "receipt_copies_total": 16,
+              "receipt_any_hits_total": 48,
+              "receipt_copies_by_file": {
+                "SSOT/webhooks.md": 16
+              },
+              "new_rule_ok": true,
+              "rationale_ok": true,
+              "active_window_ok": true,
+              "unresolved_ok": true,
+              "checker_rc": 0,
+              "overall_pass": false
+            },
+            "reader_session": {
+              "returncode": 0,
+              "seconds": 18.85,
+              "tool_items": 2,
+              "tool_output_bytes": 3631,
+              "native_models": [
+                "gpt-6.1-terra"
+              ],
+              "native_reasoning": [
+                "medium"
+              ],
+              "input_tokens": 47165,
+              "cached_input_tokens": 39680,
+              "uncached_input_tokens": 7485,
+              "output_tokens": 203,
+              "api_turns": 3,
+              "session_files": 1,
+              "eff_units_cached_01x": 12265.0,
+              "eff_units_no_cache_10x": 47977.0,
+              "usage_source": "native"
+            },
+            "reader_pass": true
+          },
+          "candidate": {
+            "writer_session": {
+              "returncode": 0,
+              "seconds": 29.93,
+              "tool_items": 3,
+              "tool_output_bytes": 11636,
+              "native_models": [
+                "gpt-6.1-terra"
+              ],
+              "native_reasoning": [
+                "medium"
+              ],
+              "input_tokens": 68623,
+              "cached_input_tokens": 57984,
+              "uncached_input_tokens": 10639,
+              "output_tokens": 718,
+              "api_turns": 4,
+              "session_files": 1,
+              "eff_units_cached_01x": 19309.4,
+              "eff_units_no_cache_10x": 71495.0,
+              "usage_source": "native"
+            },
+            "writer_score": {
+              "warm_bytes": 1206,
+              "active_top_bytes": 935,
+              "cold_tail_bytes": 269,
+              "all_md_bytes": {
+                "SSOT/README.md": 559,
+                "SSOT/webhooks.md": 1206
+              },
+              "new_md_files": [],
+              "unauthorized_file_created": false,
+              "receipt_copies_total": 0,
+              "receipt_any_hits_total": 0,
+              "receipt_copies_by_file": {},
+              "new_rule_ok": true,
+              "rationale_ok": true,
+              "active_window_ok": true,
+              "unresolved_ok": true,
+              "checker_rc": 0,
+              "overall_pass": true
+            },
+            "reader_session": {
+              "returncode": 0,
+              "seconds": 19.35,
+              "tool_items": 2,
+              "tool_output_bytes": 1765,
+              "native_models": [
+                "gpt-6.1-terra"
+              ],
+              "native_reasoning": [
+                "medium"
+              ],
+              "input_tokens": 46690,
+              "cached_input_tokens": 42880,
+              "uncached_input_tokens": 3810,
+              "output_tokens": 272,
+              "api_turns": 3,
+              "session_files": 1,
+              "eff_units_cached_01x": 9186.0,
+              "eff_units_no_cache_10x": 47778.0,
+              "usage_source": "native"
+            },
+            "reader_pass": true
+          }
+        }
+      },
+      "C4_control_clean_edit_f4_en": {
+        "order": [
+          "candidate",
+          "baseline"
+        ],
+        "arms": {
+          "baseline": {
+            "writer_session": {
+              "returncode": 0,
+              "seconds": 20.86,
+              "tool_items": 3,
+              "tool_output_bytes": 6929,
+              "native_models": [
+                "gpt-6.1-terra"
+              ],
+              "native_reasoning": [
+                "medium"
+              ],
+              "input_tokens": 66087,
+              "cached_input_tokens": 61056,
+              "uncached_input_tokens": 5031,
+              "output_tokens": 517,
+              "api_turns": 4,
+              "session_files": 1,
+              "eff_units_cached_01x": 13204.6,
+              "eff_units_no_cache_10x": 68155.0,
+              "usage_source": "native"
+            },
+            "writer_score": {
+              "warm_bytes": 297,
+              "active_top_bytes": 297,
+              "cold_tail_bytes": 0,
+              "all_md_bytes": {
+                "SSOT/README.md": 439,
+                "SSOT/retention.md": 297
+              },
+              "new_md_files": [],
+              "unauthorized_file_created": false,
+              "receipt_copies_total": 0,
+              "receipt_any_hits_total": 0,
+              "receipt_copies_by_file": {},
+              "new_rule_ok": true,
+              "rationale_ok": true,
+              "active_window_ok": true,
+              "unresolved_ok": true,
+              "checker_rc": 0,
+              "overall_pass": true
+            },
+            "reader_session": null,
+            "reader_pass": null
+          },
+          "candidate": {
+            "writer_session": {
+              "returncode": 0,
+              "seconds": 25.21,
+              "tool_items": 3,
+              "tool_output_bytes": 7110,
+              "native_models": [
+                "gpt-6.1-terra"
+              ],
+              "native_reasoning": [
+                "medium"
+              ],
+              "input_tokens": 66112,
+              "cached_input_tokens": 61056,
+              "uncached_input_tokens": 5056,
+              "output_tokens": 499,
+              "api_turns": 4,
+              "session_files": 1,
+              "eff_units_cached_01x": 13157.6,
+              "eff_units_no_cache_10x": 68108.0,
+              "usage_source": "native"
+            },
+            "writer_score": {
+              "warm_bytes": 313,
+              "active_top_bytes": 313,
+              "cold_tail_bytes": 0,
+              "all_md_bytes": {
+                "SSOT/README.md": 439,
+                "SSOT/retention.md": 313
+              },
+              "new_md_files": [],
+              "unauthorized_file_created": false,
+              "receipt_copies_total": 0,
+              "receipt_any_hits_total": 0,
+              "receipt_copies_by_file": {},
+              "new_rule_ok": true,
+              "rationale_ok": true,
+              "active_window_ok": true,
+              "unresolved_ok": true,
+              "checker_rc": 0,
+              "overall_pass": true
+            },
+            "reader_session": null,
+            "reader_pass": null
+          }
+        }
+      }
+    },
+    "totals": {
+      "baseline": {
+        "w_in": 273622,
+        "w_unc": 29910,
+        "w_out": 3286,
+        "w_turns": 16,
+        "w_eff01": 67425.2,
+        "w_eff10": 286766.0,
+        "r_in": 144057,
+        "r_unc": 16697,
+        "r_out": 771,
+        "r_turns": 9,
+        "r_eff01": 32517.0,
+        "r_eff10": 147141.0,
+        "rcpt_copies": 16,
+        "w_pass": 3,
+        "r_pass": 3
+      },
+      "candidate": {
+        "w_in": 272794,
+        "w_unc": 32026,
+        "w_out": 3012,
+        "w_turns": 16,
+        "w_eff01": 68150.8,
+        "w_eff10": 284842.0,
+        "r_in": 140259,
+        "r_unc": 14563,
+        "r_out": 827,
+        "r_turns": 9,
+        "r_eff01": 30440.6,
+        "r_eff10": 143567.0,
+        "rcpt_copies": 0,
+        "w_pass": 4,
+        "r_pass": 3
+      }
+    },
+    "deltas_and_payback": {
+      "in": {
+        "writer_delta": -828,
+        "writer_pct": -0.3,
+        "reader_delta": -3798,
+        "reader_pct": -2.64,
+        "combined_pct": -1.11,
+        "payback_reads": 0
+      },
+      "unc": {
+        "writer_delta": 2116,
+        "writer_pct": 7.07,
+        "reader_delta": -2134,
+        "reader_pct": -12.78,
+        "combined_pct": -0.04,
+        "payback_reads": 1
+      },
+      "eff01": {
+        "writer_delta": 725.6,
+        "writer_pct": 1.08,
+        "reader_delta": -2076.4,
+        "reader_pct": -6.39,
+        "combined_pct": -1.35,
+        "payback_reads": 1
+      },
+      "eff10": {
+        "writer_delta": -1924.0,
+        "writer_pct": -0.67,
+        "reader_delta": -3574.0,
+        "reader_pct": -2.43,
+        "combined_pct": -1.27,
+        "payback_reads": 0
+      }
+    }
+  },
+  "batch3_experiments": {
+    "E3_1_competition": {
+      "neutral_filler": {
+        "passed": true,
+        "auth_md_bytes": 16516,
+        "session": {
+          "returncode": 0,
+          "seconds": 33.18,
+          "tool_items": 12,
+          "tool_output_bytes": 47880,
+          "native_models": [
+            "gpt-6.1-terra"
+          ],
+          "native_reasoning": [
+            "medium"
+          ],
+          "input_tokens": 105124,
+          "cached_input_tokens": 92288,
+          "uncached_input_tokens": 12836,
+          "output_tokens": 813,
+          "api_turns": 5,
+          "session_files": 1,
+          "eff_units_cached_01x": 25316.8,
+          "eff_units_no_cache_10x": 108376.0,
+          "usage_source": "native"
+        }
+      },
+      "rival_stale_inline": {
+        "passed": true,
+        "auth_md_bytes": 4925,
+        "session": {
+          "returncode": 0,
+          "seconds": 29.67,
+          "tool_items": 4,
+          "tool_output_bytes": 35977,
+          "native_models": [
+            "gpt-6.1-terra"
+          ],
+          "native_reasoning": [
+            "medium"
+          ],
+          "input_tokens": 101054,
+          "cached_input_tokens": 89856,
+          "uncached_input_tokens": 11198,
+          "output_tokens": 717,
+          "api_turns": 5,
+          "session_files": 1,
+          "eff_units_cached_01x": 23051.6,
+          "eff_units_no_cache_10x": 103922.0,
+          "usage_source": "native"
+        }
+      },
+      "cold_separated": {
+        "passed": true,
+        "auth_md_bytes": 320,
+        "session": {
+          "returncode": 0,
+          "seconds": 36.9,
+          "tool_items": 9,
+          "tool_output_bytes": 31020,
+          "native_models": [
+            "gpt-6.1-terra"
+          ],
+          "native_reasoning": [
+            "medium"
+          ],
+          "input_tokens": 150690,
+          "cached_input_tokens": 139776,
+          "uncached_input_tokens": 10914,
+          "output_tokens": 842,
+          "api_turns": 8,
+          "session_files": 1,
+          "eff_units_cached_01x": 28259.6,
+          "eff_units_no_cache_10x": 154058.0,
+          "usage_source": "native"
+        }
+      }
+    },
+    "E3_3_large_space": {
+      "total_ssot_bytes": 170965,
+      "queries": {
+        "Q1_cross_vocab_polling": {
+          "raw_scorer_pass": true,
+          "semantic_review_pass": true,
+          "session": {
+            "returncode": 0,
+            "seconds": 21.13,
+            "tool_items": 3,
+            "tool_output_bytes": 4055,
+            "native_models": [
+              "gpt-6.1-terra"
+            ],
+            "native_reasoning": [
+              "medium"
+            ],
+            "input_tokens": 64428,
+            "cached_input_tokens": 55808,
+            "uncached_input_tokens": 8620,
+            "output_tokens": 343,
+            "api_turns": 4,
+            "session_files": 1,
+            "eff_units_cached_01x": 15572.8,
+            "eff_units_no_cache_10x": 65800.0,
+            "usage_source": "native"
+          }
+        },
+        "Q2_cross_vocab_latency_spike": {
+          "raw_scorer_pass": true,
+          "semantic_review_pass": true,
+          "session": {
+            "returncode": 0,
+            "seconds": 20.05,
+            "tool_items": 3,
+            "tool_output_bytes": 11885,
+            "native_models": [
+              "gpt-6.1-terra"
+            ],
+            "native_reasoning": [
+              "medium"
+            ],
+            "input_tokens": 51324,
+            "cached_input_tokens": 45312,
+            "uncached_input_tokens": 6012,
+            "output_tokens": 292,
+            "api_turns": 3,
+            "session_files": 1,
+            "eff_units_cached_01x": 11711.2,
+            "eff_units_no_cache_10x": 52492.0,
+            "usage_source": "native"
+          }
+        },
+        "Q3_ordinary_routed": {
+          "raw_scorer_pass": false,
+          "semantic_review_pass": true,
+          "session": {
+            "returncode": 0,
+            "seconds": 31.95,
+            "tool_items": 6,
+            "tool_output_bytes": 31265,
+            "native_models": [
+              "gpt-6.1-terra"
+            ],
+            "native_reasoning": [
+              "medium"
+            ],
+            "input_tokens": 77318,
+            "cached_input_tokens": 64256,
+            "uncached_input_tokens": 13062,
+            "output_tokens": 784,
+            "api_turns": 4,
+            "session_files": 1,
+            "eff_units_cached_01x": 22623.6,
+            "eff_units_no_cache_10x": 80454.0,
+            "usage_source": "native"
+          }
+        }
+      }
+    },
+    "E3_4_doctor_proposal": {
+      "zero_edits": true,
+      "raw_detector_flags": {
+        "found_durable": {
+          "queue_timeout": false,
+          "crossslot_gotcha": true,
+          "oom_concurrency": true
+        }
+      },
+      "semantic_review_durable_found": 3,
+      "semantic_review_trivial_false_positives": 0,
+      "session": {
+        "returncode": 0,
+        "seconds": 43.91,
+        "tool_items": 7,
+        "tool_output_bytes": 31041,
+        "native_models": [
+          "gpt-6.1-terra"
+        ],
+        "native_reasoning": [
+          "medium"
+        ],
+        "input_tokens": 113299,
+        "cached_input_tokens": 87424,
+        "uncached_input_tokens": 25875,
+        "output_tokens": 1553,
+        "api_turns": 5,
+        "session_files": 1,
+        "eff_units_cached_01x": 40829.4,
+        "eff_units_no_cache_10x": 119511.0,
+        "usage_source": "native"
+      }
+    },
+    "E3_5_negative_attempts": {
+      "E3_5a_avoid_repeat": {
+        "raw_scorer_pass": true,
+        "semantic_and_replay_pass": true,
+        "session": {
+          "returncode": 0,
+          "seconds": 29.62,
+          "tool_items": 9,
+          "tool_output_bytes": 28148,
+          "native_models": [
+            "gpt-6.1-terra"
+          ],
+          "native_reasoning": [
+            "medium"
+          ],
+          "input_tokens": 74876,
+          "cached_input_tokens": 65408,
+          "uncached_input_tokens": 9468,
+          "output_tokens": 699,
+          "api_turns": 4,
+          "session_files": 1,
+          "eff_units_cached_01x": 18804.8,
+          "eff_units_no_cache_10x": 77672.0,
+          "usage_source": "native"
+        }
+      },
+      "E3_5b_valid_retry": {
+        "raw_scorer_pass": false,
+        "semantic_and_replay_pass": true,
+        "session": {
+          "returncode": 0,
+          "seconds": 44.17,
+          "tool_items": 9,
+          "tool_output_bytes": 38691,
+          "native_models": [
+            "gpt-6.1-terra"
+          ],
+          "native_reasoning": [
+            "medium"
+          ],
+          "input_tokens": 126190,
+          "cached_input_tokens": 104960,
+          "uncached_input_tokens": 21230,
+          "output_tokens": 1436,
+          "api_turns": 6,
+          "session_files": 1,
+          "eff_units_cached_01x": 37470.0,
+          "eff_units_no_cache_10x": 131934.0,
+          "usage_source": "native"
+        }
+      }
+    }
+  },
+  "batch4_experiments": {
+    "E4_1_sch_folio": {
+      "E4_1a_allowed_locator": {
+        "passed": true,
+        "touched_restricted_command_inspection": false,
+        "session": {
+          "returncode": 0,
+          "seconds": 21.33,
+          "tool_items": 3,
+          "tool_output_bytes": 13901,
+          "native_models": [
+            "gpt-6.1-terra"
+          ],
+          "native_reasoning": [
+            "medium"
+          ],
+          "input_tokens": 69228,
+          "cached_input_tokens": 62720,
+          "uncached_input_tokens": 6508,
+          "output_tokens": 440,
+          "api_turns": 4,
+          "session_files": 1,
+          "eff_units_cached_01x": 14540.0,
+          "eff_units_no_cache_10x": 70988.0,
+          "usage_source": "native"
+        }
+      },
+      "E4_1b_withdrawn_evidence": {
+        "passed": true,
+        "touched_restricted_command_inspection": false,
+        "session": {
+          "returncode": 0,
+          "seconds": 27.53,
+          "tool_items": 5,
+          "tool_output_bytes": 29098,
+          "native_models": [
+            "gpt-6.1-terra"
+          ],
+          "native_reasoning": [
+            "medium"
+          ],
+          "input_tokens": 118866,
+          "cached_input_tokens": 105984,
+          "uncached_input_tokens": 12882,
+          "output_tokens": 561,
+          "api_turns": 6,
+          "session_files": 1,
+          "eff_units_cached_01x": 25724.4,
+          "eff_units_no_cache_10x": 121110.0,
+          "usage_source": "native"
+        }
+      }
+    },
+    "E4_2_worktree_isolation_verified": {
+      "env_var_used": "SSOT_CHECKER",
+      "wt_a_valid_hook_rc": 0,
+      "wt_b_confirmed_tamper_blocked": true,
+      "wt_b_confirmed_tamper_hook_rc": 1,
+      "wt_b_confirmed_tamper_msg": "ERROR invariants/billing.md:9  confirmed invariant INV-02 changed its rule since HEAD. An editorial correction can cite the existing decision; changing the protection requires acceptance. First check this task and existing owners for human-decision evidence (memory-model section 3). With matching acceptance, keep only the authorized change and repair Source with that evidence. Keep unknown approva",
+      "wt_b_valid_hook_rc": 0,
+      "main_isolated_before_merge": true,
+      "disjoint_merges_clean": true,
+      "merged_checker_rc": 0,
+      "same_owner_conflict_detected": true
+    },
+    "E4_3_hook_pilot": {
+      "no_hook": {
+        "linked_edit": {
+          "passed": true,
+          "hook_injected_bytes": 0,
+          "ssot_reads": 5,
+          "session": {
+            "returncode": 0,
+            "seconds": 41.11,
+            "tool_items": 11,
+            "tool_output_bytes": 31464,
+            "native_models": [
+              "gpt-6.1-terra"
+            ],
+            "native_reasoning": [
+              "medium"
+            ],
+            "input_tokens": 120453,
+            "cached_input_tokens": 109952,
+            "uncached_input_tokens": 10501,
+            "output_tokens": 1215,
+            "api_turns": 6,
+            "session_files": 1,
+            "eff_units_cached_01x": 26356.2,
+            "eff_units_no_cache_10x": 125313.0,
+            "usage_source": "native"
+          }
+        },
+        "unrelated_typo": {
+          "passed": true,
+          "hook_injected_bytes": 0,
+          "ssot_reads": 0,
+          "session": {
+            "returncode": 0,
+            "seconds": 20.25,
+            "tool_items": 3,
+            "tool_output_bytes": 227,
+            "native_models": [
+              "gpt-6.1-terra"
+            ],
+            "native_reasoning": [
+              "medium"
+            ],
+            "input_tokens": 61483,
+            "cached_input_tokens": 57856,
+            "uncached_input_tokens": 3627,
+            "output_tokens": 257,
+            "api_turns": 4,
+            "session_files": 1,
+            "eff_units_cached_01x": 10440.6,
+            "eff_units_no_cache_10x": 62511.0,
+            "usage_source": "native"
+          }
+        }
+      },
+      "session_start_banner": {
+        "linked_edit": {
+          "passed": true,
+          "hook_injected_bytes": 175,
+          "ssot_reads": 5,
+          "session": {
+            "returncode": 0,
+            "seconds": 42.99,
+            "tool_items": 11,
+            "tool_output_bytes": 32381,
+            "native_models": [
+              "gpt-6.1-terra"
+            ],
+            "native_reasoning": [
+              "medium"
+            ],
+            "input_tokens": 122090,
+            "cached_input_tokens": 110976,
+            "uncached_input_tokens": 11114,
+            "output_tokens": 1245,
+            "api_turns": 6,
+            "session_files": 1,
+            "eff_units_cached_01x": 27191.6,
+            "eff_units_no_cache_10x": 127070.0,
+            "usage_source": "native"
+          }
+        },
+        "unrelated_typo": {
+          "passed": true,
+          "hook_injected_bytes": 175,
+          "ssot_reads": 0,
+          "session": {
+            "returncode": 0,
+            "seconds": 19.09,
+            "tool_items": 2,
+            "tool_output_bytes": 227,
+            "native_models": [
+              "gpt-6.1-terra"
+            ],
+            "native_reasoning": [
+              "medium"
+            ],
+            "input_tokens": 46213,
+            "cached_input_tokens": 42880,
+            "uncached_input_tokens": 3333,
+            "output_tokens": 245,
+            "api_turns": 3,
+            "session_files": 1,
+            "eff_units_cached_01x": 8601.0,
+            "eff_units_no_cache_10x": 47193.0,
+            "usage_source": "native"
+          }
+        }
+      },
+      "pre_edit_backlink_advisory": {
+        "linked_edit": {
+          "passed": true,
+          "hook_injected_bytes": 197,
+          "ssot_reads": 4,
+          "session": {
+            "returncode": 0,
+            "seconds": 37.51,
+            "tool_items": 7,
+            "tool_output_bytes": 31825,
+            "native_models": [
+              "gpt-6.1-terra"
+            ],
+            "native_reasoning": [
+              "medium"
+            ],
+            "input_tokens": 120917,
+            "cached_input_tokens": 110080,
+            "uncached_input_tokens": 10837,
+            "output_tokens": 1109,
+            "api_turns": 6,
+            "session_files": 1,
+            "eff_units_cached_01x": 26281.0,
+            "eff_units_no_cache_10x": 125353.0,
+            "usage_source": "native"
+          }
+        },
+        "unrelated_typo": {
+          "passed": true,
+          "hook_injected_bytes": 0,
+          "ssot_reads": 0,
+          "session": {
+            "returncode": 0,
+            "seconds": 18.59,
+            "tool_items": 2,
+            "tool_output_bytes": 227,
+            "native_models": [
+              "gpt-6.1-terra"
+            ],
+            "native_reasoning": [
+              "medium"
+            ],
+            "input_tokens": 46137,
+            "cached_input_tokens": 42624,
+            "uncached_input_tokens": 3513,
+            "output_tokens": 257,
+            "api_turns": 3,
+            "session_files": 1,
+            "eff_units_cached_01x": 8803.4,
+            "eff_units_no_cache_10x": 47165.0,
+            "usage_source": "native"
+          }
+        }
+      }
+    }
+  }
+}
