@@ -132,6 +132,7 @@ curl -fsSL https://raw.githubusercontent.com/huangpufan/SSOT-CONTEXT/main/instal
 - [安装指南](./INSTALL.md)与[维护与恢复参考](./docs/2026-11-24-install-maintenance.md)：新装、指令块同步、升级、卸载、软链接、提交前守卫与中断恢复。
 - [设计说明](./DESIGN.md)：Skill 包为什么是现在这个形态，以及 v3 移除了什么。
 - [Stage 5 真实会话审计](./docs/2026-11-24-real-session-stage5-audit.md)与[长期路线审视](./docs/2026-11-20-context-evolution-route.md)：真实消费遥测、当前阶段与后续优先级。
+- [外部调研与长期吸收路线图](./docs/2026-11-27-external-research-absorption-roadmap.md)与 [`tools/ssot-backlinks.py`](./tools/ssot-backlinks.py)：多模型论文/开源项目评估、Batch 1 基线预筛实证、Batches 2–4 重开条件与可选工作树反向链接查询工具。
 - [评测指南与各版本实测索引](./tests/benchmark/README.md#recorded-studies-and-additional-lanes)：配对原生试验、冷接续、普通文档对照与证据边界。
 - [持续修改的研究和创作项目](./docs/2026-11-14-evolving-research-and-creative-projects.md)：格式 5 通用空间的实用示例。
 - [更新日志](./CHANGELOG.md)、[贡献指南](./CONTRIBUTING.md)、[AGENTS.md](./AGENTS.md)与[安全政策](./SECURITY.md)。

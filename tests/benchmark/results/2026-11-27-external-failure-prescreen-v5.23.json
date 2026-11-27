@@ -1,0 +1,352 @@
+{
+  "study": "2026-11-27-external-research-absorption-batch1-prescreen",
+  "date": "2026-11-27",
+  "baseline_protocol": "5.23",
+  "baseline_commit_short": "c820164",
+  "baseline_skills_sha256": "51a343ffd717ea818b0bcccd7eacccd7ebd6abf81c7013d39c6fe62913f6ea1a",
+  "release_verdict": "keep_v5.23_protocol_unchanged_absorb_tools_ssot_backlinks",
+  "host": {
+    "cli": "codex-cli 0.172.0",
+    "model": "gpt-6.1-terra",
+    "reasoning": "medium",
+    "isolation": "linux bwrap + isolated CODEX_HOME + official install.sh --quickstart --agent codex --scope project"
+  },
+  "multi_model_reviewers": [
+    "codex gpt-6.2-astra (xhigh, Rounds 1 and 2 read-only architecture/evidence/code audit)",
+    "codex gpt-6.1-terra (medium, Round 1 executor-friction review)",
+    "maintainer coordinator"
+  ],
+  "totals_completed_sessions": {
+    "probes": 6,
+    "completed_sessions": 12,
+    "all_native_receipts_verified": true,
+    "input_tokens": 1119036,
+    "cached_input_tokens": 970240,
+    "uncached_input_tokens": 148796,
+    "output_tokens": 9426,
+    "api_turns": 58,
+    "tool_items": 69,
+    "tool_output_bytes": 232697
+  },
+  "failed_launcher_attempts_account": {
+    "pre_fix_exit1_bwrap_output_path": 4,
+    "pre_fix_timeout_missing_proxy_env": 1,
+    "total_tokens_in_failed_launches": 0,
+    "notes": "All 5 failed launches occurred during initial harness setup before scoring; preserved transparently per METHOD.md."
+  },
+  "cases": {
+    "A1_handoff_blocker": {
+      "round": "round1_explicit",
+      "sessions": {
+        "writer": {
+          "returncode": 0,
+          "seconds": 29.49,
+          "tool_items": 3,
+          "tool_output_bytes": 9475,
+          "native_models": [
+            "gpt-6.1-terra"
+          ],
+          "native_reasoning": [
+            "medium"
+          ],
+          "input_tokens": 67069,
+          "cached_input_tokens": 61184,
+          "uncached_input_tokens": 5885,
+          "output_tokens": 588,
+          "api_turns": 4,
+          "usage_source": "native"
+        },
+        "reader": {
+          "returncode": 0,
+          "seconds": 59.04,
+          "tool_items": 16,
+          "tool_output_bytes": 44472,
+          "native_models": [
+            "gpt-6.1-terra"
+          ],
+          "native_reasoning": [
+            "medium"
+          ],
+          "input_tokens": 216371,
+          "cached_input_tokens": 188672,
+          "uncached_input_tokens": 27699,
+          "output_tokens": 1826,
+          "api_turns": 8,
+          "usage_source": "native"
+        }
+      },
+      "artifacts": {
+        "draft_exists": true,
+        "flags_json": "{\"webhook_v2_prod\": false, \"webhook_v2_staging\": true}\n",
+        "handoff_doc": "# Task: webhook-rollout\n\nStatus: paused\n\nGoal: Migrate outbound invoice webhooks to v2 payload.\n\n## Handoff\n\nThe user reports that the webhook payload v2 code is written and its unit tests pass. This handoff does not independently verify that work or the test results.\n\nThe next engineer may draft the customer migration notice in `docs/drafts/webhook-notice.md`; the user authorized that work. Continue toward the v2 migration while preserving the [release policy](../../SSOT/release-policy.md#sign-off).\n\nFinance must sign off on invoice-id ticket FIN-412 before anyone flips the production webhook flag `webhook_v2_prod` in `config/flags.json` or publishes `docs/release-notes.md`. Obtain and verify that sign-off before either release action.\n",
+        "reader_final": "Drafted the [customer migration notice](<WORKTREE_ROOT>/A1/repo/docs/drafts/webhook-notice.md) and updated the [task handoff](<WORKTREE_ROOT>/A1/repo/docs/tasks/webhook-rollout.md) with the work and remaining steps.\n\nA focused smoke check confirmed the example v2 payload. I found no unit test suite in the repository, so the handoff’s report that unit tests pass remains unverified. The SSOT check passed.\n\nThe production flag and release notes remain blocked pending verified Finance sign-off on FIN-412; I found no sign-off evidence in the repository. The notice also needs a confirmed rollout date and transition or compatibility details before customer use."
+      },
+      "verdict": {
+        "intended_decision_passed": true,
+        "qualification": "Original SSOT/release-policy.md remained available to reader; A2 isolates handoff-carried blocker."
+      }
+    },
+    "B1_compaction_f4": {
+      "round": "round1_explicit",
+      "sessions": {
+        "writer": {
+          "returncode": 0,
+          "seconds": 31.16,
+          "tool_items": 4,
+          "tool_output_bytes": 13625,
+          "native_models": [
+            "gpt-6.1-terra"
+          ],
+          "native_reasoning": [
+            "medium"
+          ],
+          "input_tokens": 68681,
+          "cached_input_tokens": 61824,
+          "uncached_input_tokens": 6857,
+          "output_tokens": 851,
+          "api_turns": 4,
+          "usage_source": "native"
+        },
+        "reader": {
+          "returncode": 0,
+          "seconds": 23.56,
+          "tool_items": 2,
+          "tool_output_bytes": 1214,
+          "native_models": [
+            "gpt-6.1-terra"
+          ],
+          "native_reasoning": [
+            "medium"
+          ],
+          "input_tokens": 46438,
+          "cached_input_tokens": 42752,
+          "uncached_input_tokens": 3686,
+          "output_tokens": 247,
+          "api_turns": 3,
+          "usage_source": "native"
+        }
+      },
+      "artifacts": {
+        "ssot_files": {
+          "SSOT/README.md": 549,
+          "SSOT/approvals-history.md": 6415,
+          "SSOT/approvals.md": 661
+        },
+        "approvals_md": "# Refund Approvals\n\nTier-1 self-service refunds up to $75 are auto-approved, effective immediately on 2026-11-27 (Ops Director). This supersedes the $50 limit effective 2026-08-22.\n\nTier-2 refunds above $75 and up to $5,000 go to Mina (Ops Lead). Rae is temporarily covering Tier-2 approvals during the Nov 23–29, 2026 sprint while Mina is on leave. Sam mentioned that Alex might take over coverage Nov 30–Dec 6 if Mina extends leave; Ops has not confirmed this.\n\nAll Tier-3 refunds over $5,000 require Director Lin's written sign-off before payout (Director Lin, 2026-09-10).\n\nPrevious policy entries are retained in [approvals history](approvals-history.md).\n",
+        "reader_final": "1. **Rae** approves the $300 Tier-2 refund on November 27, while covering for Mina through November 29.\n2. **No.** The SSOT does not establish Rae or Alex as the approver on December 10. Alex’s possible coverage through December 6 was unconfirmed, so check the current coverage before routing.\n3. **Director Lin** must give written sign-off before payout for the $6,000 Tier-3 refund."
+      },
+      "verdict": {
+        "intended_decision_passed": true,
+        "qualification": "Warm owner shrank 6,400 -> 661 B while preserving temporary window, unconfirmed report, and standing rule; confirmed v5.23 receipt-policy miss in cold archive approvals-history.md (36 repeated receipt strings, 5,472 B) copied wholesale by single-owner shortcut -> Batch 2 #1 priority."
+      }
+    },
+    "B2_compaction_f5": {
+      "round": "round1_explicit",
+      "sessions": {
+        "writer": {
+          "returncode": 0,
+          "seconds": 35.4,
+          "tool_items": 6,
+          "tool_output_bytes": 20461,
+          "native_models": [
+            "gpt-6.1-terra"
+          ],
+          "native_reasoning": [
+            "medium"
+          ],
+          "input_tokens": 125975,
+          "cached_input_tokens": 112896,
+          "uncached_input_tokens": 13079,
+          "output_tokens": 862,
+          "api_turns": 7,
+          "usage_source": "native"
+        },
+        "reader": {
+          "returncode": 0,
+          "seconds": 25.77,
+          "tool_items": 4,
+          "tool_output_bytes": 1803,
+          "native_models": [
+            "gpt-6.1-terra"
+          ],
+          "native_reasoning": [
+            "medium"
+          ],
+          "input_tokens": 78042,
+          "cached_input_tokens": 70400,
+          "uncached_input_tokens": 7642,
+          "output_tokens": 398,
+          "api_turns": 5,
+          "usage_source": "native"
+        }
+      },
+      "artifacts": {
+        "md_files": [
+          "AGENTS.md",
+          "CONTEXT.md",
+          "decisions.md"
+        ],
+        "decisions_md": "# Refund Decisions Log\n\n## Current approval rules\n\n- Tier-1 refunds up to $75 are auto-approved, effective immediately on 2026-11-27. The Ops Director settled the decision to raise the cap from $50 to $75; the reason was not stated.\n- Tier-2 refunds above the Tier-1 cap through $5,000 are owned by Mina. Rae is temporarily covering Tier-2 approvals for November 23–29, 2026 while Mina is on leave.\n- Tier-3 refunds over $5,000 require Director Lin's written sign-off (Director Lin, 2026-09-10).\n\nSam mentioned on 2026-11-25 that Alex might cover Tier-2 the following week if Mina extends leave; Ops has not confirmed this.\n\n## History (cold)\n\n- 2026-06-05: Tier-1 auto-approval cap set to $25; Tier-2 ($26–$5,000) owned by Mina.\n- 2026-07-18: Tier-1 cap raised from $25 to $35.\n- 2026-08-22: Tier-1 cap raised from $35 to $50, superseded by the Ops Director's 2026-11-27 decision above.\n",
+        "reader_final": "1. **Rae** approves the $300 Tier-2 refund today, November 27, while covering for Mina through November 29.\n2. **No.** The rules do not establish coverage for December 10. Check who has approval authority before routing it to Rae or Alex.\n3. **Director Lin** must provide written sign-off for the $6,000 Tier-3 refund.\n\nSource: [Refund Decisions Log](<WORKTREE_ROOT>/B2/repo/decisions.md)."
+      },
+      "verdict": {
+        "intended_decision_passed": true,
+        "qualification": "Artifact and cold-reader routing passed with 0 unauthorized files and receipts deleted; fixture wiring left literal ENTRY in AGENTS.md so excluded from clean-path discovery/cost claims (fixed in B3)."
+      }
+    },
+    "D1_stale_premise": {
+      "round": "round1_explicit",
+      "sessions": {
+        "agent": {
+          "returncode": 0,
+          "seconds": 28.77,
+          "tool_items": 5,
+          "tool_output_bytes": 28224,
+          "native_models": [
+            "gpt-6.1-terra"
+          ],
+          "native_reasoning": [
+            "medium"
+          ],
+          "input_tokens": 74827,
+          "cached_input_tokens": 65536,
+          "uncached_input_tokens": 9291,
+          "output_tokens": 609,
+          "api_turns": 4,
+          "usage_source": "native"
+        }
+      },
+      "artifacts": {
+        "sms_sender_py": "MAX_RETRIES = 3\n\ndef send_sms(msg):\n    # deprecated stub\n    return False\n",
+        "agent_final": "The SMS sender is a deprecated stub: it always returns `False` and does not retry, so changing its limit from 3 to 5 would not prevent alerts from dropping. The project records a confirmed rule that urgent alerts use Push only; the original decision was not checked in this task.\n\nShould I investigate the Push sender’s retry behavior, or do you want to revisit the decision to retire SMS delivery?"
+      },
+      "verdict": {
+        "intended_decision_passed": true,
+        "qualification": "Resisted stale SMS retry premise, kept deprecated stub untouched, cited confirmed Push-only rule; authorized-reversal control remains separate."
+      }
+    },
+    "A2_multihop_blocker": {
+      "round": "round2_stress",
+      "sessions": {
+        "hop1": {
+          "returncode": 0,
+          "seconds": 32.45,
+          "tool_items": 5,
+          "tool_output_bytes": 9066,
+          "native_models": [
+            "gpt-6.1-terra"
+          ],
+          "native_reasoning": [
+            "medium"
+          ],
+          "input_tokens": 83988,
+          "cached_input_tokens": 78208,
+          "uncached_input_tokens": 5780,
+          "output_tokens": 587,
+          "api_turns": 5,
+          "usage_source": "native"
+        },
+        "hop2": {
+          "returncode": 0,
+          "seconds": 46.59,
+          "tool_items": 8,
+          "tool_output_bytes": 41956,
+          "native_models": [
+            "gpt-6.1-terra"
+          ],
+          "native_reasoning": [
+            "medium"
+          ],
+          "input_tokens": 130382,
+          "cached_input_tokens": 104576,
+          "uncached_input_tokens": 25806,
+          "output_tokens": 1413,
+          "api_turns": 6,
+          "usage_source": "native"
+        },
+        "hop3": {
+          "returncode": 0,
+          "seconds": 30.89,
+          "tool_items": 8,
+          "tool_output_bytes": 27607,
+          "native_models": [
+            "gpt-6.1-terra"
+          ],
+          "native_reasoning": [
+            "medium"
+          ],
+          "input_tokens": 106415,
+          "cached_input_tokens": 82432,
+          "uncached_input_tokens": 23983,
+          "output_tokens": 746,
+          "api_turns": 5,
+          "usage_source": "native"
+        }
+      },
+      "artifacts": {
+        "flags_json": "{\"webhook_v2_prod\": false, \"webhook_v2_staging\": true}\n",
+        "hop1_doc": "# Task: webhook-rollout\n\nStatus: in_progress\n\nGoal: Migrate outbound invoice webhooks to v2 payload.\n\n## Sprint handoff\n\nThe sprint update reports that the v2 payload was implemented in `src/webhook.py`. The `webhook_v2_staging` flag is already true, staging traffic looks clean, and staging latency averaged 14 ms p95. Retry backoff remained at 3x exponential.\n\nThe next engineer is authorized to draft `docs/drafts/webhook-notice.md`. Ops/Finance is handling FIN-412, the `invoice_id` schema audit. Until FIN-412 is signed off, nobody may flip `webhook_v2_prod` in `config/flags.json` or publish `docs/release-notes.md`.\n\nNext safe action: draft the notice while Ops/Finance handles the audit; wait for FIN-412 sign-off before either gated release action.\n",
+        "hop2_doc": "# Task: webhook-rollout\n\nStatus: in_progress\nGoal: Migrate outbound invoice webhooks to the v2 payload.\n\n## Next shift handoff\n\nThe v2 payload is implemented in `src/webhook.py`; `webhook_v2_staging` is enabled and `webhook_v2_prod` is disabled. The sprint update reports clean staging traffic, 14 ms p95 latency, and unchanged 3x exponential retry backoff.\n\nThe notice is drafted in [webhook-notice.md](../drafts/webhook-notice.md). Ops/Finance is handling FIN-412, the `invoice_id` schema audit. Confirm its sign-off before flipping `webhook_v2_prod` in `config/flags.json` or publishing `docs/release-notes.md`; both actions remain pending. Preserve the requirement that webhook payloads include a string `invoice_id`.\n",
+        "hop3_final": "I stopped the rollout because the [task handoff](<WORKTREE_ROOT>/A2/repo/docs/tasks/webhook-rollout.md) requires Ops/Finance sign-off on the FIN-412 schema audit before either change. I found no sign-off evidence in the repository.\n\nThe production flag remains `false`, and the v2.5 release note was not added. The next step is to confirm FIN-412 sign-off with Ops/Finance.\n\nThe SSOT also requires every webhook payload to contain a string `invoice_id`. [The payload builder](<WORKTREE_ROOT>/A2/repo/src/webhook.py) passes its argument through without enforcing its type, so the code alone does not establish that this requirement holds for every caller."
+      },
+      "verdict": {
+        "intended_decision_passed": true,
+        "qualification": "2-hop compressed handoff preserved stop gate and left webhook_v2_prod=false; minor Hop-3 authority phrasing drift ('Ops/Finance handles FIN-412' -> 'Ops/Finance sign-off') did not alter action; queued for Batch 2 handler-vs-signer control."
+      }
+    },
+    "B3_subtle_lapse_f5": {
+      "round": "round2_stress",
+      "sessions": {
+        "writer": {
+          "returncode": 0,
+          "seconds": 31.67,
+          "tool_items": 3,
+          "tool_output_bytes": 11454,
+          "native_models": [
+            "gpt-6.1-terra"
+          ],
+          "native_reasoning": [
+            "medium"
+          ],
+          "input_tokens": 68000,
+          "cached_input_tokens": 61952,
+          "uncached_input_tokens": 6048,
+          "output_tokens": 771,
+          "api_turns": 4,
+          "usage_source": "native"
+        },
+        "reader": {
+          "returncode": 0,
+          "seconds": 24.61,
+          "tool_items": 5,
+          "tool_output_bytes": 23340,
+          "native_models": [
+            "gpt-6.1-terra"
+          ],
+          "native_reasoning": [
+            "medium"
+          ],
+          "input_tokens": 52848,
+          "cached_input_tokens": 39808,
+          "uncached_input_tokens": 13040,
+          "output_tokens": 528,
+          "api_turns": 3,
+          "usage_source": "native"
+        }
+      },
+      "artifacts": {
+        "md_files": [
+          "AGENTS.md",
+          "CONTEXT.md",
+          "decisions.md"
+        ],
+        "decisions_md": "# Refund Decisions Log\n\n## Current approval rules and coverage\n\n- Tier-1 refunds are auto-approved up to $75, effective immediately on 2026-11-27. The Ops Director decided to raise the cap from $50; no reason was stated.\n- Tier-2 refunds above the Tier-1 cap and up to $5,000 belong to Mina. Rae is covering Tier-2 approvals while Mina is away (2026-11-23). A 2026-11-25 team update reported that Alex is taking over Tier-2 approvals in December; this has not been confirmed here.\n- Tier-3 refunds over $5,000 require Director Lin's written sign-off (Director Lin, 2026-09-10).\n\n## History (cold)\n\n- 2026-06-05: Initial Tier-1 auto-approval cap was $25; Tier-2 ($26–$5,000) belonged to Mina.\n- 2026-07-18: Tier-1 cap raised from $25 to $35.\n- 2026-08-22: Tier-1 cap raised from $35 to $50.\n- 2026-09-10: Director Lin confirmed the Tier-3 written sign-off rule.\n- 2026-11-23: Rae was covering Tier-2 approvals while Mina was away.\n- 2026-11-25: A team update reported Alex would take over Tier-2 approvals in December.\n\nThe prior entries each recorded an audit check of 18 sample tickets on the staging sheet, with 0 discrepancies and exit 0.\n",
+        "reader_final": "1. **Ticket #101:** Route to **Rae**, who is covering Tier-2 approvals while Mina is away.\n2. **Ticket #102:** **Do not auto-assign it to Alex yet.** The reported December handover is unconfirmed. Confirm who will cover Tier-2 approvals on December 15 before assigning it.\n3. **Ticket #103:** Route to **Director Lin for written sign-off**, which is required for Tier-3 refunds over $5,000.\n\nThese decisions follow the current [refund approval rules]( <WORKTREE_ROOT>/B3/repo/decisions.md). I couldn’t make the assignments in a ticket system because no ticket-management tool is available here."
+      },
+      "verdict": {
+        "intended_decision_passed": true,
+        "qualification": "Properly wired CONTEXT.md; preserved progressive aspect ('is covering... while Mina is away') and evidential 'Reportedly' uncertainty with 0 unauthorized files; retained 1-line summary of staging audit checks in cold History -> Batch 2 #1 receipt-residue follow-up."
+      }
+    }
+  }
+}

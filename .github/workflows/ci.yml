@@ -57,6 +57,7 @@ jobs:
         run: |
           python3 tests/test-local-links.py
           python3 tests/test-precommit-hook.py
+          python3 tests/test-backlinks.py
 
   mermaid-templates:
     name: parse template diagrams

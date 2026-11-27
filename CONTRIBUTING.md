@@ -85,6 +85,7 @@ python3 tests/test-context-source.py   # POSIX source/owner/readback contract; n
 python3 -m unittest discover -s tests/context -p 'test_*.py' # general-context, source CLI, continuation, register, tiering and longchain tests; no model calls
 python3 tests/test-local-links.py      # tools/link-local.py symlink plan, backup and rollback tests
 python3 tests/test-precommit-hook.py   # tools/ssot-precommit.sh zero-token Git pre-commit guard tests
+python3 tests/test-backlinks.py        # tools/ssot-backlinks.py working-tree explicit reverse-link tests
 bash tests/test-installer-e2e.sh       # installer end to end
 python3 tests/test-installer-recovery.py # replacement faults, cancellation, locking and recovery
 shellcheck -S warning -e SC2034 install.sh tests/*.sh tools/*.sh

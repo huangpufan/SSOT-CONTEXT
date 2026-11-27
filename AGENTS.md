@@ -59,7 +59,7 @@ Every modification to this repository — code, templates, docs, installer, test
 - Direct commits to `main` are the established pattern for maintainers on this repo; external contributors go through `CONTRIBUTING.md` (branch + PR).
 - Group related edits into a single commit per task; do not split into per-file commits.
 - Commit message follows the `<type>: <subject>` form used in `git log` (e.g. `docs:`, `feat(protocol):`, `fix:`, `vX.YY (low|medium|high):` for protocol bumps).
-- Run any relevant local check before committing (`bash tests/test-bundle-shape.sh` for shape, links/anchors, hygiene, and budgets; `python3 tests/test-ssot-check.py` for checker changes; `bash tests/test-installer-e2e.sh` and `python3 tests/test-installer-recovery.py` for installer changes; `python3 tests/test-local-links.py` and `python3 tests/test-precommit-hook.py` for `tools/` changes; full list in [CONTRIBUTING.md](./CONTRIBUTING.md#local-verification)); a failing check is a blocker, not a footnote.
+- Run any relevant local check before committing (`bash tests/test-bundle-shape.sh` for shape, links/anchors, hygiene, and budgets; `python3 tests/test-ssot-check.py` for checker changes; `bash tests/test-installer-e2e.sh` and `python3 tests/test-installer-recovery.py` for installer changes; `python3 tests/test-local-links.py`, `python3 tests/test-precommit-hook.py`, and `python3 tests/test-backlinks.py` for `tools/` changes; full list in [CONTRIBUTING.md](./CONTRIBUTING.md#local-verification)); a failing check is a blocker, not a footnote.
 - If the user explicitly says "don't push" or "stage only", that overrides this rule for that turn only — it does not change the default.
 
 ## Models for Development and Trials
@@ -87,6 +87,6 @@ KISS is the permanent SSOT design principle: choose the shortest **reliable path
 | `skills/ssot-bootstrap/assets/templates/{en,zh}/` | Bootstrap templates |
 | `tests/benchmark/README.md` | Reproducible reading benchmark and its limits |
 | `skills/ssot-doctor/assets/scripts/ssot-check.py` | Read-only mechanical checker |
-| `tools/` | Opt-in tools outside `skills/` (`link-local.py` local symlinks, `ssot-precommit.sh` zero-token Git pre-commit guard) |
+| `tools/` | Opt-in tools outside `skills/` (`link-local.py` local symlinks, `ssot-precommit.sh` zero-token Git pre-commit guard, `ssot-backlinks.py` working-tree explicit reverse-link lookup) |
 | `tests/` | Bundle shape and budgets, checker, installer, tools, and diagram tests |
 | `.github/workflows/ci.yml` | CI pipeline |
