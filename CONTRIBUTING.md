@@ -8,7 +8,7 @@ Thanks for your interest in improving the SSOT-CONTEXT bundle. Read [DESIGN.md](
 |---|---|---|
 | Protocol | `skills/*/SKILL.md`, `skills/*/references/*.md`, templates | Protocol review (below) |
 | Engineering | `install.sh`, `skills/*/assets/scripts/`, `tools/`, `tests/`, `.github/workflows/` | Standard review |
-| Docs | `README*`, `INSTALL.md`, `DESIGN.md`, `CHANGELOG.md`, `docs/` | Standard review |
+| Docs | `README*`, `INSTALL.md`, `DESIGN.md`, `CHANGELOG.md`, `docs/`, `paper/` | Standard review |
 
 `skills/ssot-preflight/references/memory-model.md` owns development format 4 (`SSOT/`), `skills/ssot-preflight/references/context-spaces.md` owns general-space format 5, and `skills/ssot-preflight/references/writing-memory.md` owns the writing rules the bundle ships. The `SKILL.md` files and templates link to those owners rather than restating them.
 
@@ -25,7 +25,7 @@ Every protocol change answers four questions in its pull request:
 3. **How was it verified, at the level of its impact?** A wording fix needs the structural tests. A local rule needs a scenario where it should apply and a nearby one where it should not. A change to what agents read or write by default needs a baseline/candidate trial on real tasks that records wrong decisions, false triggers, reading, and writing.
 4. **What is the net effect on whole tasks?** Fixing one case while making every unrelated task read or write more is not an improvement.
 
-Do not claim more than you ran. A structural test does not show that agents behave better.
+Do not claim more than you ran. A structural test does not show that agents behave better. When a study or protocol release strengthens, narrows, or refutes a cross-batch claim, follow the maintenance contract at the top of [paper/LIVING-PAPER.md](./paper/LIVING-PAPER.md) to frame the claim upfront and update the affected passage in place with direct links to the tracked report and frozen result.
 
 ### Writing a SKILL.md
 

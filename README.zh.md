@@ -131,6 +131,7 @@ curl -fsSL https://raw.githubusercontent.com/huangpufan/SSOT-CONTEXT/main/instal
 
 - [安装指南](./INSTALL.md)与[维护与恢复参考](./docs/2026-11-24-install-maintenance.md)：新装、指令块同步、升级、卸载、软链接、提交前守卫与中断恢复。
 - [设计说明](./DESIGN.md)：Skill 包为什么是现在这个形态，以及 v3 移除了什么。
+- [活论文：活的上下文为什么难维护](./paper/LIVING-PAPER.md)（中文正文含英文导读）：跨批次叙事，复盘 v2 崩塌、386 次真实会话与配对实测证明了什么，以及哪些直觉优化被证伪撤回。
 - [Stage 5 真实会话审计](./docs/2026-11-24-real-session-stage5-audit.md)与[长期路线审视](./docs/2026-11-20-context-evolution-route.md)：真实消费遥测、当前阶段与后续优先级。
 - [外部调研与吸收路线图](./docs/2026-11-27-external-research-absorption-roadmap.md)、[Batches 2–4 与 5.24 实证报告](./docs/2026-11-27-external-research-batches2-4-v5.24.md)与 [`tools/ssot-backlinks.py`](./tools/ssot-backlinks.py)：多模型论文/开源项目评估、62 次隔离实证、5.24 收尾站位守卫与可选工作树反向链接查询工具。
 - [评测指南与各版本实测索引](./tests/benchmark/README.md#recorded-studies-and-additional-lanes)：配对原生试验、冷接续、普通文档对照与证据边界。

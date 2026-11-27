@@ -49,6 +49,7 @@ The consumer instruction blocks live in the bootstrap adapter templates—format
 - `VERSION` and `skills/ssot-preflight/SKILL.md` `metadata.protocol_version` must match (CI enforces).
 - `CHANGELOG.md` follows Keep a Changelog format.
 - Follow the [filename convention](./CONTRIBUTING.md#naming-files-in-docs) when adding or renaming files in `docs/`. Before completing a repository change or committing, follow [README reconciliation](./CONTRIBUTING.md#readme-reconciliation).
+- [paper/LIVING-PAPER.md](./paper/LIVING-PAPER.md) is the cross-batch narrative authority (opted into `living-paper`): when framing a study that tests a paper claim or after frozen evidence strengthens, narrows, or refutes one, follow its maintenance contract in place without duplicating other owners.
 
 ## Commit Discipline (Global)
 
@@ -75,6 +76,7 @@ KISS is the permanent SSOT design principle: choose the shortest **reliable path
 | File | Purpose |
 |------|---------|
 | `DESIGN.md` | Why the bundle is shaped this way; what v3 removed and why |
+| `paper/LIVING-PAPER.md` | Cross-batch living technical essay, empirical wins/withdrawals, and maintenance contract |
 | `install.sh` | Bundle installer (70+ agents; `--ref` selects a branch or tag) |
 | `VERSION` | Bundle protocol version |
 | `CHANGELOG.md` | Version history |
