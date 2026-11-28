@@ -136,12 +136,14 @@ ACTIVE_RESEARCH_RE = re.compile(
     re.IGNORECASE,
 )
 CHECKBOX_RE = re.compile(r"^\s*(?:[-*+]|\d+[.)])\s+\[([ xX])\]\s")
+DATED_BULLET_RE = re.compile(r"^\s*(?:[-*+]|\d+[.)])\s+(?:\*{1,2}|`|\[)?20\d\d-\d\d-\d\d\b")
+EXT_ROUTE_ROLLUP = 3
 
 
 class Report:
     def __init__(self, root, documents=None):
         self.root, self.documents = root, documents
-        self.lines, self.compactions, self.unchecked = [], [], []
+        self.lines, self.compactions, self.unchecked, self.ext_routes, self.err_paths = [], [], [], [], []
         self.errors = self.warnings = 0
 
     def add(self, level, path, line, message):
@@ -149,13 +151,24 @@ class Report:
         self.lines.append(f"{level:<5} {where}  {message}")
         if level == "ERROR":
             self.errors += 1
+            self.err_paths.append(real_path(path) if path else None)
         elif level == "WARN":
             self.warnings += 1
 
     def add_compaction(self, path, detail):
         self.compactions.append((os.path.relpath(path, self.root) if path else ".", detail))
 
-    def finish(self, target):
+    def finish(self, target, since=None, touched=None):
+        if len(self.ext_routes) > EXT_ROUTE_ROLLUP:
+            by_doc = {}
+            for p, _, _ in self.ext_routes:
+                rel = os.path.relpath(p, self.root)
+                by_doc[rel] = by_doc.get(rel, 0) + 1
+            sample = ", ".join(f"{k} ({v})" for k, v in list(by_doc.items())[:5]) + (f", and {len(by_doc) - 5} more file(s)" if len(by_doc) > 5 else "")
+            self.add("INFO", None, None, f"{len(self.ext_routes)} external-space route(s) not read by this check across {len(by_doc)} file(s): {sample}")
+        else:
+            for p, num, tgt in self.ext_routes:
+                self.add("INFO", p, num, f"external-space route not read by this check: {tgt}")
         if self.compactions:
             grouped = {}
             for where, detail in self.compactions:
@@ -163,14 +176,15 @@ class Report:
                 if detail not in items:
                     items.append(detail)
             entries = [f"{w} ({'; '.join(ds)})" for w, ds in grouped.items()]
-            shown = ", ".join(entries[:COMPACTION_ROLLUP_LIMIT])
-            if len(entries) > COMPACTION_ROLLUP_LIMIT:
-                shown += f", and {len(entries) - COMPACTION_ROLLUP_LIMIT} more"
+            shown = ", ".join(entries[:COMPACTION_ROLLUP_LIMIT]) + (f", and {len(entries) - COMPACTION_ROLLUP_LIMIT} more" if len(entries) > COMPACTION_ROLLUP_LIMIT else "")
             self.add("INFO", None, None, f"compaction candidates ({len(entries)}): {shown}")
         for line in self.lines:
             print(line)
         for item in self.unchecked:
             print(f"UNCHECKED {item}")
+        if since and self.errors and touched is not None:
+            in_scope = sum(1 for p in self.err_paths if p is None or p in touched)
+            print(f"INFO  .  since {since}: {in_scope} error(s) in touched files, {self.errors - in_scope} pre-existing error(s) in untouched files")
         verdict = "INCOMPLETE" if self.unchecked else ("FAIL" if self.errors else "PASS")
         counts = f"{self.errors} error(s), {self.warnings} warning(s)" + (f", {len(self.unchecked)} part(s) not checked" if self.unchecked else "")
         print(f"ssot-check: {verdict} - {counts} in {target}")
@@ -455,7 +469,7 @@ def check_link(report, doc, number, target, local_links=None, missing_links=None
             except OSError as error:
                 report.unchecked.append(f"external-space target {target}: {error}")
                 return
-            report.add("INFO", doc, number, f"external-space route not read by this check: {target}")
+            report.ext_routes.append((doc, number, target))
             return
         nested = nested_git_root(resolved)
         if nested is None:
@@ -495,19 +509,14 @@ def check_link(report, doc, number, target, local_links=None, missing_links=None
         report.add("ERROR", doc, number, f"missing heading anchor: {target}")
 
 
-# --- hard-wrapped paragraphs --------------------------------------------------
-# A paragraph written as several short lines reads as ragged text in an editor,
-# and in Chinese or Japanese a line break inside a sentence can render as a
-# stray space. Each paragraph and list item should be one line.
-
-WRAP_MIN_RUN = 3        # consecutive lines of one paragraph
-WRAP_MAX_WIDTH = 100    # every line of the run at most this wide (in characters)
+# --- hard-wrapped paragraphs ---
+WRAP_MIN_RUN = 3
+WRAP_MAX_WIDTH = 100
 BLOCK_START_RE = re.compile(r"^\s{0,3}(#|>|\||[-*+]\s|\d+[.)]\s|<|\[[^\]]+\]:|```|~~~)")
 
 
 def hard_wrapped_paragraphs(text, md_lines=None):
-    """Yield the first line number of each paragraph or list item that runs
-    over WRAP_MIN_RUN or more short source lines."""
+    """Yield start line numbers of paragraphs/list items wrapped across >=WRAP_MIN_RUN short lines."""
     run_start, run_length, in_item = None, 0, False
     for number, line in (markdown_lines(text) if md_lines is None else md_lines):
         stripped = line.strip()
@@ -538,6 +547,7 @@ def doc_rel_parts(doc, ssot_dir):
 def is_cold_dir_part(part):
     return (part in COLD_DIRS
             or re.sub(r"^\d+[-_.\s]+", "", part) in COLD_ZH_EXACT_DIRS
+            or part.endswith("归档")
             or any(tok in part for tok in COLD_ZH_DIR_TOKENS))
 
 
@@ -777,7 +787,9 @@ def check_document_bloat(report, doc, readme, ssot_dir, text, shard_paths, cold_
     wc, wb = measure_visible(vis, c_start, inv_spans, exclude_invariants=is_reg)
     tb = utf8_bytes(text)
     wh = [(n, l, r) for n, l, r in all_h if not in_cold_region(n, c_start, inv_spans)]
-    wd = sum(1 for _, _, r in wh if DATE_RE.search(r))
+    wd_h = sum(1 for _, _, r in wh if DATE_RE.search(r))
+    wd_b = sum(1 for n, ln in md_lines if not in_cold_region(n, c_start, inv_spans) and DATED_BULLET_RE.match(ln))
+    wd, wd_lbl = (wd_h, "dated headings") if wd_h >= DATED_HISTORY_INFO_HEADINGS else (wd_h + wd_b, "dated entries")
     lim = README_WARN_CHARS if doc == readme else DOC_WARN_CHARS
     cdest = "a cold archive (or trailing ## History (cold) if layout is fixed)" if (GENERAL[0] or ext) else "a cold archive (decisions/ or *-history.md)"
     dact = "propose consolidation/cold archive" if ext else ("consolidate + cold archive (or ## History (cold) if layout fixed)" if GENERAL[0] else "consolidate + offload history to cold archive")
@@ -795,7 +807,7 @@ def check_document_bloat(report, doc, readme, ssot_dir, text, shard_paths, cold_
             top = max(non_inv, key=lambda x: x[2]) if non_inv else None
             lg = f"; largest section: ## {top[1]} ({top[2]} chars)" if top and top[2] > 0 else ""
             if wd >= DATED_HISTORY_INFO_HEADINGS:
-                emit("WARN", None, f"{wc} characters is past the {lim}-character reading budget (invariant rows not counted) and has {wd} dated headings{lg}; {dated_tail}", f"{wc} entry chars, {wd} dated headings -> {dact}")
+                emit("WARN", None, f"{wc} characters is past the {lim}-character reading budget (invariant rows not counted) and has {wd} {wd_lbl}{lg}; {dated_tail}", f"{wc} entry chars, {wd} {wd_lbl} -> {dact}")
             else:
                 emit("WARN", None, f"{wc} characters is past the {lim}-character reading budget (invariant rows not counted){lg}; {split_tail}", f"{wc} entry prose chars -> trim/split entry")
         for sl, title, sc in non_inv:
@@ -813,16 +825,16 @@ def check_document_bloat(report, doc, readme, ssot_dir, text, shard_paths, cold_
         if wc > lim:
             lvl = "WARN" if is_owned else "INFO"
             if wd >= DATED_HISTORY_INFO_HEADINGS:
-                emit(lvl, None, f"{wc} characters is past the {lim}-character reading budget and has {wd} dated headings; {dated_tail}", f"{pfx}{wc} chars, {wd} dated headings -> {dact}")
+                emit(lvl, None, f"{wc} characters is past the {lim}-character reading budget and has {wd} {wd_lbl}; {dated_tail}", f"{pfx}{wc} chars, {wd} {wd_lbl} -> {dact}")
             elif not is_reg and h2 >= MEGA_DOC_H2_SECTIONS:
                 emit(lvl, None, f"{wc} characters across {h2} level-2 sections is past the {lim}-character reading budget; consider splitting by topic or moving detail out", f"{pfx}{wc} chars, {h2} sections -> {sact}")
             else:
                 emit(lvl, None, f"{wc} characters is past the {lim}-character reading budget{' (invariant rows not counted)' if is_reg else ''}; {split_tail}", f"{pfx}{wc} chars -> {sact}")
         elif wc > DATED_EARLY_INFO_CHARS and wd >= DATED_HISTORY_INFO_HEADINGS:
-            emit("INFO", None, f"{wc} characters with {wd} dated headings; consolidate current state and move superseded history to {cdest}", f"{pfx}{wc} chars, {wd} dated headings -> {dact}")
+            emit("INFO", None, f"{wc} characters with {wd} {wd_lbl}; consolidate current state and move superseded history to {cdest}", f"{pfx}{wc} chars, {wd} {wd_lbl} -> {dact}")
         elif wb > DOC_INFO_BYTES:
             if wd >= DATED_HISTORY_INFO_HEADINGS:
-                emit("INFO", None, f"{wb} bytes ({wc} chars; >{DOC_INFO_BYTES} bytes) with {wd} dated headings; {dated_tail}", f"{pfx}{wb} bytes, {wd} dated headings -> {dact}")
+                emit("INFO", None, f"{wb} bytes ({wc} chars; >{DOC_INFO_BYTES} bytes) with {wd} {wd_lbl}; {dated_tail}", f"{pfx}{wb} bytes, {wd} {wd_lbl} -> {dact}")
             else:
                 sec = f" across {h2} level-2 sections" if not is_reg and h2 >= MEGA_DOC_H2_SECTIONS else ""
                 csec = f", {h2} sections" if sec else ""
@@ -1152,12 +1164,8 @@ def check_invariants(report, readme, text, ssot_dir):
     return shards, cold_shards
 
 
-# --- git -----------------------------------------------------------------------
-# The checker never writes. These settings stop git from writing or running
-# anything on its behalf: no optional index refresh, no filesystem-monitor hook,
-# and no fetching of missing objects in a partial clone.
-# Hooks and callers may export another worktree's Git routing. Every command
-# here must inspect the requested repository, including its own history/index.
+# --- git ---
+# Read-only git settings: no index refresh, fsmonitor, or partial-clone fetch; clear caller git env.
 GIT_ROUTING_ENV = {
     "GIT_DIR", "GIT_WORK_TREE", "GIT_COMMON_DIR", "GIT_INDEX_FILE",
     "GIT_OBJECT_DIRECTORY", "GIT_ALTERNATE_OBJECT_DIRECTORIES", "GIT_SHALLOW_FILE",
@@ -1192,13 +1200,8 @@ def git_output(directory, *args):
     return result.stdout.decode("utf-8", "surrogateescape")
 
 
-# --- mentions of files that no longer exist ------------------------------------
-# SSOT names the file that holds a detail instead of copying it, so a file path
-# is the main link between a document and the code. When a change deletes or
-# moves that file, the sentence around it usually becomes wrong. Git can tell
-# that a mentioned path existed and is gone; only a reader can tell whether the
-# sentence meant the past. Records of the past (decisions/, research/) are not
-# checked, and a line that names the removing commit counts as history.
+# --- mentions of files that no longer exist ---
+# Git checks removed/moved path mentions outside cold records; naming the removing commit silences it.
 
 PATH_SPAN_RE = re.compile(r"^((?:\.{1,2}/)*\.?[\w@+-][\w@.+-]*(?:/[\w@.+-]+)+)/?(?::\d+(?:-\d+)?|::\S+)?$")
 REF_LABEL_RE = re.compile(r"!?\[(?:[^\[\]\\]|\\.)*\]\[[^\]]*\]")
@@ -1277,14 +1280,7 @@ def present_paths(top):
 
 
 def removals(top, index, shallow):
-    """Find when the paths the index asks about were removed. Returns
-    {(mention, exact): [(old path, commit or None, date, new path or None)]},
-    newest first; commit is None for a removal that is not committed yet.
-
-    Only the index and the object store are read: comparing the working tree
-    with a commit would run the repository's clean filters, which may do
-    anything. A file deleted in the working tree but not staged is therefore
-    reported as removed, without a new place even if it was moved."""
+    """Map (mention, exact) -> [(old, commit_or_None, date, new_or_None)], newest first (index + store only)."""
     found = {}
 
     def record(old, commit, date, new):
@@ -1300,12 +1296,8 @@ def removals(top, index, shallow):
     for old in git_output(top, "ls-files", "-z", "--deleted").split("\0"):
         if old:
             record(old, None, None, None)
-    # Without rename detection one pass is fast even on long histories; moves are
-    # looked up afterwards, only in the commits that removed a mentioned path.
-    # Ordinary commits are read one by one. A merge counts only for files it
-    # removed itself while resolving (present in every parent); a removal it
-    # inherits from a merged branch belongs to that branch's commit. A header
-    # starts with "/", which no repository path can.
+    # One fast pass without rename detection; moves are resolved only for commits removing mentioned paths.
+    # Merges count only self-removals; headers start with "/".
     for options, lead in ((("--no-merges",), "\n"), (("--merges", "-c"), "")):
         commit = date = None
         expect_lead = False
@@ -1439,15 +1431,8 @@ def check_removed_paths(report, ssot_dir, mentions, since):
         report.add("INFO", None, None, "this clone has shallow history, so files removed before its oldest commit are not recognised")
 
 
-# --- confirmed invariants ------------------------------------------------------
-# Only the user changes a confirmed rule (memory-model section 5), yet mining leads
-# have rewritten confirmed rows while tidying the register: narrowed one to "a
-# request, not a gate", added an exemption, dropped a duty. So each confirmed row
-# of the base commit (HEAD, or --since) is compared with the working tree. A new
-# kind, rule, or status, or a removed row, is an error unless the row's Source
-# gained a date. This is a source-recording guard, not proof of acceptance;
-# human-decision evidence and date meaning belong to memory-model section 3.
-# A moved link or a reworded source changes nothing the rule says.
+# --- confirmed invariants ---
+# Compare confirmed rows against HEAD/--since; kind/rule/status/removal changes need a new dated Source.
 
 DATE_RE = re.compile(r"\b\d{4}-\d{2}-\d{2}\b")
 
@@ -1732,23 +1717,22 @@ def check_codex_chain(report, root):
         return picked[d]
 
     def emit(p, tot, cnt):
-        head = f"Codex instruction chain is {tot} bytes ({cnt} file(s); "
-        if tot > CODEX_MAX_BYTES:
-            report.add("WARN", p, None, head + f"exceeds {CODEX_MAX_BYTES}-byte project_doc_max_bytes cliff — Codex silently truncates excess bytes, including mid-UTF-8)")
-        elif tot >= CODEX_WARN_BYTES:
-            report.add("WARN", p, None, head + f">={CODEX_WARN_BYTES} bytes, approaching {CODEX_MAX_BYTES}-byte project_doc_max_bytes limit)")
+        tail = f"exceeds {CODEX_MAX_BYTES}-byte project_doc_max_bytes cliff — Codex silently truncates excess bytes, including mid-UTF-8)" if tot > CODEX_MAX_BYTES else f">={CODEX_WARN_BYTES} bytes, approaching {CODEX_MAX_BYTES}-byte project_doc_max_bytes limit)"
+        report.add("WARN", p, None, f"Codex instruction chain is {tot} bytes ({cnt} file(s); {tail}")
+
+    def is_cold_rel(d):
+        if d == scan:
+            return False
+        return any(is_cold_dir_part(p.lower()) for p in os.path.relpath(d, scan).split(os.sep) if p not in ("", "."))
 
     chain_root, dirs = git_root or scan, None
     if git_root:
         try:
             raw = git_output(git_root, "ls-files", "-z", "--cached", "--others", "--exclude-standard", "--",
                              "AGENTS.md", "AGENTS.override.md", "*/AGENTS.md", "*/AGENTS.override.md")
-            found = set()
-            for rel in raw.split("\0"):
-                d = dirname(join(git_root, rel)) if rel else ""
-                if d and (d == scan or d.startswith(scan + os.sep)):
-                    found.add(d)
-            dirs = sorted(found)
+            dirs = sorted({dirname(join(git_root, r)) for r in raw.split("\0") if r
+                           and (dirname(join(git_root, r)) == scan or dirname(join(git_root, r)).startswith(scan + os.sep))
+                           and not is_cold_rel(dirname(join(git_root, r)))})
         except (GitError, FileNotFoundError):
             dirs = None
     if dirs is None:
@@ -1757,7 +1741,7 @@ def check_codex_chain(report, root):
             if d != scan and is_sub(d):
                 subs[:] = []
                 continue
-            subs[:] = sorted(s for s in subs if s not in CODEX_SKIP_DIRS and not os.path.islink(join(d, s)) and not is_sub(join(d, s)))
+            subs[:] = sorted(s for s in subs if s not in CODEX_SKIP_DIRS and not is_cold_dir_part(s.lower()) and not os.path.islink(join(d, s)) and not is_sub(join(d, s)))
             if "AGENTS.override.md" in files or "AGENTS.md" in files:
                 dirs.append(d)
 
@@ -2078,7 +2062,17 @@ def main(argv):
     for path in sorted(UNDECODABLE):
         report.add("WARN", path, None, "not valid UTF-8; undecodable bytes were replaced while checking")
     surface = readme if GENERAL[0] else ssot_dir
-    return report.finish(surface + " (selected files only)" if scoped else surface)
+    touched = None
+    if since and report.errors:
+        try:
+            top = git_output(REPO_ROOT[0], "rev-parse", "--show-toplevel").strip()
+            if top:
+                d_out = git_output(top, "diff", "--name-only", since)
+                u_out = git_output(top, "ls-files", "--others", "--exclude-standard")
+                touched = {real_path(os.path.join(top, n)) for n in (d_out + "\n" + u_out).splitlines() if n.strip()}
+        except (GitError, FileNotFoundError):
+            pass
+    return report.finish(surface + " (selected files only)" if scoped else surface, since=since, touched=touched)
 
 
 if __name__ == "__main__":

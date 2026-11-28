@@ -3374,6 +3374,86 @@ class CheckerTest(unittest.TestCase):
         self.assertEqual(code, 0, out_f5)
         self.assertIn("WARN  AGENTS.md  Codex instruction chain is 34000 bytes (2 file(s); exceeds 32768-byte project_doc_max_bytes cliff", out_f5)
 
+    def test_consumer_audit_dated_bullets_ext_rollup_since_scope_and_cold_codex_filter(self):
+        # 1. Chronological dated bullets (>=5 bullets, 0 dated headings) trigger dated-entries
+        #    consolidation in Format 4 & Format 5 (>8k chars), stay quiet when compact (<8k),
+        #    and respect trailing ## History (cold) boundaries.
+        self.valid()
+        bullet_pad = "Superseded release log detail from an earlier quarter. " * 26
+        big_bullets = "# Decisions\n\n## Channel Policy\n\n" + "\n".join(
+            f"- **2026-10-{d:02d} · User:** {bullet_pad}" for d in range(1, 8)
+        ) + "\n"
+        self.write("release-log.md", big_bullets)
+        out_b = self.assert_clean()
+        self.assertIn("with 7 dated entries; consolidate current state and move superseded history to a cold archive (decisions/ or *-history.md)", out_b)
+        self.assertIn("7 dated entries -> consolidate + offload history to cold archive)", out_b)
+
+        # Compact dated-bullet doc (<8k chars) stays quiet; cold tail exempts bullets below it.
+        small_bullets = "# Compact\n\n" + "\n".join(f"- **2026-10-{d:02d}:** Active rule {d}." for d in range(1, 8)) + "\n"
+        self.write("release-log.md", small_bullets)
+        out_small = self.assert_clean()
+        self.assertNotIn("dated entries", out_small)
+
+        cold_tail_bullets = "# Decisions\n\n## Active\n\nCurrent rule.\n\n## History (cold)\n\n" + "\n".join(
+            f"- **2026-10-{d:02d}:** {bullet_pad}" for d in range(1, 8)
+        ) + "\n"
+        self.write("release-log.md", cold_tail_bullets)
+        out_cold = self.assert_clean()
+        self.assertNotIn("dated entries", out_cold)
+        os.remove(os.path.join(self.ssot, "release-log.md"))
+
+        # 2. Format-5 external-space routes (>3) roll up into 1 concise INFO summary line;
+        #    <=3 stay individual lines.
+        ext = os.path.join(self.repo, "ext_siblings")
+        os.makedirs(ext)
+        for i in range(1, 6):
+            with open(os.path.join(ext, f"r{i}.md"), "w", encoding="utf-8") as handle:
+                handle.write(f"# Ext {i}\n")
+        space = os.path.join(self.repo, "f5space")
+        os.makedirs(space)
+        with open(os.path.join(space, "links.md"), "w", encoding="utf-8") as handle:
+            handle.write("# Links\n\n" + "\n".join(f"- [R{i}](../ext_siblings/r{i}.md)" for i in range(1, 6)) + "\n")
+        entry = os.path.join(space, "README.md")
+        with open(entry, "w", encoding="utf-8") as handle:
+            handle.write("---\nssot_format: 5\nlanguage: en\n---\n\n# Space\n\n- [Links](links.md)\n\n## Invariants\n\nNone.\n")
+        code, out_roll = self.run_checker(entry)
+        self.assertEqual(code, 0, out_roll)
+        self.assertIn("INFO  .  5 external-space route(s) not read by this check across 1 file(s): links.md (5)", out_roll)
+        self.assertEqual(out_roll.count("external-space route"), 1)
+
+        # 3. --since <commit> keeps exit 1 on errors while distinguishing touched vs pre-existing errors.
+        self.valid()
+        self.write("old-doc.md", "# Old\n\nSee [Missing](does-not-exist.md).\n")
+        self.git("init", "-q")
+        self.commit("baseline with pre-existing broken link")
+        code, out_pre = self.run_checker(self.ssot, "--since", "HEAD")
+        self.assertEqual(code, 1, out_pre)
+        self.assertIn("INFO  .  since HEAD: 0 error(s) in touched files, 1 pre-existing error(s) in untouched files", out_pre)
+
+        self.write("new-doc.md", "# New\n\nSee [Broken](still-missing.md).\n")
+        code, out_mix = self.run_checker(self.ssot, "--since", "HEAD")
+        self.assertEqual(code, 1, out_mix)
+        self.assertIn("INFO  .  since HEAD: 1 error(s) in touched files, 1 pre-existing error(s) in untouched files", out_mix)
+        os.remove(os.path.join(self.ssot, "old-doc.md"))
+        os.remove(os.path.join(self.ssot, "new-doc.md"))
+
+        # 4. Codex 32KB chain check skips cold archive directories (including Chinese *归档 folders)
+        #    while still warning on active directories.
+        with open(os.path.join(self.repo, "AGENTS.md"), "w", encoding="utf-8") as handle:
+            handle.write("r" * 20000)
+        arch_en = os.path.join(self.repo, "docs", "archive", "snap")
+        arch_zh = os.path.join(self.repo, "docs", "03_验证归档", "cases", "F01")
+        active = os.path.join(self.repo, "packages", "active")
+        for d in (arch_en, arch_zh, active):
+            os.makedirs(d)
+            with open(os.path.join(d, "AGENTS.md"), "w", encoding="utf-8") as handle:
+                handle.write("s" * 15000)
+        self.commit("add active and cold archive AGENTS")
+        out_codex = self.assert_clean()
+        self.assertIn("WARN  ../packages/active/AGENTS.md  Codex instruction chain is 35000 bytes", out_codex)
+        self.assertNotIn("archive/snap/AGENTS.md", out_codex)
+        self.assertNotIn("03_验证归档", out_codex)
+
 
 if __name__ == "__main__":
     unittest.main(verbosity=1)
