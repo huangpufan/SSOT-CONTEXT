@@ -877,18 +877,28 @@ def pipe_tables(lines):
 
 def register_tables(lines, text):
     """The Invariants section's lines and its pipe tables (lists of (line number, cells)); None if no section."""
-    section = None
+    sections = []
+    current = None
     for number, level, raw in headings(text, lines):
-        if section is None:
-            if norm_heading(raw).startswith(INVARIANT_HEADINGS):
-                section = [number, level, None]
-        elif level <= section[1]:
-            section[2] = number
-            break
-    if section is None:
+        if current is not None and level <= current[1]:
+            current[2] = number
+            sections.append(current)
+            current = None
+        if current is None and norm_heading(raw).startswith(INVARIANT_HEADINGS):
+            current = [number, level, None]
+    if current is not None:
+        sections.append(current)
+    if not sections:
         return None
-    body = [(n, line) for n, line in lines if n > section[0] and (section[2] is None or n < section[2])]
-    return body, pipe_tables(body)
+    fallback = None
+    for start, _level, end in sections:
+        body = [(n, line) for n, line in lines if n > start and (end is None or n < end)]
+        tables = pipe_tables(body)
+        if tables:
+            return body, tables
+        if fallback is None:
+            fallback = (body, tables)
+    return fallback
 
 
 def is_invariants_subdir(path, ssot_dir):
@@ -1439,6 +1449,15 @@ def check_removed_paths(report, ssot_dir, mentions, since):
 DATE_RE = re.compile(r"\b\d{4}-\d{2}-\d{2}\b")
 
 
+def _valid_iso_date(token):
+    import datetime
+    try:
+        datetime.date.fromisoformat(token)
+        return True
+    except ValueError:
+        return False
+
+
 def check_confirmed(report, readme, text, since, ssot_dir=None, current_shards=()):
     base, directory, entry = since or "HEAD", os.path.dirname(readme), os.path.basename(readme)
     ssot_dir = ssot_dir or directory
@@ -1514,7 +1533,8 @@ def check_confirmed(report, readme, text, since, ssot_dir=None, current_shards=(
         changed = [nm for nm, at in (("kind", 1), ("rule", 2), ("status", 4)) if comparable(cells[at], at) != comparable(now[at], at)]
         if not changed:
             continue
-        dates, before = DATE_RE.findall(now[5]), DATE_RE.findall(cells[5])
+        dates = [d for d in DATE_RE.findall(now[5]) if _valid_iso_date(d)]
+        before = [d for d in DATE_RE.findall(cells[5]) if _valid_iso_date(d)]
         if any(dates.count(d) > before.count(d) for d in dates):
             approved.append(ident)
             continue
@@ -1609,8 +1629,10 @@ def check_gitignored_links(report, ssot_dir, local_links, entry=None, missing_li
                                  capture_output=True, check=False)
             if res.returncode == 0:
                 ignored = set(filter(None, res.stdout.decode("utf-8", "surrogateescape").split("\0")))
-        except OSError:
-            pass
+            elif res.returncode != 1:
+                report.add("UNCHECKED", entry or ssot_dir, None, f"git check-ignore failed (exit {res.returncode}); ignored-link checks incomplete")
+        except OSError as exc:
+            report.add("UNCHECKED", entry or ssot_dir, None, f"git check-ignore unavailable ({exc}); ignored-link checks incomplete")
     entry_ignored = bool(entry_rel and entry_rel in ignored)
     for doc, num, target, rels in missing_entries:
         if not entry_ignored and any(rel in ignored for rel in rels):

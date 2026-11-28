@@ -63,6 +63,7 @@ ARG_YES=0
 ARG_NONINTERACTIVE=0
 ARG_UI_LANG=""
 ARG_REF=""
+ARG_ALLOW_MIRROR=0
 ARG_LEGACY_SHIMS=0
 ARG_BLOCK_FILE=""
 ARG_ENTRY=""
@@ -1056,10 +1057,10 @@ ensure_source() {
   if [[ -n "${REPO_OVERRIDE:-}" ]]; then
     mirrors=("$REPO_OVERRIDE")
   else
-    mirrors=(
-      "https://github.com/huangpufan/SSOT-CONTEXT.git"
-      "https://gh-proxy.com/https://github.com/huangpufan/SSOT-CONTEXT.git"
-    )
+    mirrors=("https://github.com/huangpufan/SSOT-CONTEXT.git")
+    if [[ "$ARG_ALLOW_MIRROR" -eq 1 ]]; then
+      mirrors+=("https://gh-proxy.com/https://github.com/huangpufan/SSOT-CONTEXT.git")
+    fi
   fi
 
   local url ok_clone=0 first=1 last_tried=""
@@ -1081,10 +1082,10 @@ ensure_source() {
 
   if [[ $ok_clone -eq 0 && -z "${REPO_OVERRIDE:-}" ]]; then
     # tar.gz fallbacks
-    local -a tars=(
-      "https://github.com/huangpufan/SSOT-CONTEXT/archive/${REPO_REF}.tar.gz"
-      "https://gh-proxy.com/https://github.com/huangpufan/SSOT-CONTEXT/archive/${REPO_REF}.tar.gz"
-    )
+    local -a tars=("https://github.com/huangpufan/SSOT-CONTEXT/archive/${REPO_REF}.tar.gz")
+    if [[ "$ARG_ALLOW_MIRROR" -eq 1 ]]; then
+      tars+=("https://gh-proxy.com/https://github.com/huangpufan/SSOT-CONTEXT/archive/${REPO_REF}.tar.gz")
+    fi
     local tar_url
     for tar_url in "${tars[@]}"; do
       warn "git clone failed for all mirrors, retrying via $tar_url" >&2
@@ -1099,7 +1100,12 @@ ensure_source() {
     done
   fi
 
-  [[ $ok_clone -eq 1 ]] || die "failed to fetch ref '$REPO_REF' from all mirrors (last tried: $last_tried)"
+  if [[ $ok_clone -ne 1 ]]; then
+    if [[ "$ARG_ALLOW_MIRROR" -eq 0 && -z "${REPO_OVERRIDE:-}" ]]; then
+      die "failed to fetch ref '$REPO_REF' from GitHub (last tried: $last_tried). Pass --allow-mirror (or SSOT_ALLOW_MIRROR=1) to opt in to the third-party gh-proxy.com mirror, or set SOURCE_DIR to a local checkout."
+    fi
+    die "failed to fetch ref '$REPO_REF' from all mirrors (last tried: $last_tried)"
+  fi
 
   if [[ -f "$SOURCE_DIR/VERSION" ]]; then
     VERSION="$(tr -d '[:space:]' < "$SOURCE_DIR/VERSION")"
@@ -1744,7 +1750,10 @@ run_sync_block() {
   cp -p "$BLOCK_REAL_TARGET" "$BLOCK_SYNC_TMP"
   printf '%s\n' "$BLOCK_EXPECTED" > "$BLOCK_PAYLOAD_TMP"
 
-  awk -v payload="$BLOCK_PAYLOAD_TMP" '
+  SSOT_BLOCK_PAYLOAD="$BLOCK_PAYLOAD_TMP" awk '
+    BEGIN {
+      payload = ENVIRON["SSOT_BLOCK_PAYLOAD"]
+    }
     {
       clean = $0
       sub(/\r$/, "", clean)
@@ -2160,6 +2169,8 @@ OPTIONS:
   --lang <en|zh>            Template language (default: en)
   --ref <branch|tag>        Install from this branch or tag (default: main).
                             --ref v2-final keeps the frozen v2 protocol.
+  --allow-mirror            Allow fallback to the third-party gh-proxy.com mirror
+                            if GitHub is unreachable (disabled by default)
   --with-legacy-shims       Also install ssot-audit and ssot-skill compatibility shims
                             (omitted on fresh installs; preserved automatically on upgrade)
   --yes, -y                 Skip confirmation
@@ -2177,7 +2188,7 @@ OPTIONS:
 
 ENVIRONMENT:
   SSOT_AGENT, SSOT_SCOPE, SSOT_LANG, SSOT_UI_LANG, SSOT_REF
-  SSOT_YES=1, SSOT_NONINTERACTIVE=1, SSOT_LEGACY_SHIMS=1
+  SSOT_YES=1, SSOT_NONINTERACTIVE=1, SSOT_LEGACY_SHIMS=1, SSOT_ALLOW_MIRROR=1
   SOURCE_DIR                Local source checkout (skip git clone)
   SSOT_CONTEXT_REPO_URL     Source repository override
   SSOT_SKILL_REPO_URL       Legacy fallback for SSOT_CONTEXT_REPO_URL
@@ -2230,6 +2241,8 @@ parse_args() {
         ARG_REF="$2"; shift 2 ;;
       --ref=*)
         ARG_REF="${1#*=}"; shift ;;
+      --allow-mirror)
+        ARG_ALLOW_MIRROR=1; shift ;;
       --with-legacy-shims)
         ARG_LEGACY_SHIMS=1; shift ;;
       --ui-lang)
@@ -2292,6 +2305,7 @@ parse_args() {
   [[ "${SSOT_YES:-0}" == "1" ]] && ARG_YES=1
   [[ "${SSOT_NONINTERACTIVE:-0}" == "1" ]] && ARG_NONINTERACTIVE=1
   [[ "${SSOT_LEGACY_SHIMS:-0}" == "1" ]] && ARG_LEGACY_SHIMS=1
+  [[ "${SSOT_ALLOW_MIRROR:-0}" == "1" ]] && ARG_ALLOW_MIRROR=1
 
   # Quickstart: fill defaults for fields the user did not pass.
   # Must run AFTER env merge so SSOT_* env values take precedence over autodetect.

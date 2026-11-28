@@ -50,7 +50,7 @@ bash "$ssot_install_dir/install.sh" --quickstart \
   --agent "$ssot_agent" --scope "$ssot_scope" --lang "$ssot_template_lang"
 ```
 
-Check download and installer exit codes separately, preserve stderr, and report the specific failure. If download fails for network reasons, retry with `https://gh-proxy.com/https://raw.githubusercontent.com/huangpufan/SSOT-CONTEXT/main/install.sh` (`gh-proxy.com` is a third-party mirror; inspect the downloaded script before executing it when supply-chain integrity matters, or fetch from a local GitHub checkout; see [SECURITY.md](SECURITY.md)). If the user supplied a local checkout, run its `install.sh` with `SOURCE_DIR` set to that checkout (`SOURCE_DIR` and `--ref` cannot be combined). Installation does not create or migrate the target repository's `SSOT/`.
+Check download and installer exit codes separately, preserve stderr, and report the specific failure. If download fails for network reasons, retry with `https://gh-proxy.com/https://raw.githubusercontent.com/huangpufan/SSOT-CONTEXT/main/install.sh` and pass `--allow-mirror` (or `SSOT_ALLOW_MIRROR=1`) if GitHub clone also needs the mirror (`gh-proxy.com` is an opt-in third-party mirror, disabled by default; inspect the downloaded script before executing it when supply-chain integrity matters, or fetch from a local GitHub checkout; see [SECURITY.md](SECURITY.md)). If the user supplied a local checkout, run its `install.sh` with `SOURCE_DIR` set to that checkout (`SOURCE_DIR` and `--ref` cannot be combined). Installation does not create or migrate the target repository's `SSOT/`.
 
 ## 3. Verify the installed bundle
 
