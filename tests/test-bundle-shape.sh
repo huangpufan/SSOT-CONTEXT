@@ -1021,7 +1021,7 @@ PY
   budget "templates/$lang" "$(bytes "${TPL_LANG_FILES[@]}")" 16384 bytes
 done
 SCRIPT_BYTES="$(bytes "${SCRIPT_FILES[@]}")"
-budget "checker" "$(bytes "$SKILLS/ssot-doctor/assets/scripts/ssot-check.py")" 98304 bytes
+budget "checker" "$(bytes "$SKILLS/ssot-doctor/assets/scripts/ssot-check.py")" 102400 bytes
 budget "bundle scripts" "$SCRIPT_BYTES" 131072 bytes
 if TOTAL_BYTES="$(git -C "$PROJECT_ROOT" ls-files -co --exclude-standard -z -- skills | xargs -0 cat | wc -c)" && (( TOTAL_BYTES > 0 )); then
   RUNTIME_ASSET_BYTES=$((TOTAL_BYTES - SCRIPT_BYTES))

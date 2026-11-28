@@ -103,6 +103,9 @@ INSTRUCTION_FILES = (
     ".windsurf/rules/ssot.md", ".windsurfrules",
     ".github/copilot-instructions.md",
 )
+CODEX_WARN_BYTES = 28672
+CODEX_MAX_BYTES = 32768
+CODEX_SKIP_DIRS = {".git", "node_modules", ".venv", "__pycache__"}
 INVARIANT_STATUSES = {"confirmed", "candidate", "retired"}
 INVARIANT_HEADINGS = ("invariants", "不变量", "保护规则")
 INVARIANT_COLUMNS = "ID | Kind | Rule | Explained in | Status | Source"
@@ -1700,6 +1703,93 @@ def check_instruction_blocks(report, root):
             report.add("INFO", path, None, f"managed block differs from installed templates{' (legacy SSOT-SKILL markers)' if legacy else ''}; run the SSOT-CONTEXT installer with --check-block / --sync-block")
 
 
+def check_codex_chain(report, root):
+    """Check Codex project_doc_max_bytes (32,768 B) along nearest-.git-root -> subdir chains."""
+    scan, join, dirname = real_path(root), os.path.join, os.path.dirname
+    is_sub = lambda d: d in SUBMODULE_ROOTS or os.path.lexists(join(d, ".git"))
+    git_root, cur = None, scan
+    while True:
+        if os.path.lexists(join(cur, ".git")):
+            git_root = cur
+            break
+        nxt = dirname(cur)
+        if nxt == cur:
+            break
+        cur = nxt
+    picked = {}
+
+    def pick(d):
+        if d not in picked:
+            picked[d] = (None, 0)
+            for n in ("AGENTS.override.md", "AGENTS.md"):
+                p = join(d, n)
+                if os.path.isfile(p):
+                    try:
+                        picked[d] = (p, os.path.getsize(p))
+                    except OSError:
+                        pass
+                    break
+        return picked[d]
+
+    def emit(p, tot, cnt):
+        head = f"Codex instruction chain is {tot} bytes ({cnt} file(s); "
+        if tot > CODEX_MAX_BYTES:
+            report.add("WARN", p, None, head + f"exceeds {CODEX_MAX_BYTES}-byte project_doc_max_bytes cliff — Codex silently truncates excess bytes, including mid-UTF-8)")
+        elif tot >= CODEX_WARN_BYTES:
+            report.add("WARN", p, None, head + f">={CODEX_WARN_BYTES} bytes, approaching {CODEX_MAX_BYTES}-byte project_doc_max_bytes limit)")
+
+    chain_root, dirs = git_root or scan, None
+    if git_root:
+        try:
+            raw = git_output(git_root, "ls-files", "-z", "--cached", "--others", "--exclude-standard", "--",
+                             "AGENTS.md", "AGENTS.override.md", "*/AGENTS.md", "*/AGENTS.override.md")
+            found = set()
+            for rel in raw.split("\0"):
+                d = dirname(join(git_root, rel)) if rel else ""
+                if d and (d == scan or d.startswith(scan + os.sep)):
+                    found.add(d)
+            dirs = sorted(found)
+        except (GitError, FileNotFoundError):
+            dirs = None
+    if dirs is None:
+        dirs = []
+        for d, subs, files in os.walk(scan):
+            if d != scan and is_sub(d):
+                subs[:] = []
+                continue
+            subs[:] = sorted(s for s in subs if s not in CODEX_SKIP_DIRS and not os.path.islink(join(d, s)) and not is_sub(join(d, s)))
+            if "AGENTS.override.md" in files or "AGENTS.md" in files:
+                dirs.append(d)
+
+    def stats(d):
+        steps = []
+        while True:
+            steps.append(d)
+            if d == chain_root or dirname(d) == d:
+                break
+            d = dirname(d)
+        tot = cnt = 0
+        last = None
+        for step in reversed(steps):
+            if step != chain_root and is_sub(step):
+                return 0, 0, None
+            p, sz = pick(step)
+            if p:
+                tot, cnt, last = tot + sz, cnt + 1, p
+        return tot, cnt, last
+
+    if git_root and git_root != scan:
+        ab, an, ap = stats(dirname(scan))
+        if ap and ab >= CODEX_WARN_BYTES:
+            emit(ap, ab, an)
+    for d in dirs:
+        p, _ = pick(d)
+        if p:
+            tot, cnt, last = stats(d)
+            if last == p and tot >= CODEX_WARN_BYTES:
+                emit(p, tot, cnt)
+
+
 def check_reviewed_through(report, readme, value, since=None):
     if not value:
         return
@@ -1984,6 +2074,7 @@ def main(argv):
         check_removed_paths(report, ssot_dir, mentions, since)
         if not legacy:
             check_instruction_blocks(report, REPO_ROOT[0])
+            check_codex_chain(report, REPO_ROOT[0])
     for path in sorted(UNDECODABLE):
         report.add("WARN", path, None, "not valid UTF-8; undecodable bytes were replaced while checking")
     surface = readme if GENERAL[0] else ssot_dir

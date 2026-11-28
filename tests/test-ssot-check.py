@@ -3274,6 +3274,106 @@ class CheckerTest(unittest.TestCase):
         self.assertIn("compaction candidates (1): guide.md (", out_f5)
         self.assertIn("bytes -> propose split/consolidation)", out_f5)
 
+    def test_codex_instruction_chain_byte_budget_and_git_boundaries(self):
+        import shutil
+        # 1. Non-git directory graceful handling: <28 KB stays clean (0 warnings, no UNCHECKED),
+        #    and >32 KB warns accurately without ascending above the workspace.
+        self.valid()
+        root_agents = os.path.join(self.repo, "AGENTS.md")
+        with open(root_agents, "w", encoding="utf-8") as handle:
+            handle.write("# Agents\n\n" + ("中" * 9000) + "\n")  # 27,011 UTF-8 bytes (<28,672)
+        out_nogit_ok = self.assert_clean()
+        self.assertIn("0 error(s), 0 warning(s)", out_nogit_ok)
+        self.assertNotIn("Codex instruction chain", out_nogit_ok)
+
+        with open(root_agents, "w", encoding="utf-8") as handle:
+            handle.write("# Agents\n\n" + ("a" * 33000) + "\n")
+        out_nogit_over = self.assert_clean()
+        self.assertIn("WARN  ../AGENTS.md  Codex instruction chain is 33011 bytes (1 file(s); exceeds 32768-byte project_doc_max_bytes cliff", out_nogit_over)
+        self.assertIn("mid-UTF-8", out_nogit_over)
+
+        # 2. Git repo: 28-32 KB warning band, >32 KB root+subdir cumulative cliff,
+        #    and AGENTS.override.md precedence in both directions.
+        with open(root_agents, "w", encoding="utf-8") as handle:
+            handle.write("r" * 20000)
+        self.git("init", "-q")
+        self.commit("init with 20k root AGENTS")
+        out_under = self.assert_clean()
+        self.assertNotIn("Codex instruction chain", out_under)
+
+        sub_dir = os.path.join(self.repo, "packages", "client")
+        os.makedirs(sub_dir)
+        sub_agents = os.path.join(sub_dir, "AGENTS.md")
+        with open(sub_agents, "w", encoding="utf-8") as handle:
+            handle.write("s" * 9500)  # cumulative 29,500 B in [28,672, 32,768]
+        out_warn = self.assert_clean()
+        self.assertIn("WARN  ../packages/client/AGENTS.md  Codex instruction chain is 29500 bytes (2 file(s); >=28672 bytes, approaching 32768-byte project_doc_max_bytes limit)", out_warn)
+        self.assertNotIn("WARN  ../AGENTS.md", out_warn)
+
+        with open(sub_agents, "w", encoding="utf-8") as handle:
+            handle.write("s" * 15000)  # cumulative 35,000 B > 32,768
+        out_cliff = self.assert_clean()
+        self.assertIn("WARN  ../packages/client/AGENTS.md  Codex instruction chain is 35000 bytes (2 file(s); exceeds 32768-byte project_doc_max_bytes cliff", out_cliff)
+
+        # Small AGENTS.override.md replaces oversized AGENTS.md in the same directory.
+        sub_override = os.path.join(sub_dir, "AGENTS.override.md")
+        with open(sub_override, "w", encoding="utf-8") as handle:
+            handle.write("# Short override\n")  # cumulative 20,017 B < 28,672
+        out_ovr_small = self.assert_clean()
+        self.assertNotIn("Codex instruction chain", out_ovr_small)
+
+        # Conversely, oversized AGENTS.override.md over tiny AGENTS.md triggers cliff.
+        with open(sub_agents, "w", encoding="utf-8") as handle:
+            handle.write("# Small base\n")
+        with open(sub_override, "w", encoding="utf-8") as handle:
+            handle.write("o" * 15000)  # cumulative 35,000 B > 32,768
+        out_ovr_big = self.assert_clean()
+        self.assertIn("WARN  ../packages/client/AGENTS.override.md  Codex instruction chain is 35000 bytes (2 file(s); exceeds 32768-byte project_doc_max_bytes cliff", out_ovr_big)
+
+        # 3. --owners scoped mode skips Codex chain scanning completely.
+        code, out_scoped = self.run_checker(os.path.join(self.ssot, "README.md"), "--owners")
+        self.assertEqual(code, 0, out_scoped)
+        self.assertNotIn("Codex instruction chain", out_scoped)
+        shutil.rmtree(os.path.join(self.repo, "packages"))
+
+        # 4. Nested .git boundary stops chain propagation in BOTH directions (zero cross-repo bleed).
+        nested = os.path.join(self.repo, "child-repo")
+        os.makedirs(os.path.join(nested, "SSOT"))
+        subprocess.run(["git", "init", "-q", nested], check=True)
+        with open(os.path.join(nested, "AGENTS.md"), "w", encoding="utf-8") as handle:
+            handle.write("n" * 20000)  # 20k outer + 20k nested would be 40k if wrongly combined
+        with open(os.path.join(nested, "SSOT", "README.md"), "w", encoding="utf-8") as handle:
+            handle.write(README)
+        with open(os.path.join(nested, "SSOT", "architecture.md"), "w", encoding="utf-8") as handle:
+            handle.write(ARCHITECTURE)
+        out_outer = self.assert_clean()
+        self.assertNotIn("Codex instruction chain", out_outer)
+        code, out_inner = self.run_checker(os.path.join(nested, "SSOT"))
+        self.assertEqual(code, 0, out_inner)
+        self.assertNotIn("Codex instruction chain", out_inner)
+
+        # 5. Gitignored runtime/snapshot directories do not spam Codex chain warnings.
+        with open(os.path.join(self.repo, ".gitignore"), "w", encoding="utf-8") as handle:
+            handle.write(".runtime/\n")
+        ign_dir = os.path.join(self.repo, ".runtime", "snap")
+        os.makedirs(ign_dir)
+        with open(os.path.join(ign_dir, "AGENTS.md"), "w", encoding="utf-8") as handle:
+            handle.write("x" * 20000)
+        out_ign = self.assert_clean()
+        self.assertNotIn("Codex instruction chain", out_ign)
+
+        # 6. Format-5 space inside a git subdirectory inherits repo-root -> space ancestor bytes
+        #    while stopping at the nearest .git root.
+        f5_sub = os.path.join(self.repo, "spaces", "notes")
+        os.makedirs(f5_sub)
+        with open(os.path.join(f5_sub, "CONTEXT.md"), "w", encoding="utf-8") as handle:
+            handle.write("---\nssot_format: 5\nlanguage: en\n---\n\n# Notes\n\n## Invariants\n\nNone.\n")
+        with open(os.path.join(f5_sub, "AGENTS.md"), "w", encoding="utf-8") as handle:
+            handle.write("f" * 14000)  # 20k repo root + 14k space = 34k > 32,768
+        code, out_f5 = self.run_checker(os.path.join(f5_sub, "CONTEXT.md"))
+        self.assertEqual(code, 0, out_f5)
+        self.assertIn("WARN  AGENTS.md  Codex instruction chain is 34000 bytes (2 file(s); exceeds 32768-byte project_doc_max_bytes cliff", out_f5)
+
 
 if __name__ == "__main__":
     unittest.main(verbosity=1)

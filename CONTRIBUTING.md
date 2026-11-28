@@ -52,7 +52,7 @@ Detailed shared material belongs in a reference, read at the point of use. `SKIL
 | Conditional/cold runtime branches (setup, migration, spaces, source, review, legacy shims) | 11,600 words |
 | Templates, per language | 16 KiB |
 | Runtime assets (`skills/` excluding Python scripts) | 184 KiB |
-| `ssot-check.py` | 96 KiB |
+| `ssot-check.py` | 100 KiB |
 | All bundle scripts (`skills/*/assets/scripts/*.py`) | 128 KiB |
 | All of `skills/` | 312 KiB |
 

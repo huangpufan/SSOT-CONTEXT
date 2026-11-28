@@ -8,6 +8,9 @@ Entries up to 2.86 were derived from the v2 protocol-upgrade ledger, which is pr
 
 ## [Unreleased]
 
+### Added
+- **`ssot-check.py` calibrated Codex `project_doc_max_bytes` (`32,768 B`) instruction-chain diagnostic (`CRE-10B`):** Added `check_codex_chain()` to measure cumulative raw UTF-8 file bytes along `AGENTS.override.md` / `AGENTS.md` chains strictly from the nearest `.git` root down to each checked subdirectory (stopping at nested `.git` roots and `.gitmodules` submodules, excluding global user files outside the repository, skipping `--owners` scoped runs, and handling non-git directories gracefully). Emits non-blocking `WARN` at `>=28,672 B` (`87.5%`) and high-severity `WARN` at `>32,768 B` (citing silent raw-byte/mid-UTF-8 truncation, keeping `exit 0` so pre-commit does not block unrelated commits on existing repos). Raised only the non-model-read `ssot-check.py` script ceiling from `96 KiB` (`98,304 B`) to `100 KiB` (`102,400 B`) in `tests/test-bundle-shape.sh` and `CONTRIBUTING.md`, keeping `bundle scripts` (`128 KiB`), `skills/` total (`312 KiB`), and all always-loaded/protocol word and byte ceilings unchanged (`+0 B` model context).
+
 ## [5.24] - 2026-11-27
 
 ### Changed
